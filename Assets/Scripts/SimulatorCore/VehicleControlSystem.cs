@@ -35,8 +35,8 @@ public class VehicleControlSystem : MonoBehaviour
     private float watch;
     
     // INTEGRATION TO-DO: Replace root with the path that it receives;
-    private string root = "D:\\00_FOA\\UAVSimulator_Git\\runtime\\";
-    private string asset_root = "D:\\00_FOA\\UAVSimulator_Git\\Assets\\";
+    private string root = "E:\\Development\\GitHub_Local\\UAVSimulator\\runtime";
+    private string asset_root = "E:\\Development\\GitHub_Local\\UAVSimulator\\Assets";
 
     private EnvironmentManagement environmentManagement;
     public List<GameObject> vehicles;

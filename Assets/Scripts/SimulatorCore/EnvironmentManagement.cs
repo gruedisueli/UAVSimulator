@@ -30,7 +30,7 @@ public class EnvironmentManagement : MonoBehaviour
         dronePortSpecs = new Dictionary<string, DronePort>();
         parkingSpots = new Dictionary<string, List<Vector3>>();
         // Temporary
-        root = "D:\\00_FOA\\UAVSimulator_Git";
+        root = "E:\\Development\\GitHub_Local\\UAVSimulator";
         current_runtime = "42o3601_71o0589";
         // ~Temporary
 
