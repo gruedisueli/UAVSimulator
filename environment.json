@@ -1,0 +1,60 @@
+{
+  "dronePorts": [
+    {
+      "type": "generic_retangular",
+      "postion": {
+        "x": -148.777,
+        "y": -0.5,
+        "z": 1411.111
+      },
+      "rotation": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "scale": {
+        "x": 150.0,
+        "y": 1.0,
+        "z": 150.0
+      },
+      "landingQueueHead": {
+        "x": 150.0,
+        "y": 150.0,
+        "z": 0.0
+      },
+      "ladingQueueDirection": {
+        "x": 1,
+        "y": 0,
+        "z": 0
+      }
+    },
+    {
+      "type": "Square_25_25",
+      "position": {
+        "x": -1740.942,
+        "y": 128.6,
+        "z": -226.3229
+      },
+      "rotation": {
+        "x": 0,
+        "y": -20,
+        "z": 0
+      },
+      "scale": {
+        "x": 1,
+        "y": 1,
+        "z": 1
+      },
+      "landingQueueHead": {
+        "x": 0,
+        "y": 50,
+        "z": 50
+      },
+      "ladingQueueDirection": {
+        "x": 0,
+        "y": 0,
+        "z": 1
+      }
+    }
+  ]
+}

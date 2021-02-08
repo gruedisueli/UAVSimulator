@@ -1,0 +1,100 @@
+﻿using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+
+public class Vehicle : MonoBehaviour
+{
+    
+    public int id;
+    public string type;
+    public int capacity;
+    public Vector3 currentLocation;
+
+    public float currentSpeed;
+    public float maxSpeed;
+    public float yawSpeed;
+    public float takeOffSpeed;
+    public float landingSpeed;
+
+    public List<float> emission;
+    public List<float> noise;
+
+    public float elevation;
+    public string origin;
+    public Queue<string> destination;
+    public bool returnedToParking;
+
+    public string status;
+    private Time elapsedTime;
+    private float separation;
+    public bool dequeued;
+
+    public int remainingDestinations;
+    #region Constructors
+    public VehicleInfo(int id_c, string type_c, Vector3 location_c)
+    {
+        id = id_c;
+        type = type_c;
+        currentLocation = location_c;
+        status = "standby";
+        currentSpeed = 0;
+        RegisterToSystem(this);
+    }
+
+    public VehicleInfo()
+    {
+    }
+    public void SetVehicleInfo(string type, int capacity, float maxSpeed, float yawspeed, float takeOffSpeed, float landingSpeed, List<float> emission, List<float> noise)
+    {
+        this.type = type;
+        this.capacity = capacity;
+        this.maxSpeed = maxSpeed;
+        this.yawSpeed = yawspeed;
+        this.takeOffSpeed = takeOffSpeed;
+        this.landingSpeed = landingSpeed;
+        this.emission = emission;
+        this.noise = noise;
+    }
+    #endregion
+
+    // Start is called before the first frame update
+    void Start()
+    {
+        dequeued = false;
+        returnedToParking = false;
+    }
+
+    // Update is called once per frame
+    void Update()
+    {
+        remainingDestinations = destination.Count;
+        UpdateToSystem(this);
+    }
+    public bool UpdateToSystem(VehicleInfo v)
+    {
+        VehecleControlSystem system = GameObject.Find("VehicleControlSystem").GetComponent<VehecleControlSystem>();
+        return system.UpdateVehicleStatus(v);
+    }
+    public bool RegisterToSystem(VehicleInfo v)
+    {
+        VehecleControlSystem system = GameObject.Find("VehicleControlSystem").GetComponent<VehecleControlSystem>();
+        return system.Register(v);
+    }
+
+    public void SetStatus(string status)
+    {
+        this.status = status;
+    }
+    public string GetStatus()
+    {
+        return this.status;
+    }
+    public void SetOrigin(string origin)
+    {
+        this.origin = origin;
+    }
+    public void SetDestinations(Queue<string> destinations)
+    {
+        this.destination = destinations;
+    }
+}

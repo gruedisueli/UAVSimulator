@@ -1,0 +1,12 @@
+{
+  "type": "TypeA",
+  "capacity": 5,
+  "maxSpeed": 200,
+  "landingSpeed": 60,
+  "takeoffSpeed": 40,
+  "yawSpeed": 30,
+  "range": 4000,
+  "size": 5,
+  "emission": [ 1.0, 1.0, 1.0, 1.0, 1.0 ],
+  "noise": [ 1.0, 1.0, 1.0, 1.0, 1.0 ]
+}

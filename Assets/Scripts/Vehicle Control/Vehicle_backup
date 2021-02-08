@@ -1,0 +1,212 @@
+﻿using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+using Assets.Scripts.Vehicle_Control;
+
+public class Vehicle : MonoBehaviour
+{
+    // constants
+    public float arrival_threshold = 5.0f;
+
+    // Vehicle specific information - can be modified in runtime       
+    public int id;
+    public string type;
+    public int capacity;
+    public float maxSpeed;
+    public float yawSpeed;
+    public float takeOffSpeed;
+    public float landingSpeed;
+    public float range;
+    public List<float> emission;
+    public List<float> noise;
+
+    // Analysis/control related information
+    public string currentPoint;
+    public Vector3 currentLocation;
+    public Vector3 currentTargetPosition;
+    public float currentSpeed;
+    public float elevation;
+    public string origin;
+    public Queue<string> destination;
+    public float separation;
+    private Time elapsedTime;
+
+    // State machine variable
+    // parked, takingoff, readytomove, moving, approached, landing, arrived
+    private string state;
+
+    private SignalSystem signalSystem;
+    private int placeInQueue;
+    private float landingElevation;
+    
+
+    #region Constructors
+    public Vehicle(int id_c, string type_c, Vector3 location_c, string point_c)
+    {
+        id = id_c;
+        type = type_c;
+        currentLocation = location_c;
+        currentPoint = point_c;
+        state = "parked";
+        currentSpeed = 0;
+        placeInQueue = -1;
+        RegisterToSystem(this);
+    }
+
+    public Vehicle()
+    {
+    }
+    public void SetVehicleInfo(string type, int capacity, float range, float maxSpeed, float yawspeed, float takeOffSpeed, float landingSpeed, List<float> emission, List<float> noise)
+    {
+        this.type = type;
+        this.capacity = capacity;
+        this.maxSpeed = maxSpeed;
+        this.yawSpeed = yawspeed;
+        this.takeOffSpeed = takeOffSpeed;
+        this.landingSpeed = landingSpeed;
+        this.emission = emission;
+        this.noise = noise;
+        this.range = range;
+    }
+    #endregion
+
+    // Start is called before the first frame update
+    void Start()
+    {
+        signalSystem = GameObject.Find("SignalSystem").GetComponent<SignalSystem>();
+        state = "parked";
+        landingElevation = 0;
+        placeInQueue = -1;
+    }
+
+    // Update is called once per frame
+    void Update()
+    {
+        if (signalSystem.hasSignaltoReceive(gameObject))
+        {
+            VehicleControlSignal vcs = signalSystem.UnregisterSignal(gameObject);
+            if (state == "parked")
+            {
+                if (vcs.signal == "call")
+                {
+                    LandingPoint lp = GameObject.Find(currentPoint).GetComponent<LandingPoint>();
+                    signalSystem.RegisterSignal(lp.gameObject, new VehicleControlSignal(gameObject, "call"));
+                }
+                /*
+                if (currentLocation != null)
+                {
+                    LandingPoint lp = GameObject.Find(currentPoint).GetComponent<LandingPoint>();
+
+                }*/
+                else if (vcs.signal == "takeoff")
+                {
+                    currentTargetPosition = vcs.vector;
+                    this.SetState("takingoff");
+                }
+            }
+            else if (state == "takingoff")
+            {
+                if (Vector3.Distance(this.currentLocation, currentTargetPosition) < arrival_threshold )
+                {
+                    // Todo: replace destinations in GameObject formats
+                    LandingPoint lp = GameObject.Find(currentPoint).GetComponent<LandingPoint>();
+                    signalSystem.RegisterSignal(lp.gameObject, new VehicleControlSignal(gameObject, "readytomove"));
+                    this.SetState("readytomove");
+                }
+            }
+            else if (state == "readytomove")
+            {
+                if(vcs.signal == "move")
+                {
+                    string nextDestination = destination.Peek();
+                    LandingPoint lp = GameObject.Find(nextDestination).GetComponent<LandingPoint>();
+                    Vector3 closest_landing_standby_at_destination = lp.GetClosestLandingStandby(currentTargetPosition);
+                    currentTargetPosition = closest_landing_standby_at_destination;
+                    this.SetState("moving");
+                }
+            }
+            else if (state == "moving")
+            {
+                // When the vehicle reaches 100m away from the destination
+                if(Vector3.Distance(currentTargetPosition, currentLocation) < 500)
+                {
+                    
+                    string currentDestination = destination.Peek();
+                    LandingPoint lp = GameObject.Find(currentDestination).GetComponent<LandingPoint>();
+                    currentSpeed = landingSpeed;
+                    placeInQueue = lp.AddToArrivalQueue(currentTargetPosition, gameObject);
+                    state = "approached";
+                }
+            }
+            else if (state == "approached" ) // by this point, it is registered to the Landing queue
+            {
+                if(vcs.signal == "moveforward") placeInQueue--;
+                else if(vcs.signal == "landinggranted") // the landing point granted landing
+                {
+                    placeInQueue = -1;
+                    string currentDestination = destination.Peek();
+                    LandingPoint lp = GameObject.Find(currentDestination).GetComponent<LandingPoint>();
+                    landingElevation = lp.gameObject.transform.position.y;
+                    state = "landing";
+                }
+            }
+            else if (state == "landing")
+            {
+                if ( elevation <= landingElevation + 0.5f ) // Arrival condition
+                {
+                    // On Arrival
+                    landingElevation = 0;
+                    string currentDestination = destination.Dequeue();
+                    LandingPoint lp = GameObject.Find(currentDestination).GetComponent<LandingPoint>();
+
+                    if (destination.Count == 0) // if the current point was the last destination
+                    {
+                        // To-do: 
+                        // 1. destination.Enqueue(get and reserve the landing point name of the nearest available parking())
+                        // 2. set toPark = true
+                        // 3. wait for a while - in behavior designer
+                        // 4. if wait is over
+                        // 4-1. 
+                    }
+                    
+
+
+                    state = "arrived";
+                    
+                    
+                }
+            }
+
+        }
+
+        UpdateToSystem(this);
+    }
+    public bool UpdateToSystem(Vehicle v)
+    {
+        VehecleControlSystem system = GameObject.Find("VehicleControlSystem").GetComponent<VehecleControlSystem>();
+        return system.UpdateVehicleStatus(v);
+    }
+    public bool RegisterToSystem(Vehicle v)
+    {
+        VehecleControlSystem system = GameObject.Find("VehicleControlSystem").GetComponent<VehecleControlSystem>();
+        return system.Register(v);
+    }
+
+    public void SetState(string state)
+    {
+        this.state = state;
+    }
+    public string GetState()
+    {
+        return this.state;
+    }
+    public void SetOrigin(string origin)
+    {
+        this.origin = origin;
+    }
+    public void SetDestinations(Queue<string> destinations)
+    {
+        this.destination = destinations;
+    }
+    
+}

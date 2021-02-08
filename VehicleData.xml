@@ -1,0 +1,45 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<vehicles>
+  <type Type="Type A">
+    <capacity>5</capacity>
+    <maxspeed>180</maxspeed>
+    <yawspeed>10</yawspeed>
+    <takeoff>20</takeoff>
+    <landing>15</landing>
+    <emission>
+      <c4>0</c4>
+      <c3>0</c3>
+      <c2>0.5</c2>
+      <c1>0</c1>
+      <c>0</c>
+    </emission>
+    <noise>
+      <c4>0</c4>
+      <c3>0</c3>
+      <c2>0.25</c2>
+      <c1>0</c1>
+      <c>0</c>
+    </noise>
+  </type>
+  <type Type="Type B">
+    <capacity>6</capacity>
+    <maxspeed>200</maxspeed>
+    <yawspeed>15</yawspeed>
+    <takeoff>20</takeoff>
+    <landing>20</landing>
+    <emission>
+      <c4>0</c4>
+      <c3>0</c3>
+      <c2>0.4</c2>
+      <c1>0</c1>
+      <c>0</c>
+    </emission>
+    <noise>
+      <c4>0</c4>
+      <c3>0</c3>
+      <c2>0.5</c2>
+      <c1>0</c1>
+      <c>0</c>
+    </noise>
+  </type>
+</vehicles>

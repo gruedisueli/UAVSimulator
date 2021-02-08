@@ -1,0 +1,9 @@
+{
+  "maxSpeed": 240,
+  "verticalSeparation": 10,
+  "horizontalSeparation": 50,
+  "maxVehicleCount": 100,
+  "maxYawSpeed": 30,
+  "landingSpeed": 40,
+  "takeoffSpeed": 40
+}

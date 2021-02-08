@@ -1,0 +1,401 @@
+{
+  "dronePorts": [
+    {
+      "type": "generic_rectangular",
+      "position": {
+        "x": -148.777,
+        "y": -0.5,
+        "z": 1411.111
+      },
+      "rotation": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "scale": {
+        "x": 150.0,
+        "y": 1.0,
+        "z": 150.0
+      },
+      "standbyPosition": {
+        "x": 0,
+        "y": 150.0,
+        "z": 0.0
+      },
+      "landingQueueHead": {
+        "x": 150.0,
+        "y": 150.0,
+        "z": 0.0
+      },
+      "landingQueueDirection": {
+        "x": 1,
+        "y": 0,
+        "z": 0
+      },
+      "landingPoint": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      }
+    },
+    {
+      "type": "Square_25_25",
+      "position": {
+        "x": 1740.942,
+        "y": 128.6,
+        "z": -226.3229
+      },
+      "rotation": {
+        "x": 0,
+        "y": -20,
+        "z": 0
+      },
+      "scale": {
+        "x": 1,
+        "y": 1,
+        "z": 1
+      },
+      "standbyPosition": {
+        "x": 0,
+        "y": 50.0,
+        "z": 0.0
+      },
+      "landingQueueHead": {
+        "x": 0,
+        "y": 50,
+        "z": 50
+      },
+      "landingQueueDirection": {
+        "x": 0,
+        "y": 0,
+        "z": 1
+      },
+      "landingPoint": {
+        "x": 0,
+        "y": 2,
+        "z": 0
+      }
+    },
+    {
+      "type": "generic_rectangular",
+      "position": {
+        "x": -2498.247,
+        "y": 0.05,
+        "z": -405.8982
+      },
+      "rotation": {
+        "x": 0,
+        "y": 30,
+        "z": 0
+      },
+      "scale": {
+        "x": 150.0,
+        "y": 1.0,
+        "z": 150.0
+      },
+      "standbyPosition": {
+        "x": 0,
+        "y": 150.0,
+        "z": 0.0
+      },
+      "landingQueueHead": {
+        "x": 150.0,
+        "y": 150.0,
+        "z": 0.0
+      },
+      "landingQueueDirection": {
+        "x": 1,
+        "y": 0,
+        "z": 0
+      },
+      "landingPoint": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      }
+    },
+    {
+      "type": "Square_25_25",
+      "position": {
+        "x": -310.2332,
+        "y": 181.5168,
+        "z": -1137.233
+      },
+      "rotation": {
+        "x": 0,
+        "y": -7,
+        "z": 0
+      },
+      "scale": {
+        "x": 1,
+        "y": 1,
+        "z": 1
+      },
+      "standbyPosition": {
+        "x": 0,
+        "y": 50.0,
+        "z": 0.0
+      },
+      "landingQueueHead": {
+        "x": 50,
+        "y": 50.0,
+        "z": 0
+      },
+      "landingQueueDirection": {
+        "x": 1,
+        "y": 0,
+        "z": 0
+      },
+      "landingPoint": {
+        "x": 0,
+        "y": 2,
+        "z": 0
+      }
+    },
+    {
+      "type": "Square_25_25",
+      "position": {
+        "x": 3767.605,
+        "y": 0,
+        "z": -740.85
+      },
+      "rotation": {
+        "x": 0,
+        "y": 184,
+        "z": 0
+      },
+      "scale": {
+        "x": 1,
+        "y": 1,
+        "z": 1
+      },
+      "standbyPosition": {
+        "x": 0,
+        "y": 100.0,
+        "z": 0.0
+      },
+      "landingQueueHead": {
+        "x": 0,
+        "y": 100.0,
+        "z": 50.0
+      },
+      "landingQueueDirection": {
+        "x": 0,
+        "y": 0,
+        "z": 1
+      },
+      "landingPoint": {
+        "x": 0,
+        "y": 2,
+        "z": 0
+      }
+    },
+    {
+      "type": "generic_rectangular",
+      "position": {
+        "x": 3871.589,
+        "y": 0,
+        "z": 40.3479
+      },
+      "rotation": {
+        "x": 0,
+        "y": -24,
+        "z": 0
+      },
+      "scale": {
+        "x": 50.0,
+        "y": 1.0,
+        "z": 50.0
+      },
+      "standbyPosition": {
+        "x": 0,
+        "y": 150.0,
+        "z": 0.0
+      },
+      "landingQueueHead": {
+        "x": 0,
+        "y": 150.0,
+        "z": -50
+      },
+      "landingQueueDirection": {
+        "x": 0,
+        "y": 0,
+        "z": -1
+      },
+      "landingPoint": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      }
+    }
+  ],
+  "parkingStructures": [
+    {
+      "type": "Simple_4Way_Stack",
+      "position": {
+        "x": -3643.921,
+        "y": 0,
+        "z": 425.676
+      },
+      "rotation": {
+        "x": 0,
+        "y": 45,
+        "z": 0
+      },
+      "scale": {
+        "x": 1,
+        "y": 1,
+        "z": 1
+      },
+      "standbyPosition": {
+        "x": 0,
+        "y": 50.0,
+        "z": 0.0
+      },
+      "landingQueueHead": {
+        "x": 50.0,
+        "y": 50.0,
+        "z": 0.0
+      },
+      "landingQueueDirection": {
+        "x": 1,
+        "y": 0,
+        "z": 0
+      }
+    },
+    {
+      "type": "generic_rectangular_lot",
+      "position": {
+        "x": 3160.363,
+        "y": 0,
+        "z": 1242.02
+      },
+      "rotation": {
+        "x": 0,
+        "y": 22,
+        "z": 0
+      },
+      "scale": {
+        "x": 300,
+        "y": 1,
+        "z": 200
+      },
+      "standbyPosition": {
+        "x": 0,
+        "y": 100.0,
+        "z": 0.0
+      },
+      "landingQueueHead": {
+        "x": 40.0,
+        "y": 100.0,
+        "z": 40.0
+      },
+      "landingQueueDirection": {
+        "x": 1,
+        "y": 0,
+        "z": 1
+      }
+    }
+  ],
+  "restrictionZones": [
+    {
+      "type": "Class_B",
+      "position": {
+        "x": -3581,
+        "y": 0,
+        "z": -1383
+      },
+      "rotation": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "scale": {
+        "x": 1,
+        "y": 1,
+        "z": 1
+      },
+      "bottoms": [ 0.0, 579.12, 1097.28 ],
+      "radius": [ 2500, 4000, 7200 ],
+      "height": 3048
+    },
+    {
+      "type": "Class_C",
+      "position": {
+        "x": 3417,
+        "y": 0,
+        "z": -4166
+      },
+      "rotation": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "scale": {
+        "x": 1,
+        "y": 1,
+        "z": 1
+      },
+      "bottoms": [ 0.0, 579.12 ],
+      "radius": [ 2500, 4000 ],
+      "height": 1219.2
+    },
+    {
+      "type": "generic_cylinder",
+      "position": {
+        "x": -1168,
+        "y": 0,
+        "z": 1329
+      },
+      "rotation": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "scale": {
+        "x": 250,
+        "y": 0,
+        "z": 200
+      },
+      "height": 3048
+    },
+    {
+      "type": "generic_rectangular",
+      "position": {
+        "x": -628,
+        "y": 0,
+        "z": -2640
+      },
+      "rotation": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "scale": {
+        "x": 300,
+        "y": 0,
+        "z": 275
+      },
+      "height": 3048
+    },
+    {
+      "type": "generic_cylinder",
+      "position": {
+        "x": -264,
+        "y": 0,
+        "z": -1659
+      },
+      "rotation": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "scale": {
+        "x": 150,
+        "y": 0,
+        "z": 150
+      },
+      "height": 3048
+    }
+  ]
+}
