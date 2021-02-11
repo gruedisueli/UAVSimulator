@@ -30,7 +30,7 @@ public class EnvironmentManagement : MonoBehaviour
         dronePortSpecs = new Dictionary<string, DronePort>();
         parkingSpots = new Dictionary<string, List<Vector3>>();
         // Temporary
-        root = "E:\\Development\\GitHub_Local\\UAVSimulator";
+        root = "E:\\Development\\GitHub_Local\\UAVSimulator\\";
         current_runtime = "42o3601_71o0589";
         // ~Temporary
 
@@ -67,11 +67,6 @@ public class EnvironmentManagement : MonoBehaviour
             destinationCollections.Add(dp);
         }
 
-        /*
-        foreach (GameObject ps in parkingStructures.Keys)
-        {
-            destinationCollections.Add(ps);
-        }*/
 
         // create straight paths first (elevation == 0 means straight paths)
         // paths whose elevation is closest to the assigned elevation will be examined first
@@ -91,7 +86,6 @@ public class EnvironmentManagement : MonoBehaviour
                         
                         List<GameObject> this_origin_adjacent_nodes = routes[origin];
                         this_origin_adjacent_nodes.Add(destination);
-                        
                     }
                     
                 }
@@ -162,7 +156,7 @@ public class EnvironmentManagement : MonoBehaviour
                 var clone = Instantiate(newObject, dp.position, Quaternion.Euler(dp.rotation.x, dp.rotation.y, dp.rotation.z));
                 clone.name = "DronePort_" + dp.type;
                 clone.tag = "DronePort";
-
+                clone.layer = 12;
                 // Fill in type specific informations
 
                 dp.maximumVehicleSize = dronePortSpecs[dp.type].maximumVehicleSize;
@@ -183,6 +177,7 @@ public class EnvironmentManagement : MonoBehaviour
                     GameObject cube = GameObject.CreatePrimitive(PrimitiveType.Cube);
                     cube.tag = "DronePort";
                     cube.name = "DronePort_Rectangular";
+                    cube.layer = 12;
                     cube.transform.position = dp.position;
                     cube.transform.rotation = Quaternion.Euler(dp.rotation.x, dp.rotation.y, dp.rotation.z);
                     cube.transform.localScale = dp.scale;
@@ -213,6 +208,7 @@ public class EnvironmentManagement : MonoBehaviour
                 var clone = Instantiate(newObject, ps.position, Quaternion.Euler(ps.rotation.x, ps.rotation.y, ps.rotation.z));
                 clone.tag = "ParkingStructure";
                 clone.name = "Parking_" + ps.type;
+                clone.layer = 11;
 
                 // Fill in type specific information
                 ps.parkingSpots = new List<Vector3>(parkingSpots[ps.type]);
@@ -236,6 +232,7 @@ public class EnvironmentManagement : MonoBehaviour
                     GameObject cube = GameObject.CreatePrimitive(PrimitiveType.Cube);
                     cube.tag = "ParkingStructure";
                     cube.name = "Parking_Rectangular";
+                    cube.layer = 11;
                     cube.transform.position = ps.position;
                     cube.transform.rotation = Quaternion.Euler(ps.rotation.x, ps.rotation.y, ps.rotation.z);
                     cube.transform.localScale = ps.scale;
@@ -287,6 +284,7 @@ public class EnvironmentManagement : MonoBehaviour
                 newZone.transform.rotation = Quaternion.Euler(rz.rotation.x, rz.rotation.y, rz.rotation.z);
                 newZone.name = "RestrictionZone_" + rz.type;
                 newZone.tag = "RestrictionZone";
+                newZone.layer = 8;
                 newZone.AddComponent<MeshRenderer>();
                 newZone.GetComponent<MeshRenderer>().material = restrictionZoneMaterial;
                 restrictionZones.Add(newZone);
@@ -304,6 +302,7 @@ public class EnvironmentManagement : MonoBehaviour
                     newZone.transform.localScale = new Vector3(this_cylinder_radius, this_cylinder_height_half, this_cylinder_radius);
                     newZone.name = "RestrictionZone_" + rz.type + "_" + i.ToString();
                     newZone.tag = "RestrictionZone";
+                    newZone.layer = 8;
                     newZone.AddComponent<MeshRenderer>();
                     newZone.GetComponent<MeshRenderer>().material = restrictionZoneMaterial;
                     restrictionZones.Add(newZone);

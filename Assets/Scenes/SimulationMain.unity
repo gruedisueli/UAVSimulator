@@ -150,9 +150,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e82c99061a325614bab19d4144e894ea, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  restrictionZones: []
-  restrictionZoneMaterial: {fileID: 2100000, guid: 2975c88d87cbeba4e96b3deaceac0aa2,
-    type: 2}
 --- !u!4 &286482313
 Transform:
   m_ObjectHideFlags: 0
@@ -831,9 +828,17 @@ MonoBehaviour:
     takeoffSpeed: 0
     landingSpeed: 0
     maxYawSpeed: 0
+    callGenerationInterval: 0
+    maxInFlightVehicles: 0
+    inCorridorSeparation: 0
+    lowAltitudeBoundary: 0
+    strategicDeconfliction: 
+    tacticalDeconfliction: 
   vehicles: []
+  movingVehicles: []
   parkingCollection: []
   landingCollection: []
+  speedMultiplier: 5
   TypeAPrefab: {fileID: 1190954189242403055, guid: 7d3554a259eccef49b8d08a8addb1549,
     type: 3}
 --- !u!4 &1994207596
@@ -920,7 +925,7 @@ PrefabInstance:
     - target: {fileID: 919132149155446097, guid: 42ab1c273f1c14b48bcc0288286cb046,
         type: 3}
       propertyPath: m_Name
-      value: Buildings (1)
+      value: Buildings
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 42ab1c273f1c14b48bcc0288286cb046, type: 3}

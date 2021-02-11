@@ -16,27 +16,29 @@ public class VehicleControlSystem : MonoBehaviour
     const float AGL_700_METERS = 213.36f;
     const float AGL_1200_METERS = 365.76f;
     public float MIN_DRONE_RANGE;
-    #region UI Variables
 
+
+    #region UI Variables
 
     public SimulationParam simulationParam;
     private Dictionary<string, float> statistics;
+
     
     #endregion
 
     #region Vehicle Info
     private Dictionary<GameObject, string> activeVehicles;
-    private Dictionary<string, VehicleDataEntry> vehicleTypes;
     #endregion
 
-    
+
 
     #region Private Variables
+    private Color translucentRed;
     private float watch;
-    
+
     // INTEGRATION TO-DO: Replace root with the path that it receives;
-    private string root = "E:\\Development\\GitHub_Local\\UAVSimulator\\runtime";
-    private string asset_root = "E:\\Development\\GitHub_Local\\UAVSimulator\\Assets";
+    private string root = "E:\\Development\\GitHub_Local\\UAVSimulator\\runtime\\";
+    private string asset_root = "E:\\Development\\GitHub_Local\\UAVSimulator\\Assets\\";
 
     private EnvironmentManagement environmentManagement;
     public List<GameObject> vehicles;
@@ -53,12 +55,14 @@ public class VehicleControlSystem : MonoBehaviour
     #endregion
 
 
+
     private SignalSystem signalSystem;
     private string current_runtime;
 
     // Start is called before the first frame update
     void Start()
     {
+        translucentRed = new Color(Color.cyan.r, Color.cyan.g, Color.cyan.b, 0.50f);
         // 1. instantiate vehicles in parking spots
         // 2. generate call signals
         MIN_DRONE_RANGE = 99999.0f;
@@ -66,6 +70,7 @@ public class VehicleControlSystem : MonoBehaviour
                                                     // Current Placeholder = Lat_Long of Boston
         simulationParam = ReadSimulationParams(current_runtime);
         environmentManagement = GameObject.Find("EnvironmentManagement").GetComponent<EnvironmentManagement>();
+    
         movingVehicles = new List<GameObject>();
         InstantiateVehicles();
 
@@ -77,21 +82,105 @@ public class VehicleControlSystem : MonoBehaviour
     // Update is called once per frames
     void Update()
     {
-        
         watch += Time.deltaTime;
-        if (watch > 3.0f && watch < 4.0f)
+        if (watch > simulationParam.callGenerationInterval && movingVehicles.Count < simulationParam.maxInFlightVehicles)
         {
             watch = 0.0f;
-            // Generating random destinations and calling a vehicle
-            Queue<GameObject> destinations = GetNewRandomDestinations();
-            GameObject parking = GetNearestAvailableParking(destinations.Peek());
-            GameObject vehicle = GetAvailableVehicleinParkingStrcuture(parking);
-            if (parking.GetComponent<Parking>().queue.Count < 3) CallVehicle(vehicle, parking.GetComponent<Parking>(), destinations);
+            GenerateRandomCalls();
         }
     }
 
 
     #region Methods
+
+    public void GenerateRandomCalls()
+    {
+        int call_type = Mathf.FloorToInt(Random.Range(0.0f, 2.0f));
+        string call_type_string = call_type == 0 ? "corridor" : "low-altitude";
+
+        // strategicDeconfliction == "none"
+        if (simulationParam.strategicDeconfliction.Equals("none"))
+        {
+            if (call_type_string.Equals("corridor"))
+            {
+                Queue<GameObject> destinations = GetNewRandomDestinations();
+                GameObject parking = GetNearestAvailableParking(destinations.Peek());
+
+                // TO-DO: Augment vehicle type
+                GameObject vehicle = GetAvailableVehicleinParkingStrcuture(parking);
+                if (parking.GetComponent<Parking>().queue.Count < 3) CallVehicle(vehicle, parking.GetComponent<Parking>(), destinations);
+            }
+            else // call_type_string == "low-altitude"
+            {
+                int withAAO = Mathf.FloorToInt(Random.Range(0.0f, 1.0f));
+                string withAAOString = withAAO == 0 ? "AAO" : "None";
+
+                if (withAAOString.Equals("AAO")) // generating calls with AAO
+                {
+                    // Create random polygon
+                    Polygon p = new Polygon(Mathf.RoundToInt(Random.Range(3, 10)));
+
+                    // Generate random center within the boundary of the maps - Integration TO-DO: Get the boundary coordinates from UI
+                    Bounds boston_bd = GameObject.Find("Buildings").GetComponentInChildren<MeshRenderer>().bounds;
+                    Vector3 polygonCenter = GetRandomAAO(boston_bd.min, boston_bd.max);
+                    p.Move(polygonCenter);
+
+                    // TO-DO: Augment vehicle type (make it find the right type) and make it possible to have more than one drone in operation per AAO
+                    GameObject parking = GetNearestAvailableParking(polygonCenter);
+                    GameObject vehicle = GetAvailableVehicleinParkingStrcuture(parking);
+
+                    // Generate 
+                    Mesh m = p.CreateExtrusion(simulationParam.lowAltitudeBoundary);
+                    var AAO = new GameObject("AAO_" + vehicle.name);
+                    AAO.AddComponent<MeshFilter>().mesh = m;
+                    MeshRenderer mr = AAO.AddComponent<MeshRenderer>();
+                    mr.material.color = translucentRed;
+                    mr.material.SetOverrideTag("RenderType", "Transparent");
+                    mr.material.SetInt("_SrcBlend", (int)UnityEngine.Rendering.BlendMode.SrcAlpha);
+                    mr.material.SetInt("_DstBlend", (int)UnityEngine.Rendering.BlendMode.OneMinusSrcAlpha);
+                    mr.material.SetInt("_ZWrite", 0);
+                    mr.material.DisableKeyword("_ALPHATEST_ON");
+                    mr.material.EnableKeyword("_ALPHABLEND_ON");
+                    mr.material.DisableKeyword("_ALPHAPREMULTIPLY_ON");
+                    mr.material.renderQueue = (int)UnityEngine.Rendering.RenderQueue.Transparent;
+
+                    AAO.layer = 8;
+                    AAOControl aaoCon = AAO.AddComponent<AAOControl>();
+                    aaoCon.AddVehicle(vehicle);
+                    /*
+                    // iterate below for each vehicle that are operating in this AAO
+                    List<Vector3> generatedPoints = p.GeneratePointsinExtrusion(aaoCon.GetVehicleCount(), simulationParam.lowAltitudeBoundary);
+                    Queue<GameObject> destinations = new Queue<GameObject>();
+                    int count = 0;
+                    foreach (Vector3 gp in generatedPoints)
+                    {
+                        GameObject newPointOfOperation = new GameObject(AAO.name + "_" + count.ToString());
+                        newPointOfOperation.transform.position = gp;
+                        newPointOfOperation.transform.SetParent(AAO.transform);
+                        count++;
+                        destinations.Enqueue(newPointOfOperation);
+                    }
+                    Vehicle vehicleInfo = vehicle.GetComponent<Vehicle>();
+                    vehicleInfo.isUTM = true;
+                    
+                    CallVehicle(vehicle, parking.GetComponent<Parking>(), destinations);*/
+                    //
+
+                }
+            }
+        }
+        else
+        {
+
+
+        }
+
+    }
+
+    public Vector3 GetRandomAAO( Vector3 minPoint, Vector3 maxPoint )
+    {
+        return new Vector3(Random.Range(minPoint.x, maxPoint.x), 0, Random.Range(minPoint.z, maxPoint.z));
+    }
 
     public List<Vector3> FindPath(Vector3 origin, Vector3 destination, int angleIncrement)
     {
@@ -165,8 +254,8 @@ public class VehicleControlSystem : MonoBehaviour
         {
             result.Add(visited[pointer]);
             pointer = from[pointer];
-        } while ( pointer >= 0 && from[pointer] != -1 );
-        if ( pointer != -1 ) result.Add(visited[pointer]);
+        } while (pointer >= 0 && from[pointer] != -1);
+        if (pointer != -1) result.Add(visited[pointer]);
         result.Reverse();
         return result;
     }
@@ -177,11 +266,11 @@ public class VehicleControlSystem : MonoBehaviour
         newPoint = newPoint + pivot;
         return newPoint;
     }
-    private void CallVehicle (GameObject vehicle, Parking parking, Queue<GameObject> destinations)
+    private void CallVehicle(GameObject vehicle, Parking parking, Queue<GameObject> destinations)
     {
         Vehicle vehicleInfo = vehicle.GetComponent<Vehicle>();
         vehicleInfo.destination = destinations;
-        vehicleInfo.state = "takeoff_requested";
+        vehicleInfo.state = "takeoff_requested";    
         parking.queue.Enqueue(vehicle);
     }
 
@@ -211,13 +300,13 @@ public class VehicleControlSystem : MonoBehaviour
         string drone_path = "Drones/";
 
         // Populate vehiclesToInstantiate number of drones in existing parking structures
-        for ( int i = 0; i < vehiclesToInstantiate; i++ )
+        for (int i = 0; i < vehiclesToInstantiate; i++)
         {
             // INTEGRATION TO-DO: Make this part to select parking structure randomly so that the drones are randomly populated
             foreach (GameObject parkingStructure in environmentManagement.parkingStructures.Keys)
             {
                 Parking ps = parkingStructure.GetComponent<Parking>();
-                if(ps.parkingInfo.remainingSpots > 0)
+                if (ps.parkingInfo.remainingSpots > 0)
                 {
                     int vehicleTypeID = Random.Range(0, vehicleTypes.Count);
                     var newDrone = Resources.Load<GameObject>(drone_path + vehicleTypes[vehicleTypeID]);
@@ -229,6 +318,7 @@ public class VehicleControlSystem : MonoBehaviour
                     var clone = Instantiate(newDrone, translatedSpot, Quaternion.Euler(0.0f, 0.0f, 0.0f));
                     clone.name = "UAV_" + i.ToString();
                     clone.tag = "Vehicle";
+                    clone.layer = 10;
                     Object.Destroy(newDrone);
 
                     // Fill in vehivle spec
@@ -236,10 +326,10 @@ public class VehicleControlSystem : MonoBehaviour
                     v.SetVehicleInfo(vehicleSpecs[type].type, vehicleSpecs[type].capacity, vehicleSpecs[type].range, vehicleSpecs[type].maxSpeed, vehicleSpecs[type].yawSpeed, vehicleSpecs[type].takeoffSpeed, vehicleSpecs[type].landingSpeed, vehicleSpecs[type].emission, vehicleSpecs[type].noise);
                     v.currentPoint = parkingStructure;
                     vehicles.Add(clone);
-                    
+
                     // Update parking management info
                     ps.parkingInfo.ParkAt(emptySpot, clone);
-                    
+
                     break;
                 }
             }
@@ -250,7 +340,7 @@ public class VehicleControlSystem : MonoBehaviour
     {
         float min_dist = float.PositiveInfinity;
         GameObject nearest = new GameObject();
-        foreach(GameObject ps in environmentManagement.parkingStructures.Keys)
+        foreach (GameObject ps in environmentManagement.parkingStructures.Keys)
         {
             if (environmentManagement.parkingStructures[ps].remainingSpots > 0)
             {
@@ -264,7 +354,7 @@ public class VehicleControlSystem : MonoBehaviour
         environmentManagement.parkingStructures[nearest].Reserve(v);
         return nearest;
     }
-    private SimulationParam ReadSimulationParams (string runtime_name)
+    private SimulationParam ReadSimulationParams(string runtime_name)
     {
         string path = root + runtime_name + "\\" + "simulation.json";
         string json = File.ReadAllText(path, System.Text.Encoding.UTF8);
@@ -272,16 +362,18 @@ public class VehicleControlSystem : MonoBehaviour
 
         return sp;
     }
-    public GameObject GetAvailableVehicleinParkingStrcuture ( GameObject parkingStructure )
+    public GameObject GetAvailableVehicleinParkingStrcuture(GameObject parkingStructure)
     {
         int random = Mathf.RoundToInt(Random.Range(0, parkingStructure.GetComponent<Parking>().parkingInfo.vehicleAt.Keys.Count - 1));
         return parkingStructure.GetComponent<Parking>().parkingInfo.vehicleAt.Keys.ElementAt<GameObject>(random);
     }
 
- 
+
+
+
 
     // assumes a vehicle gets fully charged at each stop
-    List<GameObject> Dijkstra (GameObject origin, GameObject destination, float vehicleRange)
+    List<GameObject> Dijkstra(GameObject origin, GameObject destination, float vehicleRange)
     {
         Dictionary<GameObject, float> distanceTo = new Dictionary<GameObject, float>();
         Dictionary<GameObject, List<GameObject>> pathTo = new Dictionary<GameObject, List<GameObject>>();
@@ -290,22 +382,22 @@ public class VehicleControlSystem : MonoBehaviour
         distanceTo.Add(origin, 0.0f);
         pathTo.Add(origin, new List<GameObject>());
         pathTo[origin].Add(origin);
-        
+
         queue.Enqueue(origin);
         do
         {
             GameObject currentNode = queue.Dequeue();
             Vector3 currentPoint = currentNode.transform.position;
-            foreach(GameObject nextNode in environmentManagement.routes[currentNode])
+            foreach (GameObject nextNode in environmentManagement.routes[currentNode])
             {
                 Vector3 nextPoint = nextNode.transform.position;
                 if (!distanceTo.ContainsKey(nextNode)) distanceTo.Add(nextNode, float.PositiveInfinity);
-                if ( Vector3.Distance(currentPoint, nextPoint) < vehicleRange && distanceTo[nextNode] > distanceTo[currentNode] + Vector3.Distance(currentPoint, nextPoint) )
+                if (Vector3.Distance(currentPoint, nextPoint) < vehicleRange && distanceTo[nextNode] > distanceTo[currentNode] + Vector3.Distance(currentPoint, nextPoint))
                 {
                     distanceTo[nextNode] = distanceTo[currentNode] + Vector3.Distance(currentPoint, nextPoint);
                     pathTo[nextNode] = new List<GameObject>(pathTo[currentNode]);
                     pathTo[nextNode].Add(nextNode);
-                    if ( !nextNode.Equals(destination)) queue.Enqueue(nextNode);
+                    if (!nextNode.Equals(destination)) queue.Enqueue(nextNode);
                 }
             }
         } while (queue.Count > 0);
@@ -315,7 +407,7 @@ public class VehicleControlSystem : MonoBehaviour
 
     public Queue<GameObject> GetNewRandomDestinations()
     {
-        
+
         Queue<GameObject> routedDestinations = new Queue<GameObject>();
         List<GameObject> landings = new List<GameObject>(environmentManagement.dronePorts.Keys);
         List<int> indices = new List<int>();
@@ -323,7 +415,7 @@ public class VehicleControlSystem : MonoBehaviour
         int value = 0;
         float range = MIN_DRONE_RANGE;
 
-        for(int i = 0; i < 4; i++)
+        for (int i = 0; i < 4; i++)
         {
             do
             {
@@ -335,7 +427,7 @@ public class VehicleControlSystem : MonoBehaviour
         List<GameObject> shortestPath = new List<GameObject>();
         //Debug.Log("Origin: " + destinationList[0].name + " - " + "Destination: " + destinationList[1].name);
         string routedResult = null;
-        shortestPath = Dijkstra (destinationList[0], destinationList[1], range);
+        shortestPath = Dijkstra(destinationList[0], destinationList[1], range);
         foreach (GameObject g in shortestPath)
         {
             routedResult += g.name;
@@ -344,8 +436,8 @@ public class VehicleControlSystem : MonoBehaviour
         //Debug.Log("Routed: " + routedResult);
 
         Queue<GameObject> routed = new Queue<GameObject>();
-        foreach (GameObject p in shortestPath) routed.Enqueue(p); 
-                
+        foreach (GameObject p in shortestPath) routed.Enqueue(p);
+
         return routed;
     }
     /*
@@ -376,7 +468,7 @@ public class VehicleControlSystem : MonoBehaviour
         }
         return newDestinations;
     }*/
-    public GameObject GetNearestAvailableParking (GameObject firstDestination)
+    public GameObject GetNearestAvailableParking(GameObject firstDestination)
     {
         Vector3 pickUpLocation = firstDestination.transform.position;
         GameObject closestParking = null;
@@ -401,6 +493,30 @@ public class VehicleControlSystem : MonoBehaviour
 
     }
 
+    public GameObject GetNearestAvailableParking(Vector3 AAOCenter)
+    {
+        GameObject closestParking = null;
+
+        float minDistance = Mathf.Infinity;
+        // For all parking structures
+        foreach (GameObject p in environmentManagement.parkingStructures.Keys)
+        {
+            // find the nearest one with parked vehicles
+            if (p.GetComponent<Parking>().parkingInfo.vehicleAt.Keys.Count > 0)
+            {
+                if (Vector3.Distance(AAOCenter, p.transform.position) < minDistance)
+                {
+                    minDistance = Vector3.Distance(AAOCenter, p.transform.position);
+                    closestParking = p;
+                }
+            }
+            else continue;
+        }
+
+        return closestParking;
+
+    }
+
     public bool Register(Vehicle v)
     {
         return true;
@@ -415,9 +531,9 @@ public class VehicleControlSystem : MonoBehaviour
             return false;
         }*/
     }
-    public bool UpdateVehicleStatus (Vehicle v)
+    public bool UpdateVehicleStatus(Vehicle v)
     {
-        if (activeVehicles.ContainsKey(v.gameObject) )
+        if (activeVehicles.ContainsKey(v.gameObject))
         {
             //Debug.Log(v.id + " " + v.status);
             activeVehicles[v.gameObject] = v.state;
@@ -429,19 +545,4 @@ public class VehicleControlSystem : MonoBehaviour
         }
     }
     #endregion
-
-    class VehicleDataEntry
-    {
-        public string type;
-        public int capacity;
-
-        public float maxSpeed;
-        public float yawSpeed;
-        public float takeOffSpeed;
-        public float landingSpeed;
-
-        public List<float> emission;
-        public List<float> noise;
-    }
-
 }

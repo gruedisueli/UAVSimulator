@@ -19,10 +19,10 @@ TagManager:
   - 
   - 
   - RestrictionZone
-  - ParkingPoints
-  - 
-  - 
-  - 
+  - Building
+  - Vehicle
+  - ParkingStructure
+  - DronePort
   - 
   - 
   - 

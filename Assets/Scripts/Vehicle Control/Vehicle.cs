@@ -48,7 +48,9 @@ public class Vehicle : MonoBehaviour
     public Queue<Vector3> assignedLandingGuide;
     public bool toPark;
     public bool moveForward;
-
+    public bool isUTM;
+    public float waitTimer;
+    public float waitTime;
     
     
     
@@ -78,13 +80,27 @@ public class Vehicle : MonoBehaviour
         wayPointsQueue = new Queue<Vector3>();
         vcs = GameObject.Find("SimulationCore").GetComponent<VehicleControlSystem>();
         elevation = Mathf.NegativeInfinity;
+        state = "parked";
         toPark = false;
         moveForward = false;
+        isUTM = false;
+        waitTimer = 0.0f;
+        waitTime = 0.0f;
     }
 
     // Update is called once per frame
     void Update()
     {
+        //if (state == null) return;
+        if ( state == "parked" && vcs.movingVehicles.Contains(gameObject) )
+        {
+            vcs.movingVehicles.Remove(gameObject);
+        }
+        if ( state != "parked" && !vcs.movingVehicles.Contains(gameObject) )
+        {
+            vcs.movingVehicles.Add(gameObject);
+        }
+
         currentLocation = gameObject.transform.position;
         if ( state == "takeoff_requested" )
         {
@@ -118,22 +134,12 @@ public class Vehicle : MonoBehaviour
             currentDestinationVector.y = elevation;
 
             wayPoints = vcs.FindPath(gameObject.transform.position, currentDestinationVector, 5);
-            wayPointsQueue = new Queue<Vector3>();
+            wayPointsQueue = new Queue<Vector3>(); 
             foreach (Vector3 v in wayPoints)
             {
                 wayPointsQueue.Enqueue(v);
             }
             currentTargetPosition = wayPointsQueue.Dequeue();
-
-            //Debug
-            if (Mathf.Abs(currentTargetPosition.x) > 10000 || Mathf.Abs(currentTargetPosition.z) > 10000)
-            {
-                int a;
-                a = 0;
-            }
-            //~Debug
-
-
             currentSpeed = maxSpeed * vcs.speedMultiplier;
             currentPoint = currentDestination;
             state = "moving";           
@@ -148,16 +154,14 @@ public class Vehicle : MonoBehaviour
             if (!toPark)
             {
                 DronePortControl dp = currentPoint.GetComponent<DronePortControl>();
-                if(!dp.queue.Contains(gameObject)) dp.queue.Enqueue(gameObject);
+                if (!dp.queue.Contains(gameObject)) dp.queue.Enqueue(gameObject);
                 standbyPosition = dp.GetStandbyPosition(gameObject);
             }
             else
             {
                 Parking p = currentPoint.GetComponent<Parking>();
                 if (!p.queue.Contains(gameObject)) p.queue.Enqueue(gameObject);
-                standbyPosition = p.GetStandbyPosition(gameObject);
             }
-            
             state = "registeredInQueue";
             currentTargetPosition = standbyPosition;
         }
@@ -179,6 +183,26 @@ public class Vehicle : MonoBehaviour
             moveForward = false;
             //currentSpeed = landingSpeed * vcs.speedMultiplier;
             Land();
+        }
+
+        else if ( state == "operation_point_arrived")
+        {
+            waitTimer += Time.deltaTime;
+            if (waitTimer>waitTime)
+            {
+                if (destination.Count > 0)
+                {
+                    waitTimer = 0.0f;
+                    state = "move_ready";
+                }
+                else
+                {
+                    GameObject reservedParking = vcs.ReserveNearestAvailableParking(gameObject);
+                    destination.Enqueue(reservedParking);
+                    elevation = vcs.GetElevation(currentPoint, destination.Peek());
+                    toPark = true;
+                }
+            }
         }
 
         //UpdateToSystem(this);
@@ -239,28 +263,53 @@ public class Vehicle : MonoBehaviour
     }
     void MoveAlong()
     {
-        if (Vector3.Distance(gameObject.transform.position, currentTargetPosition) < approaching_threshold && wayPointsQueue.Count == 0 && state == "moving" )
+        if (!isUTM)
         {
-            state = "approaching";
-        }
-        if (Vector3.Distance(gameObject.transform.position, currentTargetPosition) < arrival_threshold)
-        {
-            if (wayPointsQueue.Count == 0)
+            if (Vector3.Distance(gameObject.transform.position, currentTargetPosition) < approaching_threshold && wayPointsQueue.Count == 0 && state == "moving")
             {
-                state = "landing_requested";
-                return;
+                state = "approaching";
+            }
+            if (Vector3.Distance(gameObject.transform.position, currentTargetPosition) < arrival_threshold)
+            {
+                if (wayPointsQueue.Count == 0)
+                {
+                    state = "landing_requested";
+                    return;
+                }
+                else
+                {
+                    currentTargetPosition = wayPointsQueue.Dequeue();
+                    return;
+                }
             }
             else
             {
-                currentTargetPosition = wayPointsQueue.Dequeue();
-                return;
+                Quaternion wantedRotation = Quaternion.LookRotation(currentTargetPosition - transform.position, transform.up);
+                if (state == "moving") transform.rotation = Quaternion.Lerp(transform.rotation, wantedRotation, Time.deltaTime * yawSpeed);
+                transform.position = Vector3.MoveTowards(transform.position, currentTargetPosition, KMHtoMPS(currentSpeed) * Time.deltaTime);
             }
         }
         else
         {
-            Quaternion wantedRotation = Quaternion.LookRotation(currentTargetPosition - transform.position, transform.up);
-            if ( state == "moving" ) transform.rotation = Quaternion.Lerp(transform.rotation, wantedRotation, Time.deltaTime * yawSpeed);
-            transform.position = Vector3.MoveTowards(transform.position, currentTargetPosition, KMHtoMPS(currentSpeed) * Time.deltaTime);
+            if (!toPark)
+            {
+                if (Vector3.Distance(gameObject.transform.position, currentTargetPosition) < arrival_threshold)
+                {
+
+                    waitTimer = 0.0f;
+                    waitTime = Random.Range(1.0f, 5.0f) / vcs.speedMultiplier;
+                    state = "operation_point_arrived";
+                    return;
+                }
+            }
+            else
+            {
+                if (Vector3.Distance(gameObject.transform.position, currentTargetPosition) < approaching_threshold && wayPointsQueue.Count == 0 && state == "moving")
+                {
+                    isUTM = false;
+                    state = "approaching";
+                }
+            }
         }
     }
 

@@ -5,5 +5,11 @@
   "maxVehicleCount": 100,
   "maxYawSpeed": 30,
   "landingSpeed": 40,
-  "takeoffSpeed": 40
+  "takeoffSpeed": 40,
+  "callGenerationInterval": 2,
+  "maxInFlightVehicles": 100,
+  "inCorridorSeparation": 100,
+  "strategicDeconfliction": "none",
+  "tacticalDeconfliction": "senseandavoid",
+  "lowAltitudeBoundary": 150
 }
