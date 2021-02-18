@@ -73,6 +73,14 @@ public class Parking : MonoBehaviour
             }
             else if (currentVehicleState.state == "landing_requested")
             {
+                try
+                {
+                    Vector3 parkingSpotTemp = parkingInfo.reserved[currentVehicle];
+                }
+                catch(KeyNotFoundException e)
+                {
+                    Debug.Log("???");
+                }
                 Vector3 parkingSpot = parkingInfo.reserved[currentVehicle];
                 List<Vector3> landingGuide = parkingInfo.GetParkingGuide(parkingSpot, "parking", parkingInfo.type);
                 List<Vector3> translatedParkingGuide = new List<Vector3>();
@@ -88,6 +96,7 @@ public class Parking : MonoBehaviour
                 parkingInfo.Unreserve(currentVehicle);
                 currentVehicleState.state = "parked";
                 currentVehicleState.toPark = false;
+                currentVehicleState.isUTM = false;
                 currentVehicle = null;
                 state = "idle";
             }

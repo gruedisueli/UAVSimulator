@@ -31,6 +31,7 @@ public class Vehicle : MonoBehaviour
     public float elevation;
     public string origin;
     public Queue<GameObject> destination;
+    public GameObject[] destinationList;
     //Debug
     public List<Vector3> wayPoints;
     public Queue<Vector3> wayPointsQueue;
@@ -91,7 +92,14 @@ public class Vehicle : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        //destinationList = destination.ToArray();
+
         //if (state == null) return;
+        currentLocation = gameObject.transform.position;
+        if ( currentTargetPosition.x == 0.0 && state != "parked" && state != "takeoff_requested" )
+        {
+            Debug.Log("Weird!!");
+        }
         if ( state == "parked" && vcs.movingVehicles.Contains(gameObject) )
         {
             vcs.movingVehicles.Remove(gameObject);
@@ -101,7 +109,7 @@ public class Vehicle : MonoBehaviour
             vcs.movingVehicles.Add(gameObject);
         }
 
-        currentLocation = gameObject.transform.position;
+        
         if ( state == "takeoff_requested" )
         {
 
@@ -122,19 +130,51 @@ public class Vehicle : MonoBehaviour
             }
             state = "taking_off";
         }
+        else if (state == "operation_point_arrived")
+        {
+            waitTimer += Time.deltaTime;
+            if (waitTimer > waitTime)
+            {
+                if (destination.Count > 0)
+                {
+                    waitTimer = 0.0f;
+                    state = "move_ready";
+                }
+                else
+                {
+                    GameObject reservedParking = vcs.ReserveNearestAvailableParking(gameObject);
+                    destination.Enqueue(reservedParking);
+                    elevation = vcs.GetElevation(currentPoint, destination.Peek());
+                    toPark = true;
+                    state = "move_ready";
+                }
+            }
+        }
         else if ( state == "taking_off")
         {
             TakeOff();
         }
         else if ( state == "move_ready" )
         {
-            
-            GameObject currentDestination = destination.Dequeue();            
+            GameObject currentDestination;
+            int j = 0;
+            try
+            {
+                currentDestination = destination.Dequeue();
+            }
+            catch (System.InvalidOperationException e)
+            {
+                Debug.Log("Exception " + this.name);
+                Debug.Log("Current Location: " + currentLocation.ToString());
+                Debug.Log("Current Point: " + currentPoint.name.ToString());
+                currentDestination = currentPoint;
+            }
             Vector3 currentDestinationVector = currentDestination.transform.position;
             currentDestinationVector.y = elevation;
 
             wayPoints = vcs.FindPath(gameObject.transform.position, currentDestinationVector, 5);
-            wayPointsQueue = new Queue<Vector3>(); 
+            //if (isUTM) wayPoints.Add(currentDestination.transform.position);
+            wayPointsQueue = new Queue<Vector3>();             
             foreach (Vector3 v in wayPoints)
             {
                 wayPointsQueue.Enqueue(v);
@@ -160,7 +200,15 @@ public class Vehicle : MonoBehaviour
             else
             {
                 Parking p = currentPoint.GetComponent<Parking>();
-                if (!p.queue.Contains(gameObject)) p.queue.Enqueue(gameObject);
+                if(p == null)
+                {
+                    Debug.Log("approaching - exception");
+                }
+                if (!p.queue.Contains(gameObject))
+                {
+                    p.queue.Enqueue(gameObject);
+                }
+                standbyPosition = p.GetStandbyPosition(gameObject);
             }
             state = "registeredInQueue";
             currentTargetPosition = standbyPosition;
@@ -185,25 +233,7 @@ public class Vehicle : MonoBehaviour
             Land();
         }
 
-        else if ( state == "operation_point_arrived")
-        {
-            waitTimer += Time.deltaTime;
-            if (waitTimer>waitTime)
-            {
-                if (destination.Count > 0)
-                {
-                    waitTimer = 0.0f;
-                    state = "move_ready";
-                }
-                else
-                {
-                    GameObject reservedParking = vcs.ReserveNearestAvailableParking(gameObject);
-                    destination.Enqueue(reservedParking);
-                    elevation = vcs.GetElevation(currentPoint, destination.Peek());
-                    toPark = true;
-                }
-            }
-        }
+        
 
         //UpdateToSystem(this);
         //if ( destination.Count > 0 )  nextDestination = destination.Peek();
@@ -265,10 +295,6 @@ public class Vehicle : MonoBehaviour
     {
         if (!isUTM)
         {
-            if (Vector3.Distance(gameObject.transform.position, currentTargetPosition) < approaching_threshold && wayPointsQueue.Count == 0 && state == "moving")
-            {
-                state = "approaching";
-            }
             if (Vector3.Distance(gameObject.transform.position, currentTargetPosition) < arrival_threshold)
             {
                 if (wayPointsQueue.Count == 0)
@@ -282,12 +308,14 @@ public class Vehicle : MonoBehaviour
                     return;
                 }
             }
-            else
+            if (Vector3.Distance(gameObject.transform.position, currentTargetPosition) < approaching_threshold && wayPointsQueue.Count == 0 && state == "moving")
             {
-                Quaternion wantedRotation = Quaternion.LookRotation(currentTargetPosition - transform.position, transform.up);
-                if (state == "moving") transform.rotation = Quaternion.Lerp(transform.rotation, wantedRotation, Time.deltaTime * yawSpeed);
-                transform.position = Vector3.MoveTowards(transform.position, currentTargetPosition, KMHtoMPS(currentSpeed) * Time.deltaTime);
+                state = "approaching";
             }
+            
+            Quaternion wantedRotation = Quaternion.LookRotation(currentTargetPosition - transform.position, transform.up);
+            if (state == "moving") transform.rotation = Quaternion.Lerp(transform.rotation, wantedRotation, Time.deltaTime * yawSpeed);
+            transform.position = Vector3.MoveTowards(transform.position, currentTargetPosition, KMHtoMPS(currentSpeed) * Time.deltaTime);
         }
         else
         {
@@ -295,20 +323,53 @@ public class Vehicle : MonoBehaviour
             {
                 if (Vector3.Distance(gameObject.transform.position, currentTargetPosition) < arrival_threshold)
                 {
-
-                    waitTimer = 0.0f;
-                    waitTime = Random.Range(1.0f, 5.0f) / vcs.speedMultiplier;
-                    state = "operation_point_arrived";
-                    return;
+                    if (wayPointsQueue.Count == 0)
+                    {
+                        waitTimer = 0.0f;
+                        waitTime = Random.Range(1.0f, 5.0f) / vcs.speedMultiplier;
+                        state = "operation_point_arrived";
+                        return;
+                    }
+                    else
+                    {
+                        currentTargetPosition = wayPointsQueue.Dequeue();
+                        return;
+                    }
                 }
+                
+                Quaternion wantedRotation = Quaternion.LookRotation(currentTargetPosition - transform.position, transform.up);
+                //if (state == "moving") transform.rotation = Quaternion.Lerp(transform.rotation, wantedRotation, Time.deltaTime * yawSpeed);
+                transform.position = Vector3.MoveTowards(transform.position, currentTargetPosition, KMHtoMPS(currentSpeed) * Time.deltaTime);
+                
             }
             else
             {
+
+                if (Vector3.Distance(gameObject.transform.position, currentTargetPosition) < arrival_threshold)
+                {
+                    if (wayPointsQueue.Count > 0)
+                    {
+                        currentTargetPosition = wayPointsQueue.Dequeue();
+                        return;
+                    }
+                    else
+                    {
+                        state = "landing_requested";
+                        return;
+                    }
+
+
+                }
+
                 if (Vector3.Distance(gameObject.transform.position, currentTargetPosition) < approaching_threshold && wayPointsQueue.Count == 0 && state == "moving")
                 {
-                    isUTM = false;
+                    //isUTM = false;
                     state = "approaching";
                 }
+
+                Quaternion wantedRotation = Quaternion.LookRotation(currentTargetPosition - transform.position, transform.up);
+                if (state == "moving") transform.rotation = Quaternion.Lerp(transform.rotation, wantedRotation, Time.deltaTime * yawSpeed);
+                transform.position = Vector3.MoveTowards(transform.position, currentTargetPosition, KMHtoMPS(currentSpeed) * Time.deltaTime);
             }
         }
     }

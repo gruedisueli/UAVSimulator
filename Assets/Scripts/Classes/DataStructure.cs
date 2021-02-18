@@ -390,11 +390,10 @@ namespace Assets.Scripts.DataStructure
         public void Move(Vector3 target)
         {
             for (int i = 0; i < polygon.Length; i++)
-                polygon[i] += target;
+               polygon[i] += target;
 
             bBox.center += target;
-            bBox.min += target;
-            bBox.max += target;
+            
         }
 
         public Mesh CreateExtrusion(float height)

@@ -49,7 +49,7 @@ public class VehicleControlSystem : MonoBehaviour
     public Dictionary<GameObject, GameObject> parkingLandingMapping;
     public Dictionary<GameObject, List<GameObject>> routes;
 
-    public float speedMultiplier = 5.0f;
+    public float speedMultiplier = 2.0f;
 
     public GameObject TypeAPrefab;
     #endregion
@@ -95,8 +95,8 @@ public class VehicleControlSystem : MonoBehaviour
 
     public void GenerateRandomCalls()
     {
-        int call_type = Mathf.FloorToInt(Random.Range(0.0f, 2.0f));
-        string call_type_string = call_type == 0 ? "corridor" : "low-altitude";
+        int call_type = Mathf.FloorToInt(Random.Range(0.0f, 4.5f));
+        string call_type_string = call_type <= 3 ? "corridor" : "low-altitude";
 
         // strategicDeconfliction == "none"
         if (simulationParam.strategicDeconfliction.Equals("none"))
@@ -147,7 +147,7 @@ public class VehicleControlSystem : MonoBehaviour
                     AAO.layer = 8;
                     AAOControl aaoCon = AAO.AddComponent<AAOControl>();
                     aaoCon.AddVehicle(vehicle);
-                    /*
+                    
                     // iterate below for each vehicle that are operating in this AAO
                     List<Vector3> generatedPoints = p.GeneratePointsinExtrusion(aaoCon.GetVehicleCount(), simulationParam.lowAltitudeBoundary);
                     Queue<GameObject> destinations = new Queue<GameObject>();
@@ -163,7 +163,7 @@ public class VehicleControlSystem : MonoBehaviour
                     Vehicle vehicleInfo = vehicle.GetComponent<Vehicle>();
                     vehicleInfo.isUTM = true;
                     
-                    CallVehicle(vehicle, parking.GetComponent<Parking>(), destinations);*/
+                    CallVehicle(vehicle, parking.GetComponent<Parking>(), destinations);
                     //
 
                 }
@@ -194,10 +194,12 @@ public class VehicleControlSystem : MonoBehaviour
         distance.Add(0.0f);
         tail++;
 
-        while (Physics.Raycast(visited[head], destination - visited[head], Vector3.Distance(visited[head], destination)) && head <= tail)
+        ///////////////////////////////// TACKLE HERE /////////////////////////////////
+        while (head < tail && Physics.Raycast(visited[head], destination - visited[head], Vector3.Distance(visited[head], destination)) )
         {
             RaycastHit currentHitObject = Physics.RaycastAll(visited[head], destination - visited[head], Vector3.Distance(visited[head], destination))[0];
             Vector3 lastHit = currentHitObject.point;
+        ///////////////////////////////// TACKLE HERE /////////////////////////////////
             for (int i = angleIncrement; i <= 85; i += angleIncrement)
             {
                 Vector3 currentVector = destination - visited[head];
@@ -241,8 +243,17 @@ public class VehicleControlSystem : MonoBehaviour
             head++;
         }
         // Do the same thing in the opposite direction
-        List<Vector3> path = Backtrack(visited, from, distance, head);
-        path.Add(destination);
+        List<Vector3> path = new List<Vector3>();
+        if (head < tail) // found a path so backtrack
+        {
+            if(head > 0) path = Backtrack(visited, from, distance, head);
+            path.Add(destination);
+        }
+        else // cannot find a path - just fly straight
+        {
+            //path.Add(origin);
+            path.Add(destination);
+        }
         return path;
     }
 
@@ -255,7 +266,7 @@ public class VehicleControlSystem : MonoBehaviour
             result.Add(visited[pointer]);
             pointer = from[pointer];
         } while (pointer >= 0 && from[pointer] != -1);
-        if (pointer != -1) result.Add(visited[pointer]);
+        //if (pointer != -1) result.Add(visited[pointer]);
         result.Reverse();
         return result;
     }
@@ -279,7 +290,7 @@ public class VehicleControlSystem : MonoBehaviour
         // TO-DO: Assign elevation according to the simulation rules
         // Now: All 100m to test obstacle avoidance
         if (origin.transform.position.y > 100.0f) return origin.transform.position.y + 50.0f;
-        return 100.0f;
+        return 400.0f;
     }
     private void InstantiateVehicles()
     {
@@ -319,6 +330,8 @@ public class VehicleControlSystem : MonoBehaviour
                     clone.name = "UAV_" + i.ToString();
                     clone.tag = "Vehicle";
                     clone.layer = 10;
+                    TrailRenderer tr = clone.AddComponent<TrailRenderer>();
+                    tr.time = 30.0f;
                     Object.Destroy(newDrone);
 
                     // Fill in vehivle spec
@@ -351,6 +364,7 @@ public class VehicleControlSystem : MonoBehaviour
                 }
             }
         }
+        // DEBUG: different vehicles competeing for a spot
         environmentManagement.parkingStructures[nearest].Reserve(v);
         return nearest;
     }

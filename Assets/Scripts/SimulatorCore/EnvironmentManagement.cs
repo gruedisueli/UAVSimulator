@@ -303,7 +303,7 @@ public class EnvironmentManagement : MonoBehaviour
                     newZone.name = "RestrictionZone_" + rz.type + "_" + i.ToString();
                     newZone.tag = "RestrictionZone";
                     newZone.layer = 8;
-                    newZone.AddComponent<MeshRenderer>();
+                    //newwZone.AddComponent<MeshRenderer>();
                     newZone.GetComponent<MeshRenderer>().material = restrictionZoneMaterial;
                     restrictionZones.Add(newZone);
                 }
