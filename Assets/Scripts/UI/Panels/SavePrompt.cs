@@ -92,7 +92,7 @@ namespace Assets.Scripts.UI.Panels
         /// </summary>
         private void GoMainWithoutSave()
         {
-            EnvironController.Instance.CreateNew();
+            EnvironManager.Instance.CreateNew();
             SceneManager.LoadScene(UISettings.MAINMENU_SCENEPATH, LoadSceneMode.Single);
         }
 
@@ -101,8 +101,8 @@ namespace Assets.Scripts.UI.Panels
         /// </summary>
         private void SaveAndGoMain()
         {
-            EnvironController.Instance.SaveFile();
-            EnvironController.Instance.CreateNew();
+            EnvironManager.Instance.SaveFile();
+            EnvironManager.Instance.CreateNew();
             SceneManager.LoadScene(UISettings.MAINMENU_SCENEPATH, LoadSceneMode.Single);
         }
 
@@ -111,7 +111,7 @@ namespace Assets.Scripts.UI.Panels
         /// </summary>
         private void SaveAndQuit()
         {
-            EnvironController.Instance.SaveFile();
+            EnvironManager.Instance.SaveFile();
             Application.Quit();
         }
 

@@ -20,7 +20,7 @@ using Assets.Scripts.UI.Panels;
 
 namespace Assets.Scripts.UI
 {
-    public class RegionView : MonoBehaviour
+    public class RegionViewManager : SceneManagerBase
     {
         public AbstractMap abstractMap;
         public GameObject cityMarkerPrefab;
@@ -34,12 +34,12 @@ namespace Assets.Scripts.UI
         private Dictionary<string, GameObject> cityMarkers = new Dictionary<string, GameObject>();
         private CityMarker selectedMarker;
 
-        public void Start()
+        protected override void Init()
         {
-            abstractMap.Initialize(EnvironController.Instance.Environ.centerLatLong, EnvironSettings.REGION_ZOOM_LEVEL);
-            foreach(var guid in EnvironController.Instance.Environ.GetCityGuids())
+            abstractMap.Initialize(EnvironManager.Instance.Environ.centerLatLong, EnvironSettings.REGION_ZOOM_LEVEL);
+            foreach(var guid in EnvironManager.Instance.Environ.GetCityGuids())
             {
-                var c = EnvironController.Instance.Environ.GetCity(guid);
+                var c = EnvironManager.Instance.Environ.GetCity(guid);
                 if (c != null)
                 {
                     float cityTileSide = (float)GetCityTileSideLength();
@@ -71,7 +71,7 @@ namespace Assets.Scripts.UI
 
         public void GoToCity()
         {
-            EnvironController.Instance.SetActiveCity(selectedMarker._guid);
+            EnvironManager.Instance.SetActiveCity(selectedMarker._guid);
             SceneManager.LoadScene(UISettings.CITYVIEW_SCENEPATH, LoadSceneMode.Single);
         }
 
@@ -113,7 +113,7 @@ namespace Assets.Scripts.UI
             if (regionRight != null)
             {
                 regionRight.Activate();
-                var city = EnvironController.Instance.Environ.GetCity(guid);
+                var city = EnvironManager.Instance.Environ.GetCity(guid);
                 if (city != null)
                 {
                     regionRight.SetCity(guid, city._cityStats);
@@ -155,7 +155,7 @@ namespace Assets.Scripts.UI
         public void RemoveCity()
         {
             string g = regionRight?._guid;
-            EnvironController.Instance.Environ.RemoveCity(g);
+            EnvironManager.Instance.Environ.RemoveCity(g);
             if (cityMarkers.ContainsKey(g))
             {
                 selectedMarker = null;
@@ -208,9 +208,9 @@ namespace Assets.Scripts.UI
                         float cityTileSide = (float)GetCityTileSideLength();
                         var regionTileWorldCenter = uT.gameObject.transform.position;
                         InstantiateCityMarker(regionTileWorldCenter, cityTileSide, p, n, guid);
-                        CityStats s = new CityStats();
+                        CityOptions s = new CityOptions();
                         s._name = n;
-                        EnvironController.Instance.Environ.AddCity(guid, new City(p, gO.transform.position, regionTileSideLength, s));
+                        EnvironManager.Instance.Environ.AddCity(guid, new City(p, gO.transform.position, regionTileSideLength, s));
                     }
                     else
                     {
@@ -232,7 +232,7 @@ namespace Assets.Scripts.UI
         /// </summary>
         private double GetCityTileSideLength()
         {
-            double lat = EnvironController.Instance.Environ.centerLatLong.x;
+            double lat = EnvironManager.Instance.Environ.centerLatLong.x;
             int zoom = EnvironSettings.CITY_ZOOM_LEVEL;
             int res = EnvironSettings.TILE_RESOLUTION;
             double c = EnvironSettings.SCALE_CONSTANT;
@@ -263,9 +263,9 @@ namespace Assets.Scripts.UI
         /// <summary>
         /// Updates a city
         /// </summary>
-        private void UpdateCityStats(string guid, CityStats stats)
+        private void UpdateCityStats(string guid, CityOptions stats)
         {
-            City city = EnvironController.Instance.Environ.GetCity(guid);
+            City city = EnvironManager.Instance.Environ.GetCity(guid);
             if (city != null)
             {
                 city._cityStats = stats;

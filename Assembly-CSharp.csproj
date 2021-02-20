@@ -123,7 +123,6 @@
     <Compile Include="Assets\Mapbox\Unity\MeshGeneration\Filters\HeightFilter.cs" />
     <Compile Include="Assets\Mapbox\Examples\6_ZoomableMap\Scripts\SpawnOnMap.cs" />
     <Compile Include="Assets\Mapbox\Unity\MeshGeneration\Data\KdTree\IntervalHeap.cs" />
-    <Compile Include="Assets\Scripts\Environment\Enums.cs" />
     <Compile Include="Assets\Mapbox\Unity\Location\UnityLocationWrappers\IMapboxLocationInfo.cs" />
     <Compile Include="Assets\Mapbox\Unity\Map\Interfaces\IMapPlacementStrategy.cs" />
     <Compile Include="Assets\Mapbox\Unity\MeshGeneration\Modifiers\TextureSideWallModifier.cs" />
@@ -135,7 +134,7 @@
     <Compile Include="Assets\Mapbox\Unity\Map\Interfaces\IMapScalingStrategy.cs" />
     <Compile Include="Assets\Mapbox\Unity\Location\UnityLocationWrappers\MapboxLocationServiceUnityWrapper.cs" />
     <Compile Include="Assets\Mapbox\Examples\Scripts\LoadingPanelController.cs" />
-    <Compile Include="Assets\Scripts\UI\RegionView.cs" />
+    <Compile Include="Assets\Scripts\UI\RegionViewManager.cs" />
     <Compile Include="Assets\Mapbox\Core\mapbox-sdk-cs\Map\ClassicRetinaRasterTile.cs" />
     <Compile Include="Assets\Mapbox\Examples\Scripts\DragableDirectionWaypoint.cs" />
     <Compile Include="Assets\Mapbox\Unity\MeshGeneration\Factories\TerrainStrategies\FlatSphereTerrainStrategy.cs" />
@@ -148,7 +147,7 @@
     <Compile Include="Assets\Mapbox\Examples\8_VoxelMap\Scripts\VoxelFetcher.cs" />
     <Compile Include="Assets\Mapbox\Examples\5_Playground\Scripts\RasterTileExample.cs" />
     <Compile Include="Assets\Mapbox\Examples\Scripts\ForwardGeocodeUserInput.cs" />
-    <Compile Include="Assets\Scripts\Environment\EnvironController.cs" />
+    <Compile Include="Assets\Scripts\Environment\EnvironManager.cs" />
     <Compile Include="Assets\Mapbox\Examples\Scripts\FeatureSelectionDetector.cs" />
     <Compile Include="Assets\Mapbox\Examples\Scripts\LabelTextSetter.cs" />
     <Compile Include="Assets\Scripts\SimulatorCore\VehicleControlSystem.cs" />
@@ -167,7 +166,7 @@
     <Compile Include="Assets\Mapbox\Unity\Telemetry\TelemetryFallback.cs" />
     <Compile Include="Assets\Mapbox\Unity\Location\LocationSmoothing\KalmanFilter.cs" />
     <Compile Include="Assets\Mapbox\Unity\LayerProperties\PrefabItemOptions.cs" />
-    <Compile Include="Assets\Scripts\UI\CityView.cs" />
+    <Compile Include="Assets\Scripts\UI\CityViewManager.cs" />
     <Compile Include="Assets\Mapbox\Core\mapbox-sdk-cs\Platform\Cache\SQLiteCache\Tiles.cs" />
     <Compile Include="Assets\Mapbox\Unity\SourceLayers\SubLayerCustomStyleTiled.cs" />
     <Compile Include="Assets\Mapbox\Unity\Telemetry\TelemetryWebgl.cs" />
@@ -185,7 +184,7 @@
     <Compile Include="Assets\Mapbox\Core\mapbox-sdk-cs\Utils\CircularBuffer.cs" />
     <Compile Include="Assets\Mapbox\Examples\Scripts\PoiMarkerHelper.cs" />
     <Compile Include="Assets\Mapbox\Core\Plugins\Android\UniAndroidPermission\UniAndroidPermission.cs" />
-    <Compile Include="Assets\Scripts\UI\MainMenu.cs" />
+    <Compile Include="Assets\Scripts\UI\MainMenuManager.cs" />
     <Compile Include="Assets\Scripts\UI\CameraAdjustment.cs" />
     <Compile Include="Assets\Mapbox\Examples\8_VoxelMap\Scripts\TextureScaler.cs" />
     <Compile Include="Assets\Mapbox\Examples\6_ZoomableMap\Scripts\SetCameraHeight.cs" />
@@ -343,9 +342,8 @@
     <Compile Include="Assets\Mapbox\Unity\MeshGeneration\Modifiers\GameObjectModifiers\AddMonoBehavioursModifier.cs" />
     <Compile Include="Assets\Mapbox\Unity\MeshGeneration\Factories\ImageDataFetcher.cs" />
     <Compile Include="Assets\Scripts\UI\Panels\SavePrompt.cs" />
-    <Compile Include="Assets\Scripts\UI\FindLocation.cs" />
+    <Compile Include="Assets\Scripts\UI\FindLocationManager.cs" />
     <Compile Include="Assets\Mapbox\Core\mapbox-sdk-cs\Tokens\MapboxTokenApi.cs" />
-    <Compile Include="Assets\Scripts\SimulatorCore\EnvironmentManagement.cs" />
     <Compile Include="Assets\Mapbox\Unity\Map\TileProviders\AbstractTileProvider.cs" />
     <Compile Include="Assets\Mapbox\Unity\MeshGeneration\Factories\VectorDataFetcher.cs" />
     <Compile Include="Assets\Mapbox\Unity\MeshGeneration\Modifiers\GameObjectModifiers\DisableMeshRendererModifier.cs" />
@@ -355,7 +353,7 @@
     <Compile Include="Assets\Mapbox\Unity\SourceLayers\MapboxDefaultElevation.cs" />
     <Compile Include="Assets\Mapbox\Core\mapbox-sdk-cs\Platform\Cache\SQLiteCache\Tilesets.cs" />
     <Compile Include="Assets\Mapbox\Unity\Map\AbstractMap.cs" />
-    <Compile Include="Assets\Scripts\Environment\CityStats.cs" />
+    <Compile Include="Assets\Scripts\Environment\CityOptions.cs" />
     <Compile Include="Assets\Mapbox\Unity\MeshGeneration\Modifiers\MeshModifiers\PolygonMeshModifier.cs" />
     <Compile Include="Assets\Mapbox\Examples\5_Playground\Scripts\DirectionsExample.cs" />
     <Compile Include="Assets\Mapbox\Unity\DataContainers\TerrainSideWallOptions.cs" />
@@ -455,6 +453,10 @@
     <Compile Include="Assets\Mapbox\Core\mapbox-sdk-cs\Map\Tile.cs" />
     <Compile Include="Assets\Mapbox\Core\mapbox-sdk-cs\Map\ClassicRasterTile.cs" />
     <Compile Include="Assets\Mapbox\Unity\MeshGeneration\Modifiers\ModifierStack.cs" />
+    <Compile Include="Assets\Scripts\Environment\ParkingStructure.cs" />
+    <Compile Include="Assets\Scripts\Environment\Path.cs" />
+    <Compile Include="Assets\Scripts\Environment\RestrictionZone.cs" />
+    <Compile Include="Assets\Scripts\UI\SceneManagerBase.cs" />
   </ItemGroup>
   <ItemGroup>
      <None Include="Assets\Mapbox\Core\Plugins\Mapbox\vector-tile-cs\net46\Mapbox.VectorTile.Geometry.dll" />

@@ -12,7 +12,7 @@ using Assets.Scripts.Environment;
 
 namespace Assets.Scripts.UI.Panels
 {
-    public delegate void CityStatsChanged(string guid, CityStats stats);
+    public delegate void CityStatsChanged(string guid, CityOptions stats);
 
     public class RegionRight : MonoBehaviour
     {
@@ -58,7 +58,7 @@ namespace Assets.Scripts.UI.Panels
             }
         }
 
-        public void SetCity(string guid, CityStats stats)
+        public void SetCity(string guid, CityOptions stats)
         {
             _guid = guid;
             cityName.SetText(stats._name);
@@ -82,7 +82,7 @@ namespace Assets.Scripts.UI.Panels
 
         private void OnStatsChanged()
         {
-            var s = new CityStats();
+            var s = new CityOptions();
             s._name = cityName.textValue;
             s._eastExt = eastExt.intValue;
             s._westExt = westExt.intValue;

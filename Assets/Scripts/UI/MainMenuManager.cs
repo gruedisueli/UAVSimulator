@@ -13,18 +13,18 @@ using Assets.Scripts.Serialization;
 
 namespace Assets.Scripts.UI
 {
-    public class MainMenu : MonoBehaviour
+    public class MainMenuManager : MonoBehaviour
     {
 
         public void CreateNew()
         {
-            EnvironController.Instance.CreateNew();
+            EnvironManager.Instance.CreateNew();
             SceneManager.LoadScene(UISettings.FINDLOCATION_SCENEPATH, LoadSceneMode.Single);
         }
 
         public void LoadSaved()
         {
-            EnvironController.Instance.LoadSaved();
+            EnvironManager.Instance.LoadSaved();
             SceneManager.LoadScene(UISettings.REGIONVIEW_SCENEPATH, LoadSceneMode.Single);
         }
     }

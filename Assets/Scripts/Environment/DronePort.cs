@@ -11,85 +11,66 @@ namespace Assets.Scripts.Environment
     [Serializable]
     public class DronePort
     {
-        //public DronePortType PortType
-        //{
-        //    get
-        //    {
-        //        return _portType;
-        //    }
-        //    set
-        //    {
-        //        _portType = value;
-        //    }
-        //}
-        //public Vector3 Position
-        //{
-        //    get
-        //    {
-        //        return _position != null ? new Vector3(_position[0], _position[1], _position[2]) : new Vector3();
-        //    }
-        //    set
-        //    {
-        //        _position = new float[] { value.x, value.y, value.z };
-        //    }
-        //}
-        //public double Rotation
-        //{
-        //    get
-        //    {
-        //        return _rotation;
-        //    }
-        //    set
-        //    {
-        //        _rotation = value;
-        //    }
-        //}
-        //public Vector3 Scale
-        //{
-        //    get
-        //    {
-        //        return _scale != null ? new Vector3(_scale[0], _scale[1], _scale[2]) : new Vector3();
-        //    }
-        //    set
-        //    {
-        //        _scale = new float[] { value.x, value.y, value.z };
-        //    }
-        //}
-        //public Vector3 LandingQueueHead
-        //{
-        //    get
-        //    {
-        //        return _landingQueueHead != null ? new Vector3(_landingQueueHead[0], _landingQueueHead[1], _landingQueueHead[2]) : new Vector3();
-        //    }
-        //    set
-        //    {
-        //        _landingQueueHead = new float[] { value.x, value.y, value.z };
-        //    }
-        //}
-        //public Vector3 LandingQueueDirection
-        //{
-        //    get
-        //    {
-        //        return _landingQueueDirection != null ? new Vector3(_landingQueueDirection[0], _landingQueueDirection[1], _landingQueueDirection[2]) : new Vector3();
-        //    }
-        //    set
-        //    {
-        //        _landingQueueDirection = new float[] { value.x, value.y, value.z };
-        //    }
-        //}
-
-        //unity serialization is incredibly dumb and requires fields to be public
-        //their "SerializeField" attribute does not work.
-        public DronePortType _portType;
-        public Vector3 _position;
-        public double _rotation;
-        public Vector3 _scale;
-        public Vector3 _landingQueueHead;
-        public Vector3 _landingQueueDirection;
+        public string type;
+        public Vector3 position;
+        public Vector3 rotation;
+        public Vector3 scale;
+        public Vector3 standbyPosition;
+        public Vector3 landingQueueHead;
+        public Vector3 landingQueueDirection;
+        public Vector3 landingPoint;
+        public float maximumVehicleSize;
+        public bool isMountable;
+        public bool isOnTheGround;
+        public bool isScalable;
 
         public DronePort()
         {
 
+        }
+
+        // Translates to the global coordinate
+        public Vector3 TranslateLandingGuidePosition(Vector3 parkingSpot)
+        {
+            return (Quaternion.Euler(rotation.x, rotation.y, rotation.z) * parkingSpot + position);
+        }
+
+        public List<Vector3> GetLandingGuide(string mode)
+        {
+            // mode == {parking, unparking}
+            // Temporary function
+
+            List<Vector3> guides = new List<Vector3>();
+
+            guides.Add(landingQueueHead);
+            guides.Add(standbyPosition);
+            guides.Add(landingPoint);
+
+            /*
+            if (type.Equals("Simple_4Way_Stack"))
+            {
+                Vector3 direction = new Vector3(spot.x, 0.0f, spot.z).normalized;
+                direction = Quaternion.Euler(rotation.x, rotation.y, rotation.z) * direction;
+                guides.Add(spot);
+                Vector3 current_spot = spot + direction * 20.0f;
+                guides.Add(current_spot);
+                current_spot.y = standbyPosition.y;
+                guides.Add(current_spot);
+                guides.Add(standbyPosition);
+            }
+            else if (type.Equals("generic_rectangular_lot"))
+            {
+                guides.Add(spot);
+                guides.Add(standbyPosition);
+            }*/
+
+
+            if (mode == "takeoff")
+            {
+                guides.Reverse();
+            }
+
+            return guides;
         }
     }
 }

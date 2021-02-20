@@ -7,7 +7,8 @@ using System.Linq;
 
 using Assets.Scripts.Vehicle_Control;
 using Assets.Scripts.DataStructure;
-
+using Assets.Scripts.Environment;
+using Assets.Scripts.UI;
 
 
 public class VehicleControlSystem : MonoBehaviour
@@ -40,7 +41,7 @@ public class VehicleControlSystem : MonoBehaviour
     private string root = "E:\\Development\\GitHub_Local\\UAVSimulator\\runtime\\";
     private string asset_root = "E:\\Development\\GitHub_Local\\UAVSimulator\\Assets\\";
 
-    private EnvironmentManagement environmentManagement;
+    private SceneManagerBase sceneManager;
     public List<GameObject> vehicles;
     public List<GameObject> movingVehicles;
 
@@ -69,7 +70,7 @@ public class VehicleControlSystem : MonoBehaviour
         string current_runtime = "42o3601_71o0589"; // INTEGRATION TO-DO: Get current runtime name from UI side to find out which folder to refer to
                                                     // Current Placeholder = Lat_Long of Boston
         simulationParam = ReadSimulationParams(current_runtime);
-        environmentManagement = GameObject.Find("EnvironmentManagement").GetComponent<EnvironmentManagement>();
+        sceneManager = GameObject.Find("EnvironmentManagement").GetComponent<SceneManagerBase>();
     
         movingVehicles = new List<GameObject>();
         InstantiateVehicles();
@@ -306,7 +307,7 @@ public class VehicleControlSystem : MonoBehaviour
             vehicleSpecs.Add(vs.type, vs);
             if (vs.range < MIN_DRONE_RANGE) MIN_DRONE_RANGE = vs.range;
         }
-        int parkingCapacity = environmentManagement.GetParkingCapacity();
+        int parkingCapacity = sceneManager.GetParkingCapacity();
         int vehiclesToInstantiate = Random.Range(50, parkingCapacity);
         string drone_path = "Drones/";
 
@@ -314,7 +315,7 @@ public class VehicleControlSystem : MonoBehaviour
         for (int i = 0; i < vehiclesToInstantiate; i++)
         {
             // INTEGRATION TO-DO: Make this part to select parking structure randomly so that the drones are randomly populated
-            foreach (GameObject parkingStructure in environmentManagement.parkingStructures.Keys)
+            foreach (GameObject parkingStructure in sceneManager._parkingStructures.Keys)
             {
                 Parking ps = parkingStructure.GetComponent<Parking>();
                 if (ps.parkingInfo.remainingSpots > 0)
@@ -353,9 +354,9 @@ public class VehicleControlSystem : MonoBehaviour
     {
         float min_dist = float.PositiveInfinity;
         GameObject nearest = new GameObject();
-        foreach (GameObject ps in environmentManagement.parkingStructures.Keys)
+        foreach (GameObject ps in sceneManager._parkingStructures.Keys)
         {
-            if (environmentManagement.parkingStructures[ps].remainingSpots > 0)
+            if (sceneManager._parkingStructures[ps].remainingSpots > 0)
             {
                 if (Vector3.Distance(ps.transform.position, v.transform.position) < min_dist)
                 {
@@ -365,7 +366,7 @@ public class VehicleControlSystem : MonoBehaviour
             }
         }
         // DEBUG: different vehicles competeing for a spot
-        environmentManagement.parkingStructures[nearest].Reserve(v);
+        sceneManager._parkingStructures[nearest].Reserve(v);
         return nearest;
     }
     private SimulationParam ReadSimulationParams(string runtime_name)
@@ -402,7 +403,7 @@ public class VehicleControlSystem : MonoBehaviour
         {
             GameObject currentNode = queue.Dequeue();
             Vector3 currentPoint = currentNode.transform.position;
-            foreach (GameObject nextNode in environmentManagement.routes[currentNode])
+            foreach (GameObject nextNode in sceneManager._routes[currentNode])
             {
                 Vector3 nextPoint = nextNode.transform.position;
                 if (!distanceTo.ContainsKey(nextNode)) distanceTo.Add(nextNode, float.PositiveInfinity);
@@ -423,7 +424,7 @@ public class VehicleControlSystem : MonoBehaviour
     {
 
         Queue<GameObject> routedDestinations = new Queue<GameObject>();
-        List<GameObject> landings = new List<GameObject>(environmentManagement.dronePorts.Keys);
+        List<GameObject> landings = new List<GameObject>(sceneManager._dronePorts.Keys);
         List<int> indices = new List<int>();
         List<GameObject> destinationList = new List<GameObject>();
         int value = 0;
@@ -489,7 +490,7 @@ public class VehicleControlSystem : MonoBehaviour
 
         float minDistance = Mathf.Infinity;
         // For all parking structures
-        foreach (GameObject p in environmentManagement.parkingStructures.Keys)
+        foreach (GameObject p in sceneManager._parkingStructures.Keys)
         {
             // find the nearest one with parked vehicles
             if (p.GetComponent<Parking>().parkingInfo.vehicleAt.Keys.Count > 0)
@@ -513,7 +514,7 @@ public class VehicleControlSystem : MonoBehaviour
 
         float minDistance = Mathf.Infinity;
         // For all parking structures
-        foreach (GameObject p in environmentManagement.parkingStructures.Keys)
+        foreach (GameObject p in sceneManager._parkingStructures.Keys)
         {
             // find the nearest one with parked vehicles
             if (p.GetComponent<Parking>().parkingInfo.vehicleAt.Keys.Count > 0)

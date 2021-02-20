@@ -18,7 +18,7 @@ using Assets.Scripts.Environment;
 
 namespace Assets.Scripts.UI
 {
-    public class FindLocation : MonoBehaviour
+    public class FindLocationManager : MonoBehaviour
     {
         public AbstractMap _map;
         public GameObject _selectionRectPrefab;
@@ -121,7 +121,7 @@ namespace Assets.Scripts.UI
         {
             var center = (p0 + p1) / 2;
             Vector2d latLong = _map.WorldToGeoPosition(center);
-            EnvironController.Instance.Environ.centerLatLong = latLong;
+            EnvironManager.Instance.Environ.centerLatLong = latLong;
         }
     }
 }

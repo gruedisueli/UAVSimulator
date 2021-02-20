@@ -10,7 +10,7 @@ namespace Assets.Scripts.Environment
     /// Class hold user-configurable city stats
     /// </summary>
     [Serializable]
-    public class CityStats
+    public class CityOptions
     {
         public string _name = "";
         public int _eastExt = 0;
@@ -20,7 +20,7 @@ namespace Assets.Scripts.Environment
         public int _population = 0;
         public int _jobs = 0;
 
-        public CityStats()
+        public CityOptions()
         {
 
         }
