@@ -348,32 +348,32 @@
     <Reference Include="SyntaxTree.VisualStudio.Unity.Bridge">
       <HintPath>C:\Program Files (x86)\Microsoft Visual Studio Tools for Unity\15.0\Editor\SyntaxTree.VisualStudio.Unity.Bridge.dll</HintPath>
     </Reference>
+    <Reference Include="MapboxAccountsUnity">
+      <HintPath>Assets\Mapbox\Core\Plugins\Mapbox\MapboxAccounts\net35\MapboxAccountsUnity.dll</HintPath>
+    </Reference>
+    <Reference Include="Mapbox.VectorTile.ExtensionMethods">
+      <HintPath>Assets\Mapbox\Core\Plugins\Mapbox\vector-tile-cs\net46\Mapbox.VectorTile.ExtensionMethods.dll</HintPath>
+    </Reference>
+    <Reference Include="Mapbox.VectorTile.Geometry">
+      <HintPath>Assets\Mapbox\Core\Plugins\Mapbox\vector-tile-cs\net46\Mapbox.VectorTile.Geometry.dll</HintPath>
+    </Reference>
+    <Reference Include="Mapbox.VectorTile.PbfReader">
+      <HintPath>Assets\Mapbox\Core\Plugins\Mapbox\vector-tile-cs\net46\Mapbox.VectorTile.PbfReader.dll</HintPath>
+    </Reference>
+    <Reference Include="Mapbox.VectorTile.VectorTileReader">
+      <HintPath>Assets\Mapbox\Core\Plugins\Mapbox\vector-tile-cs\net46\Mapbox.VectorTile.VectorTileReader.dll</HintPath>
+    </Reference>
+    <Reference Include="Mapbox.IO.Compression">
+      <HintPath>Assets\Mapbox\Core\Plugins\ThirdParty\Mapbox.IO.Compression\net35\Mapbox.IO.Compression.dll</HintPath>
+    </Reference>
+    <Reference Include="Mapbox.Json">
+      <HintPath>Assets\Mapbox\Core\Plugins\ThirdParty\Mapbox.Json\Net35\Mapbox.Json.dll</HintPath>
+    </Reference>
     <Reference Include="DotNetZip">
       <HintPath>Assets\NuGet\Editor\DotNetZip.dll</HintPath>
     </Reference>
     <Reference Include="NugetForUnity">
       <HintPath>Assets\NuGet\Editor\NugetForUnity.dll</HintPath>
-    </Reference>
-    <Reference Include="Mapbox.Json">
-      <HintPath>Assets\Mapbox\Core\Plugins\ThirdParty\Mapbox.Json\Net35\Mapbox.Json.dll</HintPath>
-    </Reference>
-    <Reference Include="Mapbox.VectorTile.Geometry">
-      <HintPath>Assets\Mapbox\Core\Plugins\Mapbox\vector-tile-cs\net46\Mapbox.VectorTile.Geometry.dll</HintPath>
-    </Reference>
-    <Reference Include="Mapbox.IO.Compression">
-      <HintPath>Assets\Mapbox\Core\Plugins\ThirdParty\Mapbox.IO.Compression\net35\Mapbox.IO.Compression.dll</HintPath>
-    </Reference>
-    <Reference Include="MapboxAccountsUnity">
-      <HintPath>Assets\Mapbox\Core\Plugins\Mapbox\MapboxAccounts\net35\MapboxAccountsUnity.dll</HintPath>
-    </Reference>
-    <Reference Include="Mapbox.VectorTile.VectorTileReader">
-      <HintPath>Assets\Mapbox\Core\Plugins\Mapbox\vector-tile-cs\net46\Mapbox.VectorTile.VectorTileReader.dll</HintPath>
-    </Reference>
-    <Reference Include="Mapbox.VectorTile.PbfReader">
-      <HintPath>Assets\Mapbox\Core\Plugins\Mapbox\vector-tile-cs\net46\Mapbox.VectorTile.PbfReader.dll</HintPath>
-    </Reference>
-    <Reference Include="Mapbox.VectorTile.ExtensionMethods">
-      <HintPath>Assets\Mapbox\Core\Plugins\Mapbox\vector-tile-cs\net46\Mapbox.VectorTile.ExtensionMethods.dll</HintPath>
     </Reference>
     <Reference Include="nunit.framework">
       <HintPath>Library\PackageCache\com.unity.ext.nunit@1.0.0\net35\unity-custom\nunit.framework.dll</HintPath>
