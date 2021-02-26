@@ -44,8 +44,83 @@ namespace Assets.Scripts.Environment
 
         public Environ Environ { get; private set; } = new Environ();
         public string ActiveCity { get; private set; } = "";
-        public Dictionary<string, DronePort> DronePortSpecs { get; private set; } = new Dictionary<string, DronePort>();
-        public Dictionary<string, List<Vector3>> ParkingStructSpecs { get; private set; } = new Dictionary<string, List<Vector3>>();
+        public Dictionary<string, DronePortAssetPack> DronePortAssets { get; private set; } = new Dictionary<string, DronePortAssetPack>();
+        public Dictionary<string, ParkingStructureAssetPack> ParkingStructAssets { get; private set; } = new Dictionary<string, ParkingStructureAssetPack>();
+        public Dictionary<string, RestrictionZoneAssetPack> RestrictionZoneAssets { get; private set; } = new Dictionary<string, RestrictionZoneAssetPack>();
+
+        /// <summary>
+        /// Adds city to current environment. False on failure.
+        /// </summary>
+        public bool AddCity(string guid, City city)
+        {
+            if (!Environ._cities.ContainsKey(guid))
+            {
+                Environ._cities.Add(guid, city);
+                return true;
+            }
+            else
+            {
+                Debug.Log("Specified city already present in dictionary");
+                return false;
+            }
+        }
+
+        /// <summary>
+        /// Removes city from current environment. False on failure.
+        /// </summary>
+        public bool RemoveCity(string guid)
+        {
+            if (Environ._cities.ContainsKey(guid))
+            {
+                Environ._cities.Remove(guid);
+                return true;
+            }
+            else
+            {
+                Debug.Log("Specified city not present in dictionary");
+                return false;
+            }
+        }
+
+        /// <summary>
+        /// Gets city at the specified guid, if present. Null if not.
+        /// </summary>
+        public City GetCity(string guid)
+        {
+            if (Environ._cities.ContainsKey(guid))
+            {
+                return Environ._cities[guid];
+            }
+            else
+            {
+                Debug.Log("Specified city not present in dictionary");
+                return null;
+            }
+        }
+
+        /// <summary>
+        /// Gets current city dictionary.
+        /// </summary>
+        public SerializableDictionary<string, City> GetCities()
+        {
+            return Environ._cities;
+        }
+
+        /// <summary>
+        /// Gets the city marked as "active". Null on failure.
+        /// </summary>
+        public City GetCurrentCity()
+        {
+            if (Environ._cities.ContainsKey(ActiveCity))
+            {
+                return Environ._cities[ActiveCity];
+            }
+            else
+            {
+                Debug.Log("Active city not present in dictionary");
+                return null;
+            }
+        }
 
 
         /// <summary>
@@ -54,8 +129,8 @@ namespace Assets.Scripts.Environment
         public void CreateNew()
         {
             Environ = new Environ();
-            ReadDronePortSpecs();
-            ReadParkingStructureSpecs();
+            ReadDronePorts();
+            ReadParkingStructures();
         }
 
         /// <summary>
@@ -97,13 +172,15 @@ namespace Assets.Scripts.Environment
         /// <summary>
         /// Reads types of parking structures from assets.
         /// </summary>
-        private void ReadParkingStructureSpecs()
+        private void ReadParkingStructures()
         {
-            ParkingStructSpecs = new Dictionary<string, List<Vector3>>();
+            ParkingStructAssets = new Dictionary<string, ParkingStructureAssetPack>();
 
-            string path = SerializationSettings.ROOT + "\\Resources\\ParkingStructures";
-            var files = Directory.GetFiles(path, "*.DAT");
+            string sPath = SerializationSettings.ROOT + "\\Resources\\ParkingStructures";
+            string rPath = "ParkingStructures/";
 
+            //get DAT resources
+            var files = Directory.GetFiles(sPath, "*.DAT");
             foreach (string filename in files)
             {
                 // Read lines and parse DAT files
@@ -118,26 +195,80 @@ namespace Assets.Scripts.Environment
                     Vector3 point = new Vector3(float.Parse(splitted[0]), float.Parse(splitted[1]), float.Parse(splitted[2]));
                     spots.Add(point);
                 }
-                ParkingStructSpecs.Add(type, spots);
+
+                var pfb = ReadPrefab(rPath, type);
+
+                var pS = new ParkingStructure();
+                pS.parkingSpots = spots;
+                ParkingStructAssets.Add(type, new ParkingStructureAssetPack(pfb, pS));
             }
 
+            //get JSON resources
+            files = Directory.GetFiles(sPath, "*.JSON");
+            foreach(string filename in files)
+            {
+                var pS = ReadJsonAsset<ParkingStructure>(filename);
+                var pfb = ReadPrefab(rPath, pS.type);
+                ParkingStructAssets.Add(pS.type, new ParkingStructureAssetPack(pfb, pS));
+            }
         }
 
         /// <summary>
         /// Reads types of drone ports from assets.
         /// </summary>
-        private void ReadDronePortSpecs()
+        private void ReadDronePorts()
         {
-            DronePortSpecs = new Dictionary<string, DronePort>();
+            DronePortAssets = new Dictionary<string, DronePortAssetPack>();
 
-            string path = SerializationSettings.ROOT + "\\Resources\\DronePorts";
-            var files = Directory.GetFiles(path, "*.JSON");
+            string sPath = SerializationSettings.ROOT + "\\Resources\\DronePorts";
+            string rPath = "DronePorts/";
+            var files = Directory.GetFiles(sPath, "*.JSON");
             foreach (var filename in files)
             {
-                string json = File.ReadAllText(filename, System.Text.Encoding.UTF8);
-                DronePort dp = JsonUtility.FromJson<DronePort>(json);
-                DronePortSpecs.Add(dp.type, dp);
+                DronePort dp = ReadJsonAsset<DronePort>(filename);
+                var pfb = ReadPrefab(rPath, dp.type);
+                DronePortAssets.Add(dp.type, new DronePortAssetPack(pfb, dp));
             }
+        }
+
+        /// <summary>
+        /// Reads types of restriction zones from assets
+        /// </summary>
+        private void ReadRestrictionZones()
+        {
+            RestrictionZoneAssets = new Dictionary<string, RestrictionZoneAssetPack>();
+
+            string sPath = SerializationSettings.ROOT + "\\Resources\\RestrictionZones";
+            string rPath = "RestrictionZones/";
+            var files = Directory.GetFiles(sPath, "*.JSON");
+            foreach(var filename in files)
+            {
+                var rS = ReadJsonAsset<RestrictionZone>(filename);
+                var pfb = ReadPrefab(rPath, rS.type);
+                RestrictionZoneAssets.Add(rS.type, new RestrictionZoneAssetPack(pfb, rS));
+            }
+        }
+
+        /// <summary>
+        /// Returns asset of specified type from json.
+        /// </summary>
+        private T ReadJsonAsset<T>(string fileName)
+        {
+            string json = File.ReadAllText(fileName, Encoding.UTF8);
+            return JsonUtility.FromJson<T>(json);
+        }
+
+        /// <summary>
+        /// Reads prefab from resources of specified file name. Will load .prefab or .obj files. Null on failure.
+        /// </summary>
+        private GameObject ReadPrefab(string resourcePath, string name)
+        {
+            var pfb = Resources.Load<GameObject>(resourcePath + name);
+            if (pfb == null)
+            {
+                Debug.Log("Cannot find prefab for " + name);
+            }
+            return pfb;
         }
     }
 }

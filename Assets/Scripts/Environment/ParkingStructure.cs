@@ -21,10 +21,47 @@ namespace Assets.Scripts.Environment
         public Vector3 landingQueueDirection;
         public List<Vector3> parkingSpots;
 
-        public Dictionary<Vector3, GameObject> parked;
-        public Dictionary<GameObject, Vector3> vehicleAt;
+        public Dictionary<Vector3, GameObject> parked = new Dictionary<Vector3, GameObject>();
+        public Dictionary<GameObject, Vector3> vehicleAt = new Dictionary<GameObject, Vector3>();
+        public Dictionary<GameObject, Vector3> reserved = new Dictionary<GameObject, Vector3>();
 
-        public Dictionary<GameObject, Vector3> reserved;
+        public ParkingStructure()
+        {
+
+        }
+
+        public ParkingStructure(ParkingStructure pS)
+        {
+            type = pS.type;
+            remainingSpots = pS.remainingSpots;
+            position = pS.position;
+            rotation = pS.rotation;
+            scale = pS.scale;
+            standbyPosition = pS.standbyPosition;
+            landingQueueHead = pS.landingQueueHead;
+            landingQueueDirection = pS.landingQueueDirection;
+            parkingSpots = new List<Vector3>(pS.parkingSpots);
+            remainingSpots = parkingSpots.Count;
+        }
+
+        /// <summary>
+        /// Applies a parking grid to current configuration of structure, using predefined rules. REMOVES any existing parking spots and rebuilds list.
+        /// </summary>
+        public void ApplyParkingGrid()
+        {
+            //TO-DO: Use real numbers for margins - now 20m
+            parkingSpots = new List<Vector3>();
+            int parkingMargin = 20;
+            for (int i = (int)(-(scale.x / 2)) + parkingMargin; i <= (int)(scale.x / 2) - parkingMargin; i += parkingMargin)
+            {
+                for (int j = (int)(-(scale.z / 2)) + parkingMargin; j <= (int)(scale.z / 2) - parkingMargin; j += parkingMargin)
+                {
+                    Vector3 v = new Vector3((float)i, 0.0f, (float)j);
+                    parkingSpots.Add(v);
+                }
+            }
+            remainingSpots = parkingSpots.Count;
+        }
 
         public void Reserve(GameObject vehicle)
         {

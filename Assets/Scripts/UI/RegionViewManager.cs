@@ -37,13 +37,14 @@ namespace Assets.Scripts.UI
         protected override void Init()
         {
             abstractMap.Initialize(EnvironManager.Instance.Environ.centerLatLong, EnvironSettings.REGION_ZOOM_LEVEL);
-            foreach(var guid in EnvironManager.Instance.Environ.GetCityGuids())
+            foreach(var kvp in EnvironManager.Instance.GetCities())
             {
-                var c = EnvironManager.Instance.Environ.GetCity(guid);
+                //var c = EnvironManager.Instance.Environ.GetCity(guid);
+                var c = kvp.Value;
                 if (c != null)
                 {
                     float cityTileSide = (float)GetCityTileSideLength();
-                    InstantiateCityMarker(c._regionTileWorldCenter, cityTileSide, c._worldPos, c._cityStats._name, guid, c._cityStats._eastExt, c._cityStats._westExt, c._cityStats._northExt, c._cityStats._southExt);
+                    InstantiateCityMarker(c._regionTileWorldCenter, cityTileSide, c._worldPos, c._cityStats._name, kvp.Key, c._cityStats._eastExt, c._cityStats._westExt, c._cityStats._northExt, c._cityStats._southExt);
                 }
             }
             if (regionRight != null)
@@ -113,7 +114,8 @@ namespace Assets.Scripts.UI
             if (regionRight != null)
             {
                 regionRight.Activate();
-                var city = EnvironManager.Instance.Environ.GetCity(guid);
+                //var city = EnvironManager.Instance.Environ.GetCity(guid);
+                var city = EnvironManager.Instance.GetCity(guid);
                 if (city != null)
                 {
                     regionRight.SetCity(guid, city._cityStats);
@@ -155,7 +157,9 @@ namespace Assets.Scripts.UI
         public void RemoveCity()
         {
             string g = regionRight?._guid;
-            EnvironManager.Instance.Environ.RemoveCity(g);
+            //EnvironManager.Instance.Environ.RemoveCity(g);
+            //EnvironManager.Instance.Environ._cities.Remove(g);
+            EnvironManager.Instance.RemoveCity(g);
             if (cityMarkers.ContainsKey(g))
             {
                 selectedMarker = null;
@@ -210,7 +214,8 @@ namespace Assets.Scripts.UI
                         InstantiateCityMarker(regionTileWorldCenter, cityTileSide, p, n, guid);
                         CityOptions s = new CityOptions();
                         s._name = n;
-                        EnvironManager.Instance.Environ.AddCity(guid, new City(p, gO.transform.position, regionTileSideLength, s));
+                        //EnvironManager.Instance.Environ.AddCity(guid, new City(p, gO.transform.position, regionTileSideLength, s));
+                        EnvironManager.Instance.AddCity(guid, new City(p, gO.transform.position, regionTileSideLength, s));
                     }
                     else
                     {
@@ -265,7 +270,8 @@ namespace Assets.Scripts.UI
         /// </summary>
         private void UpdateCityStats(string guid, CityOptions stats)
         {
-            City city = EnvironManager.Instance.Environ.GetCity(guid);
+            //City city = EnvironManager.Instance.Environ.GetCity(guid);
+            var city = EnvironManager.Instance.GetCity(guid);
             if (city != null)
             {
                 city._cityStats = stats;

@@ -29,6 +29,22 @@ namespace Assets.Scripts.Environment
 
         }
 
+        public DronePort(DronePort dP)
+        {
+            type = dP.type;
+            position = dP.position;
+            rotation = dP.rotation;
+            scale = dP.scale;
+            standbyPosition = dP.standbyPosition;
+            landingQueueHead = dP.landingQueueHead;
+            landingQueueDirection = dP.landingQueueDirection;
+            landingPoint = dP.landingPoint;
+            maximumVehicleSize = dP.maximumVehicleSize;
+            isMountable = dP.isMountable;
+            isOnTheGround = dP.isOnTheGround;
+            isScalable = dP.isScalable;
+        }
+
         // Translates to the global coordinate
         public Vector3 TranslateLandingGuidePosition(Vector3 parkingSpot)
         {
