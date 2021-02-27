@@ -8,22 +8,150 @@ using UnityEngine;
 
 namespace Assets.Scripts.Environment
 {
+    public enum ParkingStructureCategory
+    {
+        Scalable,
+        Fixed
+    }
+
     [Serializable]
     public class ParkingStructure
     {
-        public string type;
-        public int remainingSpots;
-        public Vector3 position;
-        public Vector3 rotation;
-        public Vector3 scale;
-        public Vector3 standbyPosition;
-        public Vector3 landingQueueHead;
-        public Vector3 landingQueueDirection;
-        public List<Vector3> parkingSpots;
+        [SerializeField]
+        private ParkingStructureCategory _category = ParkingStructureCategory.Fixed;
+        public ParkingStructureCategory Category
+        {
+            get
+            {
+                return _category;
+            }
+        }
 
-        public Dictionary<Vector3, GameObject> parked = new Dictionary<Vector3, GameObject>();
-        public Dictionary<GameObject, Vector3> vehicleAt = new Dictionary<GameObject, Vector3>();
-        public Dictionary<GameObject, Vector3> reserved = new Dictionary<GameObject, Vector3>();
+        [SerializeField]
+        private string _type = "";
+        public string Type
+        {
+            get
+            {
+                return _type;
+            }
+        }
+
+        [SerializeField]
+        private int _remainingSpots = 0;
+        public int RemainingSpots
+        {
+            get
+            {
+                return _remainingSpots;
+            }
+            set
+            {
+                _remainingSpots = value;
+            }
+        }
+
+        [SerializeField]
+        private Vector3 _position = new Vector3();
+        public Vector3 Position
+        {
+            get
+            {
+                return _position;
+            }
+            set
+            {
+                _position = value;
+            }
+        }
+
+        [SerializeField]
+        private Vector3 _rotation = new Vector3();
+        public Vector3 Rotation
+        {
+            get
+            {
+                return _rotation;
+            }
+            set
+            {
+                _rotation = value;
+            }
+        }
+
+        [SerializeField]
+        private Vector3 _scale = new Vector3();
+        public Vector3 Scale
+        {
+            get
+            {
+                return _scale;
+            }
+            set
+            {
+                _scale = value;
+            }
+        }
+
+        [SerializeField]
+        private Vector3 _standbyPosition = new Vector3();
+        public Vector3 StandbyPosition
+        {
+            get
+            {
+                return _standbyPosition;
+            }
+            set
+            {
+                _standbyPosition = value;
+            }
+        }
+
+        [SerializeField]
+        private Vector3 _landingQueueHead = new Vector3();
+        public Vector3 LandingQueueHead
+        {
+            get
+            {
+                return _landingQueueHead;
+            }
+            set
+            {
+                _landingQueueHead = value;
+            }
+        }
+
+        [SerializeField]
+        private Vector3 _landingQueueDirection = new Vector3();
+        public Vector3 LandingQueueDirection
+        {
+            get
+            {
+                return _landingQueueDirection;
+            }
+            set
+            {
+                _landingQueueDirection = value;
+            }
+        }
+
+        [SerializeField]
+        private List<Vector3> _parkingSpots = new List<Vector3>();
+        public List<Vector3> ParkingSpots
+        {
+            get
+            {
+                return _parkingSpots;
+            }
+            set
+            {
+                _parkingSpots = value;
+            }
+        }
+
+        public Dictionary<Vector3, GameObject> Parked { get; set; } = new Dictionary<Vector3, GameObject>();
+        public Dictionary<GameObject, Vector3> VehicleAt { get; set; } = new Dictionary<GameObject, Vector3>();
+        public Dictionary<GameObject, Vector3> Reserved { get; set; } = new Dictionary<GameObject, Vector3>();
 
         public ParkingStructure()
         {
@@ -32,16 +160,17 @@ namespace Assets.Scripts.Environment
 
         public ParkingStructure(ParkingStructure pS)
         {
-            type = pS.type;
-            remainingSpots = pS.remainingSpots;
-            position = pS.position;
-            rotation = pS.rotation;
-            scale = pS.scale;
-            standbyPosition = pS.standbyPosition;
-            landingQueueHead = pS.landingQueueHead;
-            landingQueueDirection = pS.landingQueueDirection;
-            parkingSpots = new List<Vector3>(pS.parkingSpots);
-            remainingSpots = parkingSpots.Count;
+            _category = pS.Category;
+            _type = pS.Type;
+            RemainingSpots = pS.RemainingSpots;
+            Position = pS.Position;
+            Rotation = pS.Rotation;
+            Scale = pS.Scale;
+            StandbyPosition = pS.StandbyPosition;
+            LandingQueueHead = pS.LandingQueueHead;
+            LandingQueueDirection = pS.LandingQueueDirection;
+            ParkingSpots = new List<Vector3>(pS.ParkingSpots);
+            RemainingSpots = ParkingSpots.Count;
         }
 
         /// <summary>
@@ -50,39 +179,39 @@ namespace Assets.Scripts.Environment
         public void ApplyParkingGrid()
         {
             //TO-DO: Use real numbers for margins - now 20m
-            parkingSpots = new List<Vector3>();
+            ParkingSpots = new List<Vector3>();
             int parkingMargin = 20;
-            for (int i = (int)(-(scale.x / 2)) + parkingMargin; i <= (int)(scale.x / 2) - parkingMargin; i += parkingMargin)
+            for (int i = (int)(-(Scale.x / 2)) + parkingMargin; i <= (int)(Scale.x / 2) - parkingMargin; i += parkingMargin)
             {
-                for (int j = (int)(-(scale.z / 2)) + parkingMargin; j <= (int)(scale.z / 2) - parkingMargin; j += parkingMargin)
+                for (int j = (int)(-(Scale.z / 2)) + parkingMargin; j <= (int)(Scale.z / 2) - parkingMargin; j += parkingMargin)
                 {
                     Vector3 v = new Vector3((float)i, 0.0f, (float)j);
-                    parkingSpots.Add(v);
+                    ParkingSpots.Add(v);
                 }
             }
-            remainingSpots = parkingSpots.Count;
+            RemainingSpots = ParkingSpots.Count;
         }
 
         public void Reserve(GameObject vehicle)
         {
             Vector3 spotToReserve = new Vector3();
             bool success = false;
-            foreach (Vector3 p in parkingSpots)
+            foreach (Vector3 p in ParkingSpots)
             {
-                if (!parked.ContainsKey(p) && !reserved.Values.Contains(p))
+                if (!Parked.ContainsKey(p) && !Reserved.Values.Contains(p))
                 {
                     spotToReserve = p;
                     break;
                 }
             }
-            if (!reserved.ContainsKey(vehicle))
+            if (!Reserved.ContainsKey(vehicle))
             {
-                reserved.Add(vehicle, spotToReserve);
-                remainingSpots--;
-                Debug.Log(type + ": " + vehicle.name + " reserved " + spotToReserve.ToString());
+                Reserved.Add(vehicle, spotToReserve);
+                RemainingSpots--;
+                Debug.Log(Type + ": " + vehicle.name + " reserved " + spotToReserve.ToString());
                 success = true;
             }
-            if (!success) Debug.Log(type + ": Reservation failed");
+            if (!success) Debug.Log(Type + ": Reservation failed");
 
         }
 
@@ -90,38 +219,38 @@ namespace Assets.Scripts.Environment
         {
             Vector3 reservedSpot = new Vector3();
             bool success = false;
-            if (reserved.ContainsKey(vehicle))
+            if (Reserved.ContainsKey(vehicle))
             {
-                reservedSpot = reserved[vehicle];
-                reserved.Remove(vehicle);
-                remainingSpots++;
-                Debug.Log(type + ": " + vehicle.name + " unreserved " + reservedSpot.ToString());
+                reservedSpot = Reserved[vehicle];
+                Reserved.Remove(vehicle);
+                RemainingSpots++;
+                Debug.Log(Type + ": " + vehicle.name + " unreserved " + reservedSpot.ToString());
                 success = true;
             }
-            if (!success) Debug.Log(type + ": Reservation failed");
+            if (!success) Debug.Log(Type + ": Reservation failed");
             return reservedSpot;
         }
         public bool ParkAt(Vector3 spot, GameObject vehicle)
         {
-            if (parked.ContainsKey(spot)) return false;
+            if (Parked.ContainsKey(spot)) return false;
             else
             {
-                parked.Add(spot, vehicle);
-                vehicleAt.Add(vehicle, spot);
-                remainingSpots--;
+                Parked.Add(spot, vehicle);
+                VehicleAt.Add(vehicle, spot);
+                RemainingSpots--;
                 return true;
             }
         }
         public bool Unpark(GameObject vehicle)
         {
             // if true, there is no such vehicle parked in this structure
-            if (!vehicleAt.ContainsKey(vehicle)) return false;
+            if (!VehicleAt.ContainsKey(vehicle)) return false;
             else
             {
-                Vector3 spot = vehicleAt[vehicle];
-                parked.Remove(spot);
-                vehicleAt.Remove(vehicle);
-                remainingSpots++;
+                Vector3 spot = VehicleAt[vehicle];
+                Parked.Remove(spot);
+                VehicleAt.Remove(vehicle);
+                RemainingSpots++;
                 return true;
             }
         }
@@ -129,9 +258,9 @@ namespace Assets.Scripts.Environment
         public Vector3 GetEmptySpot()
         {
             Vector3 emptySpot = new Vector3();
-            foreach (Vector3 v in parkingSpots)
+            foreach (Vector3 v in ParkingSpots)
             {
-                if (!parked.ContainsKey(v))
+                if (!Parked.ContainsKey(v))
                 {
                     emptySpot = v;
                     break;
@@ -143,7 +272,7 @@ namespace Assets.Scripts.Environment
         // Translates to the global coordinate
         public Vector3 TranslateParkingSpot(Vector3 parkingSpot)
         {
-            return (Quaternion.Euler(rotation.x, rotation.y, rotation.z) * parkingSpot + position);
+            return (Quaternion.Euler(Rotation.x, Rotation.y, Rotation.z) * parkingSpot + Position);
         }
 
         public List<Vector3> GetParkingGuide(Vector3 spot, string mode, string type)
@@ -155,18 +284,18 @@ namespace Assets.Scripts.Environment
             if (type.Equals("Simple_4Way_Stack"))
             {
                 Vector3 direction = new Vector3(spot.x, 0.0f, spot.z).normalized;
-                direction = Quaternion.Euler(rotation.x, rotation.y, rotation.z) * direction;
+                direction = Quaternion.Euler(Rotation.x, Rotation.y, Rotation.z) * direction;
                 guides.Add(spot);
                 Vector3 current_spot = spot + direction * 20.0f;
                 guides.Add(current_spot);
-                current_spot.y = standbyPosition.y;
+                current_spot.y = StandbyPosition.y;
                 guides.Add(current_spot);
-                guides.Add(standbyPosition);
+                guides.Add(StandbyPosition);
             }
             else if (type.Equals("generic_rectangular_lot"))
             {
                 guides.Add(spot);
-                guides.Add(standbyPosition);
+                guides.Add(StandbyPosition);
             }
 
             if (mode == "parking") guides.Reverse();

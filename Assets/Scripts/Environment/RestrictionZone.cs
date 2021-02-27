@@ -22,14 +22,111 @@ namespace Assets.Scripts.Environment
     [Serializable]
     public class RestrictionZone
     {
-        public RestrictionZoneCategory category = RestrictionZoneCategory.Other;
-        public string type = "";
-        public Vector3 position = new Vector3();
-        public Vector3 rotation = new Vector3();
-        public Vector3 scale = new Vector3();
-        public List<float> bottoms = new List<float>();
-        public List<float> radius = new List<float>();
-        public float height = 0;
+        [SerializeField]
+        private RestrictionZoneCategory _category = RestrictionZoneCategory.Other;
+        /// <summary>
+        /// General category of zone.
+        /// </summary>
+        public RestrictionZoneCategory Category
+        {
+            get
+            {
+                return _category;
+            }
+        }
+
+        [SerializeField]
+        private string _type = "";
+        /// <summary>
+        /// Type as specified in file name of asset
+        /// </summary>
+        public string Type
+        {
+            get
+            {
+                return _type;
+            }
+        }
+
+        [SerializeField]
+        private Vector3 _position = new Vector3();
+        /// <summary>
+        /// Absolute position for generic rectangular restriction zones, xz position for cylindrical ones
+        /// </summary>
+        public Vector3 Position
+        {
+            get
+            {
+                return _position;
+            }
+        }
+
+        [SerializeField]
+        private Vector3 _rotation = new Vector3();
+        /// <summary>
+        /// Rotation is only applicable on generic rectangular restriction zones.
+        /// </summary>
+        public Vector3 Rotation
+        {
+            get
+            {
+                return _rotation;
+            }
+        }
+
+        [SerializeField]
+        private Vector3 _scale = new Vector3();
+        /// <summary>
+        /// Scale is only applicable on generic rectangular restriction zones.
+        /// </summary>
+        public Vector3 Scale
+        {
+            get
+            {
+                return _scale;
+            }
+        }
+
+        [SerializeField]
+        private List<float> _stepElevs = new List<float>();
+        /// <summary>
+        /// Step elevs list is only applicable on cylindrical restriction zones.
+        /// </summary>
+        public List<float> StepElevs
+        {
+            get
+            {
+                return _stepElevs;
+            }
+        }
+
+        [SerializeField]
+        private List<float> _radii = new List<float>();
+        /// <summary>
+        /// Radii list is only applicable on cylindrical restriction zones
+        /// </summary>
+        public List<float> Radii
+        {
+            get
+            {
+                return _radii;
+            }
+        }
+
+        [SerializeField]
+        private float _height = 0;
+        /// <summary>
+        /// Height is only applicable on generic restriction zones.
+        /// </summary>
+        public float Height
+        {
+            get
+            {
+                return _height;
+            }
+        }
+
+        public List<RestrictionZoneElemBase> Elements { get; private set; } = new List<RestrictionZoneElemBase>();
 
         public RestrictionZone()
         {
@@ -38,88 +135,215 @@ namespace Assets.Scripts.Environment
 
         public RestrictionZone(RestrictionZone rZ)
         {
-            category = rZ.category;
-            type = rZ.type;
-            position = rZ.position;
-            rotation = rZ.rotation;
-            scale = rZ.scale;
-            bottoms = new List<float>(rZ.bottoms);
-            radius = new List<float>(rZ.radius);
-            height = rZ.height;
+            _category = rZ.Category;
+            _type = rZ.Type;
+            _position = rZ.Position;
+            _rotation = rZ.Rotation;
+            _scale = rZ.Scale;
+            _stepElevs = new List<float>(rZ.StepElevs);
+            _radii = new List<float>(rZ.Radii);
+            _height = rZ.Height;
+
+            Initialize();
         }
 
         /// <summary>
-        /// Updates height on this zone.
+        /// Call after deserializing json or instantiating new instance.
         /// </summary>
-        public void SetHeight(float h)
+        public void Initialize()
         {
-            height = h;
-            if (category == RestrictionZoneCategory.GenericRect)
+            if (Category == RestrictionZoneCategory.GenericRect)
             {
-                scale = new Vector3(scale.x, height, scale.z);
+                Elements.Add(new RestrictionZoneRect(_position, _rotation, _scale.x, _scale.z, _height));
             }
-            else if (category == RestrictionZoneCategory.GenericCyl)
+            else if (Category == RestrictionZoneCategory.GenericCyl)
             {
-                scale = new Vector3(scale.x, height / 2, scale.z);
-            }
-            else if (category == RestrictionZoneCategory.Class && bottoms != null && radius != null)
-            {
-                for (int i = 0; i < bottoms.Count - 1; i++)
+                if (_radii != null && _stepElevs != null && _radii.Count == 1 && _stepElevs.Count == 1)
                 {
-                    var prms = GetClassCylPrms(i);
-                    if (prms != null)
+                    Elements.Add(new RestrictionZoneCyl(_position.x, _position.z, _radii[0], _height, _stepElevs[0]));
+                }
+                else 
+                {
+                    Debug.LogError("Initialization Error: Generic cylinder restriction zone radius and step elevs lists should have length 1");
+                }
+            }
+            else if (Category == RestrictionZoneCategory.Class)
+            {
+                if (_radii != null && _stepElevs != null && _radii.Count + 1 == _stepElevs.Count)
+                {
+                    for (int i = 0; i < _stepElevs.Count - 1; i++)
                     {
-                        float this_cylinder_center_y = prms[0];
-                        float this_cylinder_height_half = prms[1];
-                        float this_cylinder_radius = prms[2];
-                        position = new Vector3(position.x, this_cylinder_center_y, position.z);
-                        scale = new Vector3(this_cylinder_radius, this_cylinder_height_half, this_cylinder_radius);
+                        float bottom = _stepElevs[i];
+                        float top = _stepElevs[i + 1];
+                        float rad = _radii[i];
+                        Elements.Add(new RestrictionZoneCyl(_position.x, _position.z, rad, top - bottom, bottom));
                     }
                 }
-            }
-        }
-
-        /// <summary>
-        /// Updates scale on this zone.
-        /// </summary>
-        public void SetScale(Vector3 s)
-        {
-            scale = s;
-            if (category == RestrictionZoneCategory.GenericRect)
-            {
-                height = s.y;
-            }
-            else if (category == RestrictionZoneCategory.GenericCyl)
-            {
-                height = s.y * 2;
-            }
-            else if (category == RestrictionZoneCategory.Class && bottoms != null && radius != null)
-            {
-                for (int i = 0; i < bottoms.Count - 1; i++)
+                else
                 {
-
+                    Debug.LogError("Initialization Error: Generic class restriction zone radius list should have one more element than step elevs list");
                 }
-            }
-        }
-
-        /// <summary>
-        /// Returns general params for class cylinder. Null on failure.
-        /// </summary>
-        private float[] GetClassCylPrms(int i)
-        {
-            if (bottoms.Count > i + 1)
-            {
-                float this_cylinder_center_y = (bottoms[i] + bottoms[i + 1]) / 2.0f;
-                float this_cylinder_height_half = (bottoms[i + 1] - bottoms[i]) / 2.0f;
-                float this_cylinder_radius = radius[i];
-                return new float[] { this_cylinder_center_y, this_cylinder_height_half, this_cylinder_radius };
             }
             else
             {
-                Debug.Log("Unable to get center y of restriction zone");
-                return null;
+                Debug.LogError("This category of restriction zone not yet supported");
             }
         }
 
+        /// <summary>
+        /// Sets height if this is a generic rectangular restriction zone.
+        /// </summary>
+        public void SetRectHeight(float h)
+        {
+            if (Category == RestrictionZoneCategory.GenericRect)
+            {
+                if (Elements != null && Elements.Count == 1 && Elements[0] is RestrictionZoneRect)
+                {
+                    var e = Elements[0] as RestrictionZoneRect;
+                    e.Height = h;
+                    _height = h;
+                }
+                else
+                {
+                    Debug.LogError("Element list not properly configured");
+                }
+            }
+            else
+            {
+                Debug.LogError($"Attempting to change height of {RestrictionZoneCategory.GenericRect.ToString()} restriction zone but this zone is not rectangular");
+            }
+        }
+
+        /// <summary>
+        /// Sets height if this is a generic cylindrical restriction zone.
+        /// </summary>
+        public void SetGenCylHeight(float h)
+        {
+            if (Category == RestrictionZoneCategory.GenericCyl)
+            {
+                if (Elements != null && Elements.Count == 1 && Elements[0] is RestrictionZoneCyl && _stepElevs != null && _stepElevs.Count == 2)
+                {
+                    var e = Elements[0] as RestrictionZoneCyl;
+                    e.Height = h;
+                    _height = h;
+                    _stepElevs[1] = _stepElevs[0] + h;
+                    _position = e.Position;
+                }
+                else
+                {
+                    Debug.LogError("Element list not properly configured");
+                }
+            }
+            else
+            {
+                Debug.LogError($"Attempting to change height of {RestrictionZoneCategory.GenericCyl.ToString()} restriction zone but this zone is not cylindrical");
+            }
+        }
+
+        /// <summary>
+        /// Sets elevation of specific step in class restriction zone.
+        /// </summary>
+        public void SetClassStepElev(float elev, int index)
+        {
+            if (Category == RestrictionZoneCategory.Class)
+            {
+                //update elements affected by this step
+                if (Elements != null && Elements.Count > index && Elements[index] is RestrictionZoneCyl && _stepElevs != null && _stepElevs.Count > index)
+                {
+                    var e1 = Elements[index] as RestrictionZoneCyl;
+                    var e0 = index > 0 ? Elements[index - 1] as RestrictionZoneCyl : null; //also affect element below, if applicable
+                    e1.Bottom = elev;
+                    if (e0 != null)
+                    {
+                        e0.Top = elev;
+                    }
+                    _stepElevs[index] = elev;
+                }
+                else
+                {
+                    Debug.LogError("Restriction zone not properly configured");
+                }
+            }
+            else
+            {
+                Debug.LogError($"Attempting to change height of {RestrictionZoneCategory.Class.ToString()} restriction zone but this zone is not class");
+            }
+        }
+
+        /// <summary>
+        /// Sets radius of generic cylindrical restriction zone.
+        /// </summary>
+        public void SetGenCylRadius(float radius)
+        {
+            if (Category == RestrictionZoneCategory.GenericCyl)
+            {
+                //update elements affected by this step
+                if (Elements != null && Elements.Count == 1 && Elements[0] is RestrictionZoneCyl && _radii != null && _radii.Count == 1)
+                {
+                    var e1 = Elements[0] as RestrictionZoneCyl;
+                    e1.Radius = radius;
+                    _radii[0] = radius;
+                }
+                else
+                {
+                    Debug.LogError("Restriction zone not properly configured");
+                }
+            }
+            else
+            {
+                Debug.LogError($"Attempting to change height of {RestrictionZoneCategory.GenericCyl.ToString()} restriction zone but this zone is not class");
+            }
+        }
+
+        /// <summary>
+        /// Sets radius of specific step in class restriction zone.
+        /// </summary>
+        public void SetClassRadius(float radius, int index)
+        {
+            if (Category == RestrictionZoneCategory.Class)
+            {
+                //update elements affected by this step
+                if (Elements != null && Elements.Count > index && Elements[index] is RestrictionZoneCyl && _radii != null && _radii.Count > index)
+                {
+                    var e1 = Elements[index] as RestrictionZoneCyl;
+                    e1.Radius = radius;
+                    _radii[index] = radius;
+                }
+                else
+                {
+                    Debug.LogError("Restriction zone not properly configured");
+                }
+            }
+            else
+            {
+                Debug.LogError($"Attempting to change height of {RestrictionZoneCategory.Class.ToString()} restriction zone but this zone is not class");
+            }
+        }
+
+
+        /// <summary>
+        /// Sets bottom elevation of generic cylindrical restriction zone.
+        /// </summary>
+        public void SetGenCylBotElev(float botElev)
+        {
+            if (Category == RestrictionZoneCategory.GenericCyl)
+            {
+                //update elements affected by this step
+                if (Elements != null && Elements.Count == 1 && Elements[0] is RestrictionZoneCyl && _stepElevs != null && _stepElevs.Count == 2)
+                {
+                    var e1 = Elements[0] as RestrictionZoneCyl;
+                    e1.Radius = radius;
+                    _radii[0] = radius;
+                }
+                else
+                {
+                    Debug.LogError("Restriction zone not properly configured");
+                }
+            }
+            else
+            {
+                Debug.LogError($"Attempting to change height of {RestrictionZoneCategory.GenericCyl.ToString()} restriction zone but this zone is not class");
+            }
+        }
     }
 }

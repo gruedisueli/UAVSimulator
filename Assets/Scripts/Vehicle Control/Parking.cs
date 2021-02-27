@@ -45,7 +45,7 @@ public class Parking : MonoBehaviour
                         if (vehicle.state.Equals("landing_requested"))
                         {
                             int place = placeInQueue(v);
-                            vehicle.currentTargetPosition = (gameObject.transform.position + parkingInfo.landingQueueHead + parkingInfo.landingQueueDirection * (float)place * landingQueueSeparation);
+                            vehicle.currentTargetPosition = (gameObject.transform.position + parkingInfo.LandingQueueHead + parkingInfo.LandingQueueDirection * (float)place * landingQueueSeparation);
                             vehicle.moveForward = true;
                         }
                     }
@@ -58,8 +58,8 @@ public class Parking : MonoBehaviour
             if (currentVehicleState.state == "takeoff_requested") // If the vehicle is parked
             {
                 // TO-DO: Exception handlings
-                Vector3 currentVehicleParkingSpot = parkingInfo.vehicleAt[currentVehicle];  // Get the parking location of the current vehicle
-                List<Vector3> parkingGuide = parkingInfo.GetParkingGuide(currentVehicleParkingSpot, "unparking", parkingInfo.type);
+                Vector3 currentVehicleParkingSpot = parkingInfo.VehicleAt[currentVehicle];  // Get the parking location of the current vehicle
+                List<Vector3> parkingGuide = parkingInfo.GetParkingGuide(currentVehicleParkingSpot, "unparking", parkingInfo.Type);
                 List<Vector3> translatedParkingGuide = new List<Vector3>();
                 foreach (Vector3 v in parkingGuide) translatedParkingGuide.Add(parkingInfo.TranslateParkingSpot(v));
                 currentVehicleState.assignedLandingGuide = toQueue(translatedParkingGuide);
@@ -77,14 +77,14 @@ public class Parking : MonoBehaviour
             {
                 try
                 {
-                    Vector3 parkingSpotTemp = parkingInfo.reserved[currentVehicle];
+                    Vector3 parkingSpotTemp = parkingInfo.Reserved[currentVehicle];
                 }
                 catch(KeyNotFoundException e)
                 {
                     Debug.Log("???");
                 }
-                Vector3 parkingSpot = parkingInfo.reserved[currentVehicle];
-                List<Vector3> landingGuide = parkingInfo.GetParkingGuide(parkingSpot, "parking", parkingInfo.type);
+                Vector3 parkingSpot = parkingInfo.Reserved[currentVehicle];
+                List<Vector3> landingGuide = parkingInfo.GetParkingGuide(parkingSpot, "parking", parkingInfo.Type);
                 List<Vector3> translatedParkingGuide = new List<Vector3>();
                 foreach (Vector3 v in landingGuide) translatedParkingGuide.Add(parkingInfo.TranslateParkingSpot(v));
                 currentVehicleState.assignedLandingGuide = toQueue(translatedParkingGuide);
@@ -93,7 +93,7 @@ public class Parking : MonoBehaviour
             }
             else if ( currentVehicleState.state == "arrived" )
             {
-                Vector3 parkingSpot = parkingInfo.reserved[currentVehicle];
+                Vector3 parkingSpot = parkingInfo.Reserved[currentVehicle];
                 parkingInfo.ParkAt(parkingSpot, currentVehicle);
                 parkingInfo.Unreserve(currentVehicle);
                 currentVehicleState.state = "parked";
@@ -139,7 +139,7 @@ public class Parking : MonoBehaviour
         }
         else
         {
-            return (gameObject.transform.position + parkingInfo.landingQueueHead + parkingInfo.landingQueueDirection * (float)place * landingQueueSeparation);
+            return (gameObject.transform.position + parkingInfo.LandingQueueHead + parkingInfo.LandingQueueDirection * (float)place * landingQueueSeparation);
         }
     }
 

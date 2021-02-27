@@ -11,18 +11,169 @@ namespace Assets.Scripts.Environment
     [Serializable]
     public class DronePort
     {
-        public string type;
-        public Vector3 position;
-        public Vector3 rotation;
-        public Vector3 scale;
-        public Vector3 standbyPosition;
-        public Vector3 landingQueueHead;
-        public Vector3 landingQueueDirection;
-        public Vector3 landingPoint;
-        public float maximumVehicleSize;
-        public bool isMountable;
-        public bool isOnTheGround;
-        public bool isScalable;
+        [SerializeField]
+        private string _type = "";
+        public string Type
+        {
+            get
+            {
+                return _type;
+            }
+        }
+
+        [SerializeField]
+        private Vector3 _position = new Vector3();
+        public Vector3 Position
+        {
+            get
+            {
+                return _position;
+            }
+            set
+            {
+                _position = value;
+            }
+        }
+
+        [SerializeField]
+        private Vector3 _rotation = new Vector3();
+        public Vector3 Rotation
+        {
+            get
+            {
+                return _rotation;
+            }
+            set
+            {
+                _rotation = value;
+            }
+        }
+
+        [SerializeField]
+        private Vector3 _scale = new Vector3();
+        public Vector3 Scale
+        {
+            get
+            {
+                return _scale;
+            }
+            set
+            {
+                _scale = value;
+            }
+        }
+
+        [SerializeField]
+        private Vector3 _standByPosition = new Vector3();
+        public Vector3 StandbyPosition
+        {
+            get
+            {
+                return _standByPosition;
+            }
+            set
+            {
+                _standByPosition = value;
+            }
+        }
+
+        [SerializeField]
+        private Vector3 _landingQueueHead = new Vector3();
+        public Vector3 LandingQueueHead
+        {
+            get
+            {
+                return _landingQueueHead;
+            }
+            set
+            {
+                _landingQueueHead = value;
+            }
+        }
+
+        [SerializeField]
+        private Vector3 _landingQueueDirection = new Vector3();
+        public Vector3 LandingQueueDirection
+        {
+            get
+            {
+                return _landingQueueDirection;
+            }
+            set
+            {
+                _landingQueueDirection = value;
+            }
+        }
+
+        [SerializeField]
+        private Vector3 _landingPoint = new Vector3();
+        public Vector3 LandingPoint
+        {
+            get
+            {
+                return _landingPoint;
+            }
+            set
+            {
+                _landingPoint = value;
+            }
+        }
+
+        [SerializeField]
+        private float _maximumVehicleSize = 0;
+        public float MaximumVehicleSize
+        {
+            get
+            {
+                return _maximumVehicleSize;
+            }
+            set
+            {
+                _maximumVehicleSize = value;
+            }
+        }
+
+        [SerializeField]
+        private bool _isMountable = false;
+        public bool IsMountable
+        {
+            get
+            {
+                return _isMountable;
+            }
+            set
+            {
+                _isMountable = value;
+            }
+        }
+
+        [SerializeField]
+        private bool _isOnTheGround = false;
+        public bool IsOnTheGround
+        {
+            get
+            {
+                return _isOnTheGround;
+            }
+            set
+            {
+                _isOnTheGround = value;
+            }
+        }
+
+        [SerializeField]
+        private bool _isScalable = false;
+        public bool IsScalable
+        {
+            get
+            {
+                return _isScalable;
+            }
+            set
+            {
+                _isScalable = value;
+            }
+        }
 
         public DronePort()
         {
@@ -31,24 +182,24 @@ namespace Assets.Scripts.Environment
 
         public DronePort(DronePort dP)
         {
-            type = dP.type;
-            position = dP.position;
-            rotation = dP.rotation;
-            scale = dP.scale;
-            standbyPosition = dP.standbyPosition;
-            landingQueueHead = dP.landingQueueHead;
-            landingQueueDirection = dP.landingQueueDirection;
-            landingPoint = dP.landingPoint;
-            maximumVehicleSize = dP.maximumVehicleSize;
-            isMountable = dP.isMountable;
-            isOnTheGround = dP.isOnTheGround;
-            isScalable = dP.isScalable;
+            _type = dP.Type;
+            Position = dP.Position;
+            Rotation = dP.Rotation;
+            Scale = dP.Scale;
+            StandbyPosition = dP.StandbyPosition;
+            LandingQueueHead = dP.LandingQueueHead;
+            LandingQueueDirection = dP.LandingQueueDirection;
+            LandingPoint = dP.LandingPoint;
+            MaximumVehicleSize = dP.MaximumVehicleSize;
+            IsMountable = dP.IsMountable;
+            IsOnTheGround = dP.IsOnTheGround;
+            IsScalable = dP.IsScalable;
         }
 
         // Translates to the global coordinate
         public Vector3 TranslateLandingGuidePosition(Vector3 parkingSpot)
         {
-            return (Quaternion.Euler(rotation.x, rotation.y, rotation.z) * parkingSpot + position);
+            return (Quaternion.Euler(Rotation.x, Rotation.y, Rotation.z) * parkingSpot + Position);
         }
 
         public List<Vector3> GetLandingGuide(string mode)
@@ -58,9 +209,9 @@ namespace Assets.Scripts.Environment
 
             List<Vector3> guides = new List<Vector3>();
 
-            guides.Add(landingQueueHead);
-            guides.Add(standbyPosition);
-            guides.Add(landingPoint);
+            guides.Add(LandingQueueHead);
+            guides.Add(StandbyPosition);
+            guides.Add(LandingPoint);
 
             /*
             if (type.Equals("Simple_4Way_Stack"))

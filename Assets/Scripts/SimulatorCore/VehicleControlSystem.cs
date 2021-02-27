@@ -318,7 +318,7 @@ public class VehicleControlSystem : MonoBehaviour
             foreach (GameObject parkingStructure in sceneManager._parkingStructures.Keys)
             {
                 Parking ps = parkingStructure.GetComponent<Parking>();
-                if (ps.parkingInfo.remainingSpots > 0)
+                if (ps.parkingInfo.RemainingSpots > 0)
                 {
                     int vehicleTypeID = Random.Range(0, vehicleTypes.Count);
                     var newDrone = Resources.Load<GameObject>(drone_path + vehicleTypes[vehicleTypeID]);
@@ -356,7 +356,7 @@ public class VehicleControlSystem : MonoBehaviour
         GameObject nearest = new GameObject();
         foreach (GameObject ps in sceneManager._parkingStructures.Keys)
         {
-            if (sceneManager._parkingStructures[ps].remainingSpots > 0)
+            if (sceneManager._parkingStructures[ps].RemainingSpots > 0)
             {
                 if (Vector3.Distance(ps.transform.position, v.transform.position) < min_dist)
                 {
@@ -379,8 +379,8 @@ public class VehicleControlSystem : MonoBehaviour
     }
     public GameObject GetAvailableVehicleinParkingStrcuture(GameObject parkingStructure)
     {
-        int random = Mathf.RoundToInt(Random.Range(0, parkingStructure.GetComponent<Parking>().parkingInfo.vehicleAt.Keys.Count - 1));
-        return parkingStructure.GetComponent<Parking>().parkingInfo.vehicleAt.Keys.ElementAt<GameObject>(random);
+        int random = Mathf.RoundToInt(Random.Range(0, parkingStructure.GetComponent<Parking>().parkingInfo.VehicleAt.Keys.Count - 1));
+        return parkingStructure.GetComponent<Parking>().parkingInfo.VehicleAt.Keys.ElementAt<GameObject>(random);
     }
 
 
@@ -493,7 +493,7 @@ public class VehicleControlSystem : MonoBehaviour
         foreach (GameObject p in sceneManager._parkingStructures.Keys)
         {
             // find the nearest one with parked vehicles
-            if (p.GetComponent<Parking>().parkingInfo.vehicleAt.Keys.Count > 0)
+            if (p.GetComponent<Parking>().parkingInfo.VehicleAt.Keys.Count > 0)
             {
                 if (Vector3.Distance(pickUpLocation, p.transform.position) < minDistance)
                 {
@@ -517,7 +517,7 @@ public class VehicleControlSystem : MonoBehaviour
         foreach (GameObject p in sceneManager._parkingStructures.Keys)
         {
             // find the nearest one with parked vehicles
-            if (p.GetComponent<Parking>().parkingInfo.vehicleAt.Keys.Count > 0)
+            if (p.GetComponent<Parking>().parkingInfo.VehicleAt.Keys.Count > 0)
             {
                 if (Vector3.Distance(AAOCenter, p.transform.position) < minDistance)
                 {

@@ -84,7 +84,7 @@ namespace Assets.Scripts.UI
             int parking_capacity = 0;
             foreach (GameObject ps in _parkingStructures.Keys)
             {
-                parking_capacity += _parkingStructures[ps].parkingSpots.Count;
+                parking_capacity += _parkingStructures[ps].ParkingSpots.Count;
             }
             return parking_capacity;
         }

@@ -53,9 +53,9 @@ namespace Assets.Scripts.Environment
         /// </summary>
         public bool AddCity(string guid, City city)
         {
-            if (!Environ._cities.ContainsKey(guid))
+            if (!Environ.Cities.ContainsKey(guid))
             {
-                Environ._cities.Add(guid, city);
+                Environ.Cities.Add(guid, city);
                 return true;
             }
             else
@@ -70,9 +70,9 @@ namespace Assets.Scripts.Environment
         /// </summary>
         public bool RemoveCity(string guid)
         {
-            if (Environ._cities.ContainsKey(guid))
+            if (Environ.Cities.ContainsKey(guid))
             {
-                Environ._cities.Remove(guid);
+                Environ.Cities.Remove(guid);
                 return true;
             }
             else
@@ -87,9 +87,9 @@ namespace Assets.Scripts.Environment
         /// </summary>
         public City GetCity(string guid)
         {
-            if (Environ._cities.ContainsKey(guid))
+            if (Environ.Cities.ContainsKey(guid))
             {
-                return Environ._cities[guid];
+                return Environ.Cities[guid];
             }
             else
             {
@@ -103,7 +103,7 @@ namespace Assets.Scripts.Environment
         /// </summary>
         public SerializableDictionary<string, City> GetCities()
         {
-            return Environ._cities;
+            return Environ.Cities;
         }
 
         /// <summary>
@@ -111,9 +111,9 @@ namespace Assets.Scripts.Environment
         /// </summary>
         public City GetCurrentCity()
         {
-            if (Environ._cities.ContainsKey(ActiveCity))
+            if (Environ.Cities.ContainsKey(ActiveCity))
             {
-                return Environ._cities[ActiveCity];
+                return Environ.Cities[ActiveCity];
             }
             else
             {
@@ -199,7 +199,7 @@ namespace Assets.Scripts.Environment
                 var pfb = ReadPrefab(rPath, type);
 
                 var pS = new ParkingStructure();
-                pS.parkingSpots = spots;
+                pS.ParkingSpots = spots;
                 ParkingStructAssets.Add(type, new ParkingStructureAssetPack(pfb, pS));
             }
 
@@ -208,8 +208,8 @@ namespace Assets.Scripts.Environment
             foreach(string filename in files)
             {
                 var pS = ReadJsonAsset<ParkingStructure>(filename);
-                var pfb = ReadPrefab(rPath, pS.type);
-                ParkingStructAssets.Add(pS.type, new ParkingStructureAssetPack(pfb, pS));
+                var pfb = ReadPrefab(rPath, pS.Type);
+                ParkingStructAssets.Add(pS.Type, new ParkingStructureAssetPack(pfb, pS));
             }
         }
 
@@ -226,8 +226,8 @@ namespace Assets.Scripts.Environment
             foreach (var filename in files)
             {
                 DronePort dp = ReadJsonAsset<DronePort>(filename);
-                var pfb = ReadPrefab(rPath, dp.type);
-                DronePortAssets.Add(dp.type, new DronePortAssetPack(pfb, dp));
+                var pfb = ReadPrefab(rPath, dp.Type);
+                DronePortAssets.Add(dp.Type, new DronePortAssetPack(pfb, dp));
             }
         }
 
@@ -244,8 +244,8 @@ namespace Assets.Scripts.Environment
             foreach(var filename in files)
             {
                 var rS = ReadJsonAsset<RestrictionZone>(filename);
-                var pfb = ReadPrefab(rPath, rS.type);
-                RestrictionZoneAssets.Add(rS.type, new RestrictionZoneAssetPack(pfb, rS));
+                var pfb = ReadPrefab(rPath, rS.Type);
+                RestrictionZoneAssets.Add(rS.Type, new RestrictionZoneAssetPack(pfb, rS));
             }
         }
 

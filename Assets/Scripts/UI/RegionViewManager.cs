@@ -36,7 +36,7 @@ namespace Assets.Scripts.UI
 
         protected override void Init()
         {
-            abstractMap.Initialize(EnvironManager.Instance.Environ.centerLatLong, EnvironSettings.REGION_ZOOM_LEVEL);
+            abstractMap.Initialize(EnvironManager.Instance.Environ.CenterLatLong, EnvironSettings.REGION_ZOOM_LEVEL);
             foreach(var kvp in EnvironManager.Instance.GetCities())
             {
                 //var c = EnvironManager.Instance.Environ.GetCity(guid);
@@ -44,7 +44,7 @@ namespace Assets.Scripts.UI
                 if (c != null)
                 {
                     float cityTileSide = (float)GetCityTileSideLength();
-                    InstantiateCityMarker(c._regionTileWorldCenter, cityTileSide, c._worldPos, c._cityStats._name, kvp.Key, c._cityStats._eastExt, c._cityStats._westExt, c._cityStats._northExt, c._cityStats._southExt);
+                    InstantiateCityMarker(c.RegionTileWorldCenter, cityTileSide, c.WorldPos, c.CityStats.Name, kvp.Key, c.CityStats.EastExt, c.CityStats.WestExt, c.CityStats.NorthExt, c.CityStats.SouthExt);
                 }
             }
             if (regionRight != null)
@@ -118,7 +118,7 @@ namespace Assets.Scripts.UI
                 var city = EnvironManager.Instance.GetCity(guid);
                 if (city != null)
                 {
-                    regionRight.SetCity(guid, city._cityStats);
+                    regionRight.SetCity(guid, city.CityStats);
 
                 }
                 if (cityMarkers.ContainsKey(guid))
@@ -213,7 +213,7 @@ namespace Assets.Scripts.UI
                         var regionTileWorldCenter = uT.gameObject.transform.position;
                         InstantiateCityMarker(regionTileWorldCenter, cityTileSide, p, n, guid);
                         CityOptions s = new CityOptions();
-                        s._name = n;
+                        s.Name = n;
                         //EnvironManager.Instance.Environ.AddCity(guid, new City(p, gO.transform.position, regionTileSideLength, s));
                         EnvironManager.Instance.AddCity(guid, new City(p, gO.transform.position, regionTileSideLength, s));
                     }
@@ -237,7 +237,7 @@ namespace Assets.Scripts.UI
         /// </summary>
         private double GetCityTileSideLength()
         {
-            double lat = EnvironManager.Instance.Environ.centerLatLong.x;
+            double lat = EnvironManager.Instance.Environ.CenterLatLong.x;
             int zoom = EnvironSettings.CITY_ZOOM_LEVEL;
             int res = EnvironSettings.TILE_RESOLUTION;
             double c = EnvironSettings.SCALE_CONSTANT;
@@ -274,7 +274,7 @@ namespace Assets.Scripts.UI
             var city = EnvironManager.Instance.GetCity(guid);
             if (city != null)
             {
-                city._cityStats = stats;
+                city.CityStats = stats;
             }
             else
             {
@@ -286,10 +286,10 @@ namespace Assets.Scripts.UI
                 var cM = cityMarkers[guid].GetComponentInChildren<CityMarker>();
                 if (cM != null)
                 {
-                    cM.SetName(stats._name);
+                    cM.SetName(stats.Name);
                     float cityTileSide = (float)GetCityTileSideLength();
-                    var tile = GetLocalCityTileCoords(city._worldPos, city._regionTileWorldCenter, cityTileSide);
-                    var extents = TileCoordsToWorldExtents(tile, city._regionTileWorldCenter, cityTileSide, stats._eastExt, stats._westExt, stats._northExt, stats._southExt);
+                    var tile = GetLocalCityTileCoords(city.WorldPos, city.RegionTileWorldCenter, cityTileSide);
+                    var extents = TileCoordsToWorldExtents(tile, city.RegionTileWorldCenter, cityTileSide, stats.EastExt, stats.WestExt, stats.NorthExt, stats.SouthExt);
                     cM.SetExtents(extents);
                 }
             }

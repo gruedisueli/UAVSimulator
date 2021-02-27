@@ -4,6 +4,8 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
+using UnityEngine;
+
 namespace Assets.Scripts.Environment
 {
     /// <summary>
@@ -12,13 +14,103 @@ namespace Assets.Scripts.Environment
     [Serializable]
     public class CityOptions
     {
-        public string _name = "";
-        public int _eastExt = 0;
-        public int _westExt = 0;
-        public int _northExt = 0;
-        public int _southExt = 0;
-        public int _population = 0;
-        public int _jobs = 0;
+        [SerializeField]
+        private string _name = "";
+        public string Name
+        {
+            get
+            {
+                return _name;
+            }
+            set
+            {
+                _name = value;
+            }
+        }
+
+        [SerializeField]
+        private int _eastExt = 0;
+        public int EastExt
+        {
+            get
+            {
+                return _eastExt;
+            }
+            set
+            {
+                _eastExt = value;
+            }
+        }
+
+        [SerializeField]
+        private int _westExt = 0;
+        public int WestExt
+        {
+            get
+            {
+                return _westExt;
+            }
+            set
+            {
+                _westExt = value;
+            }
+        }
+
+        [SerializeField]
+        private int _northExt = 0;
+        public int NorthExt
+        {
+            get
+            {
+                return _northExt;
+            }
+            set
+            {
+                _northExt = value;
+            }
+        }
+
+        [SerializeField]
+        private int _southExt = 0;
+        public int SouthExt
+        {
+            get
+            {
+                return _southExt;
+            }
+            set
+            {
+                _southExt = value;
+            }
+        }
+
+        [SerializeField]
+        private int _population = 0;
+        public int Population
+        {
+            get
+            {
+                return _population;
+            }
+            set
+            {
+                _population = value;
+            }
+        }
+
+        [SerializeField]
+        private int _jobs = 0;
+        public int Jobs
+        {
+            get
+            {
+                return _jobs;
+            }
+            set
+            {
+                _jobs = value;
+            }
+        }
 
         public CityOptions()
         {

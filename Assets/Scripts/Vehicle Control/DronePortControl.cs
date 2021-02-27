@@ -43,7 +43,7 @@ public class DronePortControl : MonoBehaviour
                     {
                         Vehicle vehicle = v.GetComponent<Vehicle>();
                         int place = placeInQueue(v);
-                        vehicle.currentTargetPosition = (gameObject.transform.position + dronePortInfo.landingQueueHead + dronePortInfo.landingQueueDirection * (float)place * landingQueueSeparation);
+                        vehicle.currentTargetPosition = (gameObject.transform.position + dronePortInfo.LandingQueueHead + dronePortInfo.LandingQueueDirection * (float)place * landingQueueSeparation);
                         vehicle.moveForward = true;
                     }
                 }
@@ -113,7 +113,7 @@ public class DronePortControl : MonoBehaviour
         }
         else
         {
-            return (gameObject.transform.position + dronePortInfo.landingQueueHead + dronePortInfo.landingQueueDirection * (float)place * landingQueueSeparation);
+            return (gameObject.transform.position + dronePortInfo.LandingQueueHead + dronePortInfo.LandingQueueDirection * (float)place * landingQueueSeparation);
         }
     }
 }

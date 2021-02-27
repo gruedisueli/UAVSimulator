@@ -61,13 +61,13 @@ namespace Assets.Scripts.UI.Panels
         public void SetCity(string guid, CityOptions stats)
         {
             _guid = guid;
-            cityName.SetText(stats._name);
-            statPopulation.SetValue(stats._population);
-            statJobs.SetValue(stats._jobs);
-            eastExt.SetValue(stats._eastExt);
-            westExt.SetValue(stats._westExt);
-            northExt.SetValue(stats._northExt);
-            southExt.SetValue(stats._southExt);
+            cityName.SetText(stats.Name);
+            statPopulation.SetValue(stats.Population);
+            statJobs.SetValue(stats.Jobs);
+            eastExt.SetValue(stats.EastExt);
+            westExt.SetValue(stats.WestExt);
+            northExt.SetValue(stats.NorthExt);
+            southExt.SetValue(stats.SouthExt);
         }
 
         public void Activate()
@@ -83,13 +83,13 @@ namespace Assets.Scripts.UI.Panels
         private void OnStatsChanged()
         {
             var s = new CityOptions();
-            s._name = cityName.textValue;
-            s._eastExt = eastExt.intValue;
-            s._westExt = westExt.intValue;
-            s._northExt = northExt.intValue;
-            s._southExt = southExt.intValue;
-            s._population = statPopulation.intValue;
-            s._jobs = statJobs.intValue;
+            s.Name = cityName.textValue;
+            s.EastExt = eastExt.intValue;
+            s.WestExt = westExt.intValue;
+            s.NorthExt = northExt.intValue;
+            s.SouthExt = southExt.intValue;
+            s.Population = statPopulation.intValue;
+            s.Jobs = statJobs.intValue;
             statsChanged?.Invoke(_guid, s);
         }
     }

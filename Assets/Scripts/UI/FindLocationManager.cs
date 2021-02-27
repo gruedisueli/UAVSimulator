@@ -121,7 +121,7 @@ namespace Assets.Scripts.UI
         {
             var center = (p0 + p1) / 2;
             Vector2d latLong = _map.WorldToGeoPosition(center);
-            EnvironManager.Instance.Environ.centerLatLong = latLong;
+            EnvironManager.Instance.Environ.CenterLatLong = latLong;
         }
     }
 }

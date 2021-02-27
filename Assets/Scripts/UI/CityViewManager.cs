@@ -34,16 +34,16 @@ namespace Assets.Scripts.UI
             var city = eC.GetCurrentCity();
             if (city != null)
             {
-                _cityCenter.transform.position = city._worldPos;
+                _cityCenter.transform.position = city.WorldPos;
                 var options = new FOA_RangeAroundTransformTileProviderOptions();
-                options._eastExt = city._cityStats._eastExt;
-                options._westExt = city._cityStats._westExt;
-                options._northExt = city._cityStats._northExt;
-                options._southExt = city._cityStats._southExt;
+                options._eastExt = city.CityStats.EastExt;
+                options._westExt = city.CityStats.WestExt;
+                options._northExt = city.CityStats.NorthExt;
+                options._southExt = city.CityStats.SouthExt;
                 options._targetTransform = _cityCenter.transform;
                 _tileProvider.SetOptions(options);
-                _mainCamera.transform.position = new Vector3(city._worldPos.x, 1000, city._worldPos.z);
-                abstractMap.Initialize(EnvironManager.Instance.Environ.centerLatLong, EnvironSettings.CITY_ZOOM_LEVEL);
+                _mainCamera.transform.position = new Vector3(city.WorldPos.x, 1000, city.WorldPos.z);
+                abstractMap.Initialize(EnvironManager.Instance.Environ.CenterLatLong, EnvironSettings.CITY_ZOOM_LEVEL);
                 InstantiateObjects();
             }
         }
@@ -137,53 +137,53 @@ namespace Assets.Scripts.UI
 
         }
 
-        /// <summary>
-        /// Adds a new restriction zone from UI.
-        /// </summary>
-        public void AddRestrictionZone(string type)
-        {
-            if (type.Contains("generic"))
-            {
-                GameObject newZone = null;
-                if (rz.type.Contains("rectangular"))
-                {
-                    newZone = GameObject.CreatePrimitive(PrimitiveType.Cube);
-                    newZone.transform.localScale = new Vector3(rz.scale.x, rz.height, rz.scale.z);
-                }
-                else
-                {
-                    newZone = GameObject.CreatePrimitive(PrimitiveType.Cylinder);
-                    newZone.transform.localScale = new Vector3(rz.scale.x, rz.height / 2, rz.scale.z);
-                }
-                newZone.transform.position = new Vector3(rz.position.x, rz.height / 2, rz.position.z);
-                newZone.transform.rotation = Quaternion.Euler(rz.rotation.x, rz.rotation.y, rz.rotation.z);
-                newZone.name = "RestrictionZone_" + rz.type;
-                newZone.tag = "RestrictionZone";
-                newZone.layer = 8;
-                newZone.AddComponent<MeshRenderer>();
-                newZone.GetComponent<MeshRenderer>().material = _restrictionZoneMaterial;
-                _restrictionZones.Add(newZone);
-            }
-            else if (type.Contains("Class"))
-            {
-                rz.bottoms.Add(rz.height);
-                for (int i = 0; i < rz.bottoms.Count - 1; i++)
-                {
-                    float this_cylinder_center_y = (rz.bottoms[i] + rz.bottoms[i + 1]) / 2.0f;
-                    float this_cylinder_height_half = (rz.bottoms[i + 1] - rz.bottoms[i]) / 2.0f;
-                    float this_cylinder_radius = rz.radius[i];
-                    GameObject newZone = GameObject.CreatePrimitive(PrimitiveType.Cylinder);
-                    newZone.transform.position = new Vector3(rz.position.x, this_cylinder_center_y, rz.position.z);
-                    newZone.transform.localScale = new Vector3(this_cylinder_radius, this_cylinder_height_half, this_cylinder_radius);
-                    newZone.name = "RestrictionZone_" + rz.type + "_" + i.ToString();
-                    newZone.tag = "RestrictionZone";
-                    newZone.layer = 8;
-                    //newwZone.AddComponent<MeshRenderer>();
-                    newZone.GetComponent<MeshRenderer>().material = _restrictionZoneMaterial;
-                    _restrictionZones.Add(newZone);
-                }
-            }
-        }
+        ///// <summary>
+        ///// Adds a new restriction zone from UI.
+        ///// </summary>
+        //public void AddRestrictionZone(string type)
+        //{
+        //    if (type.Contains("generic"))
+        //    {
+        //        GameObject newZone = null;
+        //        if (rz.type.Contains("rectangular"))
+        //        {
+        //            newZone = GameObject.CreatePrimitive(PrimitiveType.Cube);
+        //            newZone.transform.localScale = new Vector3(rz.scale.x, rz.height, rz.scale.z);
+        //        }
+        //        else
+        //        {
+        //            newZone = GameObject.CreatePrimitive(PrimitiveType.Cylinder);
+        //            newZone.transform.localScale = new Vector3(rz.scale.x, rz.height / 2, rz.scale.z);
+        //        }
+        //        newZone.transform.position = new Vector3(rz.position.x, rz.height / 2, rz.position.z);
+        //        newZone.transform.rotation = Quaternion.Euler(rz.rotation.x, rz.rotation.y, rz.rotation.z);
+        //        newZone.name = "RestrictionZone_" + rz.type;
+        //        newZone.tag = "RestrictionZone";
+        //        newZone.layer = 8;
+        //        newZone.AddComponent<MeshRenderer>();
+        //        newZone.GetComponent<MeshRenderer>().material = _restrictionZoneMaterial;
+        //        _restrictionZones.Add(newZone);
+        //    }
+        //    else if (type.Contains("Class"))
+        //    {
+        //        rz.bottoms.Add(rz.height);
+        //        for (int i = 0; i < rz.bottoms.Count - 1; i++)
+        //        {
+        //            float this_cylinder_center_y = (rz.bottoms[i] + rz.bottoms[i + 1]) / 2.0f;
+        //            float this_cylinder_height_half = (rz.bottoms[i + 1] - rz.bottoms[i]) / 2.0f;
+        //            float this_cylinder_radius = rz.radius[i];
+        //            GameObject newZone = GameObject.CreatePrimitive(PrimitiveType.Cylinder);
+        //            newZone.transform.position = new Vector3(rz.position.x, this_cylinder_center_y, rz.position.z);
+        //            newZone.transform.localScale = new Vector3(this_cylinder_radius, this_cylinder_height_half, this_cylinder_radius);
+        //            newZone.name = "RestrictionZone_" + rz.type + "_" + i.ToString();
+        //            newZone.tag = "RestrictionZone";
+        //            newZone.layer = 8;
+        //            //newwZone.AddComponent<MeshRenderer>();
+        //            newZone.GetComponent<MeshRenderer>().material = _restrictionZoneMaterial;
+        //            _restrictionZones.Add(newZone);
+        //        }
+        //    }
+        //}
 
         /// <summary>
         /// Instantiates a drone port in the project from assets. Does not update environment.
@@ -214,12 +214,12 @@ namespace Assets.Scripts.UI
         /// </summary>
         private void InstantiateDronePort(GameObject prefab, DronePort dP)
         {
-            var clone = Instantiate(prefab, dP.position, Quaternion.Euler(dP.rotation.x, dP.rotation.y, dP.rotation.z));
+            var clone = Instantiate(prefab, dP.Position, Quaternion.Euler(dP.Rotation.x, dP.Rotation.y, dP.Rotation.z));
 
-            clone.name = "DronePort_" + dP.type;
+            clone.name = "DronePort_" + dP.Type;
             clone.tag = "DronePort";
             clone.layer = 12;
-            clone.transform.localScale = dP.scale;
+            clone.transform.localScale = dP.Scale;
             DronePortControl newDronePort = clone.AddComponent<DronePortControl>();
             newDronePort.dronePortInfo = dP;
 
@@ -231,12 +231,12 @@ namespace Assets.Scripts.UI
         /// </summary>
         private void InstantiateParkingStruct(GameObject prefab, ParkingStructure pS)
         {
-            var clone = Instantiate(prefab, pS.position, Quaternion.Euler(pS.rotation.x, pS.rotation.y, pS.rotation.z));
+            var clone = Instantiate(prefab, pS.Position, Quaternion.Euler(pS.Rotation.x, pS.Rotation.y, pS.Rotation.z));
 
             clone.tag = "ParkingStructure";
-            clone.name = "Parking_" + pS.type;
+            clone.name = "Parking_" + pS.Type;
             clone.layer = 11;
-            clone.transform.localScale = pS.scale;
+            clone.transform.localScale = pS.Scale;
 
             Parking newStructure = clone.AddComponent<Parking>();
             newStructure.parkingInfo = pS;
@@ -250,20 +250,20 @@ namespace Assets.Scripts.UI
         private void InstantiateRestrictionZone(GameObject prefab, RestrictionZone rZ)
         {
             GameObject clone = new GameObject();
-            if (rZ.category == RestrictionZoneCategory.GenericCyl)
+            if (rZ.Category == RestrictionZoneCategory.GenericCyl)
             {
-                clone = Instantiate(prefab, new Vector3(rZ.position.x, rZ.height / 2, rZ.position.z), Quaternion.Euler(rZ.rotation.x, rZ.rotation.y, rZ.rotation.z));
+                clone = Instantiate(prefab, new Vector3(rZ.Position.x, rZ.Height / 2, rZ.Position.z), Quaternion.Euler(rZ.Rotation.x, rZ.Rotation.y, rZ.Rotation.z));
             }
-            else if (rZ.category == RestrictionZoneCategory.GenericRect)
-            {
-
-            }
-            else if (rZ.category == RestrictionZoneCategory.Class)
+            else if (rZ.Category == RestrictionZoneCategory.GenericRect)
             {
 
             }
+            else if (rZ.Category == RestrictionZoneCategory.Class)
+            {
 
-            clone.transform.localScale = rZ.scale;
+            }
+
+            clone.transform.localScale = rZ.Scale;
 
         }
 
@@ -287,10 +287,10 @@ namespace Assets.Scripts.UI
             var eM = EnvironManager.Instance;
             //var city = eM.Environ.GetCity(eM.ActiveCity);
             var city = eM.GetCurrentCity();
-            foreach (var kvp in city._dronePorts)
+            foreach (var kvp in city.DronePorts)
             {
                 var dp = kvp.Value;
-                var pfb = eM.DronePortAssets[dp.type].Prefab;
+                var pfb = eM.DronePortAssets[dp.Type].Prefab;
                 InstantiateDronePort(pfb, dp);
 
 
@@ -344,10 +344,10 @@ namespace Assets.Scripts.UI
             }
 
             //path = "ParkingStructures/";
-            foreach (var kvp in city._parkingStructures)
+            foreach (var kvp in city.ParkingStructures)
             {
                 var ps = kvp.Value;
-                var pfb = eM.ParkingStructAssets[ps.type].Prefab;
+                var pfb = eM.ParkingStructAssets[ps.Type].Prefab;
                 InstantiateParkingStruct(pfb, ps);
 
                 //if (ps.isCustom)
@@ -414,43 +414,43 @@ namespace Assets.Scripts.UI
             }
 
            // path = "RestrictionZones/";
-            foreach (var kvp in city._restrictionZones)
+            foreach (var kvp in city.RestrictionZones)
             {
                 var rz = kvp.Value;
-                if (rz.type.Contains("generic"))
+                if (rz.Type.Contains("generic"))
                 {
                     GameObject newZone = null;
-                    if (rz.type.Contains("rectangular"))
+                    if (rz.Type.Contains("rectangular"))
                     {
                         newZone = GameObject.CreatePrimitive(PrimitiveType.Cube);
-                        newZone.transform.localScale = new Vector3(rz.scale.x, rz.height, rz.scale.z);
+                        newZone.transform.localScale = new Vector3(rz.Scale.x, rz.Height, rz.Scale.z);
                     }
                     else
                     {
                         newZone = GameObject.CreatePrimitive(PrimitiveType.Cylinder);
-                        newZone.transform.localScale = new Vector3(rz.scale.x, rz.height / 2, rz.scale.z);
+                        newZone.transform.localScale = new Vector3(rz.Scale.x, rz.Height / 2, rz.Scale.z);
                     }
-                    newZone.transform.position = new Vector3(rz.position.x, rz.height / 2, rz.position.z);
-                    newZone.transform.rotation = Quaternion.Euler(rz.rotation.x, rz.rotation.y, rz.rotation.z);
-                    newZone.name = "RestrictionZone_" + rz.type;
+                    newZone.transform.position = new Vector3(rz.Position.x, rz.Height / 2, rz.Position.z);
+                    newZone.transform.rotation = Quaternion.Euler(rz.Rotation.x, rz.Rotation.y, rz.Rotation.z);
+                    newZone.name = "RestrictionZone_" + rz.Type;
                     newZone.tag = "RestrictionZone";
                     newZone.layer = 8;
                     newZone.AddComponent<MeshRenderer>();
                     newZone.GetComponent<MeshRenderer>().material = _restrictionZoneMaterial;
                     _restrictionZones.Add(newZone);
                 }
-                else if (rz.type.Contains("Class"))
+                else if (rz.Type.Contains("Class"))
                 {
-                    rz.bottoms.Add(rz.height);
-                    for (int i = 0; i < rz.bottoms.Count - 1; i++)
+                    rz.StepElevs.Add(rz.Height);
+                    for (int i = 0; i < rz.StepElevs.Count - 1; i++)
                     {
-                        float this_cylinder_center_y = (rz.bottoms[i] + rz.bottoms[i + 1]) / 2.0f;
-                        float this_cylinder_height_half = (rz.bottoms[i + 1] - rz.bottoms[i]) / 2.0f;
-                        float this_cylinder_radius = rz.radius[i];
+                        float this_cylinder_center_y = (rz.StepElevs[i] + rz.StepElevs[i + 1]) / 2.0f;
+                        float this_cylinder_height_half = (rz.StepElevs[i + 1] - rz.StepElevs[i]) / 2.0f;
+                        float this_cylinder_radius = rz.Radii[i];
                         GameObject newZone = GameObject.CreatePrimitive(PrimitiveType.Cylinder);
-                        newZone.transform.position = new Vector3(rz.position.x, this_cylinder_center_y, rz.position.z);
+                        newZone.transform.position = new Vector3(rz.Position.x, this_cylinder_center_y, rz.Position.z);
                         newZone.transform.localScale = new Vector3(this_cylinder_radius, this_cylinder_height_half, this_cylinder_radius);
-                        newZone.name = "RestrictionZone_" + rz.type + "_" + i.ToString();
+                        newZone.name = "RestrictionZone_" + rz.Type + "_" + i.ToString();
                         newZone.tag = "RestrictionZone";
                         newZone.layer = 8;
                         //newwZone.AddComponent<MeshRenderer>();
