@@ -11,9 +11,9 @@ namespace Assets.Scripts.Environment
     public class RestrictionZoneAssetPack
     {
         public GameObject Prefab { get; private set; }
-        public RestrictionZone Specs { get; private set; }
+        public RestrictionZoneBase Specs { get; private set; }
 
-        public RestrictionZoneAssetPack(GameObject prefab, RestrictionZone specs)
+        public RestrictionZoneAssetPack(GameObject prefab, RestrictionZoneBase specs)
         {
             Prefab = prefab;
             Specs = specs;

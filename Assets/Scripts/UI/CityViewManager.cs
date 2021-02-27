@@ -190,7 +190,7 @@ namespace Assets.Scripts.UI
         /// </summary>
         private void InstantiateDronePort(DronePortAssetPack asset)
         {
-            InstantiateDronePort(asset.Prefab, new DronePort(asset.Specs));
+            InstantiateDronePort(asset.Prefab, new DronePortBase(asset.Specs));
         }
 
         /// <summary>
@@ -198,7 +198,7 @@ namespace Assets.Scripts.UI
         /// </summary>
         private void InstantiateParkingStruct(ParkingStructureAssetPack asset)
         {
-            InstantiateParkingStruct(asset.Prefab, new ParkingStructure(asset.Specs));
+            InstantiateParkingStruct(asset.Prefab, new ParkingStructureBase(asset.Specs));
         }
 
         /// <summary>
@@ -206,13 +206,32 @@ namespace Assets.Scripts.UI
         /// </summary>
         private void InstantiateRestrictionZone(RestrictionZoneAssetPack asset)
         {
-            InstantiateRestrictionZone(asset.Prefab, new RestrictionZone(asset.Specs));
+            InstantiateRestrictionZone(asset.Prefab, new RestrictionZoneBase(asset.Specs));
         }
 
         /// <summary>
-        /// Instantiates a drone port in the project. Does not update environment.
+        /// Instantiates a generic rectangular drone port in project. Does not update environment.
         /// </summary>
-        private void InstantiateDronePort(GameObject prefab, DronePort dP)
+        private void InstantiateRectDronePort(DronePortRect dP)
+        {
+            var clone = GameObject.CreatePrimitive(PrimitiveType.Cube);
+
+            clone.name = "DronePort_" + dP.Type;
+            clone.tag = "DronePort";
+            clone.layer = 12;
+            clone.transform.position = dP.Position;
+            clone.transform.rotation = Quaternion.Euler(dP.Rotation.x, dP.Rotation.y, dP.Rotation.z);
+            clone.transform.localScale = dP.Scale;
+            DronePortControl newDronePort = clone.AddComponent<DronePortControl>();
+            newDronePort.dronePortInfo = dP;
+
+            _dronePorts.Add(clone, dP);
+        }
+
+        /// <summary>
+        /// Instantiates a custom drone port in the project. Does not update environment.
+        /// </summary>
+        private void InstantiateCustomDronePort(GameObject prefab, DronePortCustom dP)
         {
             var clone = Instantiate(prefab, dP.Position, Quaternion.Euler(dP.Rotation.x, dP.Rotation.y, dP.Rotation.z));
 
@@ -227,9 +246,9 @@ namespace Assets.Scripts.UI
         }
 
         /// <summary>
-        /// Instantiates a parking structure in the project. Does not update environment.
+        /// Instantiates a custom parking structure in the project. Does not update environment.
         /// </summary>
-        private void InstantiateParkingStruct(GameObject prefab, ParkingStructure pS)
+        private void InstantiateCustomParkingStruct(GameObject prefab, ParkingStructureCustom pS)
         {
             var clone = Instantiate(prefab, pS.Position, Quaternion.Euler(pS.Rotation.x, pS.Rotation.y, pS.Rotation.z));
 
@@ -244,10 +263,30 @@ namespace Assets.Scripts.UI
             _parkingStructures.Add(clone, pS);
         }
 
+
+        /// <summary>
+        /// Instantiates a rectangular parking structure in the project. Does not update environment.
+        /// </summary>
+        private void InstantiateRectParkingStruct(ParkingStructureRect pS)
+        {
+            var clone = GameObject.CreatePrimitive(PrimitiveType.Cube);
+
+            clone.tag = "ParkingStructure";
+            clone.name = "Parking_" + pS.Type;
+            clone.layer = 11;
+            clone.transform.position = pS.Position;
+            clone.transform.rotation = Quaternion.Euler(pS.Rotation.x, pS.Rotation.y, pS.Rotation.z);
+            clone.transform.localScale = pS.Scale;
+
+            Parking newStructure = clone.AddComponent<Parking>();
+            newStructure.parkingInfo = pS;
+
+            _parkingStructures.Add(clone, pS);
+        }
         /// <summary>
         /// Instantiates a restriction zone in the project. Does not update environment.
         /// </summary>
-        private void InstantiateRestrictionZone(GameObject prefab, RestrictionZone rZ)
+        private void InstantiateRestrictionZone(GameObject prefab, RestrictionZoneBase rZ)
         {
             GameObject clone = new GameObject();
             if (rZ.Category == RestrictionZoneCategory.GenericCyl)

@@ -70,8 +70,8 @@ namespace Assets.Scripts.Environment
         }
 
         [SerializeField]
-        private SerializableDictionary<string, DronePort> _dronePorts = new SerializableDictionary<string, DronePort>();
-        public SerializableDictionary<string, DronePort> DronePorts
+        private SerializableDictionary<string, DronePortBase> _dronePorts = new SerializableDictionary<string, DronePortBase>();
+        public SerializableDictionary<string, DronePortBase> DronePorts
         {
             get
             {
@@ -84,8 +84,8 @@ namespace Assets.Scripts.Environment
         }
 
         [SerializeField]
-        private SerializableDictionary<string, ParkingStructure> _parkingStructures = new SerializableDictionary<string, ParkingStructure>();
-        public SerializableDictionary<string, ParkingStructure> ParkingStructures
+        private SerializableDictionary<string, ParkingStructureBase> _parkingStructures = new SerializableDictionary<string, ParkingStructureBase>();
+        public SerializableDictionary<string, ParkingStructureBase> ParkingStructures
         {
             get
             {
@@ -98,8 +98,8 @@ namespace Assets.Scripts.Environment
         }
 
         [SerializeField]
-        private SerializableDictionary<string, RestrictionZone> _restrictionZones = new SerializableDictionary<string, RestrictionZone>();
-        public SerializableDictionary<string, RestrictionZone> RestrictionZones
+        private SerializableDictionary<string, RestrictionZoneBase> _restrictionZones = new SerializableDictionary<string, RestrictionZoneBase>();
+        public SerializableDictionary<string, RestrictionZoneBase> RestrictionZones
         {
             get
             {

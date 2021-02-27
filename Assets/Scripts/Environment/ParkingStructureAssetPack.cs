@@ -11,9 +11,9 @@ namespace Assets.Scripts.Environment
     public class ParkingStructureAssetPack
     {
         public GameObject Prefab { get; private set; }
-        public ParkingStructure Specs { get; private set; }
+        public ParkingStructureCustom Specs { get; private set; }
 
-        public ParkingStructureAssetPack(GameObject prefab, ParkingStructure specs)
+        public ParkingStructureAssetPack(GameObject prefab, ParkingStructureCustom specs)
         {
             Prefab = prefab;
             Specs = specs;

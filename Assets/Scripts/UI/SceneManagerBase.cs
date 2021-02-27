@@ -15,8 +15,8 @@ namespace Assets.Scripts.UI
     public abstract class SceneManagerBase : MonoBehaviour
     {
         public Material _restrictionZoneMaterial;
-        public Dictionary<GameObject, DronePort> _dronePorts;
-        public Dictionary<GameObject, ParkingStructure> _parkingStructures;
+        public Dictionary<GameObject, DronePortBase> _dronePorts;
+        public Dictionary<GameObject, ParkingStructureBase> _parkingStructures;
 
         public List<GameObject> _destinationCollections;
         public Dictionary<GameObject, List<GameObject>> _routes;
@@ -24,8 +24,8 @@ namespace Assets.Scripts.UI
 
         private void Start()
         {
-            _dronePorts = new Dictionary<GameObject, DronePort>();
-            _parkingStructures = new Dictionary<GameObject, ParkingStructure>();
+            _dronePorts = new Dictionary<GameObject, DronePortBase>();
+            _parkingStructures = new Dictionary<GameObject, ParkingStructureBase>();
             _destinationCollections = new List<GameObject>();
             _routes = new Dictionary<GameObject, List<GameObject>>();
             _restrictionZones = new List<GameObject>();

@@ -4,9 +4,13 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
+using UnityEngine;
+
 namespace Assets.Scripts.Environment
 {
-    public abstract class RestrictionZoneElemBase
+    [Serializable]
+    public abstract class RestrictionZoneBase
     {
+
     }
 }

@@ -8,7 +8,7 @@ using Assets.Scripts.Environment;
 public class Parking : MonoBehaviour
 {
     public float landingQueueSeparation = 10.0f;
-    public ParkingStructure parkingInfo;
+    public ParkingStructureBase parkingInfo;
     public Queue<GameObject> queue = new Queue<GameObject>();
     public string state; // state = {busy, idle}
 

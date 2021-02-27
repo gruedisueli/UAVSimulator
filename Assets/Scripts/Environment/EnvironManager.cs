@@ -46,7 +46,7 @@ namespace Assets.Scripts.Environment
         public string ActiveCity { get; private set; } = "";
         public Dictionary<string, DronePortAssetPack> DronePortAssets { get; private set; } = new Dictionary<string, DronePortAssetPack>();
         public Dictionary<string, ParkingStructureAssetPack> ParkingStructAssets { get; private set; } = new Dictionary<string, ParkingStructureAssetPack>();
-        public Dictionary<string, RestrictionZoneAssetPack> RestrictionZoneAssets { get; private set; } = new Dictionary<string, RestrictionZoneAssetPack>();
+        //public Dictionary<string, RestrictionZoneAssetPack> RestrictionZoneAssets { get; private set; } = new Dictionary<string, RestrictionZoneAssetPack>();
 
         /// <summary>
         /// Adds city to current environment. False on failure.
@@ -198,19 +198,19 @@ namespace Assets.Scripts.Environment
 
                 var pfb = ReadPrefab(rPath, type);
 
-                var pS = new ParkingStructure();
+                var pS = new ParkingStructureCustom();
                 pS.ParkingSpots = spots;
                 ParkingStructAssets.Add(type, new ParkingStructureAssetPack(pfb, pS));
             }
 
-            //get JSON resources
-            files = Directory.GetFiles(sPath, "*.JSON");
-            foreach(string filename in files)
-            {
-                var pS = ReadJsonAsset<ParkingStructure>(filename);
-                var pfb = ReadPrefab(rPath, pS.Type);
-                ParkingStructAssets.Add(pS.Type, new ParkingStructureAssetPack(pfb, pS));
-            }
+            ////get JSON resources
+            //files = Directory.GetFiles(sPath, "*.JSON");
+            //foreach(string filename in files)
+            //{
+            //    var pS = ReadJsonAsset<ParkingStructureBase>(filename);
+            //    var pfb = ReadPrefab(rPath, pS.Type);
+            //    ParkingStructAssets.Add(pS.Type, new ParkingStructureAssetPack(pfb, pS));
+            //}
         }
 
         /// <summary>
@@ -225,29 +225,29 @@ namespace Assets.Scripts.Environment
             var files = Directory.GetFiles(sPath, "*.JSON");
             foreach (var filename in files)
             {
-                DronePort dp = ReadJsonAsset<DronePort>(filename);
+                DronePortCustom dp = ReadJsonAsset<DronePortCustom>(filename);
                 var pfb = ReadPrefab(rPath, dp.Type);
                 DronePortAssets.Add(dp.Type, new DronePortAssetPack(pfb, dp));
             }
         }
 
-        /// <summary>
-        /// Reads types of restriction zones from assets
-        /// </summary>
-        private void ReadRestrictionZones()
-        {
-            RestrictionZoneAssets = new Dictionary<string, RestrictionZoneAssetPack>();
+        ///// <summary>
+        ///// Reads types of restriction zones from assets
+        ///// </summary>
+        //private void ReadRestrictionZones()
+        //{
+        //    RestrictionZoneAssets = new Dictionary<string, RestrictionZoneAssetPack>();
 
-            string sPath = SerializationSettings.ROOT + "\\Resources\\RestrictionZones";
-            string rPath = "RestrictionZones/";
-            var files = Directory.GetFiles(sPath, "*.JSON");
-            foreach(var filename in files)
-            {
-                var rS = ReadJsonAsset<RestrictionZone>(filename);
-                var pfb = ReadPrefab(rPath, rS.Type);
-                RestrictionZoneAssets.Add(rS.Type, new RestrictionZoneAssetPack(pfb, rS));
-            }
-        }
+        //    string sPath = SerializationSettings.ROOT + "\\Resources\\RestrictionZones";
+        //    string rPath = "RestrictionZones/";
+        //    var files = Directory.GetFiles(sPath, "*.JSON");
+        //    foreach(var filename in files)
+        //    {
+        //        var rS = ReadJsonAsset<RestrictionZoneBase>(filename);
+        //        var pfb = ReadPrefab(rPath, rS.Type);
+        //        RestrictionZoneAssets.Add(rS.Type, new RestrictionZoneAssetPack(pfb, rS));
+        //    }
+        //}
 
         /// <summary>
         /// Returns asset of specified type from json.

@@ -8,12 +8,11 @@ using UnityEngine;
 
 namespace Assets.Scripts.Environment
 {
-    [Serializable]
-    public class DronePort
+    public class DronePortRect : DronePortBase
     {
         [SerializeField]
         private string _type = "";
-        public string Type
+        public override string Type
         {
             get
             {
@@ -23,7 +22,7 @@ namespace Assets.Scripts.Environment
 
         [SerializeField]
         private Vector3 _position = new Vector3();
-        public Vector3 Position
+        public override Vector3 Position
         {
             get
             {
@@ -37,7 +36,7 @@ namespace Assets.Scripts.Environment
 
         [SerializeField]
         private Vector3 _rotation = new Vector3();
-        public Vector3 Rotation
+        public override Vector3 Rotation
         {
             get
             {
@@ -51,7 +50,7 @@ namespace Assets.Scripts.Environment
 
         [SerializeField]
         private Vector3 _scale = new Vector3();
-        public Vector3 Scale
+        public override Vector3 Scale
         {
             get
             {
@@ -65,7 +64,7 @@ namespace Assets.Scripts.Environment
 
         [SerializeField]
         private Vector3 _standByPosition = new Vector3();
-        public Vector3 StandbyPosition
+        public override Vector3 StandbyPosition
         {
             get
             {
@@ -79,7 +78,7 @@ namespace Assets.Scripts.Environment
 
         [SerializeField]
         private Vector3 _landingQueueHead = new Vector3();
-        public Vector3 LandingQueueHead
+        public override Vector3 LandingQueueHead
         {
             get
             {
@@ -93,7 +92,7 @@ namespace Assets.Scripts.Environment
 
         [SerializeField]
         private Vector3 _landingQueueDirection = new Vector3();
-        public Vector3 LandingQueueDirection
+        public override Vector3 LandingQueueDirection
         {
             get
             {
@@ -107,7 +106,7 @@ namespace Assets.Scripts.Environment
 
         [SerializeField]
         private Vector3 _landingPoint = new Vector3();
-        public Vector3 LandingPoint
+        public override Vector3 LandingPoint
         {
             get
             {
@@ -121,7 +120,7 @@ namespace Assets.Scripts.Environment
 
         [SerializeField]
         private float _maximumVehicleSize = 0;
-        public float MaximumVehicleSize
+        public override float MaximumVehicleSize
         {
             get
             {
@@ -135,7 +134,7 @@ namespace Assets.Scripts.Environment
 
         [SerializeField]
         private bool _isMountable = false;
-        public bool IsMountable
+        public override bool IsMountable
         {
             get
             {
@@ -149,7 +148,7 @@ namespace Assets.Scripts.Environment
 
         [SerializeField]
         private bool _isOnTheGround = false;
-        public bool IsOnTheGround
+        public override bool IsOnTheGround
         {
             get
             {
@@ -162,8 +161,8 @@ namespace Assets.Scripts.Environment
         }
 
         [SerializeField]
-        private bool _isScalable = false;
-        public bool IsScalable
+        private bool _isScalable = true;
+        public override bool IsScalable
         {
             get
             {
@@ -175,12 +174,13 @@ namespace Assets.Scripts.Environment
             }
         }
 
-        public DronePort()
+        public DronePortRect()
         {
 
         }
 
-        public DronePort(DronePort dP)
+
+        public DronePortRect(DronePortRect dP)
         {
             _type = dP.Type;
             Position = dP.Position;
@@ -194,50 +194,6 @@ namespace Assets.Scripts.Environment
             IsMountable = dP.IsMountable;
             IsOnTheGround = dP.IsOnTheGround;
             IsScalable = dP.IsScalable;
-        }
-
-        // Translates to the global coordinate
-        public Vector3 TranslateLandingGuidePosition(Vector3 parkingSpot)
-        {
-            return (Quaternion.Euler(Rotation.x, Rotation.y, Rotation.z) * parkingSpot + Position);
-        }
-
-        public List<Vector3> GetLandingGuide(string mode)
-        {
-            // mode == {parking, unparking}
-            // Temporary function
-
-            List<Vector3> guides = new List<Vector3>();
-
-            guides.Add(LandingQueueHead);
-            guides.Add(StandbyPosition);
-            guides.Add(LandingPoint);
-
-            /*
-            if (type.Equals("Simple_4Way_Stack"))
-            {
-                Vector3 direction = new Vector3(spot.x, 0.0f, spot.z).normalized;
-                direction = Quaternion.Euler(rotation.x, rotation.y, rotation.z) * direction;
-                guides.Add(spot);
-                Vector3 current_spot = spot + direction * 20.0f;
-                guides.Add(current_spot);
-                current_spot.y = standbyPosition.y;
-                guides.Add(current_spot);
-                guides.Add(standbyPosition);
-            }
-            else if (type.Equals("generic_rectangular_lot"))
-            {
-                guides.Add(spot);
-                guides.Add(standbyPosition);
-            }*/
-
-
-            if (mode == "takeoff")
-            {
-                guides.Reverse();
-            }
-
-            return guides;
         }
     }
 }

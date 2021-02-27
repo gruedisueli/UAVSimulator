@@ -8,8 +8,19 @@ using UnityEngine;
 
 namespace Assets.Scripts.Environment
 {
-    public class RestrictionZoneRect : RestrictionZoneElemBase
+    public class RestrictionZoneRect : RestrictionZoneBase
     {
+        [SerializeField]
+        private string _type = "";
+        public string Type
+        {
+            get
+            {
+                return _type;
+            }
+        }
+
+        [SerializeField]
         private float _height = 1;
         public float Height
         {
@@ -20,30 +31,73 @@ namespace Assets.Scripts.Environment
             set
             {
                 _height = value;
-                Scale = new Vector3(Scale.x, _height, Scale.z);
+                _scale = new Vector3(Scale.x, _height, Scale.z);
             }
         }
 
-        public Vector3 Scale { get; private set; } = new Vector3();
-        public Vector3 Position { get; set; }
-        public Vector3 Rotation { get; set; }
+        [SerializeField]
+        private Vector3 _scale = new Vector3();
+        public Vector3 Scale
+        {
+            get
+            {
+                return _scale;
+            }
+        }
+
+        [SerializeField]
+        private Vector3 _position = new Vector3();
+        public Vector3 Position
+        {
+            get
+            {
+                return _position;
+            }
+            set
+            {
+                _position = value;
+            }
+        }
+
+        [SerializeField]
+        private Vector3 _rotation = new Vector3();
+        public Vector3 Rotation
+        {
+            get
+            {
+                return _rotation;
+            }
+            set
+            {
+                _rotation = value;
+            }
+        }
 
         public RestrictionZoneRect(Vector3 pos, Vector3 rot, float xScale, float zScale, float height)
         {
             Position = pos;
             Rotation = rot;
-            Scale = new Vector3(xScale, 0, zScale);
+            _scale = new Vector3(xScale, 0, zScale);
             Height = height;
+        }
+
+        public RestrictionZoneRect(RestrictionZoneRect rZ)
+        {
+            _type = rZ.Type;
+            _height = rZ.Height;
+            _scale = rZ.Scale;
+            _position = rZ.Position;
+            _rotation = rZ.Rotation;
         }
 
         public void SetXScale(float x)
         {
-            Scale = new Vector3(x, Scale.y, Scale.z);
+            _scale = new Vector3(x, Scale.y, Scale.z);
         }
 
         public void SetZScale(float z)
         {
-            Scale = new Vector3(Scale.x, Scale.y, z);
+            _scale = new Vector3(Scale.x, Scale.y, z);
         }
     }
 }

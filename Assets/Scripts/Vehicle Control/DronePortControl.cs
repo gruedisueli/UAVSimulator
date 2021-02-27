@@ -8,7 +8,7 @@ using Assets.Scripts.Environment;
 public class DronePortControl : MonoBehaviour
 {
     public float landingQueueSeparation = 10.0f;
-    public DronePort dronePortInfo;
+    public DronePortBase dronePortInfo;
     public Queue<GameObject> queue;
     
     public string state; // state = {busy, idle}
