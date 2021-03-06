@@ -58,6 +58,7 @@
     <Compile Include="Assets\Mapbox\Unity\Location\Logging\LocationLogReader.cs" />
     <Compile Include="Assets\Mapbox\Unity\MeshGeneration\Factories\TerrainDataFetcher.cs" />
     <Compile Include="Assets\Mapbox\Unity\MeshGeneration\Components\VertexDebugger.cs" />
+    <Compile Include="Assets\Scripts\Environment\SceneParkingStructure.cs" />
     <Compile Include="Assets\Scripts\Serialization\SerializableDictionary.cs" />
     <Compile Include="Assets\Mapbox\Unity\MeshGeneration\Modifiers\IReplacementCriteria.cs" />
     <Compile Include="Assets\Mapbox\Unity\LayerProperties\PresetSubLayerPropertiesFetcher.cs" />
@@ -69,6 +70,7 @@
     <Compile Include="Assets\Mapbox\Core\mapbox-sdk-cs\Geocoding\Response\GeocodeResponse.cs" />
     <Compile Include="Assets\Mapbox\Core\mapbox-sdk-cs\Directions\Response\Leg.cs" />
     <Compile Include="Assets\Mapbox\Core\mapbox-sdk-cs\Utils\Compression.cs" />
+    <Compile Include="Assets\Scripts\Environment\ParkingStructureCustom.cs" />
     <Compile Include="Assets\Scripts\UI\Tags\SelectRect.cs" />
     <Compile Include="Assets\Mapbox\Core\mapbox-sdk-cs\MapMatching\MatchObject.cs" />
     <Compile Include="Assets\Mapbox\Unity\Map\MapVisualizer.cs" />
@@ -88,6 +90,7 @@
     <Compile Include="Assets\Mapbox\Unity\MeshGeneration\Factories\TerrainFactoryBase.cs" />
     <Compile Include="Assets\Mapbox\Unity\Map\Strategies\MapPlacementAtTileCenterStrategy.cs" />
     <Compile Include="Assets\Mapbox\Core\mapbox-sdk-cs\Utils\JsonConverters\JsonConverters.cs" />
+    <Compile Include="Assets\Scripts\Environment\RestrictionZoneCyl.cs" />
     <Compile Include="Assets\Mapbox\Unity\MeshGeneration\Modifiers\MeshModifiers\SnapTerrainModifier.cs" />
     <Compile Include="Assets\Mapbox\Examples\2_AstronautGame\AstronautGame\Astronaut\AstronautDirections.cs" />
     <Compile Include="Assets\Mapbox\Unity\Location\Logging\LocationLogAbstractBase.cs" />
@@ -149,6 +152,7 @@
     <Compile Include="Assets\Mapbox\Examples\8_VoxelMap\Scripts\VoxelFetcher.cs" />
     <Compile Include="Assets\Mapbox\Examples\5_Playground\Scripts\RasterTileExample.cs" />
     <Compile Include="Assets\Mapbox\Examples\Scripts\ForwardGeocodeUserInput.cs" />
+    <Compile Include="Assets\Scripts\Environment\ParkingStructureRect.cs" />
     <Compile Include="Assets\Scripts\Environment\EnvironManager.cs" />
     <Compile Include="Assets\Mapbox\Examples\Scripts\FeatureSelectionDetector.cs" />
     <Compile Include="Assets\Mapbox\Examples\Scripts\LabelTextSetter.cs" />
@@ -195,6 +199,7 @@
     <Compile Include="Assets\Mapbox\Unity\MeshGeneration\Modifiers\MeshModifiers\LoftModifier.cs" />
     <Compile Include="Assets\Mapbox\Unity\MeshGeneration\Data\VectorFeatureUnity.cs" />
     <Compile Include="Assets\Mapbox\Unity\Utilities\TelemetryConfigurationButton.cs" />
+    <Compile Include="Assets\Scripts\Environment\RestrictionZoneRect.cs" />
     <Compile Include="Assets\Mapbox\Core\probe-extractor-cs\Probe.cs" />
     <Compile Include="Assets\Scripts\Environment\DronePortBase.cs" />
     <Compile Include="Assets\Mapbox\Unity\Map\Strategies\MapPlacementAtLocationCenterStrategy.cs" />
@@ -430,6 +435,8 @@
     <Compile Include="Assets\Mapbox\Examples\Scripts\QuadTreeCameraMovement.cs" />
     <Compile Include="Assets\Mapbox\Core\mapbox-sdk-cs\Platform\FileSource.cs" />
     <Compile Include="Assets\Mapbox\Examples\8_VoxelMap\Scripts\VoxelTile.cs" />
+    <Compile Include="Assets\Scripts\Environment\RestrictionZoneCylStack.cs" />
+    <Compile Include="Assets\Scripts\Environment\DronePortRect.cs" />
     <Compile Include="Assets\Mapbox\Examples\Scripts\ObjectInspectorModifier.cs" />
     <Compile Include="Assets\Mapbox\Core\mapbox-sdk-cs\Tokens\MapboxToken.cs" />
     <Compile Include="Assets\Mapbox\Core\mapbox-sdk-cs\MapMatching\MapMatchingParameters.cs" />
@@ -447,6 +454,7 @@
     <Compile Include="Assets\Mapbox\Unity\SourceLayers\ISubLayerModeling.cs" />
     <Compile Include="Assets\Mapbox\Unity\Map\Interfaces\IUnifiedMap.cs" />
     <Compile Include="Assets\Mapbox\Unity\Utilities\ObjectPool.cs" />
+    <Compile Include="Assets\Scripts\Environment\DronePortCustom.cs" />
     <Compile Include="Assets\Mapbox\Unity\MeshGeneration\Filters\TypeFilter.cs" />
     <Compile Include="Assets\Mapbox\Core\mapbox-sdk-cs\Map\TileResource.cs" />
     <Compile Include="Assets\Mapbox\Core\mapbox-sdk-cs\Utils\JsonConverters\BboxToGeoCoordinateBoundsConverter.cs" />
@@ -462,13 +470,7 @@
     <Compile Include="Assets\Mapbox\Core\mapbox-sdk-cs\Map\Tile.cs" />
     <Compile Include="Assets\Mapbox\Core\mapbox-sdk-cs\Map\ClassicRasterTile.cs" />
     <Compile Include="Assets\Mapbox\Unity\MeshGeneration\Modifiers\ModifierStack.cs" />
-    <Compile Include="Assets\Scripts\Environment\RestrictionZoneCyl.cs" />
-    <Compile Include="Assets\Scripts\Environment\RestrictionZoneRect.cs" />
-    <Compile Include="Assets\Scripts\Environment\RestrictionZoneCylStack.cs" />
-    <Compile Include="Assets\Scripts\Environment\ParkingStructureCustom.cs" />
-    <Compile Include="Assets\Scripts\Environment\ParkingStructureRect.cs" />
-    <Compile Include="Assets\Scripts\Environment\DronePortRect.cs" />
-    <Compile Include="Assets\Scripts\Environment\DronePortCustom.cs" />
+    <Compile Include="Assets\Scripts\Environment\SceneDronePort.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Assets\Mapbox\Core\Plugins\Mapbox\vector-tile-cs\net46\Mapbox.VectorTile.Geometry.dll" />

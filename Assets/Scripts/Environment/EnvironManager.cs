@@ -49,6 +49,267 @@ namespace Assets.Scripts.Environment
         //public Dictionary<string, RestrictionZoneAssetPack> RestrictionZoneAssets { get; private set; } = new Dictionary<string, RestrictionZoneAssetPack>();
 
         /// <summary>
+        /// Adds new drone port to environment. False on failure.
+        /// </summary>
+        public bool AddDronePort(string guid, DronePortBase dP)
+        {
+            var city = GetCurrentCity();
+            if (city == null)
+            {
+                return false;
+            }
+            if (!city.DronePorts.ContainsKey(guid))
+            {
+                city.DronePorts.Add(guid, dP);
+                return true;
+            }
+            else
+            {
+                Debug.LogError("Specified drone port already present in dictionary");
+                return false;
+            }
+        }
+
+        /// <summary>
+        /// Adds new parking structure to environment. False on failure.
+        /// </summary>
+        public bool AddParkingStructure(string guid, ParkingStructureBase pS)
+        {
+            var city = GetCurrentCity();
+            if (city == null)
+            {
+                return false;
+            }
+            if (!city.ParkingStructures.ContainsKey(guid))
+            {
+                city.ParkingStructures.Add(guid, pS);
+                return true;
+            }
+            else
+            {
+                Debug.LogError("Specified parking structure already present in dictionary");
+                return false;
+            }
+        }
+
+        /// <summary>
+        /// Adds new restriction zone to environment. False on failure.
+        /// </summary>
+        public bool AddRestrictionZone(string guid, RestrictionZoneBase rZ)
+        {
+            var city = GetCurrentCity();
+            if (city == null)
+            {
+                return false;
+            }
+            if (!city.RestrictionZones.ContainsKey(guid))
+            {
+                city.RestrictionZones.Add(guid, rZ);
+                return true;
+            }
+            else
+            {
+                Debug.LogError("Specified restriction zone already present in dictionary");
+                return false;
+            }
+        }
+
+        /// <summary>
+        /// Removes drone port from environment. False on failure.
+        /// </summary>
+        public bool RemoveDronePort(string guid)
+        {
+            var city = GetCurrentCity();
+            if (city == null)
+            {
+                return false;
+            }
+            if (city.DronePorts.ContainsKey(guid))
+            {
+                city.DronePorts.Remove(guid);
+                return true;
+            }
+            else
+            {
+                Debug.LogError("Specified drone port not present in dictionary");
+                return false;
+            }
+        }
+
+        /// <summary>
+        /// Removes parking structure from environment. False on failure.
+        /// </summary>
+        public bool RemoveParkingStructure(string guid)
+        {
+            var city = GetCurrentCity();
+            if (city == null)
+            {
+                return false;
+            }
+            if (city.ParkingStructures.ContainsKey(guid))
+            {
+                city.ParkingStructures.Remove(guid);
+                return true;
+            }
+            else
+            {
+                Debug.LogError("Specified parking structure not present in dictionary");
+                return false;
+            }
+        }
+
+        /// <summary>
+        /// Removes restriction zone from environment. False on failure.
+        /// </summary>
+        public bool RemoveRestrictionZone(string guid)
+        {
+            var city = GetCurrentCity();
+            if (city == null)
+            {
+                return false;
+            }
+            if (city.RestrictionZones.ContainsKey(guid))
+            {
+                city.RestrictionZones.Remove(guid);
+                return true;
+            }
+            else
+            {
+                Debug.LogError("Specified restriction zone not present in dictionary");
+                return false;
+            }
+        }
+
+        /// <summary>
+        /// Gets drone port. Null on failure.
+        /// </summary>
+        public DronePortBase GetDronePort(string guid)
+        {
+            var city = GetCurrentCity();
+            if (city == null)
+            {
+                return null;
+            }
+            if (city.DronePorts.ContainsKey(guid))
+            {
+                return city.DronePorts[guid];
+            }
+            else
+            {
+                Debug.LogError("Specified drone port not present in dictionary");
+                return null;
+            }
+        }
+
+        ///// <summary>
+        ///// Sets drone port. False on failure.
+        ///// </summary>
+        //public bool SetDronePort(string guid, DronePortBase dP)
+        //{
+        //    var city = GetCurrentCity();
+        //    if (city == null)
+        //    {
+        //        return false;
+        //    }
+        //    if (city.DronePorts.ContainsKey(guid))
+        //    {
+        //        city.DronePorts[guid] = dP;
+        //        return true;
+        //    }
+        //    else
+        //    {
+        //        Debug.LogError("Specified drone port not present in dictionary");
+        //        return false;
+        //    }
+        //}
+
+        /// <summary>
+        /// Gets parking structure. Null on failure.
+        /// </summary>
+        public ParkingStructureBase GetParkingStructure(string guid)
+        {
+            var city = GetCurrentCity();
+            if (city == null)
+            {
+                return null;
+            }
+            if (city.ParkingStructures.ContainsKey(guid))
+            {
+                return city.ParkingStructures[guid];
+            }
+            else
+            {
+                Debug.LogError("Specified parking structure not present in dictionary");
+                return null;
+            }
+        }
+
+        ///// <summary>
+        ///// Sets parking structure. False on failure.
+        ///// </summary>
+        //public bool SetParkingStructure(string guid, ParkingStructureBase pS)
+        //{
+        //    var city = GetCurrentCity();
+        //    if (city == null)
+        //    {
+        //        return false;
+        //    }
+        //    if (city.ParkingStructures.ContainsKey(guid))
+        //    {
+        //        city.ParkingStructures[guid] = pS;
+        //        return true;
+        //    }
+        //    else
+        //    {
+        //        Debug.LogError("Specified parking structure not present in dictionary");
+        //        return false;
+        //    }
+        //}
+
+        /// <summary>
+        /// Gets restriction zone. Null on failure.
+        /// </summary>
+        public RestrictionZoneBase GetRestrictionZone(string guid)
+        {
+            var city = GetCurrentCity();
+            if (city == null)
+            {
+                return null;
+            }
+            if (city.RestrictionZones.ContainsKey(guid))
+            {
+                return city.RestrictionZones[guid];
+            }
+            else
+            {
+                Debug.LogError("Specified restriction zone not present in dictionary");
+                return null;
+            }
+        }
+
+        ///// <summary>
+        ///// Sets restriction zone. False on failure.
+        ///// </summary>
+        //public bool SetRestrictionZone(string guid, RestrictionZoneBase rZ)
+        //{
+        //    var city = GetCurrentCity();
+        //    if (city == null)
+        //    {
+        //        return false;
+        //    }
+        //    if (city.RestrictionZones.ContainsKey(guid))
+        //    {
+        //        city.RestrictionZones[guid] = rZ;
+        //        return true;
+        //    }
+        //    else
+        //    {
+        //        Debug.LogError("Specified restriction zone not present in dictionary");
+        //        return false;
+        //    }
+        //}
+
+        /// <summary>
         /// Adds city to current environment. False on failure.
         /// </summary>
         public bool AddCity(string guid, City city)
@@ -60,7 +321,7 @@ namespace Assets.Scripts.Environment
             }
             else
             {
-                Debug.Log("Specified city already present in dictionary");
+                Debug.LogError("Specified city already present in dictionary");
                 return false;
             }
         }
@@ -77,7 +338,7 @@ namespace Assets.Scripts.Environment
             }
             else
             {
-                Debug.Log("Specified city not present in dictionary");
+                Debug.LogError("Specified city not present in dictionary");
                 return false;
             }
         }
@@ -93,7 +354,7 @@ namespace Assets.Scripts.Environment
             }
             else
             {
-                Debug.Log("Specified city not present in dictionary");
+                Debug.LogError("Specified city not present in dictionary");
                 return null;
             }
         }
@@ -117,7 +378,7 @@ namespace Assets.Scripts.Environment
             }
             else
             {
-                Debug.Log("Active city not present in dictionary");
+                Debug.LogError("Active city not present in dictionary");
                 return null;
             }
         }
@@ -266,7 +527,7 @@ namespace Assets.Scripts.Environment
             var pfb = Resources.Load<GameObject>(resourcePath + name);
             if (pfb == null)
             {
-                Debug.Log("Cannot find prefab for " + name);
+                Debug.LogError("Cannot find prefab for " + name);
             }
             return pfb;
         }

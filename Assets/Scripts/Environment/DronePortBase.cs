@@ -11,6 +11,8 @@ namespace Assets.Scripts.Environment
     [Serializable]
     public abstract class DronePortBase
     {
+        public int Layer { get; } = 12;
+
         public abstract string Type { get; }
         public abstract Vector3 Position { get; set; }
         public abstract Vector3 Rotation { get; set; }

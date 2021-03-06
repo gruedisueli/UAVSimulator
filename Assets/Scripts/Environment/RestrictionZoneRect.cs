@@ -8,6 +8,7 @@ using UnityEngine;
 
 namespace Assets.Scripts.Environment
 {
+    [Serializable]
     public class RestrictionZoneRect : RestrictionZoneBase
     {
         [SerializeField]

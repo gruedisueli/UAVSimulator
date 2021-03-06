@@ -15,20 +15,20 @@ namespace Assets.Scripts.UI
     public abstract class SceneManagerBase : MonoBehaviour
     {
         public Material _restrictionZoneMaterial;
-        public Dictionary<GameObject, DronePortBase> _dronePorts;
-        public Dictionary<GameObject, ParkingStructureBase> _parkingStructures;
+        public Dictionary<string, SceneDronePort> _dronePorts;
+        public Dictionary<string, SceneParkingStructure> _parkingStructures;
 
         public List<GameObject> _destinationCollections;
         public Dictionary<GameObject, List<GameObject>> _routes;
-        protected List<GameObject> _restrictionZones;
+        protected Dictionary<string, GameObject> _restrictionZones;
 
         private void Start()
         {
-            _dronePorts = new Dictionary<GameObject, DronePortBase>();
-            _parkingStructures = new Dictionary<GameObject, ParkingStructureBase>();
+            _dronePorts = new Dictionary<string, SceneDronePort>();
+            _parkingStructures = new Dictionary<string, SceneParkingStructure>();
             _destinationCollections = new List<GameObject>();
             _routes = new Dictionary<GameObject, List<GameObject>>();
-            _restrictionZones = new List<GameObject>();
+            _restrictionZones = new Dictionary<string, GameObject>();
 
             Init();
 
@@ -44,9 +44,9 @@ namespace Assets.Scripts.UI
         {
 
             _destinationCollections = new List<GameObject>();
-            foreach (GameObject dp in _dronePorts.Keys)
+            foreach (var kvp in _dronePorts)
             {
-                _destinationCollections.Add(dp);
+                _destinationCollections.Add(kvp.Value.SceneGameObject);
             }
 
 
@@ -82,9 +82,9 @@ namespace Assets.Scripts.UI
         public int GetParkingCapacity()
         {
             int parking_capacity = 0;
-            foreach (GameObject ps in _parkingStructures.Keys)
+            foreach (var kvp in _parkingStructures)
             {
-                parking_capacity += _parkingStructures[ps].ParkingSpots.Count;
+                parking_capacity += kvp.Value.ParkingStructureSpecs.ParkingSpots.Count;
             }
             return parking_capacity;
         }

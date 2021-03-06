@@ -11,6 +11,6 @@ namespace Assets.Scripts.Environment
     [Serializable]
     public abstract class RestrictionZoneBase
     {
-
+        public int Layer { get; } = 8;
     }
 }

@@ -11,6 +11,8 @@ namespace Assets.Scripts.Environment
     [Serializable]
     public abstract class ParkingStructureBase
     {
+        public int Layer { get; } = 11;
+
         public abstract string Type { get; }
         public abstract int RemainingSpots { get; set; }
         public abstract Vector3 Position { get; set; }

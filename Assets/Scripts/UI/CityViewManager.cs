@@ -124,156 +124,196 @@ namespace Assets.Scripts.UI
         /// <summary>
         /// Adds a new drone port from UI.
         /// </summary>
-        public void AddDronePort()
+        private void AddNewDronePort(DronePortBase dP)
         {
-
+            string guid = Guid.NewGuid().ToString();
+            EnvironManager.Instance.AddDronePort(guid, dP);
+            InstantiateDronePort(guid, dP);
         }
 
         /// <summary>
         /// Adds a new parking structure from UI.
         /// </summary>
-        public void AddParkingStruct()
+        private void AddNewParkingStruct(ParkingStructureBase pS)
         {
+            string guid = Guid.NewGuid().ToString();
+            EnvironManager.Instance.AddParkingStructure(guid, pS);
+            InstantiateParkingStructure(guid, pS);
+        }
 
+        /// <summary>
+        /// Adds a new restriction zone from UI.
+        /// </summary>
+        private void AddNewRestrictZone(RestrictionZoneBase rZ)
+        {
+            string guid = Guid.NewGuid().ToString();
+            EnvironManager.Instance.AddRestrictionZone(guid, rZ);
+            InstantiateRestrictionZone(guid, rZ);
         }
 
         ///// <summary>
-        ///// Adds a new restriction zone from UI.
+        ///// Modifies a drone port with provided parameters
         ///// </summary>
-        //public void AddRestrictionZone(string type)
+        //private void ModifyDronePort(string guid, DronePortBase dP)
         //{
-        //    if (type.Contains("generic"))
+        //    EnvironManager.Instance.SetDronePort(guid, dP);
+        //    if (_dronePorts.ContainsKey(guid))
         //    {
-        //        GameObject newZone = null;
-        //        if (rz.type.Contains("rectangular"))
-        //        {
-        //            newZone = GameObject.CreatePrimitive(PrimitiveType.Cube);
-        //            newZone.transform.localScale = new Vector3(rz.scale.x, rz.height, rz.scale.z);
-        //        }
-        //        else
-        //        {
-        //            newZone = GameObject.CreatePrimitive(PrimitiveType.Cylinder);
-        //            newZone.transform.localScale = new Vector3(rz.scale.x, rz.height / 2, rz.scale.z);
-        //        }
-        //        newZone.transform.position = new Vector3(rz.position.x, rz.height / 2, rz.position.z);
-        //        newZone.transform.rotation = Quaternion.Euler(rz.rotation.x, rz.rotation.y, rz.rotation.z);
-        //        newZone.name = "RestrictionZone_" + rz.type;
-        //        newZone.tag = "RestrictionZone";
-        //        newZone.layer = 8;
-        //        newZone.AddComponent<MeshRenderer>();
-        //        newZone.GetComponent<MeshRenderer>().material = _restrictionZoneMaterial;
-        //        _restrictionZones.Add(newZone);
+        //        _dronePorts[guid].SceneGameObject.Destroy();
+        //        _dronePorts.Remove(guid);
+        //        InstantiateDronePort(guid, dP);
         //    }
-        //    else if (type.Contains("Class"))
+        //    else
         //    {
-        //        rz.bottoms.Add(rz.height);
-        //        for (int i = 0; i < rz.bottoms.Count - 1; i++)
-        //        {
-        //            float this_cylinder_center_y = (rz.bottoms[i] + rz.bottoms[i + 1]) / 2.0f;
-        //            float this_cylinder_height_half = (rz.bottoms[i + 1] - rz.bottoms[i]) / 2.0f;
-        //            float this_cylinder_radius = rz.radius[i];
-        //            GameObject newZone = GameObject.CreatePrimitive(PrimitiveType.Cylinder);
-        //            newZone.transform.position = new Vector3(rz.position.x, this_cylinder_center_y, rz.position.z);
-        //            newZone.transform.localScale = new Vector3(this_cylinder_radius, this_cylinder_height_half, this_cylinder_radius);
-        //            newZone.name = "RestrictionZone_" + rz.type + "_" + i.ToString();
-        //            newZone.tag = "RestrictionZone";
-        //            newZone.layer = 8;
-        //            //newwZone.AddComponent<MeshRenderer>();
-        //            newZone.GetComponent<MeshRenderer>().material = _restrictionZoneMaterial;
-        //            _restrictionZones.Add(newZone);
-        //        }
+        //        Debug.LogError("Specified drone port not in dictionary");
         //    }
+
+        //}
+
+        ///// <summary>
+        ///// Instantiates a new custom drone port in the project from assets. Does not update environment.
+        ///// </summary>
+        //private void InstantiateCustomDronePort(DronePortAssetPack asset)
+        //{
+        //    InstantiateCustomDronePort(asset.Prefab, asset.Specs);
+        //}
+
+        ///// <summary>
+        ///// Instantiates a new custom parking structure in the project from assets. Does not update environment.
+        ///// </summary>
+        //private void InstantiateCustomParkingStruct(ParkingStructureAssetPack asset)
+        //{
+        //    InstantiateCustomParkingStruct(asset.Prefab, asset.Specs);
         //}
 
         /// <summary>
-        /// Instantiates a drone port in the project from assets. Does not update environment.
+        /// Instantiates a drone port. Does not update enviornment.
         /// </summary>
-        private void InstantiateDronePort(DronePortAssetPack asset)
+        private void InstantiateDronePort(string guid, DronePortBase dP)
         {
-            InstantiateDronePort(asset.Prefab, new DronePortBase(asset.Specs));
+            if (dP is DronePortRect)
+            {
+                InstantiateRectDronePort(guid, dP as DronePortRect);
+            }
+            else if (dP is DronePortCustom)
+            {
+                var pfb = EnvironManager.Instance.DronePortAssets[dP.Type].Prefab;
+                InstantiateCustomDronePort(guid, pfb, dP as DronePortCustom);
+            }
+            else
+            {
+                Debug.LogError("Drone port type requested for instantiation not recognized");
+            }
         }
 
         /// <summary>
-        /// Instantiates a parking structure in the project from assets. Does not update environment.
+        /// Instantiates a parking structure. Does not update enviornment.
         /// </summary>
-        private void InstantiateParkingStruct(ParkingStructureAssetPack asset)
+        private void InstantiateParkingStructure(string guid, ParkingStructureBase pS)
         {
-            InstantiateParkingStruct(asset.Prefab, new ParkingStructureBase(asset.Specs));
+            if (pS is ParkingStructureRect)
+            {
+                InstantiateRectParkingStruct(guid, pS as ParkingStructureRect);
+            }
+            else if (pS is ParkingStructureCustom)
+            {
+                var pfb = EnvironManager.Instance.ParkingStructAssets[pS.Type].Prefab;
+                InstantiateCustomParkingStruct(guid, pfb, pS as ParkingStructureCustom);
+            }
+            else
+            {
+                Debug.LogError("Parking structure type requested for instantiation not recognized");
+            }
         }
 
         /// <summary>
-        /// Instantiates a restriction zone in the project from assets. Does not update environment.
+        /// Instantiates a restriction zone. Does not update enviornment.
         /// </summary>
-        private void InstantiateRestrictionZone(RestrictionZoneAssetPack asset)
+        private void InstantiateRestrictionZone(string guid, RestrictionZoneBase rZ)
         {
-            InstantiateRestrictionZone(asset.Prefab, new RestrictionZoneBase(asset.Specs));
+            if (rZ is RestrictionZoneRect)
+            {
+                InstantiateRectRestrictZone(guid, rZ as RestrictionZoneRect);
+            }
+            else if (rZ is RestrictionZoneCyl)
+            {
+                InstantiateCylRestrictZone(guid, rZ as RestrictionZoneCyl);
+            }
+            else if (rZ is RestrictionZoneCylStack)
+            {
+                InstantiateStackedRestrictZone(guid, rZ as RestrictionZoneCylStack);
+            }
+            else
+            {
+                Debug.LogError("Restriction zone type requested for instantiation not recognized");
+            }
         }
 
         /// <summary>
         /// Instantiates a generic rectangular drone port in project. Does not update environment.
         /// </summary>
-        private void InstantiateRectDronePort(DronePortRect dP)
+        private void InstantiateRectDronePort(string guid, DronePortRect dP)
         {
             var clone = GameObject.CreatePrimitive(PrimitiveType.Cube);
 
             clone.name = "DronePort_" + dP.Type;
             clone.tag = "DronePort";
-            clone.layer = 12;
+            clone.layer = dP.Layer;
             clone.transform.position = dP.Position;
             clone.transform.rotation = Quaternion.Euler(dP.Rotation.x, dP.Rotation.y, dP.Rotation.z);
             clone.transform.localScale = dP.Scale;
             DronePortControl newDronePort = clone.AddComponent<DronePortControl>();
             newDronePort.dronePortInfo = dP;
 
-            _dronePorts.Add(clone, dP);
+            _dronePorts.Add(guid, new SceneDronePort(clone, dP));
         }
 
         /// <summary>
         /// Instantiates a custom drone port in the project. Does not update environment.
         /// </summary>
-        private void InstantiateCustomDronePort(GameObject prefab, DronePortCustom dP)
+        private void InstantiateCustomDronePort(string guid, GameObject prefab, DronePortCustom dP)
         {
             var clone = Instantiate(prefab, dP.Position, Quaternion.Euler(dP.Rotation.x, dP.Rotation.y, dP.Rotation.z));
 
             clone.name = "DronePort_" + dP.Type;
             clone.tag = "DronePort";
-            clone.layer = 12;
+            clone.layer = dP.Layer;
             clone.transform.localScale = dP.Scale;
             DronePortControl newDronePort = clone.AddComponent<DronePortControl>();
             newDronePort.dronePortInfo = dP;
 
-            _dronePorts.Add(clone, dP);
+            _dronePorts.Add(guid, new SceneDronePort(clone, dP));
         }
 
         /// <summary>
         /// Instantiates a custom parking structure in the project. Does not update environment.
         /// </summary>
-        private void InstantiateCustomParkingStruct(GameObject prefab, ParkingStructureCustom pS)
+        private void InstantiateCustomParkingStruct(string guid, GameObject prefab, ParkingStructureCustom pS)
         {
             var clone = Instantiate(prefab, pS.Position, Quaternion.Euler(pS.Rotation.x, pS.Rotation.y, pS.Rotation.z));
 
             clone.tag = "ParkingStructure";
             clone.name = "Parking_" + pS.Type;
-            clone.layer = 11;
+            clone.layer = pS.Layer;
             clone.transform.localScale = pS.Scale;
 
             Parking newStructure = clone.AddComponent<Parking>();
             newStructure.parkingInfo = pS;
 
-            _parkingStructures.Add(clone, pS);
+            _parkingStructures.Add(guid, new SceneParkingStructure(clone, pS));
         }
 
 
         /// <summary>
         /// Instantiates a rectangular parking structure in the project. Does not update environment.
         /// </summary>
-        private void InstantiateRectParkingStruct(ParkingStructureRect pS)
+        private void InstantiateRectParkingStruct(string guid, ParkingStructureRect pS)
         {
             var clone = GameObject.CreatePrimitive(PrimitiveType.Cube);
 
             clone.tag = "ParkingStructure";
             clone.name = "Parking_" + pS.Type;
-            clone.layer = 11;
+            clone.layer = pS.Layer;
             clone.transform.position = pS.Position;
             clone.transform.rotation = Quaternion.Euler(pS.Rotation.x, pS.Rotation.y, pS.Rotation.z);
             clone.transform.localScale = pS.Scale;
@@ -281,56 +321,67 @@ namespace Assets.Scripts.UI
             Parking newStructure = clone.AddComponent<Parking>();
             newStructure.parkingInfo = pS;
 
-            _parkingStructures.Add(clone, pS);
+            _parkingStructures.Add(guid, new SceneParkingStructure(clone, pS));
         }
+
         /// <summary>
-        /// Instantiates a restriction zone in the project. Does not update environment.
+        /// Instantiates a stacked restriction zone in the project. Does not update environment.
         /// </summary>
-        private void InstantiateRestrictionZone(GameObject prefab, RestrictionZoneBase rZ)
+        private void InstantiateStackedRestrictZone(string guid, RestrictionZoneCylStack rZ)
         {
-            GameObject clone = new GameObject();
-            if (rZ.Category == RestrictionZoneCategory.GenericCyl)
+            foreach(var cyl in rZ.Elements)
             {
-                clone = Instantiate(prefab, new Vector3(rZ.Position.x, rZ.Height / 2, rZ.Position.z), Quaternion.Euler(rZ.Rotation.x, rZ.Rotation.y, rZ.Rotation.z));
+                InstantiateCylRestrictZone(guid, cyl);
             }
-            else if (rZ.Category == RestrictionZoneCategory.GenericRect)
-            {
-
-            }
-            else if (rZ.Category == RestrictionZoneCategory.Class)
-            {
-
-            }
-
-            clone.transform.localScale = rZ.Scale;
-
         }
 
-        private void FinishRestrictZoneInst(GameObject clone, string type)
+        /// <summary>
+        /// Instantiates a rectangular restriction zone in the project. Does not update environment.
+        /// </summary>
+        private void InstantiateRectRestrictZone(string guid, RestrictionZoneRect rZ)
+        {
+            GameObject clone = GameObject.CreatePrimitive(PrimitiveType.Cube);
+            clone.transform.localScale = new Vector3(rZ.Scale.x, rZ.Height, rZ.Scale.z);
+            clone.transform.position = new Vector3(rZ.Position.x, rZ.Height / 2, rZ.Position.z);
+            clone.transform.rotation = Quaternion.Euler(rZ.Rotation.x, rZ.Rotation.y, rZ.Rotation.z);
+            clone.layer = rZ.Layer;
+            FinishRestrictZoneInst(guid, ref clone, rZ.Type);
+        }
+
+        /// <summary>
+        /// Instantiates a cylindrical restriction zone in the project. Does not update environment.
+        /// </summary>
+        private void InstantiateCylRestrictZone(string guid, RestrictionZoneCyl rZ)
+        {
+            GameObject clone = GameObject.CreatePrimitive(PrimitiveType.Cylinder);
+            clone.transform.localScale = new Vector3(rZ.Scale.x, rZ.Height, rZ.Scale.z);
+            clone.transform.position = new Vector3(rZ.Position.x, rZ.Height / 2, rZ.Position.z);
+            clone.transform.rotation = Quaternion.Euler(rZ.Rotation.x, rZ.Rotation.y, rZ.Rotation.z);
+            clone.layer = rZ.Layer;
+            FinishRestrictZoneInst(guid, ref clone, rZ.Type);
+        }
+
+        private void FinishRestrictZoneInst(string guid, ref GameObject clone, string type)
         {
             clone.name = "RestrictionZone_" + type;
             clone.tag = "RestrictionZone";
-            clone.layer = 8;
             var mR = clone.AddComponent<MeshRenderer>();
             mR.material = _restrictionZoneMaterial;
 
-            _restrictionZones.Add(clone);
+            _restrictionZones.Add(guid, clone);
         }
 
         public void InstantiateObjects()
         {
-            // TO-DO: Also register the restriction zones for drone ports and parking structures
-            //string path = "DronePorts/";
+            // (Eunu? stll relevant?) TO-DO: Also register the restriction zones for drone ports and parking structures
 
             // Instantiate different types of drone ports in the correct locations
             var eM = EnvironManager.Instance;
-            //var city = eM.Environ.GetCity(eM.ActiveCity);
             var city = eM.GetCurrentCity();
             foreach (var kvp in city.DronePorts)
             {
-                var dp = kvp.Value;
-                var pfb = eM.DronePortAssets[dp.Type].Prefab;
-                InstantiateDronePort(pfb, dp);
+                var dP = kvp.Value;
+                InstantiateDronePort(kvp.Key, dP);
 
 
                 //if (dp.isCustom)
@@ -385,9 +436,8 @@ namespace Assets.Scripts.UI
             //path = "ParkingStructures/";
             foreach (var kvp in city.ParkingStructures)
             {
-                var ps = kvp.Value;
-                var pfb = eM.ParkingStructAssets[ps.Type].Prefab;
-                InstantiateParkingStruct(pfb, ps);
+                var pS = kvp.Value;
+                InstantiateParkingStructure(kvp.Key, pS);
 
                 //if (ps.isCustom)
                 //{
@@ -455,48 +505,50 @@ namespace Assets.Scripts.UI
            // path = "RestrictionZones/";
             foreach (var kvp in city.RestrictionZones)
             {
-                var rz = kvp.Value;
-                if (rz.Type.Contains("generic"))
-                {
-                    GameObject newZone = null;
-                    if (rz.Type.Contains("rectangular"))
-                    {
-                        newZone = GameObject.CreatePrimitive(PrimitiveType.Cube);
-                        newZone.transform.localScale = new Vector3(rz.Scale.x, rz.Height, rz.Scale.z);
-                    }
-                    else
-                    {
-                        newZone = GameObject.CreatePrimitive(PrimitiveType.Cylinder);
-                        newZone.transform.localScale = new Vector3(rz.Scale.x, rz.Height / 2, rz.Scale.z);
-                    }
-                    newZone.transform.position = new Vector3(rz.Position.x, rz.Height / 2, rz.Position.z);
-                    newZone.transform.rotation = Quaternion.Euler(rz.Rotation.x, rz.Rotation.y, rz.Rotation.z);
-                    newZone.name = "RestrictionZone_" + rz.Type;
-                    newZone.tag = "RestrictionZone";
-                    newZone.layer = 8;
-                    newZone.AddComponent<MeshRenderer>();
-                    newZone.GetComponent<MeshRenderer>().material = _restrictionZoneMaterial;
-                    _restrictionZones.Add(newZone);
-                }
-                else if (rz.Type.Contains("Class"))
-                {
-                    rz.StepElevs.Add(rz.Height);
-                    for (int i = 0; i < rz.StepElevs.Count - 1; i++)
-                    {
-                        float this_cylinder_center_y = (rz.StepElevs[i] + rz.StepElevs[i + 1]) / 2.0f;
-                        float this_cylinder_height_half = (rz.StepElevs[i + 1] - rz.StepElevs[i]) / 2.0f;
-                        float this_cylinder_radius = rz.Radii[i];
-                        GameObject newZone = GameObject.CreatePrimitive(PrimitiveType.Cylinder);
-                        newZone.transform.position = new Vector3(rz.Position.x, this_cylinder_center_y, rz.Position.z);
-                        newZone.transform.localScale = new Vector3(this_cylinder_radius, this_cylinder_height_half, this_cylinder_radius);
-                        newZone.name = "RestrictionZone_" + rz.Type + "_" + i.ToString();
-                        newZone.tag = "RestrictionZone";
-                        newZone.layer = 8;
-                        //newwZone.AddComponent<MeshRenderer>();
-                        newZone.GetComponent<MeshRenderer>().material = _restrictionZoneMaterial;
-                        _restrictionZones.Add(newZone);
-                    }
-                }
+                var rZ = kvp.Value;
+                InstantiateRestrictionZone(kvp.Key, rZ);
+
+                //if (rZ.Type.Contains("generic"))
+                //{
+                //    GameObject newZone = null;
+                //    if (rZ.Type.Contains("rectangular"))
+                //    {
+                //        newZone = GameObject.CreatePrimitive(PrimitiveType.Cube);
+                //        newZone.transform.localScale = new Vector3(rZ.Scale.x, rZ.Height, rZ.Scale.z);
+                //    }
+                //    else
+                //    {
+                //        newZone = GameObject.CreatePrimitive(PrimitiveType.Cylinder);
+                //        newZone.transform.localScale = new Vector3(rZ.Scale.x, rZ.Height / 2, rZ.Scale.z);
+                //    }
+                //    newZone.transform.position = new Vector3(rZ.Position.x, rZ.Height / 2, rZ.Position.z);
+                //    newZone.transform.rotation = Quaternion.Euler(rZ.Rotation.x, rZ.Rotation.y, rZ.Rotation.z);
+                //    newZone.name = "RestrictionZone_" + rZ.Type;
+                //    newZone.tag = "RestrictionZone";
+                //    newZone.layer = 8;
+                //    newZone.AddComponent<MeshRenderer>();
+                //    newZone.GetComponent<MeshRenderer>().material = _restrictionZoneMaterial;
+                //    _restrictionZones.Add(newZone);
+                //}
+                //else if (rZ.Type.Contains("Class"))
+                //{
+                //    rZ.StepElevs.Add(rZ.Height);
+                //    for (int i = 0; i < rZ.StepElevs.Count - 1; i++)
+                //    {
+                //        float this_cylinder_center_y = (rZ.StepElevs[i] + rZ.StepElevs[i + 1]) / 2.0f;
+                //        float this_cylinder_height_half = (rZ.StepElevs[i + 1] - rZ.StepElevs[i]) / 2.0f;
+                //        float this_cylinder_radius = rZ.Radii[i];
+                //        GameObject newZone = GameObject.CreatePrimitive(PrimitiveType.Cylinder);
+                //        newZone.transform.position = new Vector3(rZ.Position.x, this_cylinder_center_y, rZ.Position.z);
+                //        newZone.transform.localScale = new Vector3(this_cylinder_radius, this_cylinder_height_half, this_cylinder_radius);
+                //        newZone.name = "RestrictionZone_" + rZ.Type + "_" + i.ToString();
+                //        newZone.tag = "RestrictionZone";
+                //        newZone.layer = 8;
+                //        //newwZone.AddComponent<MeshRenderer>();
+                //        newZone.GetComponent<MeshRenderer>().material = _restrictionZoneMaterial;
+                //        _restrictionZones.Add(newZone);
+                //    }
+                //}
             }
         }
     }
