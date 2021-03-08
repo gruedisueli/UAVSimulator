@@ -132,13 +132,9 @@ namespace Assets.Scripts.Environment
             }
         }
 
-        public RestrictionZoneCyl(float xPos, float zPos, float radius, float height, float bottom)
+        public RestrictionZoneCyl(Vector3 pos)
         {
-            _position = new Vector3(xPos, 0, zPos);
-            Radius = radius;
-            Height = height;
-            Bottom = bottom;
-            _top = Bottom + height;
+            _position = pos;
         }
 
         public RestrictionZoneCyl(RestrictionZoneCyl rZ)

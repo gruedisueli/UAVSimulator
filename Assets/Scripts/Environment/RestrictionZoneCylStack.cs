@@ -52,9 +52,9 @@ namespace Assets.Scripts.Environment
             }
         }
 
-        public RestrictionZoneCylStack()
+        public RestrictionZoneCylStack(Vector3 pos)
         {
-
+            Position = pos;
         }
 
         public RestrictionZoneCylStack(RestrictionZoneCylStack rZ)

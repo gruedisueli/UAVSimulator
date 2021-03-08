@@ -136,9 +136,9 @@ namespace Assets.Scripts.Environment
         public override Dictionary<GameObject, Vector3> VehicleAt { get; set; } = new Dictionary<GameObject, Vector3>();
         public override Dictionary<GameObject, Vector3> Reserved { get; set; } = new Dictionary<GameObject, Vector3>();
 
-        public ParkingStructureRect()
+        public ParkingStructureRect(Vector3 pos)
         {
-
+            Position = pos;
         }
 
         public ParkingStructureRect(ParkingStructureRect pS)

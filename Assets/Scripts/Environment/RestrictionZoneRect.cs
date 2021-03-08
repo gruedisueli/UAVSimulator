@@ -37,7 +37,7 @@ namespace Assets.Scripts.Environment
         }
 
         [SerializeField]
-        private Vector3 _scale = new Vector3();
+        private Vector3 _scale = new Vector3(1, 0, 1);
         public Vector3 Scale
         {
             get
@@ -74,12 +74,9 @@ namespace Assets.Scripts.Environment
             }
         }
 
-        public RestrictionZoneRect(Vector3 pos, Vector3 rot, float xScale, float zScale, float height)
+        public RestrictionZoneRect(Vector3 pos)
         {
             Position = pos;
-            Rotation = rot;
-            _scale = new Vector3(xScale, 0, zScale);
-            Height = height;
         }
 
         public RestrictionZoneRect(RestrictionZoneRect rZ)

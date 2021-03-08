@@ -1,0 +1,73 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace Assets.Scripts.UI.Events
+{
+    //public enum ElementFamily
+    //{
+    //    DronePort,
+    //    ParkingStruct,
+    //    RestrictionZone
+    //}
+
+    //public enum ElementCategory
+    //{
+    //    DronePortRect,
+    //    DronePortCustom,
+    //    ParkingStructRect,
+    //    ParkingStructCustom,
+    //    RestrictionZoneRect,
+    //    RestrictionZoneCyl,
+    //    RestrictionZoneCylStack
+    //}
+
+    public enum DronePortCategory
+    {
+        Rect,
+        Custom
+    }
+
+    public enum ParkingStructCategory
+    {
+        Rect,
+        Custom
+    }
+
+    public enum RestrictionZoneCategory
+    {
+        Rect,
+        Cylindrical,
+        CylindricalStacked
+    }
+
+    //public enum UpdateElementType
+    //{
+    //    Add,
+    //    Remove,
+    //    Modify
+    //}
+
+    public enum UpdatePropertyType
+    {
+        Type,
+        Position,
+        Rotation,
+        Scale,
+        Height,
+        Radius,
+        Bottom,
+        Top,
+        StandByPos,
+        LandingQueueHead,
+        LandingQueueDirection,
+        LandingPoint,
+        ParkingSpots,
+        MaxVehicleSize,
+        IsMountable,
+        IsOnTheGround,
+        IsScalable
+    }
+}

@@ -13,6 +13,7 @@ using Mapbox.Unity.Map;
 using Assets.Scripts.Environment;
 using Assets.Scripts.MapboxCustom;
 using Assets.Scripts.UI.Panels;
+using Assets.Scripts.UI.Events;
 
 namespace Assets.Scripts.UI
 {
@@ -24,6 +25,10 @@ namespace Assets.Scripts.UI
         public GameObject _cityCenter;
         public Camera _mainCamera;
         public SavePrompt _savePrompt;
+
+        private UpdateTool[] _modifyPanels;
+        private AddTool[] _addElements;
+        private RemoveTool[] _removeElements;
 
         private List<Tuple<GameObject, Material, Material[], Vector3>> selectedObjects = new List<Tuple<GameObject, Material, Material[], Vector3>>();
 
@@ -45,6 +50,42 @@ namespace Assets.Scripts.UI
                 _mainCamera.transform.position = new Vector3(city.WorldPos.x, 1000, city.WorldPos.z);
                 abstractMap.Initialize(EnvironManager.Instance.Environ.CenterLatLong, EnvironSettings.CITY_ZOOM_LEVEL);
                 InstantiateObjects();
+            }
+
+            //gather UI elments
+            _modifyPanels = (UpdateTool[])FindObjectsOfType(typeof(UpdateTool));
+            _addElements = (AddTool[])FindObjectsOfType(typeof(AddTool));
+            _removeElements = (RemoveTool[])FindObjectsOfType(typeof(RemoveTool));
+
+            //event subscription
+            foreach(var m in _modifyPanels)
+            {
+                m.ElementUpdatedEvent += ElementUpdate;
+            }
+            foreach(var a in _addElements)
+            {
+                a.ElementAddedEvent += AddElement;
+            }
+            foreach(var r in _removeElements)
+            {
+                r.ElementRemovedEvent += RemoveElement;
+            }
+        }
+
+        private void OnDestroy()
+        {
+            //event unsubscription
+            foreach (var m in _modifyPanels)
+            {
+                m.ElementUpdatedEvent -= ElementUpdate;
+            }
+            foreach (var a in _addElements)
+            {
+                a.ElementAddedEvent -= AddElement;
+            }
+            foreach (var r in _removeElements)
+            {
+                r.ElementRemovedEvent -= RemoveElement;
             }
         }
 
@@ -122,10 +163,116 @@ namespace Assets.Scripts.UI
         }
 
         /// <summary>
+        /// Main method to call when making modifications to objects in scene.
+        /// </summary>
+        private void ElementUpdate(IUpdateElementArgs args)
+        {
+            if (args is UpdateDronePortArgs)
+            {
+                DronePortUpdate(args as UpdateDronePortArgs);
+            }
+            else if (args is UpdateParkingStructArgs)
+            {
+                ParkingStructureUpdate(args as UpdateParkingStructArgs);
+            }
+            else if (args is UpdateRestrictZoneArgs)
+            {
+                RestrictionZoneUpdate(args as UpdateRestrictZoneArgs);
+            }
+            else
+            {
+                Debug.LogError("Unknown modify arguments encountered");
+            }
+        }
+
+        /// <summary>
+        /// Modifies a drone port
+        /// </summary>
+        private void DronePortUpdate(UpdateDronePortArgs args)
+        {
+
+        }
+
+        /// <summary>
+        /// Modifies a parking structure
+        /// </summary>
+        private void ParkingStructureUpdate(UpdateParkingStructArgs args)
+        {
+
+        }
+
+        /// <summary>
+        /// Modifies a restriction zone
+        /// </summary>
+        private void RestrictionZoneUpdate(UpdateRestrictZoneArgs args)
+        {
+
+        }
+
+        /// <summary>
+        /// Adds any type of element to scene.
+        /// </summary>
+        private void AddElement(IAddElementArgs args)
+        {
+            if (args is AddDronePortArgs)
+            {
+                AddNewDronePort(args as AddDronePortArgs);
+            }
+            else if (args is AddParkingStructArgs)
+            {
+                AddNewParkingStruct(args as AddParkingStructArgs);
+            }
+            else if (args is AddRestrictionZoneArgs)
+            {
+                AddNewRestrictZone(args as AddRestrictionZoneArgs);
+            }
+            else
+            {
+                Debug.LogError("Added elements arguments of unrecognized type");
+            }
+        }
+
+        /// <summary>
+        /// Removes any type of element from scene.
+        /// </summary>
+        private void RemoveElement(IRemoveElementArgs args)
+        {
+
+        }
+
+        /// <summary>
         /// Adds a new drone port from UI.
         /// </summary>
-        private void AddNewDronePort(DronePortBase dP)
+        private void AddNewDronePort(AddDronePortArgs args)
         {
+            DronePortBase dP = null;
+            switch (args.Category)
+            {
+                case DronePortCategory.Rect:
+                    {
+                        dP = new DronePortRect(args.Position);
+                        break;
+                    }
+                case DronePortCategory.Custom:
+                    {
+                        if (EnvironManager.Instance.DronePortAssets.ContainsKey(args.Type))
+                        {
+                            dP = EnvironManager.Instance.DronePortAssets[args.Type].Specs;
+                            dP.Position = args.Position;
+                            break;
+                        }
+                        else
+                        {
+                            Debug.LogError("Added drone port type not found in assets");
+                            dP = null;
+                            break;
+                        }
+                    }
+            }
+            if (dP == null)
+            {
+                return;
+            }
             string guid = Guid.NewGuid().ToString();
             EnvironManager.Instance.AddDronePort(guid, dP);
             InstantiateDronePort(guid, dP);
@@ -134,8 +281,36 @@ namespace Assets.Scripts.UI
         /// <summary>
         /// Adds a new parking structure from UI.
         /// </summary>
-        private void AddNewParkingStruct(ParkingStructureBase pS)
+        private void AddNewParkingStruct(AddParkingStructArgs args)
         {
+            ParkingStructureBase pS = null;
+            switch (args.Category)
+            {
+                case ParkingStructCategory.Rect:
+                    {
+                        pS = new ParkingStructureRect(args.Position);
+                        break;
+                    }
+                case ParkingStructCategory.Custom:
+                    {
+                        if (EnvironManager.Instance.ParkingStructAssets.ContainsKey(args.Type))
+                        {
+                            pS = EnvironManager.Instance.ParkingStructAssets[args.Type].Specs;
+                            pS.Position = args.Position;
+                            break;
+                        }
+                        else
+                        {
+                            Debug.LogError("Added parking structure type not found in assets");
+                            pS = null;
+                            break;
+                        }
+                    }
+            }
+            if (pS == null)
+            {
+                return;
+            }
             string guid = Guid.NewGuid().ToString();
             EnvironManager.Instance.AddParkingStructure(guid, pS);
             InstantiateParkingStructure(guid, pS);
@@ -144,11 +319,85 @@ namespace Assets.Scripts.UI
         /// <summary>
         /// Adds a new restriction zone from UI.
         /// </summary>
-        private void AddNewRestrictZone(RestrictionZoneBase rZ)
+        private void AddNewRestrictZone(AddRestrictionZoneArgs args)
         {
+            RestrictionZoneBase rZ = null;
+            switch (args.Category)
+            {
+                case RestrictionZoneCategory.Rect:
+                    {
+                        rZ = new RestrictionZoneRect(args.Position);
+                        break;
+                    }
+                case RestrictionZoneCategory.Cylindrical:
+                    {
+                        rZ = new RestrictionZoneCyl(args.Position);
+                        break;
+                    }
+                case RestrictionZoneCategory.CylindricalStacked:
+                    {
+                        rZ = new RestrictionZoneCylStack(args.Position);
+                        break;
+                    }
+            }
+            if (rZ == null)
+            {
+                return;
+            }
             string guid = Guid.NewGuid().ToString();
             EnvironManager.Instance.AddRestrictionZone(guid, rZ);
             InstantiateRestrictionZone(guid, rZ);
+        }
+
+        /// <summary>
+        /// Removes drone port.
+        /// </summary>
+        private void RemoveDronePort(string guid)
+        {
+            EnvironManager.Instance.RemoveDronePort(guid);
+            if (_dronePorts.ContainsKey(guid))
+            {
+                _dronePorts[guid].SceneGameObject.Destroy();
+                _dronePorts.Remove(guid);
+            }
+            else
+            {
+                Debug.LogError("Drone port selected for removal not found in dictionary");
+            }
+        }
+
+        /// <summary>
+        /// Removes parking structure.
+        /// </summary>
+        private void RemoveParkingStruct(string guid)
+        {
+            EnvironManager.Instance.RemoveParkingStructure(guid);
+            if (_parkingStructures.ContainsKey(guid))
+            {
+                _parkingStructures[guid].SceneGameObject.Destroy();
+                _parkingStructures.Remove(guid);
+            }
+            else
+            {
+                Debug.LogError("Parking structure selected for removal not found in dictionary");
+            }
+        }
+
+        /// <summary>
+        /// Removes restriction zone.
+        /// </summary>
+        private void RemoveRestrictZone(string guid)
+        {
+            EnvironManager.Instance.RemoveRestrictionZone(guid);
+            if (_restrictionZones.ContainsKey(guid))
+            {
+                _restrictionZones[guid].Destroy();
+                _restrictionZones.Remove(guid);
+            }
+            else
+            {
+                Debug.LogError("Restrction zone selected for removal not found in dictionary");
+            }
         }
 
         ///// <summary>

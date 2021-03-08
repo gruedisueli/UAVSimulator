@@ -174,9 +174,9 @@ namespace Assets.Scripts.Environment
             }
         }
 
-        public DronePortRect()
+        public DronePortRect(Vector3 pos)
         {
-
+            Position = pos;
         }
 
 
