@@ -8,10 +8,9 @@ using UnityEngine;
 
 namespace Assets.Scripts.Environment
 {
-    [Serializable]
-    public abstract class RestrictionZoneBase
+    public abstract class SceneElementBase : MonoBehaviour
     {
-        public int Layer { get; } = 8;
-        public abstract RestrictionZoneBase GetCopy();
+        public abstract string Guid { get; protected set; }
+        public abstract void UpdateGameObject();
     }
 }

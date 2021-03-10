@@ -8,8 +8,8 @@ namespace Assets.Scripts.UI.Events
 {
     public interface IUpdateElementArgs
     {
-        UpdateElementType UpdateType { get; }
-        string Guid { get; set; }
-        UpdatePropertyArgBase Update { get; set; }
+        //ElementFamily Family { get; }
+        //string Guid { get; }
+        UpdatePropertyArgBase Update { get; }
     }
 }

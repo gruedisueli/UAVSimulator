@@ -5,7 +5,7 @@ using Assets.Scripts.Vehicle_Control;
 using Assets.Scripts.DataStructure;
 using Assets.Scripts.Environment;
 
-public class Parking : MonoBehaviour
+public class ParkingControl : MonoBehaviour
 {
     public float landingQueueSeparation = 10.0f;
     public ParkingStructureBase parkingInfo;

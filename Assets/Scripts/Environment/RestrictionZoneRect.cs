@@ -88,6 +88,11 @@ namespace Assets.Scripts.Environment
             _rotation = rZ.Rotation;
         }
 
+        public override RestrictionZoneBase GetCopy()
+        {
+            return new RestrictionZoneRect(this);
+        }
+
         public void SetXScale(float x)
         {
             _scale = new Vector3(x, Scale.y, Scale.z);

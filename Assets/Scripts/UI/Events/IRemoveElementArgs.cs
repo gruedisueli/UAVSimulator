@@ -9,5 +9,6 @@ namespace Assets.Scripts.UI.Events
     public interface IRemoveElementArgs
     {
         string Guid { get; }
+        ElementFamily Family { get; }
     }
 }

@@ -109,7 +109,7 @@ public class VehicleControlSystem : MonoBehaviour
 
                 // TO-DO: Augment vehicle type
                 GameObject vehicle = GetAvailableVehicleinParkingStrcuture(parking);
-                if (parking.GetComponent<Parking>().queue.Count < 3) CallVehicle(vehicle, parking.GetComponent<Parking>(), destinations);
+                if (parking.GetComponent<ParkingControl>().queue.Count < 3) CallVehicle(vehicle, parking.GetComponent<ParkingControl>(), destinations);
             }
             else // call_type_string == "low-altitude"
             {
@@ -164,7 +164,7 @@ public class VehicleControlSystem : MonoBehaviour
                     Vehicle vehicleInfo = vehicle.GetComponent<Vehicle>();
                     vehicleInfo.isUTM = true;
                     
-                    CallVehicle(vehicle, parking.GetComponent<Parking>(), destinations);
+                    CallVehicle(vehicle, parking.GetComponent<ParkingControl>(), destinations);
                     //
 
                 }
@@ -278,7 +278,7 @@ public class VehicleControlSystem : MonoBehaviour
         newPoint = newPoint + pivot;
         return newPoint;
     }
-    private void CallVehicle(GameObject vehicle, Parking parking, Queue<GameObject> destinations)
+    private void CallVehicle(GameObject vehicle, ParkingControl parking, Queue<GameObject> destinations)
     {
         Vehicle vehicleInfo = vehicle.GetComponent<Vehicle>();
         vehicleInfo.destination = destinations;
@@ -317,7 +317,7 @@ public class VehicleControlSystem : MonoBehaviour
             // INTEGRATION TO-DO: Make this part to select parking structure randomly so that the drones are randomly populated
             foreach (GameObject parkingStructure in sceneManager._parkingStructures.Keys)
             {
-                Parking ps = parkingStructure.GetComponent<Parking>();
+                ParkingControl ps = parkingStructure.GetComponent<ParkingControl>();
                 if (ps.parkingInfo.RemainingSpots > 0)
                 {
                     int vehicleTypeID = Random.Range(0, vehicleTypes.Count);
@@ -379,8 +379,8 @@ public class VehicleControlSystem : MonoBehaviour
     }
     public GameObject GetAvailableVehicleinParkingStrcuture(GameObject parkingStructure)
     {
-        int random = Mathf.RoundToInt(Random.Range(0, parkingStructure.GetComponent<Parking>().parkingInfo.VehicleAt.Keys.Count - 1));
-        return parkingStructure.GetComponent<Parking>().parkingInfo.VehicleAt.Keys.ElementAt<GameObject>(random);
+        int random = Mathf.RoundToInt(Random.Range(0, parkingStructure.GetComponent<ParkingControl>().parkingInfo.VehicleAt.Keys.Count - 1));
+        return parkingStructure.GetComponent<ParkingControl>().parkingInfo.VehicleAt.Keys.ElementAt<GameObject>(random);
     }
 
 
@@ -493,7 +493,7 @@ public class VehicleControlSystem : MonoBehaviour
         foreach (GameObject p in sceneManager._parkingStructures.Keys)
         {
             // find the nearest one with parked vehicles
-            if (p.GetComponent<Parking>().parkingInfo.VehicleAt.Keys.Count > 0)
+            if (p.GetComponent<ParkingControl>().parkingInfo.VehicleAt.Keys.Count > 0)
             {
                 if (Vector3.Distance(pickUpLocation, p.transform.position) < minDistance)
                 {
@@ -517,7 +517,7 @@ public class VehicleControlSystem : MonoBehaviour
         foreach (GameObject p in sceneManager._parkingStructures.Keys)
         {
             // find the nearest one with parked vehicles
-            if (p.GetComponent<Parking>().parkingInfo.VehicleAt.Keys.Count > 0)
+            if (p.GetComponent<ParkingControl>().parkingInfo.VehicleAt.Keys.Count > 0)
             {
                 if (Vector3.Distance(AAOCenter, p.transform.position) < minDistance)
                 {

@@ -11,15 +11,30 @@ namespace Assets.Scripts.Environment
     /// <summary>
     /// The instance of a parking structure in the scene itself.
     /// </summary>
-    public class SceneParkingStructure
+    public class SceneParkingStructure : SceneElementBase
     {
-        public GameObject SceneGameObject { get; set; }
-        public ParkingStructureBase ParkingStructureSpecs { get; set; }
+        public override string Guid { get; protected set; }
+        public ParkingStructureBase ParkingStructureSpecs { get; private set; }
+        public ParkingControl ParkingCtrl { get; private set; }
 
-        public SceneParkingStructure(GameObject gO, ParkingStructureBase pS)
+        public void Initialize(ParkingStructureBase pS, string guid)
         {
-            SceneGameObject = gO;
+            Guid = guid;
             ParkingStructureSpecs = pS;
+            gameObject.tag = "ParkingStructure";
+            gameObject.name = "Parking_" + pS.Type;
+            gameObject.layer = pS.Layer;
+            ParkingCtrl = gameObject.AddComponent<ParkingControl>();
+            ParkingCtrl.parkingInfo = pS;
+
+            UpdateGameObject();
+        }
+
+        public override void UpdateGameObject()
+        {
+            gameObject.transform.position = ParkingStructureSpecs.Position;
+            gameObject.transform.rotation = Quaternion.Euler(ParkingStructureSpecs.Rotation.x, ParkingStructureSpecs.Rotation.y, ParkingStructureSpecs.Rotation.z);
+            gameObject.transform.localScale = ParkingStructureSpecs.Scale;
         }
     }
 }

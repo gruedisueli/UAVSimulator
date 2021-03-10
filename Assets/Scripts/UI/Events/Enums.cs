@@ -6,12 +6,12 @@ using System.Threading.Tasks;
 
 namespace Assets.Scripts.UI.Events
 {
-    //public enum ElementFamily
-    //{
-    //    DronePort,
-    //    ParkingStruct,
-    //    RestrictionZone
-    //}
+    public enum ElementFamily
+    {
+        DronePort,
+        ParkingStruct,
+        RestrictionZone
+    }
 
     //public enum ElementCategory
     //{
@@ -42,13 +42,6 @@ namespace Assets.Scripts.UI.Events
         Cylindrical,
         CylindricalStacked
     }
-
-    //public enum UpdateElementType
-    //{
-    //    Add,
-    //    Remove,
-    //    Modify
-    //}
 
     public enum UpdatePropertyType
     {

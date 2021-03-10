@@ -65,5 +65,10 @@ namespace Assets.Scripts.Environment
                 _elements.Add(new RestrictionZoneCyl(e));
             }
         }
+
+        public override RestrictionZoneBase GetCopy()
+        {
+            return new RestrictionZoneCylStack(this);
+        }
     }
 }

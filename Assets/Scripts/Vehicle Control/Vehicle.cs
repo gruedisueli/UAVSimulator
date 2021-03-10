@@ -199,7 +199,7 @@ public class Vehicle : MonoBehaviour
             }
             else
             {
-                Parking p = currentPoint.GetComponent<Parking>();
+                ParkingControl p = currentPoint.GetComponent<ParkingControl>();
                 if(p == null)
                 {
                     Debug.Log("approaching - exception");

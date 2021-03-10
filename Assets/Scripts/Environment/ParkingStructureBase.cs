@@ -23,6 +23,8 @@ namespace Assets.Scripts.Environment
         public abstract Vector3 LandingQueueDirection { get; set; }
         public abstract List<Vector3> ParkingSpots { get; set; }
 
+        public abstract ParkingStructureBase GetCopy();
+
         public abstract Dictionary<Vector3, GameObject> Parked { get; set; }
         public abstract Dictionary<GameObject, Vector3> VehicleAt { get; set; }
         public abstract Dictionary<GameObject, Vector3> Reserved { get; set; }

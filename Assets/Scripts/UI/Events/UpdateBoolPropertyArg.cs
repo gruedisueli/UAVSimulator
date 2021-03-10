@@ -9,11 +9,11 @@ namespace Assets.Scripts.UI.Events
     /// <summary>
     /// A class to hold a single property update
     /// </summary>
-    public class UpdateFloatPropertyArg : UpdatePropertyArgBase, IUpdatePropertyArg<float>
+    public class UpdateBoolPropertyArg : UpdatePropertyArgBase, IUpdatePropertyArg<bool>
     {
         public override UpdatePropertyType Type { get; protected set; }
-        public float Value { get; private set; }
-        public UpdateFloatPropertyArg(UpdatePropertyType type, float value)
+        public bool Value { get; private set; }
+        public UpdateBoolPropertyArg(UpdatePropertyType type, bool value)
         {
             Type = type;
             Value = value;

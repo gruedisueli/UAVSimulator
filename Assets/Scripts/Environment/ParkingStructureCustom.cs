@@ -154,5 +154,10 @@ namespace Assets.Scripts.Environment
             ParkingSpots = new List<Vector3>(pS.ParkingSpots);
             RemainingSpots = ParkingSpots.Count;
         }
+
+        public override ParkingStructureBase GetCopy()
+        {
+            return new ParkingStructureCustom(this);
+        }
     }
 }

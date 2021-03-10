@@ -155,6 +155,11 @@ namespace Assets.Scripts.Environment
             RemainingSpots = ParkingSpots.Count;
         }
 
+        public override ParkingStructureBase GetCopy()
+        {
+            return new ParkingStructureRect(this);
+        }
+
         /// <summary>
         /// Applies a parking grid to current configuration of structure, using predefined rules. REMOVES any existing parking spots and rebuilds list.
         /// </summary>

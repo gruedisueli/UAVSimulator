@@ -179,6 +179,10 @@ namespace Assets.Scripts.Environment
             Position = pos;
         }
 
+        public override DronePortBase GetCopy()
+        {
+            return new DronePortRect(this);
+        }
 
         public DronePortRect(DronePortRect dP)
         {

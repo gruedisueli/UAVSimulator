@@ -149,6 +149,11 @@ namespace Assets.Scripts.Environment
             _scale = rZ.Scale;
         }
 
+        public override RestrictionZoneBase GetCopy()
+        {
+            return new RestrictionZoneCyl(this);
+        }
+
         public void SetXZPos(float x, float z)
         {
             _position = new Vector3(x, Position.y, z);

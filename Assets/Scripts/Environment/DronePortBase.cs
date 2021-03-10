@@ -25,6 +25,7 @@ namespace Assets.Scripts.Environment
         public abstract bool IsMountable { get; set; }
         public abstract bool IsOnTheGround { get; set; }
         public abstract bool IsScalable { get; set; }
+        public abstract DronePortBase GetCopy();
 
         // Translates to the global coordinate
         public Vector3 TranslateLandingGuidePosition(Vector3 parkingSpot)

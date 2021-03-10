@@ -12,6 +12,8 @@ using Assets.Scripts.UI.Events;
 namespace Assets.Scripts.UI.Panels
 {
     public delegate void ElementUpdated(IUpdateElementArgs args);
+    public delegate void StartUpdating();
+    public delegate void CommitChange(bool commitChange);
     
     /// <summary>
     /// A behavior that allows the user to modify existing simulation elements
@@ -20,20 +22,41 @@ namespace Assets.Scripts.UI.Panels
     {
         public abstract EditableField[] Fields { get; }
         public event ElementUpdated ElementUpdatedEvent;
+        public event CommitChange CommitChangeEvent;
+        public event StartUpdating StartUpdatingEvent;
 
+        /// <summary>
+        /// Called when turning on the modiifer.
+        /// </summary>
         public virtual void Activate()
         {
             gameObject.SetActive(true);
+            StartUpdatingEvent.Invoke();
         }
 
+        /// <summary>
+        /// Called when cancelling changes.
+        /// </summary>
         public virtual void Cancel()
         {
+            CommitChangeEvent.Invoke(false);
             gameObject.SetActive(false);
         }
 
-        public virtual void Complete()
+        /// <summary>
+        /// Called whenever a property is changed.
+        /// </summary>
+        public virtual void RegisterUpdate()
         {
             ElementUpdatedEvent.Invoke(GatherInformation());
+        }
+        
+        /// <summary>
+        /// Called when committing the changes.
+        /// </summary>
+        public virtual void Commit()
+        {
+            CommitChangeEvent.Invoke(true);
         }
 
         protected abstract IUpdateElementArgs GatherInformation();

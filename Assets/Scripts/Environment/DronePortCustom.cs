@@ -174,6 +174,11 @@ namespace Assets.Scripts.Environment
             }
         }
 
+        public override DronePortBase GetCopy()
+        {
+            return new DronePortCustom(this);
+        }
+
         public DronePortCustom(DronePortCustom dP)
         {
             _type = dP.Type;

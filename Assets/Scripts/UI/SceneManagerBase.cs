@@ -20,7 +20,7 @@ namespace Assets.Scripts.UI
 
         public List<GameObject> _destinationCollections;
         public Dictionary<GameObject, List<GameObject>> _routes;
-        protected Dictionary<string, GameObject> _restrictionZones;
+        protected Dictionary<string, SceneRestrictionZone> _restrictionZones;
 
         private void Start()
         {
@@ -28,7 +28,7 @@ namespace Assets.Scripts.UI
             _parkingStructures = new Dictionary<string, SceneParkingStructure>();
             _destinationCollections = new List<GameObject>();
             _routes = new Dictionary<GameObject, List<GameObject>>();
-            _restrictionZones = new Dictionary<string, GameObject>();
+            _restrictionZones = new Dictionary<string, SceneRestrictionZone>();
 
             Init();
 
@@ -46,7 +46,7 @@ namespace Assets.Scripts.UI
             _destinationCollections = new List<GameObject>();
             foreach (var kvp in _dronePorts)
             {
-                _destinationCollections.Add(kvp.Value.SceneGameObject);
+                _destinationCollections.Add(kvp.Value.gameObject);
             }
 
 
@@ -89,7 +89,56 @@ namespace Assets.Scripts.UI
             return parking_capacity;
         }
 
+        /// <summary>
+        /// Attempts to remove drone port.
+        /// </summary>
+        protected void RemoveDronePort(string guid)
+        {
+            EnvironManager.Instance.RemoveDronePort(guid);
+            if (_dronePorts.ContainsKey(guid))
+            {
+                _dronePorts[guid].Destroy();
+                _dronePorts.Remove(guid);
+            }
+            else
+            {
+                Debug.LogError("Drone port for removal not found in scene dictionary");
+            }
+        }
 
+        /// <summary>
+        /// Attempts to remove parking structure.
+        /// </summary>
+        protected void RemoveParkingStructure(string guid)
+        {
+            EnvironManager.Instance.RemoveParkingStructure(guid);
+            if (_parkingStructures.ContainsKey(guid))
+            {
+                _parkingStructures[guid].Destroy();
+                _parkingStructures.Remove(guid);
+            }
+            else
+            {
+                Debug.LogError("Parking structure for removal not found in scene dictionary");
+            }
+        }
+
+        /// <summary>
+        /// Attempts to remove restriction zone.
+        /// </summary>
+        protected void RemoveRestrictionZone(string guid)
+        {
+            EnvironManager.Instance.RemoveRestrictionZone(guid);
+            if (_restrictionZones.ContainsKey(guid))
+            {
+                _restrictionZones[guid].Destroy();
+                _restrictionZones.Remove(guid);
+            }
+            else
+            {
+                Debug.LogError("Restriction zone for removal not found in scene dictionary");
+            }
+        }
         
     }
 }
