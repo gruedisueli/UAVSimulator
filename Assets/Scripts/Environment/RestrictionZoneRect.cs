@@ -113,27 +113,27 @@ namespace Assets.Scripts.Environment
                     //    {
 
                     //    }
-                    case UpdatePropertyType.Height:
+                    case ElementPropertyType.Height:
                         {
                             Height = (args as UpdateFloatPropertyArg).Value;
                             break;
                         }
-                    case UpdatePropertyType.XScale:
+                    case ElementPropertyType.XScale:
                         {
                             SetXScale((args as UpdateFloatPropertyArg).Value);
                             break;
                         }
-                    case UpdatePropertyType.ZScale:
+                    case ElementPropertyType.ZScale:
                         {
                             SetZScale((args as UpdateFloatPropertyArg).Value);
                             break;
                         }
-                    case UpdatePropertyType.Position:
+                    case ElementPropertyType.Position:
                         {
                             Position = (args as UpdateVector3PropertyArg).Value;
                             break;
                         }
-                    case UpdatePropertyType.Rotation:
+                    case ElementPropertyType.Rotation:
                         {
                             Rotation = (args as UpdateVector3PropertyArg).Value;
                             break;

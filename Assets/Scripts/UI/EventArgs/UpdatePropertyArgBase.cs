@@ -8,6 +8,6 @@ namespace Assets.Scripts.UI.EventArgs
 {
     public abstract class UpdatePropertyArgBase
     {
-        public abstract UpdatePropertyType Type { get; protected set; } 
+        public abstract ElementPropertyType Type { get; protected set; } 
     }
 }

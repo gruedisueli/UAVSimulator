@@ -8,7 +8,7 @@ using UnityEngine;
 
 using Assets.Scripts.UI.EventArgs;
 
-namespace Assets.Scripts.UI.Panels
+namespace Assets.Scripts.UI.Tools
 {
     public delegate void ElementRemoved(IRemoveElementArgs args);
 

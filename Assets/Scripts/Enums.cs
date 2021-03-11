@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Assets.Scripts.UI.EventArgs
+namespace Assets.Scripts
 {
     public enum ElementFamily
     {
@@ -12,17 +12,6 @@ namespace Assets.Scripts.UI.EventArgs
         ParkingStruct,
         RestrictionZone
     }
-
-    //public enum ElementCategory
-    //{
-    //    DronePortRect,
-    //    DronePortCustom,
-    //    ParkingStructRect,
-    //    ParkingStructCustom,
-    //    RestrictionZoneRect,
-    //    RestrictionZoneCyl,
-    //    RestrictionZoneCylStack
-    //}
 
     public enum DronePortCategory
     {
@@ -43,7 +32,7 @@ namespace Assets.Scripts.UI.EventArgs
         CylindricalStacked
     }
 
-    public enum UpdatePropertyType
+    public enum ElementPropertyType
     {
         Type,
         XZPosition,

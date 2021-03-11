@@ -12,7 +12,7 @@ using Mapbox.Unity.Map;
 
 using Assets.Scripts.Environment;
 using Assets.Scripts.MapboxCustom;
-using Assets.Scripts.UI.Panels;
+using Assets.Scripts.UI.Tools;
 using Assets.Scripts.UI.EventArgs;
 
 namespace Assets.Scripts.UI
@@ -29,6 +29,11 @@ namespace Assets.Scripts.UI
             
             //get tile provider
             _tileProvider = (FOA_RangeAroundTransformTileProvider)FindObjectOfType(typeof(FOA_RangeAroundTransformTileProvider));
+            if (_tileProvider == null)
+            {
+                Debug.LogError("Tile provider not found");
+                return;
+            }
 
             var eC = EnvironManager.Instance;
             //var city = eC.Environ.GetCity(eC.ActiveCity);

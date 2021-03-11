@@ -11,7 +11,7 @@ using Assets.Scripts.Environment;
 using UnityEngine.UI;
 
 
-namespace Assets.Scripts.UI.Panels
+namespace Assets.Scripts.UI.Tools
 {
     public class SavePrompt : MonoBehaviour
     {

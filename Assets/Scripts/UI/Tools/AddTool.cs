@@ -8,7 +8,7 @@ using Assets.Scripts.UI.EventArgs;
 
 using UnityEngine;
 
-namespace Assets.Scripts.UI.Panels
+namespace Assets.Scripts.UI.Tools
 {
     public delegate void ElementAdded(IAddElementArgs args);
 

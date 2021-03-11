@@ -16,7 +16,7 @@ using Mapbox.Unity.Utilities;
 using Assets.Scripts.Environment;
 using Assets.Scripts.Serialization;
 using Assets.Scripts.UI.Tags;
-using Assets.Scripts.UI.Panels;
+using Assets.Scripts.UI.Tools;
 
 namespace Assets.Scripts.UI
 {
@@ -24,7 +24,8 @@ namespace Assets.Scripts.UI
     {
         public GameObject _cityMarkerPrefab;
         public GameObject _markCityPanel;
-        public RegionRight _regionRight;
+
+        private RegionRight _regionRight;
 
         /// <summary>
         /// City markers in region, keyed by guid.
@@ -45,10 +46,13 @@ namespace Assets.Scripts.UI
                     InstantiateCityMarker(c.RegionTileWorldCenter, cityTileSide, c.WorldPos, c.CityStats.Name, kvp.Key, c.CityStats.EastExt, c.CityStats.WestExt, c.CityStats.NorthExt, c.CityStats.SouthExt);
                 }
             }
-            if (_regionRight != null)
+            _regionRight = (RegionRight)FindObjectOfType(typeof(RegionRight));
+            if (_regionRight == null)
             {
-                _regionRight.statsChanged += UpdateCityStats;
+                Debug.LogError("Region right not found");
+                return;
             }
+            _regionRight.statsChanged += UpdateCityStats;
         }
 
         #region INSTANTIATION

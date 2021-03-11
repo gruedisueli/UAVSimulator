@@ -9,7 +9,7 @@ using UnityEngine;
 using Assets.Scripts.UI.Fields;
 using Assets.Scripts.UI.EventArgs;
 
-namespace Assets.Scripts.UI.Panels
+namespace Assets.Scripts.UI.Tools
 {
     public delegate void ElementUpdated(IUpdateElementArgs args);
     public delegate void StartUpdating();

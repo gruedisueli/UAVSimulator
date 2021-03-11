@@ -10,7 +10,7 @@ using UnityEngine.UI;
 using Assets.Scripts.UI.Fields;
 using Assets.Scripts.Environment;
 
-namespace Assets.Scripts.UI.Panels
+namespace Assets.Scripts.UI.Tools
 {
     public delegate void CityStatsChanged(string guid, CityOptions stats);
 

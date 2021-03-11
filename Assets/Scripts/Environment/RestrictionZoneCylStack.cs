@@ -79,7 +79,7 @@ namespace Assets.Scripts.Environment
             {
                 switch (args.Type)
                 {
-                    case UpdatePropertyType.Position:
+                    case ElementPropertyType.Position:
                         {
                             Position = (args as UpdateVector3PropertyArg).Value;
                             break;

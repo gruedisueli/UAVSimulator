@@ -171,32 +171,32 @@ namespace Assets.Scripts.Environment
                     //    {
 
                     //    }
-                    case UpdatePropertyType.Height:
+                    case ElementPropertyType.Height:
                         {
                             Height = (args as UpdateFloatPropertyArg).Value;
                             break;
                         }
-                    case UpdatePropertyType.Radius:
+                    case ElementPropertyType.Radius:
                         {
                             Radius = (args as UpdateFloatPropertyArg).Value;
                             break;
                         }
-                    case UpdatePropertyType.Bottom:
+                    case ElementPropertyType.Bottom:
                         {
                             Bottom = (args as UpdateFloatPropertyArg).Value;
                             break;
                         }
-                    case UpdatePropertyType.Top:
+                    case ElementPropertyType.Top:
                         {
                             Top = (args as UpdateFloatPropertyArg).Value;
                             break;
                         }
-                    case UpdatePropertyType.XZPosition:
+                    case ElementPropertyType.XZPosition:
                         {
                             SetXZPos((args as UpdateVector3PropertyArg).Value);
                             break;
                         }
-                    case UpdatePropertyType.Rotation:
+                    case ElementPropertyType.Rotation:
                         {
                             Rotation = (args as UpdateVector3PropertyArg).Value;
                             break;

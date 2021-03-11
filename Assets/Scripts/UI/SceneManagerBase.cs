@@ -12,7 +12,7 @@ using UnityEngine;
 
 using Mapbox.Unity.Map;
 
-using Assets.Scripts.UI.Panels;
+using Assets.Scripts.UI.Tools;
 using Assets.Scripts.UI.EventArgs;
 
 namespace Assets.Scripts.UI
@@ -62,15 +62,30 @@ namespace Assets.Scripts.UI
 
             //get mapbox abstract map
             _abstractMap = (AbstractMap)FindObjectOfType(typeof(AbstractMap));
+            if (_abstractMap == null)
+            {
+                Debug.LogError("Abstract map not found");
+                return;
+            }
 
             //get main camera
             _mainCamera = Camera.main;
+            if (_mainCamera == null)
+            {
+                Debug.LogError("Main camera not found");
+                return;
+            }
 
             //gather UI elments
             _modifyPanels = (UpdateTool[])FindObjectsOfType(typeof(UpdateTool));
             _addElements = (AddTool[])FindObjectsOfType(typeof(AddTool));
             _removeElements = (RemoveTool[])FindObjectsOfType(typeof(RemoveTool));
             _savePrompt = (SavePrompt)FindObjectOfType(typeof(SavePrompt));
+            if (_savePrompt == null)
+            {
+                Debug.LogError("Save prompt not found");
+                return;
+            }
 
             //event subscription
             foreach (var m in _modifyPanels)
@@ -111,6 +126,18 @@ namespace Assets.Scripts.UI
             foreach (var r in _removeElements)
             {
                 r.ElementRemovedEvent -= RemoveElement;
+            }
+            foreach(var d in DronePorts)
+            {
+                d.Value.OnSceneElementSelected -= SelectElement;
+            }
+            foreach(var p in ParkingStructures)
+            {
+                p.Value.OnSceneElementSelected -= SelectElement;
+            }
+            foreach(var r in RestrictionZones)
+            {
+                r.Value.OnSceneElementSelected -= SelectElement;
             }
         }
 
@@ -296,57 +323,57 @@ namespace Assets.Scripts.UI
                     //        //envDP.Type = (args.Update as UpdateStringPropertyArg)?.Value;
                     //        //special case: need to reinstantiate
                     //    }
-                    case UpdatePropertyType.Position:
+                    case ElementPropertyType.Position:
                         {
                             dP.Position = (args.Update as UpdateVector3PropertyArg).Value;
                             break;
                         }
-                    case UpdatePropertyType.Rotation:
+                    case ElementPropertyType.Rotation:
                         {
                             dP.Rotation = (args.Update as UpdateVector3PropertyArg).Value;
                             break;
                         }
-                    case UpdatePropertyType.Scale:
+                    case ElementPropertyType.Scale:
                         {
                             dP.Scale = (args.Update as UpdateVector3PropertyArg).Value;
                             break;
                         }
-                    case UpdatePropertyType.StandByPos:
+                    case ElementPropertyType.StandByPos:
                         {
                             dP.StandbyPosition = (args.Update as UpdateVector3PropertyArg).Value;
                             break;
                         }
-                    case UpdatePropertyType.LandingQueueHead:
+                    case ElementPropertyType.LandingQueueHead:
                         {
                             dP.LandingQueueHead = (args.Update as UpdateVector3PropertyArg).Value;
                             break;
                         }
-                    case UpdatePropertyType.LandingQueueDirection:
+                    case ElementPropertyType.LandingQueueDirection:
                         {
                             dP.LandingQueueDirection = (args.Update as UpdateVector3PropertyArg).Value;
                             break;
                         }
-                    case UpdatePropertyType.LandingPoint:
+                    case ElementPropertyType.LandingPoint:
                         {
                             dP.LandingPoint = (args.Update as UpdateVector3PropertyArg).Value;
                             break;
                         }
-                    case UpdatePropertyType.MaxVehicleSize:
+                    case ElementPropertyType.MaxVehicleSize:
                         {
                             dP.MaximumVehicleSize = (args.Update as UpdateFloatPropertyArg).Value;
                             break;
                         }
-                    case UpdatePropertyType.IsMountable:
+                    case ElementPropertyType.IsMountable:
                         {
                             dP.IsMountable = (args.Update as UpdateBoolPropertyArg).Value;
                             break;
                         }
-                    case UpdatePropertyType.IsOnTheGround:
+                    case ElementPropertyType.IsOnTheGround:
                         {
                             dP.IsOnTheGround = (args.Update as UpdateBoolPropertyArg).Value;
                             break;
                         }
-                    case UpdatePropertyType.IsScalable:
+                    case ElementPropertyType.IsScalable:
                         {
                             dP.IsScalable = (args.Update as UpdateBoolPropertyArg).Value;
                             break;
@@ -390,32 +417,32 @@ namespace Assets.Scripts.UI
                     //        //envDP.Type = (args.Update as UpdateStringPropertyArg)?.Value;
                     //        //special case: need to reinstantiate
                     //    }
-                    case UpdatePropertyType.Position:
+                    case ElementPropertyType.Position:
                         {
                             pS.Position = (args.Update as UpdateVector3PropertyArg).Value;
                             break;
                         }
-                    case UpdatePropertyType.Rotation:
+                    case ElementPropertyType.Rotation:
                         {
                             pS.Rotation = (args.Update as UpdateVector3PropertyArg).Value;
                             break;
                         }
-                    case UpdatePropertyType.Scale:
+                    case ElementPropertyType.Scale:
                         {
                             pS.Scale = (args.Update as UpdateVector3PropertyArg).Value;
                             break;
                         }
-                    case UpdatePropertyType.StandByPos:
+                    case ElementPropertyType.StandByPos:
                         {
                             pS.StandbyPosition = (args.Update as UpdateVector3PropertyArg).Value;
                             break;
                         }
-                    case UpdatePropertyType.LandingQueueHead:
+                    case ElementPropertyType.LandingQueueHead:
                         {
                             pS.LandingQueueHead = (args.Update as UpdateVector3PropertyArg).Value;
                             break;
                         }
-                    case UpdatePropertyType.LandingQueueDirection:
+                    case ElementPropertyType.LandingQueueDirection:
                         {
                             pS.LandingQueueDirection = (args.Update as UpdateVector3PropertyArg).Value;
                             break;

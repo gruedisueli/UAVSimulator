@@ -13,9 +13,9 @@ namespace Assets.Scripts.UI.EventArgs
     /// </summary>
     public class UpdateVector3PropertyArg : UpdatePropertyArgBase, IUpdatePropertyArg<Vector3>
     {
-        public override UpdatePropertyType Type { get; protected set; }
+        public override ElementPropertyType Type { get; protected set; }
         public Vector3 Value { get; private set; }
-        public UpdateVector3PropertyArg(UpdatePropertyType type, Vector3 value)
+        public UpdateVector3PropertyArg(ElementPropertyType type, Vector3 value)
         {
             Type = type;
             Value = value;

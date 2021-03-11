@@ -8,8 +8,7 @@
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProductVersion>10.0.20506</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
-    <RootNamespace>
-    </RootNamespace>
+    <RootNamespace></RootNamespace>
     <ProjectGuid>{365135D0-FE80-8477-C2D5-A30D0A9F9CDA}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
@@ -169,7 +168,7 @@
     <Compile Include="Assets\Mapbox\Core\mapbox-sdk-cs\Geocoding\Geocoder.cs" />
     <Compile Include="Assets\Mapbox\Unity\Map\Interfaces\IMap.cs" />
     <Compile Include="Assets\Mapbox\Unity\SourceLayers\ILayer.cs" />
-    <Compile Include="Assets\Scripts\UI\Panels\RemoveTool.cs" />
+    <Compile Include="Assets\Scripts\UI\Tools\RemoveTool.cs" />
     <Compile Include="Assets\Mapbox\Unity\SourceLayers\ISubLayerColorStyle.cs" />
     <Compile Include="Assets\Mapbox\Unity\Telemetry\TelemetryIos.cs" />
     <Compile Include="Assets\Mapbox\Core\mapbox-sdk-cs\Map\RasterTile.cs" />
@@ -191,7 +190,7 @@
     <Compile Include="Assets\Mapbox\Unity\MeshGeneration\Components\FeatureBehaviour.cs" />
     <Compile Include="Assets\Mapbox\Core\mapbox-sdk-cs\Platform\HTTPRequestThreaded.cs" />
     <Compile Include="Assets\Mapbox\Core\mapbox-sdk-cs\Utils\Vector2d\RectD.cs" />
-    <Compile Include="Assets\Scripts\UI\Panels\AddTool.cs" />
+    <Compile Include="Assets\Scripts\UI\Tools\AddTool.cs" />
     <Compile Include="Assets\Mapbox\Unity\SourceLayers\ISubLayerLineGeometryOptions.cs" />
     <Compile Include="Assets\Mapbox\Core\mapbox-sdk-cs\Utils\CircularBuffer.cs" />
     <Compile Include="Assets\Mapbox\Examples\Scripts\PoiMarkerHelper.cs" />
@@ -257,7 +256,7 @@
     <Compile Include="Assets\Mapbox\Unity\MeshGeneration\Modifiers\GameObjectModifiers\NoiseOffsetModifier.cs" />
     <Compile Include="Assets\Mapbox\Unity\MeshGeneration\Modifiers\MeshModifiers\ChamferHeightModifier.cs" />
     <Compile Include="Assets\Mapbox\Core\mapbox-sdk-cs\Platform\IAsyncRequest.cs" />
-    <Compile Include="Assets\Scripts\UI\EventArgs\Enums.cs" />
+    <Compile Include="Assets\Scripts\Enums.cs" />
     <Compile Include="Assets\Mapbox\Unity\MeshGeneration\LayerVisualizers\VectorLayerVisualizer.cs" />
     <Compile Include="Assets\Mapbox\Unity\Utilities\NodeEditorElementAttribute.cs" />
     <Compile Include="Assets\Scripts\Environment\DronePortAssetPack.cs" />
@@ -348,7 +347,7 @@
     <Compile Include="Assets\Scripts\UI\EventArgs\UpdateFloatPropertyArg.cs" />
     <Compile Include="Assets\Mapbox\Unity\Telemetry\TelemetryDummy.cs" />
     <Compile Include="Assets\Mapbox\Core\mapbox-sdk-cs\Map\TileCover.cs" />
-    <Compile Include="Assets\Scripts\UI\Panels\RegionRight.cs" />
+    <Compile Include="Assets\Scripts\UI\Tools\RegionRight.cs" />
     <Compile Include="Assets\Mapbox\Unity\Map\Strategies\MapScalingAtUnityScaleStrategy.cs" />
     <Compile Include="Assets\Mapbox\Unity\DataContainers\TileJsonData.cs" />
     <Compile Include="Assets\Mapbox\Core\mapbox-sdk-cs\Directions\Response\Step.cs" />
@@ -367,7 +366,7 @@
     <Compile Include="Assets\Mapbox\Unity\MeshGeneration\Modifiers\GameObjectModifiers\AddMonoBehavioursModifier.cs" />
     <Compile Include="Assets\Scripts\UI\EventArgs\UpdateVector3PropertyArg.cs" />
     <Compile Include="Assets\Mapbox\Unity\MeshGeneration\Factories\ImageDataFetcher.cs" />
-    <Compile Include="Assets\Scripts\UI\Panels\SavePrompt.cs" />
+    <Compile Include="Assets\Scripts\UI\Tools\SavePrompt.cs" />
     <Compile Include="Assets\Scripts\UI\FindLocationManager.cs" />
     <Compile Include="Assets\Mapbox\Core\mapbox-sdk-cs\Tokens\MapboxTokenApi.cs" />
     <Compile Include="Assets\Mapbox\Unity\Map\TileProviders\AbstractTileProvider.cs" />
@@ -473,7 +472,7 @@
     <Compile Include="Assets\Mapbox\Unity\MeshGeneration\Modifiers\GameObjectModifiers\LayerModifier.cs" />
     <Compile Include="Assets\Mapbox\Unity\SourceLayers\ISubLayerModeling.cs" />
     <Compile Include="Assets\Mapbox\Unity\Map\Interfaces\IUnifiedMap.cs" />
-    <Compile Include="Assets\Scripts\UI\Panels\UpdateTool.cs" />
+    <Compile Include="Assets\Scripts\UI\Tools\UpdateTool.cs" />
     <Compile Include="Assets\Mapbox\Unity\Utilities\ObjectPool.cs" />
     <Compile Include="Assets\Scripts\Environment\DronePortCustom.cs" />
     <Compile Include="Assets\Mapbox\Unity\MeshGeneration\Filters\TypeFilter.cs" />
@@ -494,38 +493,38 @@
     <Compile Include="Assets\Mapbox\Unity\MeshGeneration\Modifiers\ModifierStack.cs" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Assets\Mapbox\Core\Plugins\Mapbox\vector-tile-cs\net46\Mapbox.VectorTile.Geometry.dll" />
-    <None Include="Assets\Mapbox\Examples\2_AstronautGame\AstronautGame\Astronaut\ProjectorLight.shader" />
-    <None Include="Assets\Mapbox\Core\Plugins\Mapbox\vector-tile-cs\portable-net45+uap10\Mapbox.VectorTile.PbfReader.dll" />
-    <None Include="Assets\Mapbox\Unity\Location\ExampleGpsTraces\LocationProviderAndroidNative.txt" />
-    <None Include="Assets\Mapbox\Examples\2_AstronautGame\AstronautGame\Building\CharacterBuildingShader.shader" />
-    <None Include="Assets\Mapbox\Shaders\MapboxStylesPerRenderer.shader" />
-    <None Include="Assets\Mapbox\Unity\Location\ExampleGpsTraces\LocationProviderUnity.txt" />
-    <None Include="Assets\Mapbox\link.xml" />
-    <None Include="Assets\Mapbox\Core\Plugins\sqlite\x64\sqlite3.dll" />
-    <None Include="Assets\Mapbox\Core\Plugins\Mapbox\vector-tile-cs\net46\Mapbox.VectorTile.PbfReader.dll" />
-    <None Include="Assets\Mapbox\Core\Plugins\sqlite\x86\sqlite3.dll" />
-    <None Include="Assets\Mapbox\Core\Plugins\Mapbox\MapboxAccounts\net35\MapboxAccountsUnity.dll" />
-    <None Include="Assets\Mapbox\Core\Plugins\Mapbox\vector-tile-cs\portable-net45+uap10\Mapbox.VectorTile.Geometry.dll" />
-    <None Include="Assets\Mapbox\Shaders\MapboxStyles.shader" />
-    <None Include="Assets\Mapbox\Core\Plugins\ThirdParty\Mapbox.Json\Portable\Mapbox.Json.dll" />
-    <None Include="Assets\Mapbox\Core\Plugins\ThirdParty\Mapbox.IO.Compression\net35\Mapbox.IO.Compression.dll" />
-    <None Include="Assets\Mapbox\Core\Plugins\Mapbox\vector-tile-cs\net46\Mapbox.VectorTile.VectorTileReader.dll" />
-    <None Include="Assets\Mapbox\Core\Plugins\Mapbox\vector-tile-cs\net46\Mapbox.VectorTile.ExtensionMethods.dll" />
-    <None Include="Assets\Scripts\Vehicle Control\VehicleData.xml" />
-    <None Include="Assets\Mapbox\README.txt" />
-    <None Include="Assets\Mapbox\Core\Plugins\Android\UniAndroidPermission\AndroidManifest-uniRP.xml" />
-    <None Include="Assets\Mapbox\Core\Plugins\Mapbox\vector-tile-cs\portable-net45+uap10\Mapbox.VectorTile.ExtensionMethods.dll" />
-    <None Include="Assets\Mapbox\Core\Plugins\Mapbox\vector-tile-cs\portable-net45+uap10\Mapbox.VectorTile.VectorTileReader.dll" />
-    <None Include="Assets\Resources\Mapbox\MapboxConfiguration.txt" />
-    <None Include="Assets\Mapbox\Core\Plugins\link.xml" />
-    <None Include="Assets\Mapbox\Shaders\RasterWithTransparencyShader.shader" />
-    <None Include="Assets\Mapbox\Core\Plugins\ThirdParty\Mapbox.Json\Net35\Mapbox.Json.dll" />
-    <None Include="Assets\Mapbox\Fonts\OpenSansLic.txt" />
-    <None Include="Assets\Mapbox\Core\Plugins\Mapbox\MapboxAccounts\net4x\MapboxAccountsUnity.dll" />
-    <None Include="Assets\Mapbox\Unity\Location\ExampleGpsTraces\Helsinki.txt" />
-    <None Include="Assets\Mapbox\Core\Plugins\ThirdParty\Mapbox.IO.Compression\uap10\Mapbox.IO.Compression.dll" />
-    <None Include="Assets\Mapbox\Unity\Location\ExampleGpsTraces\LocationProviderAndroidNative-2.txt" />
+     <None Include="Assets\Mapbox\Core\Plugins\Mapbox\vector-tile-cs\net46\Mapbox.VectorTile.Geometry.dll" />
+     <None Include="Assets\Mapbox\Examples\2_AstronautGame\AstronautGame\Astronaut\ProjectorLight.shader" />
+     <None Include="Assets\Mapbox\Core\Plugins\Mapbox\vector-tile-cs\portable-net45+uap10\Mapbox.VectorTile.PbfReader.dll" />
+     <None Include="Assets\Mapbox\Unity\Location\ExampleGpsTraces\LocationProviderAndroidNative.txt" />
+     <None Include="Assets\Mapbox\Examples\2_AstronautGame\AstronautGame\Building\CharacterBuildingShader.shader" />
+     <None Include="Assets\Mapbox\Shaders\MapboxStylesPerRenderer.shader" />
+     <None Include="Assets\Mapbox\Unity\Location\ExampleGpsTraces\LocationProviderUnity.txt" />
+     <None Include="Assets\Mapbox\link.xml" />
+     <None Include="Assets\Mapbox\Core\Plugins\sqlite\x64\sqlite3.dll" />
+     <None Include="Assets\Mapbox\Core\Plugins\Mapbox\vector-tile-cs\net46\Mapbox.VectorTile.PbfReader.dll" />
+     <None Include="Assets\Mapbox\Core\Plugins\sqlite\x86\sqlite3.dll" />
+     <None Include="Assets\Mapbox\Core\Plugins\Mapbox\MapboxAccounts\net35\MapboxAccountsUnity.dll" />
+     <None Include="Assets\Mapbox\Core\Plugins\Mapbox\vector-tile-cs\portable-net45+uap10\Mapbox.VectorTile.Geometry.dll" />
+     <None Include="Assets\Mapbox\Shaders\MapboxStyles.shader" />
+     <None Include="Assets\Mapbox\Core\Plugins\ThirdParty\Mapbox.Json\Portable\Mapbox.Json.dll" />
+     <None Include="Assets\Mapbox\Core\Plugins\ThirdParty\Mapbox.IO.Compression\net35\Mapbox.IO.Compression.dll" />
+     <None Include="Assets\Mapbox\Core\Plugins\Mapbox\vector-tile-cs\net46\Mapbox.VectorTile.VectorTileReader.dll" />
+     <None Include="Assets\Mapbox\Core\Plugins\Mapbox\vector-tile-cs\net46\Mapbox.VectorTile.ExtensionMethods.dll" />
+     <None Include="Assets\Scripts\Vehicle Control\VehicleData.xml" />
+     <None Include="Assets\Mapbox\README.txt" />
+     <None Include="Assets\Mapbox\Core\Plugins\Android\UniAndroidPermission\AndroidManifest-uniRP.xml" />
+     <None Include="Assets\Mapbox\Core\Plugins\Mapbox\vector-tile-cs\portable-net45+uap10\Mapbox.VectorTile.ExtensionMethods.dll" />
+     <None Include="Assets\Mapbox\Core\Plugins\Mapbox\vector-tile-cs\portable-net45+uap10\Mapbox.VectorTile.VectorTileReader.dll" />
+     <None Include="Assets\Resources\Mapbox\MapboxConfiguration.txt" />
+     <None Include="Assets\Mapbox\Core\Plugins\link.xml" />
+     <None Include="Assets\Mapbox\Shaders\RasterWithTransparencyShader.shader" />
+     <None Include="Assets\Mapbox\Core\Plugins\ThirdParty\Mapbox.Json\Net35\Mapbox.Json.dll" />
+     <None Include="Assets\Mapbox\Fonts\OpenSansLic.txt" />
+     <None Include="Assets\Mapbox\Core\Plugins\Mapbox\MapboxAccounts\net4x\MapboxAccountsUnity.dll" />
+     <None Include="Assets\Mapbox\Unity\Location\ExampleGpsTraces\Helsinki.txt" />
+     <None Include="Assets\Mapbox\Core\Plugins\ThirdParty\Mapbox.IO.Compression\uap10\Mapbox.IO.Compression.dll" />
+     <None Include="Assets\Mapbox\Unity\Location\ExampleGpsTraces\LocationProviderAndroidNative-2.txt" />
     <Reference Include="UnityEngine">
       <HintPath>C:\Program Files\Unity\Hub\Editor\2020.1.15f1\Editor\Data\Managed\UnityEngine\UnityEngine.dll</HintPath>
     </Reference>

@@ -11,9 +11,9 @@ namespace Assets.Scripts.UI.EventArgs
     /// </summary>
     public class UpdateBoolPropertyArg : UpdatePropertyArgBase, IUpdatePropertyArg<bool>
     {
-        public override UpdatePropertyType Type { get; protected set; }
+        public override ElementPropertyType Type { get; protected set; }
         public bool Value { get; private set; }
-        public UpdateBoolPropertyArg(UpdatePropertyType type, bool value)
+        public UpdateBoolPropertyArg(ElementPropertyType type, bool value)
         {
             Type = type;
             Value = value;

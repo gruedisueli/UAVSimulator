@@ -11,9 +11,9 @@ namespace Assets.Scripts.UI.EventArgs
     /// </summary>
     public class UpdateStringPropertyArg : UpdatePropertyArgBase, IUpdatePropertyArg<string>
     {
-        public override UpdatePropertyType Type { get; protected set; }
+        public override ElementPropertyType Type { get; protected set; }
         public string Value { get; private set; }
-        public UpdateStringPropertyArg(UpdatePropertyType type, string value)
+        public UpdateStringPropertyArg(ElementPropertyType type, string value)
         {
             Type = type;
             Value = value;

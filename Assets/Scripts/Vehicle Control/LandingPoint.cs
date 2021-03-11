@@ -16,7 +16,7 @@ public class LandingPoint : MonoBehaviour
     private Queue<GameObject> departureQueue;
     private GameObject vehicleOnThisPoint;
 
-    private string name;
+    private string landingName;
 
     public Vector3 baseLocation;
     public List<Vector3> landingStandByPoints;
@@ -35,7 +35,7 @@ public class LandingPoint : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        name = null;
+        landingName = null;
         baseLocation = new Vector3();
         currentTarget = null;
         signal = null;
@@ -205,7 +205,7 @@ public class LandingPoint : MonoBehaviour
 
     public void Register(string name, Vector3 basePoint)
     {
-        this.name = name;
+        this.landingName = name;
         this.baseLocation = basePoint;
     }
     public void RegisterArrivalInfo(Vector3 point, Queue<Vector3> guides)

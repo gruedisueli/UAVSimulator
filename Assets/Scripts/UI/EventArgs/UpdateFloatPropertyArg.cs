@@ -11,9 +11,9 @@ namespace Assets.Scripts.UI.EventArgs
     /// </summary>
     public class UpdateFloatPropertyArg : UpdatePropertyArgBase, IUpdatePropertyArg<float>
     {
-        public override UpdatePropertyType Type { get; protected set; }
+        public override ElementPropertyType Type { get; protected set; }
         public float Value { get; private set; }
-        public UpdateFloatPropertyArg(UpdatePropertyType type, float value)
+        public UpdateFloatPropertyArg(ElementPropertyType type, float value)
         {
             Type = type;
             Value = value;

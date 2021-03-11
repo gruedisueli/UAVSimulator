@@ -9,6 +9,7 @@ using Assets.Scripts.Vehicle_Control;
 using Assets.Scripts.DataStructure;
 using Assets.Scripts.Environment;
 using Assets.Scripts.UI;
+using Assets.Scripts;
 
 
 public class VehicleControlSystem : MonoBehaviour
@@ -315,16 +316,17 @@ public class VehicleControlSystem : MonoBehaviour
         for (int i = 0; i < vehiclesToInstantiate; i++)
         {
             // INTEGRATION TO-DO: Make this part to select parking structure randomly so that the drones are randomly populated
-            foreach (GameObject parkingStructure in sceneManager.ParkingStructures.Keys)
+            foreach (var key in sceneManager.ParkingStructures.Keys)
             {
-                ParkingControl ps = parkingStructure.GetComponent<ParkingControl>();
-                if (ps.parkingInfo.RemainingSpots > 0)
+                var sPS = sceneManager.ParkingStructures[key];
+                ParkingControl pC = sPS.ParkingCtrl;
+                if (pC.parkingInfo.RemainingSpots > 0)
                 {
                     int vehicleTypeID = Random.Range(0, vehicleTypes.Count);
                     var newDrone = Resources.Load<GameObject>(drone_path + vehicleTypes[vehicleTypeID]);
                     var type = vehicleTypes[vehicleTypeID];
-                    var emptySpot = ps.parkingInfo.GetEmptySpot();
-                    var translatedSpot = ps.parkingInfo.TranslateParkingSpot(emptySpot);
+                    var emptySpot = pC.parkingInfo.GetEmptySpot();
+                    var translatedSpot = pC.parkingInfo.TranslateParkingSpot(emptySpot);
 
                     // instantiate the vehicle at emptySpot
                     var clone = Instantiate(newDrone, translatedSpot, Quaternion.Euler(0.0f, 0.0f, 0.0f));
@@ -338,11 +340,11 @@ public class VehicleControlSystem : MonoBehaviour
                     // Fill in vehivle spec
                     Vehicle v = clone.AddComponent<Vehicle>();
                     v.SetVehicleInfo(vehicleSpecs[type].type, vehicleSpecs[type].capacity, vehicleSpecs[type].range, vehicleSpecs[type].maxSpeed, vehicleSpecs[type].yawSpeed, vehicleSpecs[type].takeoffSpeed, vehicleSpecs[type].landingSpeed, vehicleSpecs[type].emission, vehicleSpecs[type].noise);
-                    v.currentPoint = parkingStructure;
+                    v.currentPoint = sPS.gameObject;
                     vehicles.Add(clone);
 
                     // Update parking management info
-                    ps.parkingInfo.ParkAt(emptySpot, clone);
+                    pC.parkingInfo.ParkAt(emptySpot, clone);
 
                     break;
                 }
@@ -354,19 +356,23 @@ public class VehicleControlSystem : MonoBehaviour
     {
         float min_dist = float.PositiveInfinity;
         GameObject nearest = new GameObject();
-        foreach (GameObject ps in sceneManager.ParkingStructures.Keys)
+        string nearestGuid = "";
+        foreach (var key in sceneManager.ParkingStructures.Keys)
         {
-            if (sceneManager.ParkingStructures[ps].RemainingSpots > 0)
+            var sPS = sceneManager.ParkingStructures[key];
+            var gO = sPS.gameObject;
+            if (sPS.ParkingStructureSpecs.RemainingSpots > 0)
             {
-                if (Vector3.Distance(ps.transform.position, v.transform.position) < min_dist)
+                if (Vector3.Distance(gO.transform.position, v.transform.position) < min_dist)
                 {
-                    nearest = ps;
-                    min_dist = Vector3.Distance(ps.transform.position, v.transform.position);
+                    nearest = gO;
+                    nearestGuid = key;
+                    min_dist = Vector3.Distance(gO.transform.position, v.transform.position);
                 }
             }
         }
         // DEBUG: different vehicles competeing for a spot
-        sceneManager.ParkingStructures[nearest].Reserve(v);
+        sceneManager.ParkingStructures[nearestGuid].ParkingStructureSpecs.Reserve(v);
         return nearest;
     }
     private SimulationParam ReadSimulationParams(string runtime_name)
@@ -424,7 +430,11 @@ public class VehicleControlSystem : MonoBehaviour
     {
 
         Queue<GameObject> routedDestinations = new Queue<GameObject>();
-        List<GameObject> landings = new List<GameObject>(sceneManager.DronePorts.Keys);
+        List<GameObject> landings = new List<GameObject>();
+        foreach(var sDP in sceneManager.DronePorts.Values)
+        {
+            landings.Add(sDP.gameObject);
+        }
         List<int> indices = new List<int>();
         List<GameObject> destinationList = new List<GameObject>();
         int value = 0;
@@ -490,15 +500,16 @@ public class VehicleControlSystem : MonoBehaviour
 
         float minDistance = Mathf.Infinity;
         // For all parking structures
-        foreach (GameObject p in sceneManager.ParkingStructures.Keys)
+        foreach (var sPS in sceneManager.ParkingStructures.Values)
         {
+            var gO = sPS.gameObject;
             // find the nearest one with parked vehicles
-            if (p.GetComponent<ParkingControl>().parkingInfo.VehicleAt.Keys.Count > 0)
+            if (sPS.ParkingCtrl.parkingInfo.VehicleAt.Keys.Count > 0)
             {
-                if (Vector3.Distance(pickUpLocation, p.transform.position) < minDistance)
+                if (Vector3.Distance(pickUpLocation, gO.transform.position) < minDistance)
                 {
-                    minDistance = Vector3.Distance(pickUpLocation, p.transform.position);
-                    closestParking = p;
+                    minDistance = Vector3.Distance(pickUpLocation, gO.transform.position);
+                    closestParking = gO;
                 }
             }
             else continue;
@@ -514,15 +525,16 @@ public class VehicleControlSystem : MonoBehaviour
 
         float minDistance = Mathf.Infinity;
         // For all parking structures
-        foreach (GameObject p in sceneManager.ParkingStructures.Keys)
+        foreach (var sPS in sceneManager.ParkingStructures.Values)
         {
+            var gO = sPS.gameObject;
             // find the nearest one with parked vehicles
-            if (p.GetComponent<ParkingControl>().parkingInfo.VehicleAt.Keys.Count > 0)
+            if (sPS.ParkingCtrl.parkingInfo.VehicleAt.Keys.Count > 0)
             {
-                if (Vector3.Distance(AAOCenter, p.transform.position) < minDistance)
+                if (Vector3.Distance(AAOCenter, gO.transform.position) < minDistance)
                 {
-                    minDistance = Vector3.Distance(AAOCenter, p.transform.position);
-                    closestParking = p;
+                    minDistance = Vector3.Distance(AAOCenter, gO.transform.position);
+                    closestParking = gO;
                 }
             }
             else continue;
