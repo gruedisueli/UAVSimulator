@@ -6,6 +6,8 @@ using System.Threading.Tasks;
 
 using UnityEngine;
 
+using Assets.Scripts.UI.Events;
+
 namespace Assets.Scripts.Environment
 {
     [Serializable]
@@ -69,6 +71,26 @@ namespace Assets.Scripts.Environment
         public override RestrictionZoneBase GetCopy()
         {
             return new RestrictionZoneCylStack(this);
+        }
+
+        public override void UpdateParams(UpdatePropertyArgBase args)
+        {
+            try
+            {
+                switch (args.Type)
+                {
+                    case UpdatePropertyType.Position:
+                        {
+                            Position = (args as UpdateVector3PropertyArg).Value;
+                            break;
+                        }
+                }
+            }
+            catch
+            {
+                Debug.LogError("Casting error in restriction zone property update");
+                return;
+            }
         }
     }
 }

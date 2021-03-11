@@ -6,6 +6,8 @@ using System.Threading.Tasks;
 
 using UnityEngine;
 
+using Assets.Scripts.UI.Events;
+
 namespace Assets.Scripts.Environment
 {
     [Serializable]
@@ -154,9 +156,58 @@ namespace Assets.Scripts.Environment
             return new RestrictionZoneCyl(this);
         }
 
-        public void SetXZPos(float x, float z)
+        public void SetXZPos(Vector3 xz)
         {
-            _position = new Vector3(x, Position.y, z);
+            _position = new Vector3(xz.x, Position.y, xz.z);
+        }
+
+        public override void UpdateParams(UpdatePropertyArgBase args)
+        {
+            try
+            {
+                switch (args.Type)
+                {
+                    //case UpdatePropertyType.Type:
+                    //    {
+
+                    //    }
+                    case UpdatePropertyType.Height:
+                        {
+                            Height = (args as UpdateFloatPropertyArg).Value;
+                            break;
+                        }
+                    case UpdatePropertyType.Radius:
+                        {
+                            Radius = (args as UpdateFloatPropertyArg).Value;
+                            break;
+                        }
+                    case UpdatePropertyType.Bottom:
+                        {
+                            Bottom = (args as UpdateFloatPropertyArg).Value;
+                            break;
+                        }
+                    case UpdatePropertyType.Top:
+                        {
+                            Top = (args as UpdateFloatPropertyArg).Value;
+                            break;
+                        }
+                    case UpdatePropertyType.XZPosition:
+                        {
+                            SetXZPos((args as UpdateVector3PropertyArg).Value);
+                            break;
+                        }
+                    case UpdatePropertyType.Rotation:
+                        {
+                            Rotation = (args as UpdateVector3PropertyArg).Value;
+                            break;
+                        }
+                }
+            }
+            catch
+            {
+                Debug.LogError("Casting error in restriction zone property update");
+                return;
+            }
         }
     }
 }

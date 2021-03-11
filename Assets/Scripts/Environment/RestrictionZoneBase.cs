@@ -6,12 +6,15 @@ using System.Threading.Tasks;
 
 using UnityEngine;
 
+using Assets.Scripts.UI.Events;
+
 namespace Assets.Scripts.Environment
 {
     [Serializable]
     public abstract class RestrictionZoneBase
     {
         public int Layer { get; } = 8;
+        public abstract void UpdateParams(UpdatePropertyArgBase args);
         public abstract RestrictionZoneBase GetCopy();
     }
 }

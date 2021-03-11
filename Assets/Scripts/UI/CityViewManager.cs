@@ -244,7 +244,7 @@ namespace Assets.Scripts.UI
             }
             catch
             {
-                Debug.LogError("Error casting drone port specs");
+                Debug.LogError("Error casting working copy of scene drone port");
                 return;
             }
             try
@@ -331,7 +331,68 @@ namespace Assets.Scripts.UI
         /// </summary>
         private void ParkingStructureUpdate(IUpdateElementArgs args)
         {
+            ParkingStructureBase pS = null;
+            try
+            {
+                pS = ((SceneParkingStructure)_workingCopy).ParkingStructureSpecs;
+            }
+            catch
+            {
+                Debug.LogError("Error casting working copy of scene parking structure");
+                return;
+            }
+            try
+            {
+                switch (args.Update.Type)
+                {
+                    //case UpdatePropertyType.Type:
+                    //    {
+                    //        //remove old port and reinstantiate
+                    //        _dronePorts[args.Guid].gameObject.Destroy();
+                    //        _dronePorts.Remove(args.Guid);
+                    //        AddNewDronePort(new AddDronePortArgs())
+                    //        //envDP.Type = (args.Update as UpdateStringPropertyArg)?.Value;
+                    //        //special case: need to reinstantiate
+                    //    }
+                    case UpdatePropertyType.Position:
+                        {
+                            pS.Position = (args.Update as UpdateVector3PropertyArg).Value;
+                            break;
+                        }
+                    case UpdatePropertyType.Rotation:
+                        {
+                            pS.Rotation = (args.Update as UpdateVector3PropertyArg).Value;
+                            break;
+                        }
+                    case UpdatePropertyType.Scale:
+                        {
+                            pS.Scale = (args.Update as UpdateVector3PropertyArg).Value;
+                            break;
+                        }
+                    case UpdatePropertyType.StandByPos:
+                        {
+                            pS.StandbyPosition = (args.Update as UpdateVector3PropertyArg).Value;
+                            break;
+                        }
+                    case UpdatePropertyType.LandingQueueHead:
+                        {
+                            pS.LandingQueueHead = (args.Update as UpdateVector3PropertyArg).Value;
+                            break;
+                        }
+                    case UpdatePropertyType.LandingQueueDirection:
+                        {
+                            pS.LandingQueueDirection = (args.Update as UpdateVector3PropertyArg).Value;
+                            break;
+                        }
+                }
+            }
+            catch
+            {
+                Debug.LogError("Casting error in parking strcuture property update");
+                return;
+            }
 
+            _workingCopy.UpdateGameObject();
         }
 
         /// <summary>
@@ -339,7 +400,20 @@ namespace Assets.Scripts.UI
         /// </summary>
         private void RestrictionZoneUpdate(IUpdateElementArgs args)
         {
+            RestrictionZoneBase rZ = null;
+            try
+            {
+                rZ = ((SceneRestrictionZone)_workingCopy).RestrictionZoneSpecs;
+            }
+            catch
+            {
+                Debug.LogError("Error casting working copy of scene restriction zone");
+                return;
+            }
 
+            rZ.UpdateParams(args.Update);
+
+            _workingCopy.UpdateGameObject();
         }
 
         /// <summary>

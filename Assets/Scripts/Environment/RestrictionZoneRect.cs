@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-
+using Assets.Scripts.UI.Events;
 using UnityEngine;
 
 namespace Assets.Scripts.Environment
@@ -101,6 +101,50 @@ namespace Assets.Scripts.Environment
         public void SetZScale(float z)
         {
             _scale = new Vector3(Scale.x, Scale.y, z);
+        }
+
+        public override void UpdateParams(UpdatePropertyArgBase args)
+        {
+            try
+            {
+                switch (args.Type)
+                {
+                    //case UpdatePropertyType.Type:
+                    //    {
+
+                    //    }
+                    case UpdatePropertyType.Height:
+                        {
+                            Height = (args as UpdateFloatPropertyArg).Value;
+                            break;
+                        }
+                    case UpdatePropertyType.XScale:
+                        {
+                            SetXScale((args as UpdateFloatPropertyArg).Value);
+                            break;
+                        }
+                    case UpdatePropertyType.ZScale:
+                        {
+                            SetZScale((args as UpdateFloatPropertyArg).Value);
+                            break;
+                        }
+                    case UpdatePropertyType.Position:
+                        {
+                            Position = (args as UpdateVector3PropertyArg).Value;
+                            break;
+                        }
+                    case UpdatePropertyType.Rotation:
+                        {
+                            Rotation = (args as UpdateVector3PropertyArg).Value;
+                            break;
+                        }
+                }
+            }
+            catch
+            {
+                Debug.LogError("Casting error in restriction zone property update");
+                return;
+            }
         }
     }
 }

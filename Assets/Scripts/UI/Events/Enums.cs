@@ -46,8 +46,11 @@ namespace Assets.Scripts.UI.Events
     public enum UpdatePropertyType
     {
         Type,
+        XZPosition,
         Position,
         Rotation,
+        XScale,
+        ZScale,
         Scale,
         Height,
         Radius,
