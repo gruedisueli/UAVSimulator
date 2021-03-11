@@ -22,11 +22,9 @@ namespace Assets.Scripts.UI
 {
     public class RegionViewManager : SceneManagerBase
     {
-        public AbstractMap abstractMap;
-        public GameObject cityMarkerPrefab;
-        public GameObject markCityPanel;
-        public RegionRight regionRight;
-        public SavePrompt _savePrompt;
+        public GameObject _cityMarkerPrefab;
+        public GameObject _markCityPanel;
+        public RegionRight _regionRight;
 
         /// <summary>
         /// City markers in region, keyed by guid.
@@ -36,7 +34,7 @@ namespace Assets.Scripts.UI
 
         protected override void Init()
         {
-            abstractMap.Initialize(EnvironManager.Instance.Environ.CenterLatLong, EnvironSettings.REGION_ZOOM_LEVEL);
+            _abstractMap.Initialize(EnvironManager.Instance.Environ.CenterLatLong, EnvironSettings.REGION_ZOOM_LEVEL);
             foreach(var kvp in EnvironManager.Instance.GetCities())
             {
                 //var c = EnvironManager.Instance.Environ.GetCity(guid);
@@ -47,28 +45,55 @@ namespace Assets.Scripts.UI
                     InstantiateCityMarker(c.RegionTileWorldCenter, cityTileSide, c.WorldPos, c.CityStats.Name, kvp.Key, c.CityStats.EastExt, c.CityStats.WestExt, c.CityStats.NorthExt, c.CityStats.SouthExt);
                 }
             }
-            if (regionRight != null)
+            if (_regionRight != null)
             {
-                regionRight.statsChanged += UpdateCityStats;
+                _regionRight.statsChanged += UpdateCityStats;
             }
         }
 
-        /// <summary>
-        /// Initiates process of going to main menu
-        /// </summary>
-        public void GoMain()
+        #region INSTANTIATION
+
+        protected override void InstantiateObjects()
         {
-            _savePrompt.GoMain();
+            
         }
 
-        /// <summary>
-        /// Initiates process of quitting
-        /// </summary>
-        public void Quit()
+        protected override SceneDronePort InstantiateCustomDronePort(string guid, GameObject prefab, DronePortCustom dP, bool register)
         {
-            _savePrompt.Quit();
+            throw new NotImplementedException();
         }
 
+        protected override SceneParkingStructure InstantiateCustomParkingStruct(string guid, GameObject prefab, ParkingStructureCustom pS, bool register)
+        {
+            throw new NotImplementedException();
+        }
+
+        protected override SceneDronePort InstantiateDronePort(string guid, DronePortBase dP, bool register)
+        {
+            throw new NotImplementedException();
+        }
+
+        protected override SceneParkingStructure InstantiateParkingStructure(string guid, ParkingStructureBase pS, bool register)
+        {
+            throw new NotImplementedException();
+        }
+
+        protected override SceneDronePort InstantiateRectDronePort(string guid, DronePortRect dP, bool register)
+        {
+            throw new NotImplementedException();
+        }
+
+        protected override SceneParkingStructure InstantiateRectParkingStruct(string guid, ParkingStructureRect pS, bool register)
+        {
+            throw new NotImplementedException();
+        }
+
+        protected override SceneRestrictionZone InstantiateRestrictionZone(string guid, RestrictionZoneBase rZ, bool register)
+        {
+            throw new NotImplementedException();
+        }
+
+        #endregion
 
         public void GoToCity()
         {
@@ -81,7 +106,7 @@ namespace Assets.Scripts.UI
         /// </summary>
         public void AddCity()
         {
-            var inputF = markCityPanel?.GetComponentInChildren<InputField>();
+            var inputF = _markCityPanel?.GetComponentInChildren<InputField>();
 
             if (inputF == null)
             {
@@ -95,13 +120,13 @@ namespace Assets.Scripts.UI
         /// </summary>
         public void ShowHideMarkCityPanel()
         {
-            if (markCityPanel == null)
+            if (_markCityPanel == null)
             {
                 return;
             }
 
-            bool isEnabled = markCityPanel.activeSelf;
-            markCityPanel.SetActive(!isEnabled);
+            bool isEnabled = _markCityPanel.activeSelf;
+            _markCityPanel.SetActive(!isEnabled);
         }
 
         public void CityMarkerSelected(string guid, string cityName)
@@ -111,14 +136,14 @@ namespace Assets.Scripts.UI
                 DeselectMarker();
             }
 
-            if (regionRight != null)
+            if (_regionRight != null)
             {
-                regionRight.Activate();
+                _regionRight.Activate();
                 //var city = EnvironManager.Instance.Environ.GetCity(guid);
                 var city = EnvironManager.Instance.GetCity(guid);
                 if (city != null)
                 {
-                    regionRight.SetCity(guid, city.CityStats);
+                    _regionRight.SetCity(guid, city.CityStats);
 
                 }
                 if (cityMarkers.ContainsKey(guid))
@@ -136,9 +161,9 @@ namespace Assets.Scripts.UI
 
         public void CloseRightPanel()
         {
-            if (regionRight != null)
+            if (_regionRight != null)
             {
-                regionRight.Deactivate();
+                _regionRight.Deactivate();
             }
         }
 
@@ -156,7 +181,7 @@ namespace Assets.Scripts.UI
         /// </summary>
         public void RemoveCity()
         {
-            string g = regionRight?._guid;
+            string g = _regionRight?._guid;
             //EnvironManager.Instance.Environ.RemoveCity(g);
             //EnvironManager.Instance.Environ._cities.Remove(g);
             EnvironManager.Instance.RemoveCity(g);
@@ -249,7 +274,7 @@ namespace Assets.Scripts.UI
         /// </summary>
         private void InstantiateCityMarker(Vector3 regionTileWorldCenter, float cityTileSideLength, Vector3 selectedPt, string n, string guid, int eastExt = 0, int westExt = 0, int northExt = 0, int southExt = 0)
         {
-            var m = Instantiate(cityMarkerPrefab);
+            var m = Instantiate(_cityMarkerPrefab);
             var cM = m.GetComponentInChildren<CityMarker>();
             if (cM != null)
             {

@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using Assets.Scripts.UI.Events;
+using Assets.Scripts.UI.EventArgs;
 using UnityEngine;
 
 namespace Assets.Scripts.Environment

@@ -4,16 +4,16 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Assets.Scripts.UI.Events
+namespace Assets.Scripts.UI.EventArgs
 {
     /// <summary>
     /// A class to hold a single property update
     /// </summary>
-    public class UpdateStringPropertyArg : UpdatePropertyArgBase, IUpdatePropertyArg<string>
+    public class UpdateFloatPropertyArg : UpdatePropertyArgBase, IUpdatePropertyArg<float>
     {
         public override UpdatePropertyType Type { get; protected set; }
-        public string Value { get; private set; }
-        public UpdateStringPropertyArg(UpdatePropertyType type, string value)
+        public float Value { get; private set; }
+        public UpdateFloatPropertyArg(UpdatePropertyType type, float value)
         {
             Type = type;
             Value = value;

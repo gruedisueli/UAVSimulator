@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 using UnityEngine;
 
-using Assets.Scripts.UI.Events;
+using Assets.Scripts.UI.EventArgs;
 
 namespace Assets.Scripts.Environment
 {

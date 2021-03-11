@@ -315,7 +315,7 @@ public class VehicleControlSystem : MonoBehaviour
         for (int i = 0; i < vehiclesToInstantiate; i++)
         {
             // INTEGRATION TO-DO: Make this part to select parking structure randomly so that the drones are randomly populated
-            foreach (GameObject parkingStructure in sceneManager._parkingStructures.Keys)
+            foreach (GameObject parkingStructure in sceneManager.ParkingStructures.Keys)
             {
                 ParkingControl ps = parkingStructure.GetComponent<ParkingControl>();
                 if (ps.parkingInfo.RemainingSpots > 0)
@@ -354,9 +354,9 @@ public class VehicleControlSystem : MonoBehaviour
     {
         float min_dist = float.PositiveInfinity;
         GameObject nearest = new GameObject();
-        foreach (GameObject ps in sceneManager._parkingStructures.Keys)
+        foreach (GameObject ps in sceneManager.ParkingStructures.Keys)
         {
-            if (sceneManager._parkingStructures[ps].RemainingSpots > 0)
+            if (sceneManager.ParkingStructures[ps].RemainingSpots > 0)
             {
                 if (Vector3.Distance(ps.transform.position, v.transform.position) < min_dist)
                 {
@@ -366,7 +366,7 @@ public class VehicleControlSystem : MonoBehaviour
             }
         }
         // DEBUG: different vehicles competeing for a spot
-        sceneManager._parkingStructures[nearest].Reserve(v);
+        sceneManager.ParkingStructures[nearest].Reserve(v);
         return nearest;
     }
     private SimulationParam ReadSimulationParams(string runtime_name)
@@ -403,7 +403,7 @@ public class VehicleControlSystem : MonoBehaviour
         {
             GameObject currentNode = queue.Dequeue();
             Vector3 currentPoint = currentNode.transform.position;
-            foreach (GameObject nextNode in sceneManager._routes[currentNode])
+            foreach (GameObject nextNode in sceneManager.Routes[currentNode])
             {
                 Vector3 nextPoint = nextNode.transform.position;
                 if (!distanceTo.ContainsKey(nextNode)) distanceTo.Add(nextNode, float.PositiveInfinity);
@@ -424,7 +424,7 @@ public class VehicleControlSystem : MonoBehaviour
     {
 
         Queue<GameObject> routedDestinations = new Queue<GameObject>();
-        List<GameObject> landings = new List<GameObject>(sceneManager._dronePorts.Keys);
+        List<GameObject> landings = new List<GameObject>(sceneManager.DronePorts.Keys);
         List<int> indices = new List<int>();
         List<GameObject> destinationList = new List<GameObject>();
         int value = 0;
@@ -490,7 +490,7 @@ public class VehicleControlSystem : MonoBehaviour
 
         float minDistance = Mathf.Infinity;
         // For all parking structures
-        foreach (GameObject p in sceneManager._parkingStructures.Keys)
+        foreach (GameObject p in sceneManager.ParkingStructures.Keys)
         {
             // find the nearest one with parked vehicles
             if (p.GetComponent<ParkingControl>().parkingInfo.VehicleAt.Keys.Count > 0)
@@ -514,7 +514,7 @@ public class VehicleControlSystem : MonoBehaviour
 
         float minDistance = Mathf.Infinity;
         // For all parking structures
-        foreach (GameObject p in sceneManager._parkingStructures.Keys)
+        foreach (GameObject p in sceneManager.ParkingStructures.Keys)
         {
             // find the nearest one with parked vehicles
             if (p.GetComponent<ParkingControl>().parkingInfo.VehicleAt.Keys.Count > 0)

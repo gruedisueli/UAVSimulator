@@ -4,16 +4,18 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Assets.Scripts.UI.Events
+using UnityEngine;
+
+namespace Assets.Scripts.UI.EventArgs
 {
     /// <summary>
     /// A class to hold a single property update
     /// </summary>
-    public class UpdateBoolPropertyArg : UpdatePropertyArgBase, IUpdatePropertyArg<bool>
+    public class UpdateVector3PropertyArg : UpdatePropertyArgBase, IUpdatePropertyArg<Vector3>
     {
         public override UpdatePropertyType Type { get; protected set; }
-        public bool Value { get; private set; }
-        public UpdateBoolPropertyArg(UpdatePropertyType type, bool value)
+        public Vector3 Value { get; private set; }
+        public UpdateVector3PropertyArg(UpdatePropertyType type, Vector3 value)
         {
             Type = type;
             Value = value;

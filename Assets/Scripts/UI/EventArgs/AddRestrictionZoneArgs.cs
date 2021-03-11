@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 using UnityEngine;
 
-namespace Assets.Scripts.UI.Events
+namespace Assets.Scripts.UI.EventArgs
 {
     public class AddRestrictionZoneArgs : IAddElementArgs
     {

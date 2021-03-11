@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 using UnityEngine;
 
 using Assets.Scripts.UI.Fields;
-using Assets.Scripts.UI.Events;
+using Assets.Scripts.UI.EventArgs;
 
 namespace Assets.Scripts.UI.Panels
 {

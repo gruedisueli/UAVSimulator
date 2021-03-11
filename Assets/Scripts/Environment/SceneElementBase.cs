@@ -8,9 +8,23 @@ using UnityEngine;
 
 namespace Assets.Scripts.Environment
 {
+    public delegate void SceneElementSelected(SceneElementBase element);
+
     public abstract class SceneElementBase : MonoBehaviour
     {
         public abstract string Guid { get; protected set; }
         public abstract void UpdateGameObject();
+        public event SceneElementSelected OnSceneElementSelected;
+
+        private void Start()
+        {
+            gameObject.AddComponent<BoxCollider>();//for UI selection
+        }
+
+        private void OnMouseUp()
+        {
+            Debug.Log("Clicked scene element " + Guid);
+            OnSceneElementSelected.Invoke(this);
+        }
     }
 }
