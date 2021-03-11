@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 
 using UnityEngine;
+using UnityEngine.EventSystems;
 
 namespace Assets.Scripts.Environment
 {
@@ -23,8 +24,11 @@ namespace Assets.Scripts.Environment
 
         private void OnMouseUp()
         {
-            Debug.Log("Clicked scene element " + Guid);
-            OnSceneElementSelected.Invoke(this);
+            if (!EventSystem.current.IsPointerOverGameObject())//prevent selection of objects behind GUI
+            {
+                Debug.Log("Clicked scene element " + Guid);
+                OnSceneElementSelected.Invoke(this);
+            }
         }
     }
 }
