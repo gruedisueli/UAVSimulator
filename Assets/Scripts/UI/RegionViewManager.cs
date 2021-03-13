@@ -17,49 +17,156 @@ using Assets.Scripts.Environment;
 using Assets.Scripts.Serialization;
 using Assets.Scripts.UI.Tags;
 using Assets.Scripts.UI.Tools;
+using Assets.Scripts.UI.EventArgs;
 
 namespace Assets.Scripts.UI
 {
     public class RegionViewManager : SceneManagerBase
     {
-        public GameObject _cityMarkerPrefab;
-        public GameObject _markCityPanel;
-
-        private RegionRight _regionRight;
-
-        /// <summary>
-        /// City markers in region, keyed by guid.
-        /// </summary>
-        private Dictionary<string, GameObject> cityMarkers = new Dictionary<string, GameObject>();
-        private CityMarker selectedMarker;
+        private GameObject _cityMarkerPrefab;
+        private CityPanel _cityPanel; //CONSIDER JUST GETTING ARRAY ON BASE CLASS.
 
         protected override void Init()
         {
-            _abstractMap.Initialize(EnvironManager.Instance.Environ.CenterLatLong, EnvironSettings.REGION_ZOOM_LEVEL);
-            foreach(var kvp in EnvironManager.Instance.GetCities())
+            string rPath = "GUI/";
+            _cityMarkerPrefab = AssetUtils.ReadPrefab(rPath, "CityMarker");
+            if (_cityMarkerPrefab == null)
             {
-                //var c = EnvironManager.Instance.Environ.GetCity(guid);
-                var c = kvp.Value;
-                if (c != null)
-                {
-                    float cityTileSide = (float)GetCityTileSideLength();
-                    InstantiateCityMarker(c.RegionTileWorldCenter, cityTileSide, c.WorldPos, c.CityStats.Name, kvp.Key, c.CityStats.EastExt, c.CityStats.WestExt, c.CityStats.NorthExt, c.CityStats.SouthExt);
-                }
-            }
-            _regionRight = (RegionRight)FindObjectOfType(typeof(RegionRight));
-            if (_regionRight == null)
-            {
-                Debug.LogError("Region right not found");
+                Debug.LogError("City marker prefab not found");
                 return;
             }
-            _regionRight.statsChanged += UpdateCityStats;
+            _abstractMap.Initialize(EnvironManager.Instance.Environ.CenterLatLong, EnvironSettings.REGION_ZOOM_LEVEL);
+
+            _cityPanel = FindObjectOfType<CityPanel>(true);
+            if (_cityPanel == null)
+            {
+                Debug.LogError("Modify city panel not found");
+                return;
+            }
+
+            _cityPanel.OnCloseCityPanel += DeselectElement;
         }
+
+        protected override void OnDestroyDerived()
+        {
+            _cityPanel.OnCloseCityPanel -= DeselectElement;
+        }
+
+        public void GoToCity()
+        {
+            if (_selectedElement is SceneCity)
+            {
+                EnvironManager.Instance.SetActiveCity(_selectedElement.Guid);
+                SceneManager.LoadScene(UISettings.CITYVIEW_SCENEPATH, LoadSceneMode.Single);
+            }
+        }
+
+        #region SELECTION
+
+        protected override bool SelectElement(SceneElementBase sE)
+        {
+            bool selectedNew = base.SelectElement(sE);
+
+            if (selectedNew)
+            {
+                SelectCityMarker();
+                SetCityPanelActive(true);
+            }
+
+            return selectedNew;
+        }
+
+        protected override void DeselectElement()
+        {
+            DeselectMarker(); //do this stuff first before we null selected element field.
+
+            base.DeselectElement();
+        }
+
+        private void SelectCityMarker()
+        {
+            var guid = _selectedElement.Guid;
+            if (_cityPanel != null)
+            {
+                var city = EnvironManager.Instance.GetCity(guid);
+                if (city != null)
+                {
+                    _cityPanel.SetCity(city.CityStats);
+
+                }
+                //if (_cityMarkers.ContainsKey(guid))
+                //{
+                //    var cM = _cityMarkers[guid].GetComponentInChildren<CityMarker>();
+                //    if (cM != null)
+                //    {
+                //        cM.SetColor(Color.red);
+                //        selectedMarker = cM;
+                //    }
+                //}
+            }
+
+            if (_selectedElement is SceneCity)
+            {
+                (_selectedElement as SceneCity).SetSelectedState(true);
+            }
+        }
+
+        private void SetCityPanelActive(bool isActive)
+        {
+            if (_cityPanel != null)
+            {
+                _cityPanel.SetActive(true);
+            }
+        }
+
+        private void DeselectMarker()
+        {
+            if (_selectedElement is SceneCity)
+            {
+                var sC = _selectedElement as SceneCity;
+                sC.SetSelectedState(false);
+            }
+        }
+
+
+        #endregion
+
+
+        #region ADD/REMOVE ELEMENTS
+
+        protected override void AddElement(IAddElementArgs args)
+        {
+            if (args is AddCityArgs)
+            {
+                AddNewCity(args as AddCityArgs);
+            }
+        }
+
+        protected override void RemoveElement(IRemoveElementArgs args)
+        {
+            if (args.Family == ElementFamily.City)
+            {
+                RemoveCity(args.Guid);
+                SetCityPanelActive(false);
+            }
+        }
+
+
+
+        #endregion
 
         #region INSTANTIATION
 
         protected override void InstantiateObjects()
         {
-            
+            foreach (var kvp in EnvironManager.Instance.GetCities())
+            {
+                var c = kvp.Value;
+                if (c != null)
+                {
+                    InstantiateCity(kvp.Key, c.CityStats, true);
+                }
+            }
         }
 
         protected override SceneDronePort InstantiateCustomDronePort(string guid, GameObject prefab, DronePortCustom dP, bool register)
@@ -97,273 +204,142 @@ namespace Assets.Scripts.UI
             throw new NotImplementedException();
         }
 
-        #endregion
-
-        public void GoToCity()
-        {
-            EnvironManager.Instance.SetActiveCity(selectedMarker._guid);
-            SceneManager.LoadScene(UISettings.CITYVIEW_SCENEPATH, LoadSceneMode.Single);
-        }
-
-        /// <summary>
-        /// Adds city to game and to environment
-        /// </summary>
-        public void AddCity()
-        {
-            var inputF = _markCityPanel?.GetComponentInChildren<InputField>();
-
-            if (inputF == null)
-            {
-                return;
-            }
-            StartCoroutine(PlaceCityCoroutine(inputF.text));
-        }
-
-        /// <summary>
-        /// Turns on the mark city panel
-        /// </summary>
-        public void ShowHideMarkCityPanel()
-        {
-            if (_markCityPanel == null)
-            {
-                return;
-            }
-
-            bool isEnabled = _markCityPanel.activeSelf;
-            _markCityPanel.SetActive(!isEnabled);
-        }
-
-        public void CityMarkerSelected(string guid, string cityName)
-        {
-            if (selectedMarker != null)
-            {
-                DeselectMarker();
-            }
-
-            if (_regionRight != null)
-            {
-                _regionRight.Activate();
-                //var city = EnvironManager.Instance.Environ.GetCity(guid);
-                var city = EnvironManager.Instance.GetCity(guid);
-                if (city != null)
-                {
-                    _regionRight.SetCity(guid, city.CityStats);
-
-                }
-                if (cityMarkers.ContainsKey(guid))
-                {
-                    var cM = cityMarkers[guid].GetComponentInChildren<CityMarker>();
-                    if (cM != null)
-                    {
-                        cM.SetColor(Color.red);
-                        selectedMarker = cM;
-                    }
-                }
-            }
-
-        }
-
-        public void CloseRightPanel()
-        {
-            if (_regionRight != null)
-            {
-                _regionRight.Deactivate();
-            }
-        }
-
-        public void DeselectMarker()
-        {
-            if (selectedMarker != null)
-            {
-                selectedMarker.ResetColor();
-            }
-            selectedMarker = null;
-        }
-
-        /// <summary>
-        /// Removes city from region.
-        /// </summary>
-        public void RemoveCity()
-        {
-            string g = _regionRight?._guid;
-            //EnvironManager.Instance.Environ.RemoveCity(g);
-            //EnvironManager.Instance.Environ._cities.Remove(g);
-            EnvironManager.Instance.RemoveCity(g);
-            if (cityMarkers.ContainsKey(g))
-            {
-                selectedMarker = null;
-                GameObject m = cityMarkers[g];
-                var cM = m.GetComponentInChildren<CityMarker>();
-                if (cM != null)
-                {
-                    cM._markerSelected -= CityMarkerSelected;
-                }
-                cityMarkers.Remove(g);
-                m.Destroy();
-            }
-
-            CloseRightPanel();
-        }
-
-        private IEnumerator PlaceCityCoroutine(string n)
-        {
-            #region ALLOW CLICK FROM BUTTON TO CLEAR OUT
-
-            while (!Input.GetMouseButtonUp(0) && !Input.GetKeyUp(KeyCode.Escape))
-            {
-                yield return null;
-            }
-
-            if (Input.GetMouseButtonUp(0)) //after initial button press
-            {
-                yield return null;
-            }
-
-            #endregion
-
-            while (!Input.GetMouseButtonUp(0) && !Input.GetKeyUp(KeyCode.Escape))
-            {
-                yield return null;
-            }
-            if (Input.GetMouseButtonUp(0))
-            {
-                bool hit = Physics.Raycast(Camera.main.ScreenPointToRay(Input.mousePosition), out RaycastHit hitInfo);
-                if (hit)
-                {
-                    var gO = hitInfo.transform.gameObject;
-                    var uT = gO.GetComponent<UnityTile>();
-                    if (uT != null) //check that we've hit a terrain tile and not something else like a button.
-                    {
-                        var p = hitInfo.point;
-                        string guid = Guid.NewGuid().ToString();
-                        var tileBounds = Conversions.TileBounds(uT.UnwrappedTileId);
-                        float regionTileSideLength = (float)tileBounds.Size.x;
-                        float cityTileSide = (float)GetCityTileSideLength();
-                        var regionTileWorldCenter = uT.gameObject.transform.position;
-                        InstantiateCityMarker(regionTileWorldCenter, cityTileSide, p, n, guid);
-                        CityOptions s = new CityOptions();
-                        s.Name = n;
-                        //EnvironManager.Instance.Environ.AddCity(guid, new City(p, gO.transform.position, regionTileSideLength, s));
-                        EnvironManager.Instance.AddCity(guid, new City(p, gO.transform.position, regionTileSideLength, s));
-                    }
-                    else
-                    {
-                        hit = false;
-                    }
-                }
-
-                if (!hit)
-                {
-                    Debug.Log("No hit");
-                }
-
-            }
-        }
-
-        /// <summary>
-        /// Gets the length of a city tile side.
-        /// See https://wiki.openstreetmap.org/wiki/Slippy_map_tilenames#Resolution_and_Scale 
-        /// </summary>
-        private double GetCityTileSideLength()
-        {
-            double lat = EnvironManager.Instance.Environ.CenterLatLong.x;
-            int zoom = EnvironSettings.CITY_ZOOM_LEVEL;
-            int res = EnvironSettings.TILE_RESOLUTION;
-            double c = EnvironSettings.SCALE_CONSTANT;
-            return c * Math.Cos(lat) / Math.Pow(2, zoom) * res;
-        }
 
         /// <summary>
         /// Places a marker at a city.
         /// </summary>
-        private void InstantiateCityMarker(Vector3 regionTileWorldCenter, float cityTileSideLength, Vector3 selectedPt, string n, string guid, int eastExt = 0, int westExt = 0, int northExt = 0, int southExt = 0)
+        protected override SceneCity InstantiateCity(string guid, CityOptions cityOptions, bool register)
         {
-            var m = Instantiate(_cityMarkerPrefab);
-            var cM = m.GetComponentInChildren<CityMarker>();
-            if (cM != null)
-            {
-                cM.SetWorldPos(selectedPt);
-                cM.SetName(n);
-                cM.SetGuid(guid);
-                cM._markerSelected += CityMarkerSelected;
-                var tile = GetLocalCityTileCoords(selectedPt, regionTileWorldCenter, cityTileSideLength);
-                var extents = TileCoordsToWorldExtents(tile, regionTileWorldCenter, cityTileSideLength, eastExt, westExt, northExt, southExt);
-                cM.SetExtents(extents);
+            var c = cityOptions;
 
+            var clone = GameObject.CreatePrimitive(PrimitiveType.Cube);
+            
+            var sCity = clone.AddComponent<SceneCity>();
+            sCity.Initialize(guid, c);
+
+            sCity.OnSceneElementSelected += SelectElement;
+
+
+            //var m = Instantiate(_cityMarkerPrefab);
+            //var cM = m.GetComponentInChildren<CityMarker>();
+            //if (cM != null)
+            //{
+            //    cM.SetWorldPos(selectedPt);
+            //    cM.SetName(n);
+            //    cM.SetGuid(guid);
+            //    cM._markerSelected += CityMarkerSelected;
+            //    var tile = GetLocalCityTileCoords(selectedPt, regionTileWorldCenter, cityTileSideLength);
+            //    var extents = TileCoordsToWorldExtents(tile, regionTileWorldCenter, cityTileSideLength, eastExt, westExt, northExt, southExt);
+            //    cM.SetExtents(extents);
+
+            //}
+
+
+            if (register)
+            {
+                Cities.Add(guid, sCity);
             }
-            cityMarkers.Add(guid, m);
+
+            return sCity;
         }
 
-        /// <summary>
-        /// Updates a city
-        /// </summary>
-        private void UpdateCityStats(string guid, CityOptions stats)
+        #endregion
+
+
+        #region MODIFICATION
+
+        protected override void ElementModify(IModifyElementArgs args)
         {
-            //City city = EnvironManager.Instance.Environ.GetCity(guid);
-            var city = EnvironManager.Instance.GetCity(guid);
-            if (city != null)
+            if (_workingCopy == null)
             {
-                city.CityStats = stats;
-            }
-            else
-            {
+                Debug.LogError("Working copy is null");
                 return;
             }
-
-            if (cityMarkers.ContainsKey(guid))
+            if (_workingCopy is SceneCity)
             {
-                var cM = cityMarkers[guid].GetComponentInChildren<CityMarker>();
-                if (cM != null)
+                var sC = _workingCopy as SceneCity;
+                try
                 {
-                    cM.SetName(stats.Name);
-                    float cityTileSide = (float)GetCityTileSideLength();
-                    var tile = GetLocalCityTileCoords(city.WorldPos, city.RegionTileWorldCenter, cityTileSide);
-                    var extents = TileCoordsToWorldExtents(tile, city.RegionTileWorldCenter, cityTileSide, stats.EastExt, stats.WestExt, stats.NorthExt, stats.SouthExt);
-                    cM.SetExtents(extents);
+                    switch (args.Update.Type)
+                    {
+                        case ElementPropertyType.Name:
+                            {
+                                sC.CitySpecs.Name = (args.Update as ModifyStringPropertyArg).Value;
+                                break;
+                            }
+                        case ElementPropertyType.Population:
+                            {
+                                sC.CitySpecs.Population = (args.Update as ModifyIntPropertyArg).Value;
+                                break;
+                            }
+                        case ElementPropertyType.Jobs:
+                            {
+                                sC.CitySpecs.Jobs = (args.Update as ModifyIntPropertyArg).Value;
+                                break;
+                            }
+                        case ElementPropertyType.EastExt:
+                            {
+                                sC.CitySpecs.EastExt = (args.Update as ModifyIntPropertyArg).Value;
+                                break;
+                            }
+                        case ElementPropertyType.WestExt:
+                            {
+                                sC.CitySpecs.WestExt = (args.Update as ModifyIntPropertyArg).Value;
+                                break;
+                            }
+                        case ElementPropertyType.NorthExt:
+                            {
+                                sC.CitySpecs.NorthExt = (args.Update as ModifyIntPropertyArg).Value;
+                                break;
+                            }
+                        case ElementPropertyType.SouthExt:
+                            {
+                                sC.CitySpecs.SouthExt = (args.Update as ModifyIntPropertyArg).Value;
+                                break;
+                            }
+                    }
+
+                }
+                catch
+                {
+                    Debug.LogError("Casting error in working city modification");
+                    return;
                 }
             }
+
+            _workingCopy.UpdateGameObject();
         }
 
+        ///// <summary>
+        ///// Updates a city
+        ///// </summary>
+        //private void UpdateCityStats(string guid, CityOptions stats)
+        //{
+        //    //City city = EnvironManager.Instance.Environ.GetCity(guid);
+        //    var city = EnvironManager.Instance.GetCity(guid);
+        //    if (city != null)
+        //    {
+        //        city.CityStats = stats;
+        //    }
+        //    else
+        //    {
+        //        return;
+        //    }
 
-        /// <summary>
-        /// Finds the local tile coordinates (x,y) within the larger region tile where provided world coordinate is located. X,Y coords are relative to region tile center.
-        /// </summary>
-        private int[] GetLocalCityTileCoords(Vector3 sampleWorldPos, Vector3 regionTileWorldCenter, float cityTileSide)
-        {
+        //    if (_cityMarkers.ContainsKey(guid))
+        //    {
+        //        var cM = _cityMarkers[guid].GetComponentInChildren<CityMarker>();
+        //        if (cM != null)
+        //        {
+        //            cM.SetName(stats.Name);
+        //            float cityTileSide = (float)GetCityTileSideLength();
+        //            var tile = GetLocalCityTileCoords(city.CityStats.WorldPos, city.CityStats.RegionTileWorldCenter, cityTileSide);
+        //            var extents = TileCoordsToWorldExtents(tile, city.CityStats.RegionTileWorldCenter, cityTileSide, stats.EastExt, stats.WestExt, stats.NorthExt, stats.SouthExt);
+        //            cM.SetExtents(extents);
+        //        }
+        //    }
+        //}
 
-            //since side factor is a power of two, the center of the region tile will be on the border of four city tiles
-            Vector3 toSample = sampleWorldPos - regionTileWorldCenter;
-            int xSteps = (int)Math.Ceiling(toSample.x / cityTileSide);
-            int ySteps = (int)Math.Ceiling(toSample.z / cityTileSide);
-            return new int[] { xSteps, ySteps };
-        }
-
-        /// <summary>
-        /// Converts city tile coordinates within a region into actual world coordinates: x-range, z-range
-        /// </summary>
-        /// <returns></returns>
-        private float[][] TileCoordsToWorldExtents(int[] coordsXY, Vector3 regionTileWorldCenter, float cityTileSideLength, int eExt, int wExt, int nExt, int sExt)
-        {
-            int x1 = coordsXY[0] + wExt;
-            int x0 = coordsXY[0] - 1 - eExt;
-            int y1 = coordsXY[1] + sExt;
-            int y0 = coordsXY[1] - 1 - nExt;
-
-            float xR0 = CoordToWorldCoord(regionTileWorldCenter.x, x0, cityTileSideLength);
-            float xR1 = CoordToWorldCoord(regionTileWorldCenter.x, x1, cityTileSideLength);
-            float zR0 = CoordToWorldCoord(regionTileWorldCenter.z, y0, cityTileSideLength);
-            float zR1 = CoordToWorldCoord(regionTileWorldCenter.z, y1, cityTileSideLength);
-
-            return new float[][] { new float[] { xR0, xR1 }, new float[] { zR0, zR1 } };
-
-        }
-
-        /// <summary>
-        /// Converts a single tile division line coord (int) into position in world space based on relevant region center tile coordinate compoent.
-        /// </summary>
-        private float CoordToWorldCoord(float worldCenterCoord, int coord, float cityTileSideLength)
-        {
-            return worldCenterCoord + coord * cityTileSideLength;
-        }
+        #endregion
     }
 }

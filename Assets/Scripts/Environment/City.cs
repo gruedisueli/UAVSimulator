@@ -28,48 +28,6 @@ namespace Assets.Scripts.Environment
         }
 
         [SerializeField]
-        private Vector3 _worldPos;
-        public Vector3 WorldPos
-        {
-            get
-            {
-                return _worldPos;
-            }
-            set
-            {
-                _worldPos = value;
-            }
-        }
-
-        [SerializeField]
-        private Vector3 _regionTileWorldCenter;
-        public Vector3 RegionTileWorldCenter
-        {
-            get
-            {
-                return _regionTileWorldCenter;
-            }
-            set
-            {
-                _regionTileWorldCenter = value;
-            }
-        }
-
-        [SerializeField]
-        private float _regionTileSideLength;
-        public float RegionTileSideLength
-        {
-            get
-            {
-                return _regionTileSideLength;
-            }
-            set
-            {
-                _regionTileSideLength = value;
-            }
-        }
-
-        [SerializeField]
         private SerializableDictionary<string, DronePortBase> _dronePorts = new SerializableDictionary<string, DronePortBase>();
         public SerializableDictionary<string, DronePortBase> DronePorts
         {
@@ -111,12 +69,9 @@ namespace Assets.Scripts.Environment
             }
         }
 
-        public City(Vector3 pos, Vector3 regionTileCenter, float tileSize, CityOptions stats)
+        public City(CityOptions stats)
         {
             CityStats = stats;
-            WorldPos = pos;
-            RegionTileWorldCenter = regionTileCenter;
-            RegionTileSideLength = tileSize;
         }
     }
 }

@@ -73,7 +73,7 @@ namespace Assets.Scripts.Environment
             return new RestrictionZoneCylStack(this);
         }
 
-        public override void UpdateParams(UpdatePropertyArgBase args)
+        public override void UpdateParams(ModifyPropertyArgBase args)
         {
             try
             {
@@ -81,7 +81,7 @@ namespace Assets.Scripts.Environment
                 {
                     case ElementPropertyType.Position:
                         {
-                            Position = (args as UpdateVector3PropertyArg).Value;
+                            Position = (args as ModifyVector3PropertyArg).Value;
                             break;
                         }
                 }

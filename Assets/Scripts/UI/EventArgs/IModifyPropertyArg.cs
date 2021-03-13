@@ -6,8 +6,8 @@ using System.Threading.Tasks;
 
 namespace Assets.Scripts.UI.EventArgs
 {
-    public abstract class UpdatePropertyArgBase
+    public interface IModifyPropertyArg<T>
     {
-        public abstract ElementPropertyType Type { get; protected set; } 
+        T Value { get; }
     }
 }

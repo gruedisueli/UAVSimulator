@@ -8,6 +8,7 @@ namespace Assets.Scripts
 {
     public enum ElementFamily
     {
+        City,
         DronePort,
         ParkingStruct,
         RestrictionZone
@@ -34,6 +35,7 @@ namespace Assets.Scripts
 
     public enum ElementPropertyType
     {
+        Unset,
         Type,
         XZPosition,
         Position,
@@ -53,6 +55,13 @@ namespace Assets.Scripts
         MaxVehicleSize,
         IsMountable,
         IsOnTheGround,
-        IsScalable
+        IsScalable,
+        Name,
+        Population,
+        Jobs,
+        EastExt,
+        WestExt,
+        NorthExt,
+        SouthExt
     }
 }

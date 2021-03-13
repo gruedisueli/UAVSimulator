@@ -9,7 +9,7 @@ using UnityEngine.EventSystems;
 
 namespace Assets.Scripts.Environment
 {
-    public delegate void SceneElementSelected(SceneElementBase element);
+    public delegate bool SceneElementSelected(SceneElementBase element);
 
     public abstract class SceneElementBase : MonoBehaviour
     {

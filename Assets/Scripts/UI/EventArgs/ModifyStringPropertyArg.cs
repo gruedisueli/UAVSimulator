@@ -9,11 +9,11 @@ namespace Assets.Scripts.UI.EventArgs
     /// <summary>
     /// A class to hold a single property update
     /// </summary>
-    public class UpdateStringPropertyArg : UpdatePropertyArgBase, IUpdatePropertyArg<string>
+    public class ModifyStringPropertyArg : ModifyPropertyArgBase, IModifyPropertyArg<string>
     {
         public override ElementPropertyType Type { get; protected set; }
         public string Value { get; private set; }
-        public UpdateStringPropertyArg(ElementPropertyType type, string value)
+        public ModifyStringPropertyArg(ElementPropertyType type, string value)
         {
             Type = type;
             Value = value;

@@ -457,21 +457,12 @@ namespace Assets.Scripts.Environment
                     spots.Add(point);
                 }
 
-                var pfb = ReadPrefab(rPath, type);
+                var pfb = AssetUtils.ReadPrefab(rPath, type);
 
                 var pS = new ParkingStructureCustom();
                 pS.ParkingSpots = spots;
                 ParkingStructAssets.Add(type, new ParkingStructureAssetPack(pfb, pS));
             }
-
-            ////get JSON resources
-            //files = Directory.GetFiles(sPath, "*.JSON");
-            //foreach(string filename in files)
-            //{
-            //    var pS = ReadJsonAsset<ParkingStructureBase>(filename);
-            //    var pfb = ReadPrefab(rPath, pS.Type);
-            //    ParkingStructAssets.Add(pS.Type, new ParkingStructureAssetPack(pfb, pS));
-            //}
         }
 
         /// <summary>
@@ -486,50 +477,10 @@ namespace Assets.Scripts.Environment
             var files = Directory.GetFiles(sPath, "*.JSON");
             foreach (var filename in files)
             {
-                DronePortCustom dp = ReadJsonAsset<DronePortCustom>(filename);
-                var pfb = ReadPrefab(rPath, dp.Type);
+                DronePortCustom dp = AssetUtils.ReadJsonAsset<DronePortCustom>(filename);
+                var pfb = AssetUtils.ReadPrefab(rPath, dp.Type);
                 DronePortAssets.Add(dp.Type, new DronePortAssetPack(pfb, dp));
             }
-        }
-
-        ///// <summary>
-        ///// Reads types of restriction zones from assets
-        ///// </summary>
-        //private void ReadRestrictionZones()
-        //{
-        //    RestrictionZoneAssets = new Dictionary<string, RestrictionZoneAssetPack>();
-
-        //    string sPath = SerializationSettings.ROOT + "\\Resources\\RestrictionZones";
-        //    string rPath = "RestrictionZones/";
-        //    var files = Directory.GetFiles(sPath, "*.JSON");
-        //    foreach(var filename in files)
-        //    {
-        //        var rS = ReadJsonAsset<RestrictionZoneBase>(filename);
-        //        var pfb = ReadPrefab(rPath, rS.Type);
-        //        RestrictionZoneAssets.Add(rS.Type, new RestrictionZoneAssetPack(pfb, rS));
-        //    }
-        //}
-
-        /// <summary>
-        /// Returns asset of specified type from json.
-        /// </summary>
-        private T ReadJsonAsset<T>(string fileName)
-        {
-            string json = File.ReadAllText(fileName, Encoding.UTF8);
-            return JsonUtility.FromJson<T>(json);
-        }
-
-        /// <summary>
-        /// Reads prefab from resources of specified file name. Will load .prefab or .obj files. Null on failure.
-        /// </summary>
-        private GameObject ReadPrefab(string resourcePath, string name)
-        {
-            var pfb = Resources.Load<GameObject>(resourcePath + name);
-            if (pfb == null)
-            {
-                Debug.LogError("Cannot find prefab for " + name);
-            }
-            return pfb;
         }
     }
 }

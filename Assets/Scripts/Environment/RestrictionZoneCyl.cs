@@ -161,7 +161,7 @@ namespace Assets.Scripts.Environment
             _position = new Vector3(xz.x, Position.y, xz.z);
         }
 
-        public override void UpdateParams(UpdatePropertyArgBase args)
+        public override void UpdateParams(ModifyPropertyArgBase args)
         {
             try
             {
@@ -173,32 +173,32 @@ namespace Assets.Scripts.Environment
                     //    }
                     case ElementPropertyType.Height:
                         {
-                            Height = (args as UpdateFloatPropertyArg).Value;
+                            Height = (args as ModifyFloatPropertyArg).Value;
                             break;
                         }
                     case ElementPropertyType.Radius:
                         {
-                            Radius = (args as UpdateFloatPropertyArg).Value;
+                            Radius = (args as ModifyFloatPropertyArg).Value;
                             break;
                         }
                     case ElementPropertyType.Bottom:
                         {
-                            Bottom = (args as UpdateFloatPropertyArg).Value;
+                            Bottom = (args as ModifyFloatPropertyArg).Value;
                             break;
                         }
                     case ElementPropertyType.Top:
                         {
-                            Top = (args as UpdateFloatPropertyArg).Value;
+                            Top = (args as ModifyFloatPropertyArg).Value;
                             break;
                         }
                     case ElementPropertyType.XZPosition:
                         {
-                            SetXZPos((args as UpdateVector3PropertyArg).Value);
+                            SetXZPos((args as ModifyVector3PropertyArg).Value);
                             break;
                         }
                     case ElementPropertyType.Rotation:
                         {
-                            Rotation = (args as UpdateVector3PropertyArg).Value;
+                            Rotation = (args as ModifyVector3PropertyArg).Value;
                             break;
                         }
                 }

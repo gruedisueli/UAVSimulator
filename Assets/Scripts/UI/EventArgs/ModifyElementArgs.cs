@@ -6,13 +6,13 @@ using System.Threading.Tasks;
 
 namespace Assets.Scripts.UI.EventArgs
 {
-    public class UpdateElementArgs : IUpdateElementArgs
+    public class ModifyElementArgs : IModifyElementArgs
     {
         //public ElementFamily Family { get; private set; }
         //public string Guid { get; private set; }
-        public UpdatePropertyArgBase Update { get; private set; }
+        public ModifyPropertyArgBase Update { get; private set; }
 
-        public UpdateElementArgs(/*ElementFamily family, string guid, */UpdatePropertyArgBase update)
+        public ModifyElementArgs(/*ElementFamily family, string guid, */ModifyPropertyArgBase update)
         {
             //Family = family;
            // Guid = guid;

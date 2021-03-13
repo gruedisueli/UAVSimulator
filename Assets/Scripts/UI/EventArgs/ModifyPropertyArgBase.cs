@@ -6,10 +6,8 @@ using System.Threading.Tasks;
 
 namespace Assets.Scripts.UI.EventArgs
 {
-    public interface IUpdateElementArgs
+    public abstract class ModifyPropertyArgBase
     {
-        //ElementFamily Family { get; }
-        //string Guid { get; }
-        UpdatePropertyArgBase Update { get; }
+        public abstract ElementPropertyType Type { get; protected set; } 
     }
 }

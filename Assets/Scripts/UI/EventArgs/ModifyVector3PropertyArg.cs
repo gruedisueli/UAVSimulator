@@ -4,16 +4,18 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
+using UnityEngine;
+
 namespace Assets.Scripts.UI.EventArgs
 {
     /// <summary>
     /// A class to hold a single property update
     /// </summary>
-    public class UpdateIntPropertyArg : UpdatePropertyArgBase, IUpdatePropertyArg<int>
+    public class ModifyVector3PropertyArg : ModifyPropertyArgBase, IModifyPropertyArg<Vector3>
     {
         public override ElementPropertyType Type { get; protected set; }
-        public int Value { get; private set; }
-        public UpdateIntPropertyArg(ElementPropertyType type, int value)
+        public Vector3 Value { get; private set; }
+        public ModifyVector3PropertyArg(ElementPropertyType type, Vector3 value)
         {
             Type = type;
             Value = value;

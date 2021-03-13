@@ -11,6 +11,8 @@ using Assets.Scripts.Serialization;
 using UnityEngine;
 
 using Mapbox.Unity.Map;
+using Mapbox.Unity.MeshGeneration.Data;
+using Mapbox.Unity.Utilities;
 
 using Assets.Scripts.UI.Tools;
 using Assets.Scripts.UI.EventArgs;
@@ -31,9 +33,10 @@ namespace Assets.Scripts.UI
 
         protected Camera _mainCamera;
 
-        protected UpdateTool[] _modifyPanels;
-        protected AddTool[] _addElements;
-        protected RemoveTool[] _removeElements;
+        protected ModifyPanel[] _modifyPanels;
+        protected ModifyTool[] _modifyTools;
+        protected AddTool[] _addTools;
+        protected RemoveTool[] _removeTools;
         protected SavePrompt _savePrompt;
 
         protected SceneElementBase _selectedElement = null;
@@ -43,6 +46,7 @@ namespace Assets.Scripts.UI
 
         #region PROPERTIES
 
+        public Dictionary<string, SceneCity> Cities { get; protected set; } = new Dictionary<string, SceneCity>();
         public Dictionary<string, SceneDronePort> DronePorts { get; protected set; }
         public Dictionary<string, SceneParkingStructure> ParkingStructures { get; protected set; }
         public Dictionary<string, SceneRestrictionZone> RestrictionZones { get; protected set; }
@@ -61,7 +65,7 @@ namespace Assets.Scripts.UI
             RestrictionZones = new Dictionary<string, SceneRestrictionZone>();
 
             //get mapbox abstract map
-            _abstractMap = (AbstractMap)FindObjectOfType(typeof(AbstractMap));
+            _abstractMap = FindObjectOfType<AbstractMap>(true);
             if (_abstractMap == null)
             {
                 Debug.LogError("Abstract map not found");
@@ -77,10 +81,11 @@ namespace Assets.Scripts.UI
             }
 
             //gather UI elments
-            _modifyPanels = (UpdateTool[])FindObjectsOfType(typeof(UpdateTool));
-            _addElements = (AddTool[])FindObjectsOfType(typeof(AddTool));
-            _removeElements = (RemoveTool[])FindObjectsOfType(typeof(RemoveTool));
-            _savePrompt = (SavePrompt)FindObjectOfType(typeof(SavePrompt));
+            _modifyPanels = FindObjectsOfType<ModifyPanel>(true);
+            _modifyTools = FindObjectsOfType<ModifyTool>(true);
+            _addTools = FindObjectsOfType<AddTool>(true);
+            _removeTools = FindObjectsOfType<RemoveTool>(true);
+            _savePrompt = FindObjectOfType<SavePrompt>(true);
             if (_savePrompt == null)
             {
                 Debug.LogError("Save prompt not found");
@@ -88,17 +93,22 @@ namespace Assets.Scripts.UI
             }
 
             //event subscription
+            //QUESTION: Why register our tools directly on the scene manager and not sub-panels?
+            //ANSWER: Because by registering here, we are not wedded to a specific tool hierarchy and can rearrange our tools regardless of sub-panels, etc.
             foreach (var m in _modifyPanels)
             {
-                m.ElementUpdatedEvent += ElementUpdate;
-                m.CommitChangeEvent += CommitUpdates;
-                m.StartUpdatingEvent += StartModifying;
+                m.OnCommitChange += CommitUpdates;
+                m.OnStartModify += StartModifying;
             }
-            foreach (var a in _addElements)
+            foreach (var m in _modifyTools)
+            {
+                m.OnElementModified += ElementModify;
+            }
+            foreach (var a in _addTools)
             {
                 a.ElementAddedEvent += AddElement;
             }
-            foreach (var r in _removeElements)
+            foreach (var r in _removeTools)
             {
                 r.ElementRemovedEvent += RemoveElement;
             }
@@ -115,15 +125,18 @@ namespace Assets.Scripts.UI
             //event unsubscription
             foreach (var m in _modifyPanels)
             {
-                m.ElementUpdatedEvent -= ElementUpdate;
-                m.CommitChangeEvent -= CommitUpdates;
-                m.StartUpdatingEvent -= StartModifying;
+                m.OnCommitChange -= CommitUpdates;
+                m.OnStartModify -= StartModifying;
             }
-            foreach (var a in _addElements)
+            foreach (var m in _modifyTools)
+            {
+                m.OnElementModified -= ElementModify;
+            }
+            foreach (var a in _addTools)
             {
                 a.ElementAddedEvent -= AddElement;
             }
-            foreach (var r in _removeElements)
+            foreach (var r in _removeTools)
             {
                 r.ElementRemovedEvent -= RemoveElement;
             }
@@ -139,7 +152,18 @@ namespace Assets.Scripts.UI
             {
                 r.Value.OnSceneElementSelected -= SelectElement;
             }
+            foreach (var c in Cities.Values)
+            {
+                c.OnSceneElementSelected -= SelectElement;
+            }
+
+            OnDestroyDerived();
         }
+
+        /// <summary>
+        /// Called by classes that inherit from this base class
+        /// </summary>
+        protected abstract void OnDestroyDerived();
 
         /// <summary>
         /// All derived classes should call this instead of "Start()", for use in view-specific initialization
@@ -175,20 +199,23 @@ namespace Assets.Scripts.UI
         #region SELECT/DESELECT
 
         /// <summary>
-        /// Called when selecting scene element
+        /// Called when selecting scene element. False if there is already a selected element.
         /// </summary>
-        protected void SelectElement(SceneElementBase sE)
+        protected virtual bool SelectElement(SceneElementBase sE)
         {
             if (_selectedElement == null) //only change selection if we don't have something selected
             {
                 _selectedElement = sE;
+                return true;
             }
+
+            return false;
         }
 
         /// <summary>
         /// Called when deselecting a scene element.
         /// </summary>
-        protected void DeselectElement()
+        protected virtual void DeselectElement()
         {
             _selectedElement = null;
         }
@@ -196,6 +223,11 @@ namespace Assets.Scripts.UI
         #endregion
 
         #region MODIFY ELEMENTS
+
+        /// <summary>
+        /// Main method to call when making modifications to objects in scene.
+        /// </summary>
+        protected abstract void ElementModify(IModifyElementArgs args);
 
         /// <summary>
         /// Called when we start modifying a scene element.
@@ -226,6 +258,12 @@ namespace Assets.Scripts.UI
                 var sRS = _selectedElement as SceneRestrictionZone;
                 var specs = sRS.RestrictionZoneSpecs.GetCopy();
                 _workingCopy = InstantiateRestrictionZone(guid, specs, false);
+            }
+            else if (_selectedElement is SceneCity)
+            {
+                var sC = _selectedElement as SceneCity;
+                var specs = new CityOptions(sC.CitySpecs);
+                _workingCopy = InstantiateCity(guid, specs, false);
             }
 
         }
@@ -260,45 +298,29 @@ namespace Assets.Scripts.UI
                     EnvironManager.Instance.AddRestrictionZone(guidNew, wC.RestrictionZoneSpecs);
                     InstantiateRestrictionZone(guidNew, wC.RestrictionZoneSpecs, true);
                 }
-
+                else if (_workingCopy is SceneCity)
+                {
+                    //cities are special case because city object at region level is still existing, but we want to upate specs...
+                    //a bit confusing because other objects behave differently.
+                    var wc = _workingCopy as SceneCity;
+                    if (Cities.ContainsKey(guidOld))
+                    {
+                        Cities.Remove(guidOld);
+                    }
+                    EnvironManager.Instance.GetCities()[guidOld].CityStats = wc.CitySpecs;
+                    InstantiateCity(guidOld, wc.CitySpecs, true);
+                }
             }
 
-            //regardless, we want to delete this working copy
-            _workingCopy.gameObject.Destroy();
+            //regardless, we want to delete this working copy, if there is one.
+            _workingCopy?.gameObject.Destroy();
             _workingCopy = null;
-
-            //also set selected to null
-            _selectedElement = null;
-        }
-
-        /// <summary>
-        /// Main method to call when making modifications to objects in scene.
-        /// </summary>
-        protected void ElementUpdate(IUpdateElementArgs args)
-        {
-            if (_workingCopy == null)
-            {
-                Debug.LogError("Working copy is null");
-                return;
-            }
-            if (_workingCopy is SceneDronePort)
-            {
-                DronePortUpdate(args);
-            }
-            else if (_workingCopy is SceneParkingStructure)
-            {
-                ParkingStructureUpdate(args);
-            }
-            else if (_workingCopy is SceneRestrictionZone)
-            {
-                RestrictionZoneUpdate(args);
-            }
         }
 
         /// <summary>
         /// Modifies the working drone port port
         /// </summary>
-        protected void DronePortUpdate(IUpdateElementArgs args)
+        protected void DronePortUpdate(IModifyElementArgs args)
         {
             DronePortBase dP = null;
             try
@@ -325,57 +347,57 @@ namespace Assets.Scripts.UI
                     //    }
                     case ElementPropertyType.Position:
                         {
-                            dP.Position = (args.Update as UpdateVector3PropertyArg).Value;
+                            dP.Position = (args.Update as ModifyVector3PropertyArg).Value;
                             break;
                         }
                     case ElementPropertyType.Rotation:
                         {
-                            dP.Rotation = (args.Update as UpdateVector3PropertyArg).Value;
+                            dP.Rotation = (args.Update as ModifyVector3PropertyArg).Value;
                             break;
                         }
                     case ElementPropertyType.Scale:
                         {
-                            dP.Scale = (args.Update as UpdateVector3PropertyArg).Value;
+                            dP.Scale = (args.Update as ModifyVector3PropertyArg).Value;
                             break;
                         }
                     case ElementPropertyType.StandByPos:
                         {
-                            dP.StandbyPosition = (args.Update as UpdateVector3PropertyArg).Value;
+                            dP.StandbyPosition = (args.Update as ModifyVector3PropertyArg).Value;
                             break;
                         }
                     case ElementPropertyType.LandingQueueHead:
                         {
-                            dP.LandingQueueHead = (args.Update as UpdateVector3PropertyArg).Value;
+                            dP.LandingQueueHead = (args.Update as ModifyVector3PropertyArg).Value;
                             break;
                         }
                     case ElementPropertyType.LandingQueueDirection:
                         {
-                            dP.LandingQueueDirection = (args.Update as UpdateVector3PropertyArg).Value;
+                            dP.LandingQueueDirection = (args.Update as ModifyVector3PropertyArg).Value;
                             break;
                         }
                     case ElementPropertyType.LandingPoint:
                         {
-                            dP.LandingPoint = (args.Update as UpdateVector3PropertyArg).Value;
+                            dP.LandingPoint = (args.Update as ModifyVector3PropertyArg).Value;
                             break;
                         }
                     case ElementPropertyType.MaxVehicleSize:
                         {
-                            dP.MaximumVehicleSize = (args.Update as UpdateFloatPropertyArg).Value;
+                            dP.MaximumVehicleSize = (args.Update as ModifyFloatPropertyArg).Value;
                             break;
                         }
                     case ElementPropertyType.IsMountable:
                         {
-                            dP.IsMountable = (args.Update as UpdateBoolPropertyArg).Value;
+                            dP.IsMountable = (args.Update as ModifyBoolPropertyArg).Value;
                             break;
                         }
                     case ElementPropertyType.IsOnTheGround:
                         {
-                            dP.IsOnTheGround = (args.Update as UpdateBoolPropertyArg).Value;
+                            dP.IsOnTheGround = (args.Update as ModifyBoolPropertyArg).Value;
                             break;
                         }
                     case ElementPropertyType.IsScalable:
                         {
-                            dP.IsScalable = (args.Update as UpdateBoolPropertyArg).Value;
+                            dP.IsScalable = (args.Update as ModifyBoolPropertyArg).Value;
                             break;
                         }
                 }
@@ -392,7 +414,7 @@ namespace Assets.Scripts.UI
         /// <summary>
         /// Modifies a parking structure
         /// </summary>
-        protected void ParkingStructureUpdate(IUpdateElementArgs args)
+        protected void ParkingStructureUpdate(IModifyElementArgs args)
         {
             ParkingStructureBase pS = null;
             try
@@ -419,32 +441,32 @@ namespace Assets.Scripts.UI
                     //    }
                     case ElementPropertyType.Position:
                         {
-                            pS.Position = (args.Update as UpdateVector3PropertyArg).Value;
+                            pS.Position = (args.Update as ModifyVector3PropertyArg).Value;
                             break;
                         }
                     case ElementPropertyType.Rotation:
                         {
-                            pS.Rotation = (args.Update as UpdateVector3PropertyArg).Value;
+                            pS.Rotation = (args.Update as ModifyVector3PropertyArg).Value;
                             break;
                         }
                     case ElementPropertyType.Scale:
                         {
-                            pS.Scale = (args.Update as UpdateVector3PropertyArg).Value;
+                            pS.Scale = (args.Update as ModifyVector3PropertyArg).Value;
                             break;
                         }
                     case ElementPropertyType.StandByPos:
                         {
-                            pS.StandbyPosition = (args.Update as UpdateVector3PropertyArg).Value;
+                            pS.StandbyPosition = (args.Update as ModifyVector3PropertyArg).Value;
                             break;
                         }
                     case ElementPropertyType.LandingQueueHead:
                         {
-                            pS.LandingQueueHead = (args.Update as UpdateVector3PropertyArg).Value;
+                            pS.LandingQueueHead = (args.Update as ModifyVector3PropertyArg).Value;
                             break;
                         }
                     case ElementPropertyType.LandingQueueDirection:
                         {
-                            pS.LandingQueueDirection = (args.Update as UpdateVector3PropertyArg).Value;
+                            pS.LandingQueueDirection = (args.Update as ModifyVector3PropertyArg).Value;
                             break;
                         }
                 }
@@ -461,7 +483,7 @@ namespace Assets.Scripts.UI
         /// <summary>
         /// Modifies a restriction zone
         /// </summary>
-        protected void RestrictionZoneUpdate(IUpdateElementArgs args)
+        protected void RestrictionZoneUpdate(IModifyElementArgs args)
         {
             RestrictionZoneBase rZ = null;
             try
@@ -485,50 +507,12 @@ namespace Assets.Scripts.UI
         /// <summary>
         /// Adds any type of element to scene.
         /// </summary>
-        protected void AddElement(IAddElementArgs args)
-        {
-            if (args is AddDronePortArgs)
-            {
-                AddNewDronePort(args as AddDronePortArgs);
-            }
-            else if (args is AddParkingStructArgs)
-            {
-                AddNewParkingStruct(args as AddParkingStructArgs);
-            }
-            else if (args is AddRestrictionZoneArgs)
-            {
-                AddNewRestrictZone(args as AddRestrictionZoneArgs);
-            }
-            else
-            {
-                Debug.LogError("Added elements arguments of unrecognized type");
-            }
-        }
+        protected abstract void AddElement(IAddElementArgs args);
 
         /// <summary>
         /// Removes any type of element from scene.
         /// </summary>
-        protected void RemoveElement(IRemoveElementArgs args)
-        {
-            switch (args.Family)
-            {
-                case ElementFamily.DronePort:
-                    {
-                        RemoveDronePort(args.Guid);
-                        break;
-                    }
-                case ElementFamily.ParkingStruct:
-                    {
-                        RemoveParkingStructure(args.Guid);
-                        break;
-                    }
-                case ElementFamily.RestrictionZone:
-                    {
-                        RemoveRestrictionZone(args.Guid);
-                        break;
-                    }
-            }
-        }
+        protected abstract void RemoveElement(IRemoveElementArgs args);
 
         /// <summary>
         /// Adds a new drone port from UI.
@@ -640,6 +624,26 @@ namespace Assets.Scripts.UI
         }
 
         /// <summary>
+        /// Adds city to game and to environment
+        /// </summary>
+        protected void AddNewCity(AddCityArgs args)
+        {
+            var gO = args.HitInfo.transform.gameObject;
+            var uT = gO.GetComponent<UnityTile>();
+            string guid = Guid.NewGuid().ToString();
+            var p = args.Position;
+
+            var tileBounds = Conversions.TileBounds(uT.UnwrappedTileId);
+            var regionTileWorldCenter = uT.gameObject.transform.position;
+            CityOptions s = new CityOptions();
+            s.WorldPos = p;
+            s.RegionTileWorldCenter = regionTileWorldCenter;
+            InstantiateCity(guid, s, true);
+            EnvironManager.Instance.AddCity(guid, new City(s));
+        }
+
+
+        /// <summary>
         /// Attempts to remove drone port from scene and environment.
         /// </summary>
         protected void RemoveDronePort(string guid)
@@ -693,6 +697,27 @@ namespace Assets.Scripts.UI
             }
         }
 
+        /// <summary>
+        /// Removes city from region.
+        /// </summary>
+        protected void RemoveCity(string guid)
+        {
+            EnvironManager.Instance.RemoveCity(guid);
+            if (Cities.ContainsKey(guid))
+            {
+                Cities[guid].OnSceneElementSelected -= SelectElement;
+                Cities[guid].gameObject.Destroy();
+                //var cM = m.GetComponentInChildren<CityMarker>();
+                //if (cM != null)
+                //{
+                //    cM._markerSelected -= CityMarkerSelected;
+                //}
+                Cities.Remove(guid);
+                //m.Destroy();
+            }
+        }
+
+
         #endregion
 
         #region INSTANTIATE ELEMENTS
@@ -731,6 +756,11 @@ namespace Assets.Scripts.UI
         /// Instantiates a drone port. Does not update enviornment.
         /// </summary>
         protected abstract SceneDronePort InstantiateDronePort(string guid, DronePortBase dP, bool register);
+
+        /// <summary>
+        /// Places a marker at a city.
+        /// </summary>
+        protected abstract SceneCity InstantiateCity(string guid, CityOptions cityOptions, bool register);
 
         #endregion
 

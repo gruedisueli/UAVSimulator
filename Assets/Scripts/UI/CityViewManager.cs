@@ -28,7 +28,7 @@ namespace Assets.Scripts.UI
             _cityCenter.name = "City Center";
             
             //get tile provider
-            _tileProvider = (FOA_RangeAroundTransformTileProvider)FindObjectOfType(typeof(FOA_RangeAroundTransformTileProvider));
+            _tileProvider = FindObjectOfType<FOA_RangeAroundTransformTileProvider>(true);
             if (_tileProvider == null)
             {
                 Debug.LogError("Tile provider not found");
@@ -40,7 +40,7 @@ namespace Assets.Scripts.UI
             var city = eC.GetCurrentCity();
             if (city != null)
             {
-                _cityCenter.transform.position = city.WorldPos;
+                _cityCenter.transform.position = city.CityStats.WorldPos;
                 var options = new FOA_RangeAroundTransformTileProviderOptions();
                 options._eastExt = city.CityStats.EastExt;
                 options._westExt = city.CityStats.WestExt;
@@ -48,7 +48,7 @@ namespace Assets.Scripts.UI
                 options._southExt = city.CityStats.SouthExt;
                 options._targetTransform = _cityCenter.transform;
                 _tileProvider.SetOptions(options);
-                _mainCamera.transform.position = new Vector3(city.WorldPos.x, 1000, city.WorldPos.z);
+                _mainCamera.transform.position = new Vector3(city.CityStats.WorldPos.x, 1000, city.CityStats.WorldPos.z);
                 _abstractMap.Initialize(EnvironManager.Instance.Environ.CenterLatLong, EnvironSettings.CITY_ZOOM_LEVEL);
             }
         }
@@ -60,6 +60,91 @@ namespace Assets.Scripts.UI
         {
             SceneManager.LoadScene(UISettings.REGIONVIEW_SCENEPATH, LoadSceneMode.Single);
         }
+
+        protected override void OnDestroyDerived()
+        {
+
+        }
+
+        #region MODIFICATION
+
+        /// <summary>
+        /// Main method to call when making modifications to objects in scene.
+        /// </summary>
+        protected override void ElementModify(IModifyElementArgs args)
+        {
+            if (_workingCopy == null)
+            {
+                Debug.LogError("Working copy is null");
+                return;
+            }
+            if (_workingCopy is SceneDronePort)
+            {
+                DronePortUpdate(args);
+            }
+            else if (_workingCopy is SceneParkingStructure)
+            {
+                ParkingStructureUpdate(args);
+            }
+            else if (_workingCopy is SceneRestrictionZone)
+            {
+                RestrictionZoneUpdate(args);
+            }
+        }
+
+        #endregion
+
+        #region ADD/REMOVE ELEMENTS
+
+        /// <summary>
+        /// Adds any type of element to scene.
+        /// </summary>
+        protected override void AddElement(IAddElementArgs args)
+        {
+            if (args is AddDronePortArgs)
+            {
+                AddNewDronePort(args as AddDronePortArgs);
+            }
+            else if (args is AddParkingStructArgs)
+            {
+                AddNewParkingStruct(args as AddParkingStructArgs);
+            }
+            else if (args is AddRestrictionZoneArgs)
+            {
+                AddNewRestrictZone(args as AddRestrictionZoneArgs);
+            }
+            else
+            {
+                Debug.LogError("Added elements arguments of unrecognized type");
+            }
+        }
+
+        /// <summary>
+        /// Removes any type of element from scene.
+        /// </summary>
+        protected override void RemoveElement(IRemoveElementArgs args)
+        {
+            switch (args.Family)
+            {
+                case ElementFamily.DronePort:
+                    {
+                        RemoveDronePort(args.Guid);
+                        break;
+                    }
+                case ElementFamily.ParkingStruct:
+                    {
+                        RemoveParkingStructure(args.Guid);
+                        break;
+                    }
+                case ElementFamily.RestrictionZone:
+                    {
+                        RemoveRestrictionZone(args.Guid);
+                        break;
+                    }
+            }
+        }
+
+        #endregion
 
         #region INSTANTIATION
 
@@ -185,6 +270,11 @@ namespace Assets.Scripts.UI
             sPS.OnSceneElementSelected += SelectElement;
 
             return sPS;
+        }
+
+        protected override SceneCity InstantiateCity(string guid, CityOptions cityOptions, bool register)
+        {
+            throw new NotImplementedException();
         }
 
         protected override void InstantiateObjects()

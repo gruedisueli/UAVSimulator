@@ -19,6 +19,11 @@ namespace Assets.Scripts.UI.Tools
     {
         public event ElementAdded ElementAddedEvent;
 
+        private void Start()
+        {
+            Initialize();
+        }
+
         public virtual void Activate()
         {
             gameObject.SetActive(true);
@@ -34,6 +39,7 @@ namespace Assets.Scripts.UI.Tools
             ElementAddedEvent.Invoke(GatherInformation());
         }
 
+        protected abstract void Initialize();
         protected abstract IAddElementArgs GatherInformation();
     }
 }

@@ -15,7 +15,7 @@ namespace Assets.Scripts.Environment
     public class CityOptions
     {
         [SerializeField]
-        private string _name = "";
+        private string _name = "New City";
         public string Name
         {
             get
@@ -25,6 +25,34 @@ namespace Assets.Scripts.Environment
             set
             {
                 _name = value;
+            }
+        }
+
+        [SerializeField]
+        private Vector3 _worldPos = new Vector3();
+        public Vector3 WorldPos
+        {
+            get
+            {
+                return _worldPos;
+            }
+            set
+            {
+                _worldPos = value;
+            }
+        }
+
+        [SerializeField]
+        private Vector3 _regionTileWorldCenter = new Vector3();
+        public Vector3 RegionTileWorldCenter
+        {
+            get
+            {
+                return _regionTileWorldCenter;
+            }
+            set
+            {
+                _regionTileWorldCenter = value;
             }
         }
 
@@ -115,6 +143,19 @@ namespace Assets.Scripts.Environment
         public CityOptions()
         {
 
+        }
+
+        public CityOptions(CityOptions cityOptions)
+        {
+            Name = cityOptions.Name;
+            WorldPos = cityOptions.WorldPos;
+            RegionTileWorldCenter = cityOptions.RegionTileWorldCenter;
+            EastExt = cityOptions.EastExt;
+            WestExt = cityOptions.WestExt;
+            NorthExt = cityOptions.NorthExt;
+            SouthExt = cityOptions.SouthExt;
+            Population = cityOptions.Population;
+            Jobs = cityOptions.Jobs;
         }
     }
 }
