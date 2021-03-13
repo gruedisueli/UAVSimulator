@@ -64,4 +64,22 @@ namespace Assets.Scripts
         NorthExt,
         SouthExt
     }
+
+    public enum InputFieldType
+    {
+        Unset,
+        String_,
+        Float_,
+        Integer_
+    }
+
+    public enum SceneType
+    {
+        Unset,
+        Main,
+        FindLoc,
+        Region,
+        City,
+        Quit
+    }
 }

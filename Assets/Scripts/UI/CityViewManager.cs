@@ -17,6 +17,9 @@ using Assets.Scripts.UI.EventArgs;
 
 namespace Assets.Scripts.UI
 {
+    /// <summary>
+    /// Manages the city view. Only functions specific to city view should be here. If it can be generalized, put it in the base class.
+    /// </summary>
     public class CityViewManager : SceneManagerBase
     {
         private FOA_RangeAroundTransformTileProvider _tileProvider;
@@ -51,14 +54,6 @@ namespace Assets.Scripts.UI
                 _mainCamera.transform.position = new Vector3(city.CityStats.WorldPos.x, 1000, city.CityStats.WorldPos.z);
                 _abstractMap.Initialize(EnvironManager.Instance.Environ.CenterLatLong, EnvironSettings.CITY_ZOOM_LEVEL);
             }
-        }
-
-        /// <summary>
-        /// Loads up the region view of current environment
-        /// </summary>
-        public void GoToRegion()
-        {
-            SceneManager.LoadScene(UISettings.REGIONVIEW_SCENEPATH, LoadSceneMode.Single);
         }
 
         protected override void OnDestroyDerived()
@@ -116,31 +111,6 @@ namespace Assets.Scripts.UI
             else
             {
                 Debug.LogError("Added elements arguments of unrecognized type");
-            }
-        }
-
-        /// <summary>
-        /// Removes any type of element from scene.
-        /// </summary>
-        protected override void RemoveElement(IRemoveElementArgs args)
-        {
-            switch (args.Family)
-            {
-                case ElementFamily.DronePort:
-                    {
-                        RemoveDronePort(args.Guid);
-                        break;
-                    }
-                case ElementFamily.ParkingStruct:
-                    {
-                        RemoveParkingStructure(args.Guid);
-                        break;
-                    }
-                case ElementFamily.RestrictionZone:
-                    {
-                        RemoveRestrictionZone(args.Guid);
-                        break;
-                    }
             }
         }
 

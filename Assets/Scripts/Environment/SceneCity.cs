@@ -23,27 +23,33 @@ namespace Assets.Scripts.Environment
         {
             Guid = guid;
             CitySpecs = citySpecs;
-            _renderer = gameObject.AddComponent<MeshRenderer>();
-            //_renderer.material.color = _colorDefault;
+            _renderer = gameObject.GetComponent<MeshRenderer>();
+            _renderer.materials[0].color = _colorDefault;
 
             UpdateGameObject();
         }
 
-        public void SetSelectedState(bool isSelected)
+        public override void SetSelectedState(bool isSelected)
         {
-            //_renderer.material.color = isSelected ? _selectedColor : _colorDefault;
+            _renderer.materials[0].color = isSelected ? _selectedColor : _colorDefault;
         }
 
         public override void UpdateGameObject()
         {
             var c = CitySpecs;
-            gameObject.transform.position = c.WorldPos;
             float cityTileSideLength = (float)UnitUtils.GetCityTileSideLength();
             var tile = UnitUtils.GetLocalCityTileCoords(c.WorldPos, c.RegionTileWorldCenter, cityTileSideLength);
             var extents = UnitUtils.TileCoordsToWorldExtents(tile, c.RegionTileWorldCenter, cityTileSideLength, c.EastExt, c.WestExt, c.NorthExt, c.SouthExt);
             float xRange = Math.Abs(extents[0][0] - extents[0][1]);
             float zRange = Math.Abs(extents[1][0] - extents[1][1]);
             gameObject.transform.localScale = new Vector3(xRange, 1000, zRange);//setting large y range to get over terrain, for now.
+
+            //get center of game object (different from city center, which is the point from which extents are measured.)
+            var minPt = new Vector3(extents[0][0], 0, extents[1][0]);
+            var maxPt = new Vector3(extents[0][1], 0, extents[1][1]);
+            var centerPt = (minPt + maxPt) / 2;
+
+            gameObject.transform.position = centerPt;
         }
 
 

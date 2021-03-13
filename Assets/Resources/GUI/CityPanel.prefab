@@ -328,6 +328,7 @@ GameObject:
   - component: {fileID: 5001046008592346931}
   - component: {fileID: 1686176695040733071}
   - component: {fileID: 5129399693087868857}
+  - component: {fileID: 1660917877628877277}
   m_Layer: 5
   m_Name: InputField_Pop
   m_TagString: Untagged
@@ -446,7 +447,19 @@ MonoBehaviour:
   m_CharacterLimit: 0
   m_OnEndEdit:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 1660917877628877277}
+        m_TargetAssemblyTypeName: Assets.Scripts.UI.Tools.ModifyTool, Assembly-CSharp
+        m_MethodName: RegisterModification
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
   m_OnValueChanged:
     m_PersistentCalls:
       m_Calls: []
@@ -457,6 +470,20 @@ MonoBehaviour:
   m_CaretBlinkRate: 0.85
   m_CaretWidth: 1
   m_ReadOnly: 0
+--- !u!114 &1660917877628877277
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2457500036706155164}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a1d844715843b1144aae4af881281151, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _propertyType: 22
+  _fieldType: 3
 --- !u!1 &2481192055141083154
 GameObject:
   m_ObjectHideFlags: 0
@@ -548,6 +575,7 @@ GameObject:
   - component: {fileID: 1402600406119237423}
   - component: {fileID: 1331839349768572324}
   - component: {fileID: 2866232801573432164}
+  - component: {fileID: 2582348538928546346}
   m_Layer: 5
   m_Name: InputField_South Ext
   m_TagString: Untagged
@@ -666,7 +694,19 @@ MonoBehaviour:
   m_CharacterLimit: 0
   m_OnEndEdit:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 2582348538928546346}
+        m_TargetAssemblyTypeName: Assets.Scripts.UI.Tools.ModifyTool, Assembly-CSharp
+        m_MethodName: RegisterModification
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
   m_OnValueChanged:
     m_PersistentCalls:
       m_Calls: []
@@ -677,6 +717,20 @@ MonoBehaviour:
   m_CaretBlinkRate: 0.85
   m_CaretWidth: 1
   m_ReadOnly: 0
+--- !u!114 &2582348538928546346
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2502899810936688268}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a1d844715843b1144aae4af881281151, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _propertyType: 27
+  _fieldType: 3
 --- !u!1 &2733945751989807451
 GameObject:
   m_ObjectHideFlags: 0
@@ -1053,14 +1107,14 @@ MonoBehaviour:
       - m_Target: {fileID: 3896741548666523100}
         m_TargetAssemblyTypeName: Assets.Scripts.UI.Tools.ModifyPanel, Assembly-CSharp
         m_MethodName: SetActive
-        m_Mode: 1
+        m_Mode: 6
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
           m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
           m_IntArgument: 0
           m_FloatArgument: 0
           m_StringArgument: 
-          m_BoolArgument: 0
+          m_BoolArgument: 1
         m_CallState: 2
 --- !u!1 &3559313145071424477
 GameObject:
@@ -1157,7 +1211,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &4801199962786208127
 RectTransform:
   m_ObjectHideFlags: 0
@@ -1368,6 +1422,7 @@ GameObject:
   - component: {fileID: 1140578904983915234}
   - component: {fileID: 8299015249078920277}
   - component: {fileID: 913986185817580346}
+  - component: {fileID: 8496667332429567156}
   m_Layer: 5
   m_Name: InputField_Jobs
   m_TagString: Untagged
@@ -1486,7 +1541,19 @@ MonoBehaviour:
   m_CharacterLimit: 0
   m_OnEndEdit:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 8496667332429567156}
+        m_TargetAssemblyTypeName: Assets.Scripts.UI.Tools.ModifyTool, Assembly-CSharp
+        m_MethodName: RegisterModification
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
   m_OnValueChanged:
     m_PersistentCalls:
       m_Calls: []
@@ -1497,6 +1564,20 @@ MonoBehaviour:
   m_CaretBlinkRate: 0.85
   m_CaretWidth: 1
   m_ReadOnly: 0
+--- !u!114 &8496667332429567156
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3704514473834878237}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a1d844715843b1144aae4af881281151, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _propertyType: 23
+  _fieldType: 3
 --- !u!1 &4083092992794078057
 GameObject:
   m_ObjectHideFlags: 0
@@ -2510,6 +2591,7 @@ GameObject:
   - component: {fileID: 3302459169594154523}
   - component: {fileID: 3203823023160241448}
   - component: {fileID: 3097108899658458016}
+  - component: {fileID: 856654248727305239}
   m_Layer: 5
   m_Name: InputField_East Ext
   m_TagString: Untagged
@@ -2628,7 +2710,19 @@ MonoBehaviour:
   m_CharacterLimit: 0
   m_OnEndEdit:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 856654248727305239}
+        m_TargetAssemblyTypeName: Assets.Scripts.UI.Tools.ModifyTool, Assembly-CSharp
+        m_MethodName: RegisterModification
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
   m_OnValueChanged:
     m_PersistentCalls:
       m_Calls: []
@@ -2639,6 +2733,20 @@ MonoBehaviour:
   m_CaretBlinkRate: 0.85
   m_CaretWidth: 1
   m_ReadOnly: 0
+--- !u!114 &856654248727305239
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7005101437209886592}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a1d844715843b1144aae4af881281151, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _propertyType: 24
+  _fieldType: 3
 --- !u!1 &7991688500791895432
 GameObject:
   m_ObjectHideFlags: 0
@@ -2732,6 +2840,7 @@ GameObject:
   - component: {fileID: 664475151121374288}
   - component: {fileID: 5032099347794340894}
   - component: {fileID: 6859170795257968533}
+  - component: {fileID: 4593796359181427346}
   m_Layer: 5
   m_Name: InputField_North Ext
   m_TagString: Untagged
@@ -2850,7 +2959,19 @@ MonoBehaviour:
   m_CharacterLimit: 0
   m_OnEndEdit:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 4593796359181427346}
+        m_TargetAssemblyTypeName: Assets.Scripts.UI.Tools.ModifyTool, Assembly-CSharp
+        m_MethodName: RegisterModification
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
   m_OnValueChanged:
     m_PersistentCalls:
       m_Calls: []
@@ -2861,6 +2982,20 @@ MonoBehaviour:
   m_CaretBlinkRate: 0.85
   m_CaretWidth: 1
   m_ReadOnly: 0
+--- !u!114 &4593796359181427346
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8200176918722829715}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a1d844715843b1144aae4af881281151, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _propertyType: 26
+  _fieldType: 3
 --- !u!1 &8316848661391024596
 GameObject:
   m_ObjectHideFlags: 0
@@ -2873,6 +3008,7 @@ GameObject:
   - component: {fileID: 8316848661391024592}
   - component: {fileID: 8316848661391024593}
   - component: {fileID: 8316848661391024594}
+  - component: {fileID: 1472400476436395255}
   m_Layer: 5
   m_Name: Button_GoToCity
   m_TagString: Untagged
@@ -2981,9 +3117,9 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 0}
-        m_TargetAssemblyTypeName: Assets.FOA.UI.RegionView, Assembly-CSharp
-        m_MethodName: GoToCity
+      - m_Target: {fileID: 1472400476436395255}
+        m_TargetAssemblyTypeName: Assets.Scripts.UI.Tools.SceneChangeTool, Assembly-CSharp
+        m_MethodName: ChangeScene
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -2993,6 +3129,19 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
+--- !u!114 &1472400476436395255
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8316848661391024596}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ba3ac20a7db98f94ab0e4410748def89, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _sceneType: 4
 --- !u!1 &8316848661644202875
 GameObject:
   m_ObjectHideFlags: 0
@@ -3084,6 +3233,7 @@ GameObject:
   - component: {fileID: 8316848662014102812}
   - component: {fileID: 8316848662014102813}
   - component: {fileID: 8316848662014102814}
+  - component: {fileID: 8140719595144005543}
   m_Layer: 5
   m_Name: Button_RemoveCity
   m_TagString: Untagged
@@ -3192,9 +3342,9 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 0}
-        m_TargetAssemblyTypeName: Assets.FOA.UI.RegionView, Assembly-CSharp
-        m_MethodName: RemoveCity
+      - m_Target: {fileID: 8140719595144005543}
+        m_TargetAssemblyTypeName: Assets.Scripts.UI.Tools.RemoveTool, Assembly-CSharp
+        m_MethodName: Remove
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -3204,6 +3354,18 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
+--- !u!114 &8140719595144005543
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8316848662014102784}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b8e06e746a226fa4bb4d0f5afaefcdd1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &8316848662278786775
 GameObject:
   m_ObjectHideFlags: 0
@@ -3324,21 +3486,9 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 0}
-        m_TargetAssemblyTypeName: Assets.FOA.UI.RegionView, Assembly-CSharp
-        m_MethodName: CloseRightPanel
-        m_Mode: 1
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
-      - m_Target: {fileID: 0}
-        m_TargetAssemblyTypeName: Assets.FOA.UI.RegionView, Assembly-CSharp
-        m_MethodName: DeselectMarker
+      - m_Target: {fileID: 9130889750080559211}
+        m_TargetAssemblyTypeName: Assets.Scripts.UI.Tools.CityPanel, Assembly-CSharp
+        m_MethodName: Close
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -3619,6 +3769,7 @@ GameObject:
   - component: {fileID: 3681249498396163134}
   - component: {fileID: 543574229707677882}
   - component: {fileID: 5060134710121507904}
+  - component: {fileID: 5151044920774114432}
   m_Layer: 5
   m_Name: InputField_West Ext
   m_TagString: Untagged
@@ -3737,7 +3888,19 @@ MonoBehaviour:
   m_CharacterLimit: 0
   m_OnEndEdit:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 5151044920774114432}
+        m_TargetAssemblyTypeName: Assets.Scripts.UI.Tools.ModifyTool, Assembly-CSharp
+        m_MethodName: RegisterModification
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
   m_OnValueChanged:
     m_PersistentCalls:
       m_Calls: []
@@ -3748,6 +3911,20 @@ MonoBehaviour:
   m_CaretBlinkRate: 0.85
   m_CaretWidth: 1
   m_ReadOnly: 0
+--- !u!114 &5151044920774114432
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8411903133969704528}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a1d844715843b1144aae4af881281151, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _propertyType: 25
+  _fieldType: 3
 --- !u!1 &8431833462201408820
 GameObject:
   m_ObjectHideFlags: 0
@@ -3999,7 +4176,7 @@ GameObject:
   - component: {fileID: 3530755585461883217}
   - component: {fileID: 4162623343745289994}
   - component: {fileID: 2811685960228119763}
-  - component: {fileID: 718266089762178535}
+  - component: {fileID: 438189319468788160}
   m_Layer: 5
   m_Name: InputField_Name
   m_TagString: Untagged
@@ -4119,7 +4296,7 @@ MonoBehaviour:
   m_OnEndEdit:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 718266089762178535}
+      - m_Target: {fileID: 438189319468788160}
         m_TargetAssemblyTypeName: Assets.Scripts.UI.Tools.ModifyTool, Assembly-CSharp
         m_MethodName: RegisterModification
         m_Mode: 1
@@ -4141,7 +4318,7 @@ MonoBehaviour:
   m_CaretBlinkRate: 0.85
   m_CaretWidth: 1
   m_ReadOnly: 0
---- !u!114 &718266089762178535
+--- !u!114 &438189319468788160
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -4150,7 +4327,8 @@ MonoBehaviour:
   m_GameObject: {fileID: 9162946387713812888}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 97daf52020639a647ba26b7de44bfa6a, type: 3}
+  m_Script: {fileID: 11500000, guid: a1d844715843b1144aae4af881281151, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   _propertyType: 21
+  _fieldType: 1

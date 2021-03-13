@@ -9,6 +9,7 @@ using Assets.Scripts.Environment;
 using Assets.Scripts.Serialization;
 
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 using Mapbox.Unity.Map;
 using Mapbox.Unity.MeshGeneration.Data;
@@ -19,6 +20,12 @@ using Assets.Scripts.UI.EventArgs;
 
 namespace Assets.Scripts.UI
 {
+    /// <summary>
+    /// Base class for managers of a scene in the game. Contains functions that should not vary from sceme to scene, whether or not they are needed in each scene.
+    /// Anything that can be generalized should go here.
+    /// Acts as a listener for many types of events in the scene.
+    /// Receives and sends messages to UI.
+    /// </summary>
     public abstract class SceneManagerBase : MonoBehaviour
     {
         #region PUBLIC FIELDS
@@ -37,6 +44,7 @@ namespace Assets.Scripts.UI
         protected ModifyTool[] _modifyTools;
         protected AddTool[] _addTools;
         protected RemoveTool[] _removeTools;
+        protected SceneChangeTool[] _sceneChangeTools;
         protected SavePrompt _savePrompt;
 
         protected SceneElementBase _selectedElement = null;
@@ -85,6 +93,7 @@ namespace Assets.Scripts.UI
             _modifyTools = FindObjectsOfType<ModifyTool>(true);
             _addTools = FindObjectsOfType<AddTool>(true);
             _removeTools = FindObjectsOfType<RemoveTool>(true);
+            _sceneChangeTools = FindObjectsOfType<SceneChangeTool>(true);
             _savePrompt = FindObjectOfType<SavePrompt>(true);
             if (_savePrompt == null)
             {
@@ -110,7 +119,11 @@ namespace Assets.Scripts.UI
             }
             foreach (var r in _removeTools)
             {
-                r.ElementRemovedEvent += RemoveElement;
+                r.OnSelectedElementRemoved += RemoveSelectedElement;
+            }
+            foreach (var t in _sceneChangeTools)
+            {
+                t.OnSceneChange += ChangeScene;
             }
 
             Init();
@@ -138,9 +151,13 @@ namespace Assets.Scripts.UI
             }
             foreach (var r in _removeTools)
             {
-                r.ElementRemovedEvent -= RemoveElement;
+                r.OnSelectedElementRemoved -= RemoveSelectedElement;
             }
-            foreach(var d in DronePorts)
+            foreach (var t in _sceneChangeTools)
+            {
+                t.OnSceneChange -= ChangeScene;
+            }
+            foreach (var d in DronePorts)
             {
                 d.Value.OnSceneElementSelected -= SelectElement;
             }
@@ -179,6 +196,46 @@ namespace Assets.Scripts.UI
         #region CHANGE SCENE/QUIT
 
         /// <summary>
+        /// Called when changing scenes in any way, or quitting
+        /// </summary>
+        protected void ChangeScene(object sender, SceneChangeArgs args)
+        {
+            switch (args.SceneType)
+            {
+                case SceneType.City:
+                    {
+                        GoToCity();
+                        break;
+                    }
+                case SceneType.FindLoc:
+                    {
+                        GoToFindLoc();
+                        break;
+                    }
+                case SceneType.Main:
+                    {
+                        GoMain();
+                        break;
+                    }
+                case SceneType.Quit:
+                    {
+                        Quit();
+                        break;
+                    }
+                case SceneType.Region:
+                    {
+                        GoToRegion();
+                        break;
+                    }
+                case SceneType.Unset:
+                    {
+                        Debug.LogError("Scene type not selected");
+                        break;
+                    }
+            }
+        }
+
+        /// <summary>
         /// Initiates process of going to main menu
         /// </summary>
         protected void GoMain()
@@ -194,6 +251,29 @@ namespace Assets.Scripts.UI
             _savePrompt.Quit();
         }
 
+        protected void GoToCity()
+        {
+            if (_selectedElement is SceneCity)
+            {
+                EnvironManager.Instance.SetActiveCity(_selectedElement.Guid);
+                SceneManager.LoadScene(UISettings.CITYVIEW_SCENEPATH, LoadSceneMode.Single);
+            }
+        }
+
+        protected void GoToFindLoc()
+        {
+            SceneManager.LoadScene(UISettings.FINDLOCATION_SCENEPATH, LoadSceneMode.Single);
+        }
+
+
+        /// <summary>
+        /// Loads up the region view of current environment
+        /// </summary>
+        protected void GoToRegion()
+        {
+            SceneManager.LoadScene(UISettings.REGIONVIEW_SCENEPATH, LoadSceneMode.Single);
+        }
+
         #endregion
 
         #region SELECT/DESELECT
@@ -206,6 +286,7 @@ namespace Assets.Scripts.UI
             if (_selectedElement == null) //only change selection if we don't have something selected
             {
                 _selectedElement = sE;
+                _selectedElement.SetSelectedState(true);
                 return true;
             }
 
@@ -217,6 +298,7 @@ namespace Assets.Scripts.UI
         /// </summary>
         protected virtual void DeselectElement()
         {
+            _selectedElement.SetSelectedState(false);
             _selectedElement = null;
         }
 
@@ -266,6 +348,7 @@ namespace Assets.Scripts.UI
                 _workingCopy = InstantiateCity(guid, specs, false);
             }
 
+            _workingCopy.SetSelectedState(true);
         }
 
         /// <summary>
@@ -282,21 +365,21 @@ namespace Assets.Scripts.UI
                     var wC = _workingCopy as SceneDronePort;
                     RemoveDronePort(guidOld);
                     EnvironManager.Instance.AddDronePort(guidNew, wC.DronePortSpecs);
-                    InstantiateDronePort(guidNew, wC.DronePortSpecs, true);
+                    _selectedElement = InstantiateDronePort(guidNew, wC.DronePortSpecs, true);
                 }
                 else if (_workingCopy is SceneParkingStructure)
                 {
                     var wC = _workingCopy as SceneParkingStructure;
                     RemoveParkingStructure(guidOld);
                     EnvironManager.Instance.AddParkingStructure(guidNew, wC.ParkingStructureSpecs);
-                    InstantiateParkingStructure(guidNew, wC.ParkingStructureSpecs, true);
+                    _selectedElement = InstantiateParkingStructure(guidNew, wC.ParkingStructureSpecs, true);
                 }
                 else if (_workingCopy is SceneRestrictionZone)
                 {
                     var wC = _workingCopy as SceneRestrictionZone;
                     RemoveRestrictionZone(guidOld);
                     EnvironManager.Instance.AddRestrictionZone(guidNew, wC.RestrictionZoneSpecs);
-                    InstantiateRestrictionZone(guidNew, wC.RestrictionZoneSpecs, true);
+                    _selectedElement = InstantiateRestrictionZone(guidNew, wC.RestrictionZoneSpecs, true);
                 }
                 else if (_workingCopy is SceneCity)
                 {
@@ -305,16 +388,20 @@ namespace Assets.Scripts.UI
                     var wc = _workingCopy as SceneCity;
                     if (Cities.ContainsKey(guidOld))
                     {
+                        Cities[guidOld].gameObject.Destroy();
                         Cities.Remove(guidOld);
                     }
                     EnvironManager.Instance.GetCities()[guidOld].CityStats = wc.CitySpecs;
-                    InstantiateCity(guidOld, wc.CitySpecs, true);
+                    _selectedElement = InstantiateCity(guidOld, wc.CitySpecs, true);
                 }
             }
 
             //regardless, we want to delete this working copy, if there is one.
             _workingCopy?.gameObject.Destroy();
             _workingCopy = null;
+
+            //update selected because we threw out old
+            _selectedElement.SetSelectedState(true);
         }
 
         /// <summary>
@@ -512,7 +599,30 @@ namespace Assets.Scripts.UI
         /// <summary>
         /// Removes any type of element from scene.
         /// </summary>
-        protected abstract void RemoveElement(IRemoveElementArgs args);
+        protected virtual void RemoveSelectedElement()
+        {
+            if (_selectedElement == null)
+            {
+                Debug.LogError("Nothing selected");
+                return;
+            }
+            if (_selectedElement is SceneDronePort)
+            {
+                RemoveDronePort((_selectedElement as SceneDronePort).Guid);
+            }
+            else if (_selectedElement is SceneParkingStructure)
+            {
+                RemoveParkingStructure((_selectedElement as SceneParkingStructure).Guid);
+            }
+            else if (_selectedElement is SceneRestrictionZone)
+            {
+                RemoveRestrictionZone((_selectedElement as SceneRestrictionZone).Guid);
+            }
+            else if (_selectedElement is SceneCity)
+            {
+                RemoveCity((_selectedElement as SceneCity).Guid);
+            }
+        }
 
         /// <summary>
         /// Adds a new drone port from UI.

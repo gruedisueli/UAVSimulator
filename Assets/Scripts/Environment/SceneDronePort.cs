@@ -40,5 +40,10 @@ namespace Assets.Scripts.Environment
             gameObject.transform.rotation = Quaternion.Euler(DronePortSpecs.Rotation.x, DronePortSpecs.Rotation.y, DronePortSpecs.Rotation.z);
             gameObject.transform.localScale = DronePortSpecs.Scale;
         }
+
+        public override void SetSelectedState(bool isSelected)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

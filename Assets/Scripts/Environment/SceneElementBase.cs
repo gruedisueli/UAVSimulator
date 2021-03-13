@@ -19,7 +19,10 @@ namespace Assets.Scripts.Environment
 
         private void Start()
         {
-            gameObject.AddComponent<BoxCollider>();//for UI selection
+            //disabled because it seems like primitives come with colliders, and we can assign colliders when we instantiate the game objects if they are custom//gameObject.AddComponent<BoxCollider>();//for UI selection
+
+            var bC = gameObject.GetComponent<BoxCollider>();
+            bC.size = new Vector3(2, 2, 2);//bigger seems to solve raycast issues
         }
 
         private void OnMouseUp()
@@ -30,5 +33,7 @@ namespace Assets.Scripts.Environment
                 OnSceneElementSelected.Invoke(this);
             }
         }
+
+        public abstract void SetSelectedState(bool isSelected);
     }
 }

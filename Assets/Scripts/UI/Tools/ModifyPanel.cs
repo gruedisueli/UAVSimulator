@@ -38,10 +38,13 @@ namespace Assets.Scripts.UI.Tools
         /// <summary>
         /// Called to activate/deactivate this entire game object and children.
         /// </summary>
-        public virtual void SetActive()
+        public virtual void SetActive(bool isActive)
         {
-            gameObject.SetActive(true);
-            OnStartModify.Invoke();
+            gameObject.SetActive(isActive);
+            if (isActive)
+            {
+                OnStartModify.Invoke();
+            }
         }
 
         /// <summary>
@@ -50,6 +53,7 @@ namespace Assets.Scripts.UI.Tools
         public virtual void CancelModification()
         {
             OnCommitChange.Invoke(false);
+            gameObject.SetActive(false);
         }
 
         /// <summary>
@@ -58,6 +62,7 @@ namespace Assets.Scripts.UI.Tools
         public virtual void CommitModification()
         {
             OnCommitChange.Invoke(true);
+            gameObject.SetActive(false);
         }
 
     }

@@ -285,50 +285,6 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!1 &137106891
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 137106892}
-  - component: {fileID: 137106893}
-  m_Layer: 0
-  m_Name: UI
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &137106892
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 137106891}
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 158.1545, y: -514.5205, z: 164.6447}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_Children:
-  - {fileID: 1265748627}
-  m_Father: {fileID: 1422719017}
-  m_RootOrder: 0
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &137106893
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 137106891}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 2d19f9552e9b9904b8ee2bae6fa8fef2, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!1 &214324614
 GameObject:
   m_ObjectHideFlags: 0
@@ -441,7 +397,7 @@ RectTransform:
   - {fileID: 214324615}
   - {fileID: 1280251561}
   - {fileID: 1825167816}
-  m_Father: {fileID: 137106892}
+  m_Father: {fileID: 1422719017}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
@@ -591,8 +547,8 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 137106893}
-        m_TargetAssemblyTypeName: Assets.FOA.UI.MainMenu, Assembly-CSharp
+      - m_Target: {fileID: 1422719018}
+        m_TargetAssemblyTypeName: Assets.Scripts.UI.MainMenuManager, Assembly-CSharp
         m_MethodName: CreateNew
         m_Mode: 1
         m_Arguments:
@@ -716,6 +672,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1422719017}
+  - component: {fileID: 1422719018}
   m_Layer: 0
   m_Name: FOA
   m_TagString: Untagged
@@ -734,10 +691,22 @@ Transform:
   m_LocalPosition: {x: -158.1545, y: 514.5205, z: -164.6447}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
-  - {fileID: 137106892}
+  - {fileID: 1265748627}
   m_Father: {fileID: 0}
   m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1422719018
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1422719016}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2d19f9552e9b9904b8ee2bae6fa8fef2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &1825167815
 GameObject:
   m_ObjectHideFlags: 0
@@ -820,8 +789,8 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 137106893}
-        m_TargetAssemblyTypeName: Assets.FOA.UI.MainMenu, Assembly-CSharp
+      - m_Target: {fileID: 1422719018}
+        m_TargetAssemblyTypeName: Assets.Scripts.UI.MainMenuManager, Assembly-CSharp
         m_MethodName: LoadSaved
         m_Mode: 1
         m_Arguments:

@@ -102,6 +102,7 @@
     <Compile Include="Assets\Mapbox\Core\mapbox-sdk-cs\Platform\HTTPRequestNonThreaded.cs" />
     <Compile Include="Assets\Scripts\Vehicle Control\ParkingControl.cs" />
     <Compile Include="Assets\Mapbox\Unity\Utilities\VectorEntity.cs" />
+    <Compile Include="Assets\Scripts\UI\Tools\ModifyFieldTool.cs" />
     <Compile Include="Assets\Mapbox\Unity\Location\AngleSmoothing\AngleSmoothingLowPass.cs" />
     <Compile Include="Assets\Mapbox\Unity\SourceLayers\SubLayerRealisticStyle.cs" />
     <Compile Include="Assets\Scripts\UI\EventArgs\ModifyElementArgs.cs" />
@@ -320,7 +321,7 @@
     <Compile Include="Assets\Mapbox\Core\mapbox-sdk-cs\Directions\Response\Maneuver.cs" />
     <Compile Include="Assets\Mapbox\Unity\DataContainers\CameraBoundsTileProviderOptions.cs" />
     <Compile Include="Assets\Mapbox\Unity\Location\Location.cs" />
-    <Compile Include="Assets\Scripts\UI\Tools\AddCity.cs" />
+    <Compile Include="Assets\Scripts\UI\Tools\AddCityTool.cs" />
     <Compile Include="Assets\Scripts\MapboxCustom\FOA_RangeAroundTransformTileProviderOptions.cs" />
     <Compile Include="Assets\Mapbox\Core\mapbox-sdk-cs\Platform\IFileSource.cs" />
     <Compile Include="Assets\Scripts\Vehicle Control\DronePortControl.cs" />
@@ -446,6 +447,7 @@
     <Compile Include="Assets\Mapbox\Examples\Scripts\ImmediatePositionWithLocationProvider.cs" />
     <Compile Include="Assets\Mapbox\Unity\MeshGeneration\Modifiers\MeshModifiers\SnapTerrainRaycastModifier.cs" />
     <Compile Include="Assets\Mapbox\Unity\MeshGeneration\Enums\TilePropertyState.cs" />
+    <Compile Include="Assets\Scripts\UI\Tools\ModifyPanel.cs" />
     <Compile Include="Assets\Mapbox\Unity\DataContainers\MapPlacementOptions.cs" />
     <Compile Include="Assets\Scripts\Environment\RestrictionZoneAssetPack.cs" />
     <Compile Include="Assets\Mapbox\Unity\DataContainers\UnityLayerOptions.cs" />
@@ -454,6 +456,7 @@
     <Compile Include="Assets\Scripts\Environment\SceneElementBase.cs" />
     <Compile Include="Assets\Mapbox\Unity\MeshGeneration\Modifiers\GameObjectModifiers\MapboxStylesColorModifier.cs" />
     <Compile Include="Assets\Mapbox\Examples\Scripts\QuadTreeCameraMovement.cs" />
+    <Compile Include="Assets\Scripts\UnitUtils.cs" />
     <Compile Include="Assets\Mapbox\Core\mapbox-sdk-cs\Platform\FileSource.cs" />
     <Compile Include="Assets\Scripts\UI\EventArgs\ModifyBoolPropertyArg.cs" />
     <Compile Include="Assets\Mapbox\Examples\8_VoxelMap\Scripts\VoxelTile.cs" />
@@ -495,10 +498,8 @@
     <Compile Include="Assets\Mapbox\Core\mapbox-sdk-cs\Map\Tile.cs" />
     <Compile Include="Assets\Mapbox\Core\mapbox-sdk-cs\Map\ClassicRasterTile.cs" />
     <Compile Include="Assets\Mapbox\Unity\MeshGeneration\Modifiers\ModifierStack.cs" />
-    <Compile Include="Assets\Scripts\UI\Tools\ModifyPanel.cs" />
-    <Compile Include="Assets\Scripts\UnitUtils.cs" />
-    <Compile Include="Assets\Scripts\UI\Tools\ModifyFieldTool.cs" />
-    <Compile Include="Assets\Scripts\UI\Tools\ModifyStringFieldTool.cs" />
+    <Compile Include="Assets\Scripts\UI\EventArgs\SceneChangeArgs.cs" />
+    <Compile Include="Assets\Scripts\UI\Tools\SceneChangeTool.cs" />
   </ItemGroup>
   <ItemGroup>
      <None Include="Assets\Mapbox\Core\Plugins\Mapbox\vector-tile-cs\net46\Mapbox.VectorTile.Geometry.dll" />

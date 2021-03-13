@@ -47,6 +47,8 @@ namespace Assets.Scripts.UI.Tools
             {
                 t.OnElementModified += Modification;
             }
+
+            _modifyPanel.SetActive(false);
         }
 
         private void OnDestroy()
@@ -59,13 +61,13 @@ namespace Assets.Scripts.UI.Tools
 
         public void SetCity(CityOptions stats)
         {
-            _cityName.text = stats.Name;
-            _population.text = stats.Population.ToString();
-            _jobs.text = stats.Jobs.ToString();
-            _eastExt.text = stats.EastExt.ToString();
-            _westExt.text = stats.WestExt.ToString();
-            _northExt.text = stats.NorthExt.ToString();
-            _southExt.text = stats.SouthExt.ToString();
+            _cityName.text = "Name: " + stats.Name;
+            _population.text = "Pop: " + stats.Population.ToString();
+            _jobs.text = "Jobs: " + stats.Jobs.ToString();
+            _eastExt.text = "East Ext: " + stats.EastExt.ToString();
+            _westExt.text = "West Ext: " + stats.WestExt.ToString();
+            _northExt.text = "North Ext: " + stats.NorthExt.ToString();
+            _southExt.text = "South Ext: " + stats.SouthExt.ToString();
         }
 
         /// <summary>

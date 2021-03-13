@@ -21,6 +21,9 @@ using Assets.Scripts.UI.EventArgs;
 
 namespace Assets.Scripts.UI
 {
+    /// <summary>
+    /// Manages the region view. Only functions specific to region view should be here. If it can be generalized, put it in the base class.
+    /// </summary>
     public class RegionViewManager : SceneManagerBase
     {
         private GameObject _cityMarkerPrefab;
@@ -45,6 +48,8 @@ namespace Assets.Scripts.UI
             }
 
             _cityPanel.OnCloseCityPanel += DeselectElement;
+
+            _cityPanel.SetActive(false);
         }
 
         protected override void OnDestroyDerived()
@@ -52,14 +57,6 @@ namespace Assets.Scripts.UI
             _cityPanel.OnCloseCityPanel -= DeselectElement;
         }
 
-        public void GoToCity()
-        {
-            if (_selectedElement is SceneCity)
-            {
-                EnvironManager.Instance.SetActiveCity(_selectedElement.Guid);
-                SceneManager.LoadScene(UISettings.CITYVIEW_SCENEPATH, LoadSceneMode.Single);
-            }
-        }
 
         #region SELECTION
 
@@ -74,13 +71,6 @@ namespace Assets.Scripts.UI
             }
 
             return selectedNew;
-        }
-
-        protected override void DeselectElement()
-        {
-            DeselectMarker(); //do this stuff first before we null selected element field.
-
-            base.DeselectElement();
         }
 
         private void SelectCityMarker()
@@ -105,26 +95,13 @@ namespace Assets.Scripts.UI
                 //}
             }
 
-            if (_selectedElement is SceneCity)
-            {
-                (_selectedElement as SceneCity).SetSelectedState(true);
-            }
         }
 
         private void SetCityPanelActive(bool isActive)
         {
             if (_cityPanel != null)
             {
-                _cityPanel.SetActive(true);
-            }
-        }
-
-        private void DeselectMarker()
-        {
-            if (_selectedElement is SceneCity)
-            {
-                var sC = _selectedElement as SceneCity;
-                sC.SetSelectedState(false);
+                _cityPanel.SetActive(isActive);
             }
         }
 
@@ -142,15 +119,12 @@ namespace Assets.Scripts.UI
             }
         }
 
-        protected override void RemoveElement(IRemoveElementArgs args)
+        protected override void RemoveSelectedElement()
         {
-            if (args.Family == ElementFamily.City)
-            {
-                RemoveCity(args.Guid);
-                SetCityPanelActive(false);
-            }
-        }
+            base.RemoveSelectedElement();
 
+            SetCityPanelActive(false);
+        }
 
 
         #endregion

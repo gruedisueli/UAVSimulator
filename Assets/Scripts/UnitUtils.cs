@@ -44,10 +44,10 @@ namespace Assets.Scripts
         /// <returns></returns>
         public static float[][] TileCoordsToWorldExtents(int[] coordsXY, Vector3 regionTileWorldCenter, float cityTileSideLength, int eExt, int wExt, int nExt, int sExt)
         {
-            int x1 = coordsXY[0] + wExt;
-            int x0 = coordsXY[0] - 1 - eExt;
-            int y1 = coordsXY[1] + sExt;
-            int y0 = coordsXY[1] - 1 - nExt;
+            int x1 = coordsXY[0] -1 - wExt;
+            int x0 = coordsXY[0] + eExt;
+            int y1 = coordsXY[1] -1 - sExt;
+            int y0 = coordsXY[1] + nExt;
 
             float xR0 = CoordToWorldCoord(regionTileWorldCenter.x, x0, cityTileSideLength);
             float xR1 = CoordToWorldCoord(regionTileWorldCenter.x, x1, cityTileSideLength);

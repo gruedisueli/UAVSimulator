@@ -111,6 +111,11 @@ namespace Assets.Scripts.Environment
             }
         }
 
+        public override void SetSelectedState(bool isSelected)
+        {
+            throw new NotImplementedException();
+        }
+
         /// <summary>
         /// Instantiate rectangular component.
         /// </summary>

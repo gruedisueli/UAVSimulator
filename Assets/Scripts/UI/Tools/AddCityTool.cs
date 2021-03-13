@@ -15,7 +15,7 @@ using UnityEngine;
 
 namespace Assets.Scripts.UI.Tools
 {
-    public class AddCity : AddTool
+    public class AddCityTool : AddTool
     {
         private RaycastHit _hitInfo;
         private Vector3 _position;
