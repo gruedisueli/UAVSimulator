@@ -15,7 +15,7 @@ namespace Assets.Scripts.Environment
     /// <summary>
     /// Class hold user-configurable city stats
     /// </summary>
-    [Serializable]
+    [JsonObject(MemberSerialization.OptIn)]
     public class CityOptions
     {
         [JsonProperty]

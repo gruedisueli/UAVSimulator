@@ -4,11 +4,12 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
+using Newtonsoft.Json;
+
 using UnityEngine;
 
 namespace Assets.Scripts.Environment
 {
-    [Serializable]
     public abstract class DronePortBase
     {
         public int Layer { get; } = 12;

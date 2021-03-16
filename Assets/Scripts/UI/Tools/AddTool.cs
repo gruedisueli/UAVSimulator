@@ -73,7 +73,7 @@ namespace Assets.Scripts.UI.Tools
                 if (hit)
                 {
                     var gO = hitInfo.transform.gameObject;
-                    var uT = gO.GetComponent<UnityTile>();
+                    var uT = gO.GetComponentInParent<UnityTile>();
                     if (uT != null) //check that we've hit a terrain tile and not something else like a button.
                     {
                         _hitInfo = hitInfo;

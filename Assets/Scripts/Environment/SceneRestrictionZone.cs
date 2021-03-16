@@ -23,21 +23,26 @@ namespace Assets.Scripts.Environment
             if (rZ is RestrictionZoneRect)
             {
                 type = "Rect";
-                InstantiateRect();
+                var rRect = rZ as RestrictionZoneRect;
+                transform.position = rRect.Position;
+                InstantiateRect(rRect);
 
             }
             else if (rZ is RestrictionZoneCyl)
             {
                 type = "Cyl";
-                InstantiateCyl();
+                var rCyl = rZ as RestrictionZoneCyl;
+                transform.position = rCyl.Position;
+                InstantiateCyl(rCyl);
             }
             else if (rZ is RestrictionZoneCylStack)
             {
                 type = "CylStacked";
                 var tmp = rZ as RestrictionZoneCylStack;
+                transform.position = tmp.Position;
                 foreach(var t  in tmp.Elements)
                 {
-                    InstantiateCyl();
+                    InstantiateCyl(t);
                 }
             }
 
@@ -48,7 +53,7 @@ namespace Assets.Scripts.Environment
             foreach(var c in SubElements)
             {
                 c.transform.parent = transform;
-                var mR = c.AddComponent<MeshRenderer>();
+                var mR = c.GetComponent<MeshRenderer>();
                 mR.material = zoneMaterial;
                 c.name = gameObject.name;
                 c.tag = gameObject.tag;
@@ -99,12 +104,12 @@ namespace Assets.Scripts.Environment
             else if (RestrictionZoneSpecs is RestrictionZoneCylStack)
             {
                 var rZ = RestrictionZoneSpecs as RestrictionZoneCylStack;
-                if (rZ == null || rZ.Elements.Count != SubElements.Count)
+                if (rZ == null || rZ.Elements.Length != SubElements.Count)
                 {
                     Debug.LogError("List length mismatch in restriction zone");
                     return;
                 }
-                for (int i = 0; i < rZ.Elements.Count; i++)
+                for (int i = 0; i < rZ.Elements.Length; i++)
                 {
                     UpdateSingleCyl(SubElements[i], rZ.Elements[i]);
                 }
@@ -119,17 +124,25 @@ namespace Assets.Scripts.Environment
         /// <summary>
         /// Instantiate rectangular component.
         /// </summary>
-        private void InstantiateRect()
+        private void InstantiateRect(RestrictionZoneRect rZ)
         {
-            SubElements.Add(GameObject.CreatePrimitive(PrimitiveType.Cube));
+            var cube = GameObject.CreatePrimitive(PrimitiveType.Cube);
+            cube.transform.parent = transform;
+            cube.transform.position = rZ.Position;
+            cube.transform.localScale = rZ.Scale;
+            SubElements.Add(cube);
         }
 
         /// <summary>
         /// Instantiates cylindrical component.
         /// </summary>
-        private void InstantiateCyl()
+        private void InstantiateCyl(RestrictionZoneCyl rZ)
         {
-            SubElements.Add(GameObject.CreatePrimitive(PrimitiveType.Cylinder));
+            var cyl = GameObject.CreatePrimitive(PrimitiveType.Cylinder);
+            cyl.transform.parent = transform;
+            cyl.transform.position = rZ.Position;
+            cyl.transform.localScale = rZ.Scale;
+            SubElements.Add(cyl);
         }
 
         /// <summary>

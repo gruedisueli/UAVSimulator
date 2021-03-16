@@ -364,7 +364,7 @@ namespace Assets.Scripts.Environment
         /// <summary>
         /// Gets current city dictionary.
         /// </summary>
-        public SerializableDictionary<string, City> GetCities()
+        public Dictionary<string, City> GetCities()
         {
             return Environ.Cities;
         }
@@ -453,6 +453,7 @@ namespace Assets.Scripts.Environment
 
                 var pS = new ParkingStructureCustom();
                 pS.ParkingSpots = spots;
+                pS.Type = type;
                 ParkingStructAssets.Add(type, new ParkingStructureAssetPack(pfb, pS));
             }
         }
@@ -477,9 +478,7 @@ namespace Assets.Scripts.Environment
         private T DeserializeJsonFile<T>(string path)
         {
             JsonSerializer serializer = new JsonSerializer();
-            serializer.
-            //serializer.NullValueHandling = NullValueHandling.Ignore;
-
+            serializer.TypeNameHandling = TypeNameHandling.All; //required for keeping track of derived classes.
             using (StreamReader sR = new StreamReader(path))
             {
                 using (JsonReader reader = new JsonTextReader(sR))
@@ -492,7 +491,8 @@ namespace Assets.Scripts.Environment
         private void SerializeJsonFile(object obj, string path)
         {
             JsonSerializer serializer = new JsonSerializer();
-            //serializer.NullValueHandling = NullValueHandling.Ignore;
+            serializer.Formatting = Formatting.Indented; //makes output file easier to read
+            serializer.TypeNameHandling = TypeNameHandling.All; //required for keeping track of derived classes.
 
             using (StreamWriter sW = new StreamWriter(path))
             {

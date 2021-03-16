@@ -13,7 +13,7 @@ using Assets.Scripts.Serialization;
 
 namespace Assets.Scripts.Environment
 {
-    [Serializable]
+    [JsonObject(MemberSerialization.OptIn)]
     public class RestrictionZoneCyl : RestrictionZoneBase
     {
         [JsonProperty]
@@ -70,6 +70,8 @@ namespace Assets.Scripts.Environment
                 if (value < _top)
                 {
                     _bottom = value;
+                    _height = _top - _bottom;
+                    _scale = new SerVect3f(Scale.x, _height / 2, Scale.z);
                     _position = new SerVect3f(Position.x, value + Height / 2, Position.z);
                 }
                 else
@@ -135,6 +137,24 @@ namespace Assets.Scripts.Environment
             {
                 return _scale.ToVector3();
             }
+        }
+
+        /// <summary>
+        /// Empty constructor for json deserialization
+        /// </summary>
+        public RestrictionZoneCyl()
+        {
+
+        }
+
+        public RestrictionZoneCyl(Vector3 centerPt, float bottom, float top, float radius)
+        {
+            _position = new SerVect3f(centerPt);
+
+            //Important: update properties from "set", and not on fields directly because this will also update other properties affected by these changes.
+            Top = top;//set top before bottom
+            Bottom = bottom;//set bottom after top
+            Radius = radius;
         }
 
         public RestrictionZoneCyl(Vector3 pos)

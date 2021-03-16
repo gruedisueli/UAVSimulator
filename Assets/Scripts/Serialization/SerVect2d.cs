@@ -15,7 +15,7 @@ using Newtonsoft.Json;
 /// </summary>
 namespace Assets.Scripts.Serialization
 {
-    [Serializable]
+    [JsonObject(MemberSerialization.OptIn)]
     public class SerVect2d
     {
         [JsonProperty]

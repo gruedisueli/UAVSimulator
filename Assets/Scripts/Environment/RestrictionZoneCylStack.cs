@@ -13,7 +13,7 @@ using Assets.Scripts.Serialization;
 
 namespace Assets.Scripts.Environment
 {
-    [Serializable]
+    [JsonObject(MemberSerialization.OptIn)]
     public class RestrictionZoneCylStack : RestrictionZoneBase
     {
         [JsonProperty]
@@ -44,8 +44,8 @@ namespace Assets.Scripts.Environment
         }
 
         [JsonProperty]
-        private List<RestrictionZoneCyl> _elements = new List<RestrictionZoneCyl>();
-        public List<RestrictionZoneCyl> Elements
+        private RestrictionZoneCyl[] _elements;
+        public RestrictionZoneCyl[] Elements
         {
             get
             {
@@ -57,17 +57,27 @@ namespace Assets.Scripts.Environment
             }
         }
 
+        /// <summary>
+        /// Empty constructor for json deserialization
+        /// </summary>
+        public RestrictionZoneCylStack()
+        {
+            ConfigureDefaultStack();
+        }
+
         public RestrictionZoneCylStack(Vector3 pos)
         {
             Position = pos;
+            ConfigureDefaultStack();
         }
 
         public RestrictionZoneCylStack(RestrictionZoneCylStack rZ)
         {
             _type = rZ.Type;
-            foreach(var e in rZ.Elements)
+            _elements = new RestrictionZoneCyl[rZ.Elements.Length];
+            for (int i = 0; i < rZ.Elements.Length; i++)
             {
-                _elements.Add(new RestrictionZoneCyl(e));
+                _elements[i] = new RestrictionZoneCyl(rZ.Elements[i]);
             }
         }
 
@@ -94,6 +104,17 @@ namespace Assets.Scripts.Environment
                 Debug.LogError("Casting error in restriction zone property update");
                 return;
             }
+        }
+
+        /// <summary>
+        /// Creates default stack of cylinders
+        /// </summary>
+        private void ConfigureDefaultStack()
+        {
+            var cyl0 = new RestrictionZoneCyl(Position, 0, 579.12f, 2500);
+            var cyl1 = new RestrictionZoneCyl(Position, 579.12f, 1097.28f, 4000);
+            var cyl2 = new RestrictionZoneCyl(Position, 1097.28f, 3048, 7200);
+            _elements = new RestrictionZoneCyl[] { cyl0, cyl1, cyl2 };
         }
     }
 }

@@ -12,7 +12,7 @@ using Assets.Scripts.Serialization;
 
 namespace Assets.Scripts.Environment
 {
-    [Serializable]
+    [JsonObject(MemberSerialization.OptIn)]
     public class RestrictionZoneRect : RestrictionZoneBase
     {
         [JsonProperty]
@@ -76,6 +76,14 @@ namespace Assets.Scripts.Environment
             {
                 _rotation = new SerVect3f(value);
             }
+        }
+
+        /// <summary>
+        /// Empty constructor for json deserialization
+        /// </summary>
+        public RestrictionZoneRect()
+        {
+
         }
 
         public RestrictionZoneRect(Vector3 pos)

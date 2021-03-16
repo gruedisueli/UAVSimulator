@@ -12,7 +12,7 @@ using Assets.Scripts.Serialization;
 
 namespace Assets.Scripts.Environment
 {
-    [Serializable]
+    [JsonObject(MemberSerialization.OptIn)]
     public class City
     {
         [JsonProperty]
@@ -74,6 +74,14 @@ namespace Assets.Scripts.Environment
         public City(CityOptions stats)
         {
             CityStats = stats;
+        }
+
+        /// <summary>
+        /// Empty constructor for json deserialization
+        /// </summary>
+        public City()
+        {
+
         }
     }
 }

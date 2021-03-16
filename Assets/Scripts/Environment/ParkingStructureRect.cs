@@ -12,7 +12,7 @@ using UnityEngine;
 
 namespace Assets.Scripts.Environment
 {
-    [Serializable]
+    [JsonObject(MemberSerialization.OptIn)]
     public class ParkingStructureRect : ParkingStructureBase
     {
         [JsonProperty]
@@ -22,6 +22,10 @@ namespace Assets.Scripts.Environment
             get
             {
                 return _type;
+            }
+            set
+            {
+                _type = value;
             }
         }
 
@@ -68,7 +72,7 @@ namespace Assets.Scripts.Environment
         }
 
         [JsonProperty]
-        private SerVect3f _scale = new SerVect3f(1, 1, 1);
+        private SerVect3f _scale = new SerVect3f(100, 1, 100);
         public override Vector3 Scale
         {
             get
@@ -149,6 +153,14 @@ namespace Assets.Scripts.Environment
         public override Dictionary<Vector3, GameObject> Parked { get; set; } = new Dictionary<Vector3, GameObject>();
         public override Dictionary<GameObject, Vector3> VehicleAt { get; set; } = new Dictionary<GameObject, Vector3>();
         public override Dictionary<GameObject, Vector3> Reserved { get; set; } = new Dictionary<GameObject, Vector3>();
+
+        /// <summary>
+        /// Empty constructor for json deserialization
+        /// </summary>
+        public ParkingStructureRect()
+        {
+
+        }
 
         public ParkingStructureRect(Vector3 pos)
         {

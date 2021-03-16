@@ -12,7 +12,7 @@ using Assets.Scripts.Serialization;
 
 namespace Assets.Scripts.Environment
 {
-    [Serializable]
+    [JsonObject(MemberSerialization.OptIn)]
     public class DronePortRect : DronePortBase
     {
         [JsonProperty]
@@ -54,7 +54,7 @@ namespace Assets.Scripts.Environment
         }
 
         [JsonProperty]
-        private SerVect3f _scale = new SerVect3f(1, 1, 1);
+        private SerVect3f _scale = new SerVect3f(25, 1, 25);
         public override Vector3 Scale
         {
             get
@@ -187,6 +187,14 @@ namespace Assets.Scripts.Environment
         public override DronePortBase GetCopy()
         {
             return new DronePortRect(this);
+        }
+
+        /// <summary>
+        /// Empty constructor for json deserialization
+        /// </summary>
+        public DronePortRect()
+        {
+
         }
 
         public DronePortRect(DronePortRect dP)

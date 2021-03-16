@@ -167,6 +167,7 @@ namespace Assets.Scripts.UI
         protected override SceneRestrictionZone InstantiateRestrictionZone(string guid, RestrictionZoneBase rZ, bool register)
         {
             var zoneParent = new GameObject();
+
             var sRZ = zoneParent.AddComponent<SceneRestrictionZone>();
             sRZ.Initialize(guid, rZ, _restrictionZoneMaterial);
 

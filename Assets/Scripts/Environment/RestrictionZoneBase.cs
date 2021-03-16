@@ -6,11 +6,12 @@ using System.Threading.Tasks;
 
 using UnityEngine;
 
+using Newtonsoft.Json;
+
 using Assets.Scripts.UI.EventArgs;
 
 namespace Assets.Scripts.Environment
 {
-    [Serializable]
     public abstract class RestrictionZoneBase
     {
         public int Layer { get; } = 8;

@@ -4,16 +4,17 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
+using Newtonsoft.Json;
+
 using UnityEngine;
 
 namespace Assets.Scripts.Environment
 {
-    [Serializable]
     public abstract class ParkingStructureBase
     {
         public int Layer { get; } = 11;
 
-        public abstract string Type { get; }
+        public abstract string Type { get; set; }
         public abstract int RemainingSpots { get; set; }
         public abstract Vector3 Position { get; set; }
         public abstract Vector3 Rotation { get; set; }

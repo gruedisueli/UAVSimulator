@@ -18,7 +18,7 @@ namespace Assets.Scripts.Environment
     /// This serializable class contains EVERYTHING that you would want to need to save/load a configuration.
     /// It is serializable for this reason.
     /// </summary>
-    [Serializable]
+    [JsonObject(MemberSerialization.OptIn)]
     public class Environ
     {
 

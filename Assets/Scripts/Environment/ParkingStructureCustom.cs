@@ -12,7 +12,7 @@ using UnityEngine;
 
 namespace Assets.Scripts.Environment
 {
-    [Serializable]
+    [JsonObject(MemberSerialization.OptIn)]
     public class ParkingStructureCustom : ParkingStructureBase
     {
         [JsonProperty]
@@ -22,6 +22,10 @@ namespace Assets.Scripts.Environment
             get
             {
                 return _type;
+            }
+            set
+            {
+                _type = value;
             }
         }
 
@@ -68,7 +72,7 @@ namespace Assets.Scripts.Environment
         }
 
         [JsonProperty]
-        private SerVect3f _scale = new SerVect3f();
+        private SerVect3f _scale = new SerVect3f(1, 1, 1);
         public override Vector3 Scale
         {
             get
