@@ -4,13 +4,18 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
+using Newtonsoft.Json;
+
+using Assets.Scripts.Serialization;
+
 using UnityEngine;
 
 namespace Assets.Scripts.Environment
 {
+    [Serializable]
     public class ParkingStructureCustom : ParkingStructureBase
     {
-        [SerializeField]
+        [JsonProperty]
         private string _type = "";
         public override string Type
         {
@@ -20,7 +25,7 @@ namespace Assets.Scripts.Environment
             }
         }
 
-        [SerializeField]
+        [JsonProperty]
         private int _remainingSpots = 0;
         public override int RemainingSpots
         {
@@ -34,101 +39,110 @@ namespace Assets.Scripts.Environment
             }
         }
 
-        [SerializeField]
-        private Vector3 _position = new Vector3();
+        [JsonProperty]
+        private SerVect3f _position = new SerVect3f();
         public override Vector3 Position
         {
             get
             {
-                return _position;
+                return _position.ToVector3();
             }
             set
             {
-                _position = value;
+                _position = new SerVect3f(value);
             }
         }
 
-        [SerializeField]
-        private Vector3 _rotation = new Vector3();
+        [JsonProperty]
+        private SerVect3f _rotation = new SerVect3f();
         public override Vector3 Rotation
         {
             get
             {
-                return _rotation;
+                return _rotation.ToVector3();
             }
             set
             {
-                _rotation = value;
+                _rotation = new SerVect3f(value);
             }
         }
 
-        [SerializeField]
-        private Vector3 _scale = new Vector3();
+        [JsonProperty]
+        private SerVect3f _scale = new SerVect3f();
         public override Vector3 Scale
         {
             get
             {
-                return _scale;
+                return _scale.ToVector3();
             }
             set
             {
-                _scale = value;
+                _scale = new SerVect3f(value);
             }
         }
 
-        [SerializeField]
-        private Vector3 _standbyPosition = new Vector3();
+        [JsonProperty]
+        private SerVect3f _standbyPosition = new SerVect3f();
         public override Vector3 StandbyPosition
         {
             get
             {
-                return _standbyPosition;
+                return _standbyPosition.ToVector3();
             }
             set
             {
-                _standbyPosition = value;
+                _standbyPosition = new SerVect3f(value);
             }
         }
 
-        [SerializeField]
-        private Vector3 _landingQueueHead = new Vector3();
+        [JsonProperty]
+        private SerVect3f _landingQueueHead = new SerVect3f();
         public override Vector3 LandingQueueHead
         {
             get
             {
-                return _landingQueueHead;
+                return _landingQueueHead.ToVector3();
             }
             set
             {
-                _landingQueueHead = value;
+                _landingQueueHead = new SerVect3f(value);
             }
         }
 
-        [SerializeField]
-        private Vector3 _landingQueueDirection = new Vector3();
+        [JsonProperty]
+        private SerVect3f _landingQueueDirection = new SerVect3f();
         public override Vector3 LandingQueueDirection
         {
             get
             {
-                return _landingQueueDirection;
+                return _landingQueueDirection.ToVector3();
             }
             set
             {
-                _landingQueueDirection = value;
+                _landingQueueDirection = new SerVect3f(value);
             }
         }
 
-        [SerializeField]
-        private List<Vector3> _parkingSpots = new List<Vector3>();
+        [JsonProperty]
+        private List<SerVect3f> _parkingSpots = new List<SerVect3f>();
         public override List<Vector3> ParkingSpots
         {
             get
             {
-                return _parkingSpots;
+                List<Vector3> list = new List<Vector3>();
+                foreach(var pS in _parkingSpots)
+                {
+                    list.Add(pS.ToVector3());
+                }
+                return list;
             }
             set
             {
-                _parkingSpots = value;
+                _parkingSpots = new List<SerVect3f>();
+                foreach(var pS in value)
+                {
+                    _parkingSpots.Add(new SerVect3f(pS));
+                }
             }
         }
 

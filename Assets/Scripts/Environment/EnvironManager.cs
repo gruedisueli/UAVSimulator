@@ -7,6 +7,8 @@ using System.IO;
 
 using UnityEngine;
 
+using Newtonsoft.Json;
+
 using Assets.Scripts.Serialization;
 
 namespace Assets.Scripts.Environment
@@ -399,14 +401,8 @@ namespace Assets.Scripts.Environment
         /// </summary>
         public void SaveFile()
         {
-            using (StreamWriter writer = new StreamWriter(SerializationSettings.SAVE_PATH))
-            {
-                string json = JsonUtility.ToJson(Environ, true);
-                writer.WriteLine(json);
-                writer.Close();
-                Debug.Log("File written to " + SerializationSettings.SAVE_PATH);
-            }
-
+            SerializeJsonFile(Environ, SerializationSettings.SAVE_PATH);
+            Debug.Log("File written to " + SerializationSettings.SAVE_PATH);
         }
 
         /// <summary>
@@ -414,12 +410,8 @@ namespace Assets.Scripts.Environment
         /// </summary>
         public void LoadSaved()
         {
-            using (StreamReader reader = new StreamReader(SerializationSettings.SAVE_PATH))
-            {
-                string json = reader.ReadToEnd();
-                reader.Close();
-                Environ = JsonUtility.FromJson<Environ>(json);
-            }
+            Environ = DeserializeJsonFile<Environ>(SerializationSettings.SAVE_PATH);
+            Debug.Log("File read from " + SerializationSettings.SAVE_PATH);
         }
 
         /// <summary>
@@ -471,15 +463,43 @@ namespace Assets.Scripts.Environment
         private void ReadDronePorts()
         {
             DronePortAssets = new Dictionary<string, DronePortAssetPack>();
-
             string sPath = SerializationSettings.ROOT + "\\Resources\\DronePorts";
             string rPath = "DronePorts/";
             var files = Directory.GetFiles(sPath, "*.JSON");
             foreach (var filename in files)
             {
-                DronePortCustom dp = AssetUtils.ReadJsonAsset<DronePortCustom>(filename);
+                DronePortCustom dp = DeserializeJsonFile<DronePortCustom>(filename);
                 var pfb = AssetUtils.ReadPrefab(rPath, dp.Type);
                 DronePortAssets.Add(dp.Type, new DronePortAssetPack(pfb, dp));
+            }
+        }
+
+        private T DeserializeJsonFile<T>(string path)
+        {
+            JsonSerializer serializer = new JsonSerializer();
+            serializer.
+            //serializer.NullValueHandling = NullValueHandling.Ignore;
+
+            using (StreamReader sR = new StreamReader(path))
+            {
+                using (JsonReader reader = new JsonTextReader(sR))
+                {
+                    return serializer.Deserialize<T>(reader);
+                }
+            }
+        }
+
+        private void SerializeJsonFile(object obj, string path)
+        {
+            JsonSerializer serializer = new JsonSerializer();
+            //serializer.NullValueHandling = NullValueHandling.Ignore;
+
+            using (StreamWriter sW = new StreamWriter(path))
+            {
+                using (JsonWriter writer = new JsonTextWriter(sW))
+                {
+                    serializer.Serialize(writer, obj);
+                }
             }
         }
     }

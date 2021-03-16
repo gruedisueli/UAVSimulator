@@ -6,15 +6,18 @@ using System.Threading.Tasks;
 
 using UnityEngine;
 
+using Newtonsoft.Json;
+
 using Assets.Scripts.UI.EventArgs;
+using Assets.Scripts.Serialization;
 
 namespace Assets.Scripts.Environment
 {
     [Serializable]
     public class RestrictionZoneCylStack : RestrictionZoneBase
     {
-        [SerializeField]
-        private string _type = "";
+        [JsonProperty]
+        private string _type = "Cyl_Stacked";
         public string Type
         {
             get
@@ -23,8 +26,8 @@ namespace Assets.Scripts.Environment
             }
         }
 
-        [SerializeField]
-        private Vector3 _position = new Vector3();
+        [JsonProperty]
+        private SerVect3f _position = new SerVect3f();
         /// <summary>
         /// This is the position at the BOTTOM of the stack. Element positions are LOCAL positions relative to this parent.
         /// </summary>
@@ -32,15 +35,15 @@ namespace Assets.Scripts.Environment
         {
             get
             {
-                return _position;
+                return _position.ToVector3();
             }
             set
             {
-                _position = value;
+                _position = new SerVect3f(value);
             }
         }
 
-        [SerializeField]
+        [JsonProperty]
         private List<RestrictionZoneCyl> _elements = new List<RestrictionZoneCyl>();
         public List<RestrictionZoneCyl> Elements
         {

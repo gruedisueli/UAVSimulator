@@ -133,6 +133,7 @@ namespace Assets.Scripts.UI
             else
             {
                 Debug.LogError("Drone port type requested for instantiation not recognized");
+                return null;
             }
 
             sDP.OnSceneElementSelected += SelectElement;
@@ -155,6 +156,7 @@ namespace Assets.Scripts.UI
             else
             {
                 Debug.LogError("Parking structure type requested for instantiation not recognized");
+                return null;
             }
 
             sPS.OnSceneElementSelected += SelectElement;
@@ -198,6 +200,7 @@ namespace Assets.Scripts.UI
         {
             var clone = Instantiate(prefab/*, dP.Position, Quaternion.Euler(dP.Rotation.x, dP.Rotation.y, dP.Rotation.z)*/);
             var sDP = clone.AddComponent<SceneDronePort>();
+            clone.AddComponent<BoxCollider>();
             sDP.Initialize(dP, guid);
 
             if (register)
@@ -214,6 +217,7 @@ namespace Assets.Scripts.UI
         {
             var clone = Instantiate(prefab/*, pS.Position, Quaternion.Euler(pS.Rotation.x, pS.Rotation.y, pS.Rotation.z)*/);
             var sPS = clone.AddComponent<SceneParkingStructure>();
+            clone.AddComponent<BoxCollider>();
             sPS.Initialize(pS, guid);
 
             if (register)

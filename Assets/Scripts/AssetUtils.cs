@@ -23,14 +23,5 @@ namespace Assets.Scripts
             }
             return pfb;
         }
-
-        /// <summary>
-        /// Returns asset of specified type from json.
-        /// </summary>
-        public static T ReadJsonAsset<T>(string fileName)
-        {
-            string json = File.ReadAllText(fileName, Encoding.UTF8);
-            return JsonUtility.FromJson<T>(json);
-        }
     }
 }

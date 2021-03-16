@@ -8,6 +8,7 @@ namespace Assets.Scripts
 {
     public enum ElementFamily
     {
+        Unset,
         City,
         DronePort,
         ParkingStruct,
@@ -16,18 +17,21 @@ namespace Assets.Scripts
 
     public enum DronePortCategory
     {
+        Unset,
         Rect,
         Custom
     }
 
     public enum ParkingStructCategory
     {
+        Unset,
         Rect,
         Custom
     }
 
     public enum RestrictionZoneCategory
     {
+        Unset,
         Rect,
         Cylindrical,
         CylindricalStacked

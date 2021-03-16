@@ -4,6 +4,8 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
+using Newtonsoft.Json;
+
 using UnityEngine;
 
 using Assets.Scripts.Serialization;
@@ -13,7 +15,7 @@ namespace Assets.Scripts.Environment
     [Serializable]
     public class City
     {
-        [SerializeField]
+        [JsonProperty]
         private CityOptions _cityStats;
         public CityOptions CityStats
         {
@@ -27,9 +29,9 @@ namespace Assets.Scripts.Environment
             }
         }
 
-        [SerializeField]
-        private SerializableDictionary<string, DronePortBase> _dronePorts = new SerializableDictionary<string, DronePortBase>();
-        public SerializableDictionary<string, DronePortBase> DronePorts
+        [JsonProperty]
+        private Dictionary<string, DronePortBase> _dronePorts = new Dictionary<string, DronePortBase>();
+        public Dictionary<string, DronePortBase> DronePorts
         {
             get
             {
@@ -41,9 +43,9 @@ namespace Assets.Scripts.Environment
             }
         }
 
-        [SerializeField]
-        private SerializableDictionary<string, ParkingStructureBase> _parkingStructures = new SerializableDictionary<string, ParkingStructureBase>();
-        public SerializableDictionary<string, ParkingStructureBase> ParkingStructures
+        [JsonProperty]
+        private Dictionary<string, ParkingStructureBase> _parkingStructures = new Dictionary<string, ParkingStructureBase>();
+        public Dictionary<string, ParkingStructureBase> ParkingStructures
         {
             get
             {
@@ -55,9 +57,9 @@ namespace Assets.Scripts.Environment
             }
         }
 
-        [SerializeField]
-        private SerializableDictionary<string, RestrictionZoneBase> _restrictionZones = new SerializableDictionary<string, RestrictionZoneBase>();
-        public SerializableDictionary<string, RestrictionZoneBase> RestrictionZones
+        [JsonProperty]
+        private Dictionary<string, RestrictionZoneBase> _restrictionZones = new Dictionary<string, RestrictionZoneBase>();
+        public Dictionary<string, RestrictionZoneBase> RestrictionZones
         {
             get
             {

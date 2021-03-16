@@ -6,15 +6,18 @@ using System.Threading.Tasks;
 
 using UnityEngine;
 
+using Newtonsoft.Json;
+
 using Assets.Scripts.UI.EventArgs;
+using Assets.Scripts.Serialization;
 
 namespace Assets.Scripts.Environment
 {
     [Serializable]
     public class RestrictionZoneCyl : RestrictionZoneBase
     {
-        [SerializeField]
-        private string _type = "";
+        [JsonProperty]
+        private string _type = "Cyl";
         public string Type
         {
             get
@@ -23,7 +26,7 @@ namespace Assets.Scripts.Environment
             }
         }
 
-        [SerializeField]
+        [JsonProperty]
         private float _height = 1;
         public float Height
         {
@@ -34,12 +37,12 @@ namespace Assets.Scripts.Environment
             set
             {
                 _height = value;
-                _scale = new Vector3(Scale.x, value / 2, Scale.z);
-                _position = new Vector3(Position.x, _bottom + value / 2, Position.z);
+                _scale = new SerVect3f(Scale.x, value / 2, Scale.z);
+                _position = new SerVect3f(Position.x, _bottom + value / 2, Position.z);
             }
         }
 
-        [SerializeField]
+        [JsonProperty]
         private float _radius = 1;
         public float Radius
         {
@@ -50,11 +53,11 @@ namespace Assets.Scripts.Environment
             set
             {
                 _radius = value;
-                _scale = new Vector3(value, Scale.y, value);
+                _scale = new SerVect3f(value, Scale.y, value);
             }
         }
 
-        [SerializeField]
+        [JsonProperty]
         private float _bottom = 0;
         public float Bottom
         {
@@ -67,7 +70,7 @@ namespace Assets.Scripts.Environment
                 if (value < _top)
                 {
                     _bottom = value;
-                    _position = new Vector3(Position.x, value + Height / 2, Position.z);
+                    _position = new SerVect3f(Position.x, value + Height / 2, Position.z);
                 }
                 else
                 {
@@ -76,7 +79,7 @@ namespace Assets.Scripts.Environment
             }
         }
 
-        [SerializeField]
+        [JsonProperty]
         private float _top = 0;
         public float Top
         {
@@ -90,8 +93,8 @@ namespace Assets.Scripts.Environment
                 {
                     _top = value;
                     _height = value - _bottom;
-                    _scale = new Vector3(Scale.x, _height / 2, Scale.z);
-                    _position = new Vector3(Position.x, _bottom + _height / 2, Position.z);
+                    _scale = new SerVect3f(Scale.x, _height / 2, Scale.z);
+                    _position = new SerVect3f(Position.x, _bottom + _height / 2, Position.z);
                 }
                 else
                 {
@@ -100,43 +103,43 @@ namespace Assets.Scripts.Environment
             }
         }
 
-        [SerializeField]
-        private Vector3 _position = new Vector3();
+        [JsonProperty]
+        private SerVect3f _position = new SerVect3f();
         public Vector3 Position
         {
             get
             {
-                return _position;
+                return _position.ToVector3();
             }
         }
 
-        [SerializeField]
-        private Vector3 _rotation = new Vector3();
+        [JsonProperty]
+        private SerVect3f _rotation = new SerVect3f();
         public Vector3 Rotation
         {
             get
             {
-                return _rotation;
+                return _rotation.ToVector3();
             }
             set
             {
-                _rotation = value;
+                _rotation = new SerVect3f(value);
             }
         }
 
-        [SerializeField]
-        private Vector3 _scale = new Vector3();
+        [JsonProperty]
+        private SerVect3f _scale = new SerVect3f(1, 1, 1);
         public Vector3 Scale
         {
             get
             {
-                return _scale;
+                return _scale.ToVector3();
             }
         }
 
         public RestrictionZoneCyl(Vector3 pos)
         {
-            _position = pos;
+            _position = new SerVect3f(pos);
         }
 
         public RestrictionZoneCyl(RestrictionZoneCyl rZ)
@@ -146,9 +149,9 @@ namespace Assets.Scripts.Environment
             _radius = rZ.Radius;
             _bottom = rZ.Bottom;
             _top = rZ.Top;
-            _position = rZ.Position;
-            _rotation = rZ.Rotation;
-            _scale = rZ.Scale;
+            _position = new SerVect3f(rZ.Position);
+            _rotation = new SerVect3f(rZ.Rotation);
+            _scale = new SerVect3f(rZ.Scale);
         }
 
         public override RestrictionZoneBase GetCopy()
@@ -158,7 +161,7 @@ namespace Assets.Scripts.Environment
 
         public void SetXZPos(Vector3 xz)
         {
-            _position = new Vector3(xz.x, Position.y, xz.z);
+            _position = new SerVect3f(xz.x, Position.y, xz.z);
         }
 
         public override void UpdateParams(ModifyPropertyArgBase args)

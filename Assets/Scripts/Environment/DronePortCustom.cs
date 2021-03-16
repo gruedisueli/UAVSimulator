@@ -4,13 +4,18 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
+using Newtonsoft.Json;
+
 using UnityEngine;
+
+using Assets.Scripts.Serialization;
 
 namespace Assets.Scripts.Environment
 {
+    [Serializable]
     public class DronePortCustom : DronePortBase
     {
-        [SerializeField]
+        [JsonProperty]
         private string _type = "";
         public override string Type
         {
@@ -20,105 +25,105 @@ namespace Assets.Scripts.Environment
             }
         }
 
-        [SerializeField]
-        private Vector3 _position = new Vector3();
+        [JsonProperty]
+        private SerVect3f _position = new SerVect3f();
         public override Vector3 Position
         {
             get
             {
-                return _position;
+                return _position.ToVector3();
             }
             set
             {
-                _position = value;
+                _position = new SerVect3f(value);
             }
         }
 
-        [SerializeField]
-        private Vector3 _rotation = new Vector3();
+        [JsonProperty]
+        private SerVect3f _rotation = new SerVect3f();
         public override Vector3 Rotation
         {
             get
             {
-                return _rotation;
+                return _rotation.ToVector3();
             }
             set
             {
-                _rotation = value;
+                _rotation = new SerVect3f(value);
             }
         }
 
-        [SerializeField]
-        private Vector3 _scale = new Vector3();
+        [JsonProperty]
+        private SerVect3f _scale = new SerVect3f();
         public override Vector3 Scale
         {
             get
             {
-                return _scale;
+                return _scale.ToVector3();
             }
             set
             {
-                _scale = value;
+                _scale = new SerVect3f(value);
             }
         }
 
-        [SerializeField]
-        private Vector3 _standByPosition = new Vector3();
+        [JsonProperty]
+        private SerVect3f _standByPosition = new SerVect3f();
         public override Vector3 StandbyPosition
         {
             get
             {
-                return _standByPosition;
+                return _standByPosition.ToVector3();
             }
             set
             {
-                _standByPosition = value;
+                _standByPosition = new SerVect3f(value);
             }
         }
 
-        [SerializeField]
-        private Vector3 _landingQueueHead = new Vector3();
+        [JsonProperty]
+        private SerVect3f _landingQueueHead = new SerVect3f();
         public override Vector3 LandingQueueHead
         {
             get
             {
-                return _landingQueueHead;
+                return _landingQueueHead.ToVector3();
             }
             set
             {
-                _landingQueueHead = value;
+                _landingQueueHead = new SerVect3f(value);
             }
         }
 
-        [SerializeField]
-        private Vector3 _landingQueueDirection = new Vector3();
+        [JsonProperty]
+        private SerVect3f _landingQueueDirection = new SerVect3f();
         public override Vector3 LandingQueueDirection
         {
             get
             {
-                return _landingQueueDirection;
+                return _landingQueueDirection.ToVector3();
             }
             set
             {
-                _landingQueueDirection = value;
+                _landingQueueDirection = new SerVect3f(value);
             }
         }
 
-        [SerializeField]
-        private Vector3 _landingPoint = new Vector3();
+        [JsonProperty]
+        private SerVect3f _landingPoint = new SerVect3f();
         public override Vector3 LandingPoint
         {
             get
             {
-                return _landingPoint;
+                return _landingPoint.ToVector3();
             }
             set
             {
-                _landingPoint = value;
+                _landingPoint = new SerVect3f(value);
             }
         }
 
-        [SerializeField]
+        [JsonProperty]
         private float _maximumVehicleSize = 0;
         public override float MaximumVehicleSize
         {
@@ -132,7 +137,7 @@ namespace Assets.Scripts.Environment
             }
         }
 
-        [SerializeField]
+        [JsonProperty]
         private bool _isMountable = false;
         public override bool IsMountable
         {
@@ -146,7 +151,7 @@ namespace Assets.Scripts.Environment
             }
         }
 
-        [SerializeField]
+        [JsonProperty]
         private bool _isOnTheGround = false;
         public override bool IsOnTheGround
         {
@@ -160,7 +165,7 @@ namespace Assets.Scripts.Environment
             }
         }
 
-        [SerializeField]
+        [JsonProperty]
         private bool _isScalable = false;
         public override bool IsScalable
         {

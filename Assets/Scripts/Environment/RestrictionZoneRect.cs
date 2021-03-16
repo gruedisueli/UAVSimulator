@@ -3,16 +3,20 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using Assets.Scripts.UI.EventArgs;
 using UnityEngine;
+
+using Newtonsoft.Json;
+
+using Assets.Scripts.UI.EventArgs;
+using Assets.Scripts.Serialization;
 
 namespace Assets.Scripts.Environment
 {
     [Serializable]
     public class RestrictionZoneRect : RestrictionZoneBase
     {
-        [SerializeField]
-        private string _type = "";
+        [JsonProperty]
+        private string _type = "Rect";
         public string Type
         {
             get
@@ -21,7 +25,7 @@ namespace Assets.Scripts.Environment
             }
         }
 
-        [SerializeField]
+        [JsonProperty]
         private float _height = 1;
         public float Height
         {
@@ -32,45 +36,45 @@ namespace Assets.Scripts.Environment
             set
             {
                 _height = value;
-                _scale = new Vector3(Scale.x, _height, Scale.z);
+                _scale = new SerVect3f(Scale.x, _height, Scale.z);
             }
         }
 
-        [SerializeField]
-        private Vector3 _scale = new Vector3(1, 0, 1);
+        [JsonProperty]
+        private SerVect3f _scale = new SerVect3f(1, 0, 1);
         public Vector3 Scale
         {
             get
             {
-                return _scale;
+                return _scale.ToVector3();
             }
         }
 
-        [SerializeField]
-        private Vector3 _position = new Vector3();
+        [JsonProperty]
+        private SerVect3f _position = new SerVect3f();
         public Vector3 Position
         {
             get
             {
-                return _position;
+                return _position.ToVector3();
             }
             set
             {
-                _position = value;
+                _position = new SerVect3f(value);
             }
         }
 
-        [SerializeField]
-        private Vector3 _rotation = new Vector3();
+        [JsonProperty]
+        private SerVect3f _rotation = new SerVect3f();
         public Vector3 Rotation
         {
             get
             {
-                return _rotation;
+                return _rotation.ToVector3();
             }
             set
             {
-                _rotation = value;
+                _rotation = new SerVect3f(value);
             }
         }
 
@@ -83,9 +87,9 @@ namespace Assets.Scripts.Environment
         {
             _type = rZ.Type;
             _height = rZ.Height;
-            _scale = rZ.Scale;
-            _position = rZ.Position;
-            _rotation = rZ.Rotation;
+            _scale = new SerVect3f(rZ.Scale);
+            _position = new SerVect3f(rZ.Position);
+            _rotation = new SerVect3f(rZ.Rotation);
         }
 
         public override RestrictionZoneBase GetCopy()
@@ -95,12 +99,12 @@ namespace Assets.Scripts.Environment
 
         public void SetXScale(float x)
         {
-            _scale = new Vector3(x, Scale.y, Scale.z);
+            _scale = new SerVect3f(x, Scale.y, Scale.z);
         }
 
         public void SetZScale(float z)
         {
-            _scale = new Vector3(Scale.x, Scale.y, z);
+            _scale = new SerVect3f(Scale.x, Scale.y, z);
         }
 
         public override void UpdateParams(ModifyPropertyArgBase args)

@@ -4,7 +4,11 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
+using Newtonsoft.Json;
+
 using UnityEngine;
+
+using Assets.Scripts.Serialization;
 
 namespace Assets.Scripts.Environment
 {
@@ -14,7 +18,7 @@ namespace Assets.Scripts.Environment
     [Serializable]
     public class CityOptions
     {
-        [SerializeField]
+        [JsonProperty]
         private string _name = "New City";
         public string Name
         {
@@ -28,35 +32,35 @@ namespace Assets.Scripts.Environment
             }
         }
 
-        [SerializeField]
-        private Vector3 _worldPos = new Vector3();
+        [JsonProperty]
+        private SerVect3f _worldPos = new SerVect3f();
         public Vector3 WorldPos
         {
             get
             {
-                return _worldPos;
+                return _worldPos.ToVector3();
             }
             set
             {
-                _worldPos = value;
+                _worldPos = new SerVect3f(value);
             }
         }
 
-        [SerializeField]
-        private Vector3 _regionTileWorldCenter = new Vector3();
+        [JsonProperty]
+        private SerVect3f _regionTileWorldCenter = new SerVect3f();
         public Vector3 RegionTileWorldCenter
         {
             get
             {
-                return _regionTileWorldCenter;
+                return _regionTileWorldCenter.ToVector3();
             }
             set
             {
-                _regionTileWorldCenter = value;
+                _regionTileWorldCenter = new SerVect3f(value);
             }
         }
 
-        [SerializeField]
+        [JsonProperty]
         private int _eastExt = 0;
         public int EastExt
         {
@@ -70,7 +74,7 @@ namespace Assets.Scripts.Environment
             }
         }
 
-        [SerializeField]
+        [JsonProperty]
         private int _westExt = 0;
         public int WestExt
         {
@@ -84,7 +88,7 @@ namespace Assets.Scripts.Environment
             }
         }
 
-        [SerializeField]
+        [JsonProperty]
         private int _northExt = 0;
         public int NorthExt
         {
@@ -98,7 +102,7 @@ namespace Assets.Scripts.Environment
             }
         }
 
-        [SerializeField]
+        [JsonProperty]
         private int _southExt = 0;
         public int SouthExt
         {
@@ -112,7 +116,7 @@ namespace Assets.Scripts.Environment
             }
         }
 
-        [SerializeField]
+        [JsonProperty]
         private int _population = 0;
         public int Population
         {
@@ -126,7 +130,7 @@ namespace Assets.Scripts.Environment
             }
         }
 
-        [SerializeField]
+        [JsonProperty]
         private int _jobs = 0;
         public int Jobs
         {
