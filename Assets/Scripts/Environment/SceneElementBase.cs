@@ -7,6 +7,9 @@ using System.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
+using Assets.Scripts.UI.Tools;
+using Assets.Scripts.UI.EventArgs;
+
 namespace Assets.Scripts.Environment
 {
     public delegate bool SceneElementSelected(SceneElementBase element);
@@ -16,10 +19,14 @@ namespace Assets.Scripts.Environment
         public abstract string Guid { get; protected set; }
         public abstract void UpdateGameObject();
         public event SceneElementSelected OnSceneElementSelected;
+        protected Material _selectedMaterial;
+        protected Material _defaultMaterial;
+        protected MeshRenderer[] _renderers;
+        protected SelectableGameObject[] _selectableObjs;
 
         private void Start()
         {
-            //disabled because it seems like primitives come with colliders, and we can assign colliders when we instantiate the game objects if they are custom//gameObject.AddComponent<BoxCollider>();//for UI selection
+            gameObject.AddComponent<SelectableGameObject>();
 
             var c = gameObject.GetComponent<Collider>();
             if (c is BoxCollider)
@@ -27,9 +34,46 @@ namespace Assets.Scripts.Environment
                 var bC = c as BoxCollider;
                 bC.size = new Vector3(2, 2, 2);//bigger seems to solve raycast issues
             }
+
+            if (_renderers == null)//some scene elements may define this before "Start" is called.
+            {
+                _renderers = GetComponentsInChildren<MeshRenderer>();
+                if (_renderers == null)
+                {
+                    Debug.LogError("Mesh renderers not found on scene element");
+                }
+            }
+
+            if (_selectedMaterial == null)
+            {
+                _selectedMaterial = Instantiate(EnvironManager.Instance.SelectedSceneElementMat);
+            }
+            if (_defaultMaterial == null)
+            {
+                _defaultMaterial = Instantiate(EnvironManager.Instance.DefaultSceneElementMat);
+            }
+
+            _selectableObjs = GetComponentsInChildren<SelectableGameObject>();
+            if (_selectableObjs == null)
+            {
+                Debug.LogError("Selectable game object component not found in this scene element or its children");
+                return;
+            }
+            foreach(var o in _selectableObjs)
+            {
+                o.OnSelected += Selected;
+            }
         }
 
-        private void OnMouseUp()
+        private void OnDestroy()
+        {
+            foreach (var o in _selectableObjs)
+            {
+                o.OnSelected -= Selected;
+            }
+        }
+
+        private void Selected(object sender, SelectGameObjectArgs args)
         {
             if (!EventSystem.current.IsPointerOverGameObject())//prevent selection of objects behind GUI
             {
@@ -38,6 +82,17 @@ namespace Assets.Scripts.Environment
             }
         }
 
-        public abstract void SetSelectedState(bool isSelected);
+        public void SetActive(bool isActive)
+        {
+            gameObject.SetActive(isActive);
+        }
+
+        public virtual void SetSelectedState(bool isSelected)
+        {
+            foreach(var r in _renderers)
+            {
+                r.material = isSelected ? _selectedMaterial : _defaultMaterial;
+            }
+        }
     }
 }

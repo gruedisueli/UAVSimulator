@@ -169,7 +169,7 @@ namespace Assets.Scripts.UI
             var zoneParent = new GameObject();
 
             var sRZ = zoneParent.AddComponent<SceneRestrictionZone>();
-            sRZ.Initialize(guid, rZ, _restrictionZoneMaterial);
+            sRZ.Initialize(guid, rZ);
 
             if (register)
             {
@@ -200,6 +200,11 @@ namespace Assets.Scripts.UI
         protected override SceneDronePort InstantiateCustomDronePort(string guid, GameObject prefab, DronePortCustom dP, bool register)
         {
             var clone = Instantiate(prefab/*, dP.Position, Quaternion.Euler(dP.Rotation.x, dP.Rotation.y, dP.Rotation.z)*/);
+            foreach (var c in clone.GetComponentsInChildren<Transform>())
+            {
+                c.gameObject.AddComponent<SelectableGameObject>();
+                c.gameObject.AddComponent<BoxCollider>();
+            }
             var sDP = clone.AddComponent<SceneDronePort>();
             clone.AddComponent<BoxCollider>();
             sDP.Initialize(dP, guid);
@@ -217,6 +222,11 @@ namespace Assets.Scripts.UI
         protected override SceneParkingStructure InstantiateCustomParkingStruct(string guid, GameObject prefab, ParkingStructureCustom pS, bool register)
         {
             var clone = Instantiate(prefab/*, pS.Position, Quaternion.Euler(pS.Rotation.x, pS.Rotation.y, pS.Rotation.z)*/);
+            foreach (var c in clone.GetComponentsInChildren<Transform>())
+            {
+                c.gameObject.AddComponent<SelectableGameObject>();
+                c.gameObject.AddComponent<BoxCollider>();
+            }
             var sPS = clone.AddComponent<SceneParkingStructure>();
             clone.AddComponent<BoxCollider>();
             sPS.Initialize(pS, guid);

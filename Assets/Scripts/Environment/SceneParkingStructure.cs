@@ -36,10 +36,5 @@ namespace Assets.Scripts.Environment
             gameObject.transform.rotation = Quaternion.Euler(ParkingStructureSpecs.Rotation.x, ParkingStructureSpecs.Rotation.y, ParkingStructureSpecs.Rotation.z);
             gameObject.transform.localScale = ParkingStructureSpecs.Scale;
         }
-
-        public override void SetSelectedState(bool isSelected)
-        {
-            throw new NotImplementedException();
-        }
     }
 }

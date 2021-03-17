@@ -48,6 +48,10 @@ namespace Assets.Scripts.Environment
         public string ActiveCity { get; private set; } = "";
         public Dictionary<string, DronePortAssetPack> DronePortAssets { get; private set; } = new Dictionary<string, DronePortAssetPack>();
         public Dictionary<string, ParkingStructureAssetPack> ParkingStructAssets { get; private set; } = new Dictionary<string, ParkingStructureAssetPack>();
+        public Material SelectedSceneElementMat { get; private set; } = null;
+        public Material DefaultSceneElementMat { get; private set; } = null;
+        public Material RestrictionZoneMaterial { get; private set; } = null;
+        
         //public Dictionary<string, RestrictionZoneAssetPack> RestrictionZoneAssets { get; private set; } = new Dictionary<string, RestrictionZoneAssetPack>();
 
         /// <summary>
@@ -394,6 +398,7 @@ namespace Assets.Scripts.Environment
             Environ = new Environ();
             ReadDronePorts();
             ReadParkingStructures();
+            ReadMaterialAssets();
         }
 
         /// <summary>
@@ -501,6 +506,30 @@ namespace Assets.Scripts.Environment
                     serializer.Serialize(writer, obj);
                 }
             }
+        }
+
+        /// <summary>
+        /// Get relevant materials from resources folder
+        /// </summary>
+        private void ReadMaterialAssets()
+        {
+            string rPath = "Materials/";
+            DefaultSceneElementMat = ReadMaterial(rPath, "DefaultElement");
+            SelectedSceneElementMat = ReadMaterial(rPath, "SelectedElement");
+            RestrictionZoneMaterial = ReadMaterial(rPath, "RestrictionZone");
+        }
+
+        /// <summary>
+        /// Reads material from resources of specified file name. Null on failure.
+        /// </summary>
+        private Material ReadMaterial(string resourcePath, string name)
+        {
+            var mat = Resources.Load<Material>(resourcePath + name);
+            if (mat == null)
+            {
+                Debug.LogError("Cannot find material for " + name);
+            }
+            return mat;
         }
     }
 }

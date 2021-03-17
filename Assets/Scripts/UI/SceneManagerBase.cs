@@ -28,24 +28,23 @@ namespace Assets.Scripts.UI
     /// </summary>
     public abstract class SceneManagerBase : MonoBehaviour
     {
-        #region PUBLIC FIELDS
-
-        public Material _restrictionZoneMaterial;
-
-        #endregion
-
         #region PROTECTED FIELDS
 
         protected AbstractMap _abstractMap;
 
         protected Camera _mainCamera;
 
+        protected VehicleControlSystem _vehicleControlSystem;
+
         protected ModifyPanel[] _modifyPanels;
         protected ModifyTool[] _modifyTools;
         protected AddTool[] _addTools;
         protected RemoveTool[] _removeTools;
         protected SceneChangeTool[] _sceneChangeTools;
+        protected DeselectTool[] _deselectTools;
         protected SavePrompt _savePrompt;
+        protected PlayPauseTool _playPause;
+
 
         protected SceneElementBase _selectedElement = null;
         protected SceneElementBase _workingCopy = null;
@@ -88,16 +87,30 @@ namespace Assets.Scripts.UI
                 return;
             }
 
+            //get vehicle control system
+            _vehicleControlSystem = FindObjectOfType<VehicleControlSystem>(true);
+            if (_vehicleControlSystem == null)
+            {
+                Debug.LogError("Vehicle control system not found");
+            }
+
             //gather UI elments
             _modifyPanels = FindObjectsOfType<ModifyPanel>(true);
             _modifyTools = FindObjectsOfType<ModifyTool>(true);
             _addTools = FindObjectsOfType<AddTool>(true);
             _removeTools = FindObjectsOfType<RemoveTool>(true);
             _sceneChangeTools = FindObjectsOfType<SceneChangeTool>(true);
+            _deselectTools = FindObjectsOfType<DeselectTool>(true);
             _savePrompt = FindObjectOfType<SavePrompt>(true);
             if (_savePrompt == null)
             {
                 Debug.LogError("Save prompt not found");
+                return;
+            }
+            _playPause = FindObjectOfType<PlayPauseTool>(true);
+            if (_playPause == null)
+            {
+                Debug.LogError("Play pause tool not found");
                 return;
             }
 
@@ -125,6 +138,11 @@ namespace Assets.Scripts.UI
             {
                 t.OnSceneChange += ChangeScene;
             }
+            foreach(var t in _deselectTools)
+            {
+                t.OnDeselect += DeselectElement;
+            }
+            _playPause.OnPlayPause += PlayPause;
 
             Init();
 
@@ -157,6 +175,10 @@ namespace Assets.Scripts.UI
             {
                 t.OnSceneChange -= ChangeScene;
             }
+            foreach (var t in _deselectTools)
+            {
+                t.OnDeselect -= DeselectElement;
+            }
             foreach (var d in DronePorts)
             {
                 d.Value.OnSceneElementSelected -= SelectElement;
@@ -173,6 +195,7 @@ namespace Assets.Scripts.UI
             {
                 c.OnSceneElementSelected -= SelectElement;
             }
+            _playPause.OnPlayPause -= PlayPause;
 
             OnDestroyDerived();
         }
@@ -192,6 +215,20 @@ namespace Assets.Scripts.UI
         /// </summary>
         protected abstract void InstantiateObjects();
 
+        #region SIMULATION CONTROL
+
+        /// <summary>
+        /// Called whenever we push play/pause button.
+        /// </summary>
+        protected void PlayPause(object sender, PlayPauseArgs args)
+        {
+            if (_vehicleControlSystem != null)
+            {
+                _vehicleControlSystem.PlayPause();
+            }
+        }
+
+        #endregion
 
         #region CHANGE SCENE/QUIT
 
@@ -296,7 +333,7 @@ namespace Assets.Scripts.UI
         /// <summary>
         /// Called when deselecting a scene element.
         /// </summary>
-        protected virtual void DeselectElement()
+        protected virtual void DeselectElement(object sender, DeselectArgs args)
         {
             _selectedElement.SetSelectedState(false);
             _selectedElement = null;
@@ -348,6 +385,7 @@ namespace Assets.Scripts.UI
                 _workingCopy = InstantiateCity(guid, specs, false);
             }
 
+            _selectedElement.SetActive(false); //hide original element
             _workingCopy.SetSelectedState(true);
         }
 
@@ -401,6 +439,7 @@ namespace Assets.Scripts.UI
             _workingCopy = null;
 
             //update selected because we threw out old
+            _selectedElement.SetActive(true);
             _selectedElement.SetSelectedState(true);
         }
 
@@ -762,7 +801,7 @@ namespace Assets.Scripts.UI
             if (DronePorts.ContainsKey(guid))
             {
                 DronePorts[guid].OnSceneElementSelected -= SelectElement;
-                DronePorts[guid].Destroy();
+                DronePorts[guid].gameObject.Destroy();
                 DronePorts.Remove(guid);
             }
             else
@@ -780,7 +819,7 @@ namespace Assets.Scripts.UI
             if (ParkingStructures.ContainsKey(guid))
             {
                 ParkingStructures[guid].OnSceneElementSelected -= SelectElement;
-                ParkingStructures[guid].Destroy();
+                ParkingStructures[guid].gameObject.Destroy();
                 ParkingStructures.Remove(guid);
             }
             else
@@ -798,7 +837,7 @@ namespace Assets.Scripts.UI
             if (RestrictionZones.ContainsKey(guid))
             {
                 RestrictionZones[guid].OnSceneElementSelected -= SelectElement;
-                RestrictionZones[guid].Destroy();
+                RestrictionZones[guid].gameObject.Destroy();
                 RestrictionZones.Remove(guid);
             }
             else

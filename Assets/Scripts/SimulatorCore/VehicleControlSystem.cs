@@ -95,6 +95,14 @@ public class VehicleControlSystem : MonoBehaviour
 
     #region Methods
 
+    /// <summary>
+    /// Called (from scene manager) whenever we push the button that plays/pauses simulation. If currently playing, pauses simulation, else plays simulation.
+    /// </summary>
+    public void PlayPause()
+    {
+
+    }
+
     public void GenerateRandomCalls()
     {
         int call_type = Mathf.FloorToInt(Random.Range(0.0f, 4.5f));

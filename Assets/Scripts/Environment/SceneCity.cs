@@ -17,21 +17,31 @@ namespace Assets.Scripts.Environment
 
         private readonly Color _colorDefault = new Color(1, 1, 1, 0.5f);
         private readonly Color _selectedColor = Color.red;
-        private MeshRenderer _renderer;
 
         public void Initialize(string guid, CityOptions citySpecs)
         {
             Guid = guid;
             CitySpecs = citySpecs;
-            _renderer = gameObject.GetComponent<MeshRenderer>();
-            _renderer.materials[0].color = _colorDefault;
+            if (_renderers == null)
+            {
+                _renderers = GetComponentsInChildren<MeshRenderer>();
+                if (_renderers == null)
+                {
+                    Debug.LogError("Mesh renderer not found on city element");
+                }
+                else
+                {
+                    _renderers[0].materials[0].color = _colorDefault;
+                }
+            }
 
             UpdateGameObject();
         }
 
         public override void SetSelectedState(bool isSelected)
         {
-            _renderer.materials[0].color = isSelected ? _selectedColor : _colorDefault;
+            //base.SetSelectedState(isSelected);
+            _renderers[0].materials[0].color = isSelected ? _selectedColor : _colorDefault;
         }
 
         public override void UpdateGameObject()

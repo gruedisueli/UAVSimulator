@@ -504,6 +504,12 @@
     <Compile Include="Assets\Mapbox\Core\mapbox-sdk-cs\Map\Tile.cs" />
     <Compile Include="Assets\Mapbox\Core\mapbox-sdk-cs\Map\ClassicRasterTile.cs" />
     <Compile Include="Assets\Mapbox\Unity\MeshGeneration\Modifiers\ModifierStack.cs" />
+    <Compile Include="Assets\Scripts\UI\EventArgs\PlayPauseArgs.cs" />
+    <Compile Include="Assets\Scripts\UI\Tools\PlayPauseTool.cs" />
+    <Compile Include="Assets\Scripts\UI\EventArgs\SelectGameObjectArgs.cs" />
+    <Compile Include="Assets\Scripts\UI\Tools\SelectableGameObject.cs" />
+    <Compile Include="Assets\Scripts\UI\Tools\DeselectTool.cs" />
+    <Compile Include="Assets\Scripts\UI\EventArgs\DeselectArgs.cs" />
   </ItemGroup>
   <ItemGroup>
      <None Include="Assets\Mapbox\Core\Plugins\Mapbox\vector-tile-cs\net46\Mapbox.VectorTile.Geometry.dll" />

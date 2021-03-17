@@ -13,8 +13,6 @@ using Assets.Scripts.UI.EventArgs;
 
 namespace Assets.Scripts.UI.Tools
 {
-    public delegate void CloseCityPanel();
-
     /// <summary>
     /// A panel that contains tools for modifying a city. Doesn't modify the city itself. There are child objects for this.
     /// </summary>
@@ -28,7 +26,7 @@ namespace Assets.Scripts.UI.Tools
         public Text _northExt;
         public Text _southExt;
 
-        public event CloseCityPanel OnCloseCityPanel;
+        public event EventHandler<DeselectArgs> OnCloseCityPanel;
 
         private ModifyPanel _modifyPanel;
         private ModifyTool[] _childTools;
@@ -84,7 +82,7 @@ namespace Assets.Scripts.UI.Tools
         public void Close()
         {
             gameObject.SetActive(false);
-            OnCloseCityPanel.Invoke();
+            OnCloseCityPanel.Invoke(this, new DeselectArgs());
         }
 
         /// <summary>

@@ -6,6 +6,8 @@ using System.Threading.Tasks;
 
 using UnityEngine;
 
+using Assets.Scripts.UI.Tools;
+
 namespace Assets.Scripts.Environment
 {
     public class SceneRestrictionZone : SceneElementBase
@@ -14,10 +16,11 @@ namespace Assets.Scripts.Environment
         public RestrictionZoneBase RestrictionZoneSpecs { get; private set; }
         public List<GameObject> SubElements { get; private set; } = new List<GameObject>();
 
-        public void Initialize(string guid, RestrictionZoneBase rZ, Material zoneMaterial)
+        public void Initialize(string guid, RestrictionZoneBase rZ)
         {
             Guid = guid;
             RestrictionZoneSpecs = rZ;
+            _defaultMaterial = Instantiate(EnvironManager.Instance.RestrictionZoneMaterial);
 
             string type = "";
             if (rZ is RestrictionZoneRect)
@@ -54,10 +57,11 @@ namespace Assets.Scripts.Environment
             {
                 c.transform.parent = transform;
                 var mR = c.GetComponent<MeshRenderer>();
-                mR.material = zoneMaterial;
+                mR.material = _defaultMaterial;
                 c.name = gameObject.name;
                 c.tag = gameObject.tag;
                 c.layer = gameObject.layer;
+                c.AddComponent<SelectableGameObject>();
             }
 
         }
@@ -114,11 +118,6 @@ namespace Assets.Scripts.Environment
                     UpdateSingleCyl(SubElements[i], rZ.Elements[i]);
                 }
             }
-        }
-
-        public override void SetSelectedState(bool isSelected)
-        {
-            throw new NotImplementedException();
         }
 
         /// <summary>
