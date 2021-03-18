@@ -13,115 +13,184 @@ using Mapbox.Unity.Map;
 using Mapbox.Utils;
 using Mapbox.Unity.MeshGeneration.Data;
 
+using Assets.Scripts.UI.Tools;
 using Assets.Scripts.UI.Tags;
 using Assets.Scripts.Environment;
+using Assets.Scripts.UI.EventArgs;
 
 namespace Assets.Scripts.UI
 {
     public class FindLocationManager : MonoBehaviour
     {
-        public AbstractMap _map;
-        public GameObject _selectionRectPrefab;
+        public GameObject _regionSelectorPrefab;
         private GameObject _selectionRect;
 
-        private Vector3 _worldPt0 = new Vector3();
-        private Vector3 _worldPt1 = new Vector3();
+        private AbstractMap _map;
+        private AddRegionTool _addRegionTool;
+
+        private List<GameObject> _selectedTiles = new List<GameObject>();
+        private Color _emissionColor = new Color(0.5f, 0.5f, 0.5f);
+
+        private void Start()
+        {
+            _map = FindObjectOfType<AbstractMap>();
+            if (_map == null)
+            {
+                Debug.LogError("Abstract map not found");
+                return;
+            }
+            _map.SetZoom(EnvironSettings.FINDLOCATION_ZOOM_LEVEL);
+
+            _addRegionTool = FindObjectOfType<AddRegionTool>();
+            if (_addRegionTool == null)
+            {
+                Debug.LogError("Add region tool not found");
+                return;
+            }
+
+            _addRegionTool.ElementAddedEvent += PlaceMarker;
+        }
+
+        private void OnDestroy()
+        {
+            _addRegionTool.ElementAddedEvent -= PlaceMarker;
+        }
 
         public void CreateProject()
         {
             SceneManager.LoadScene(UISettings.REGIONVIEW_SCENEPATH, LoadSceneMode.Single);
         }
 
-        public void PlaceMarker()
+        public void PlaceMarker(IAddElementArgs args)
         {
-            StartCoroutine(PlaceMarkerCoroutine());
-        }
-
-        private IEnumerator PlaceMarkerCoroutine()
-        {
-            #region ALLOW CLICK FROM BUTTON TO CLEAR OUT
-
-            while (!Input.GetMouseButtonUp(0) && !Input.GetKeyUp(KeyCode.Escape))
+            if (args is AddRegionArgs)
             {
-                yield return null;
-            }
-
-            if (Input.GetMouseButtonUp(0)) //after initial button press
-            {
-                yield return null;
-            }
-
-            while (!Input.GetMouseButtonDown(0) && !Input.GetKeyUp(KeyCode.Escape))
-            {
-                yield return null;
-            }
-
-            #endregion
-
-            if (_selectionRectPrefab != null)
-            {
-                var wP0 = MarkPt(0);
-                if (wP0 != null)
+                var a = args as AddRegionArgs;
+                var gO = a.HitInfo.transform.gameObject;
+                string name = gO.name;
+                string d = "/";
+                var frags = name.Split(new string[] { d }, StringSplitOptions.None);
+                Vector3 center = gO.transform.position;
+                if (frags != null && frags.Length == 3)
                 {
-                    var p0 = Input.mousePosition;
-                    if (_selectionRect != null)
+                    foreach(var t in _selectedTiles)
                     {
-                        _selectionRect.Destroy();
-                    }
-                    _selectionRect = Instantiate(_selectionRectPrefab);
-                    var sR = _selectionRect.GetComponentInChildren<SelectRect>();
-                    sR._followOn = false;
-                    if (sR != null)
-                    {
-                        while (!Input.GetMouseButtonUp(0) && !Input.GetKeyUp(KeyCode.Escape))
+                        var mR = t.GetComponent<MeshRenderer>();
+                        if (mR != null)
                         {
-                            sR.SetExtents(p0, Input.mousePosition);
-                            yield return null;
+                            mR.material.DisableKeyword("_EMISSION");
                         }
-                        if (Input.GetMouseButtonUp(0))
+                    }
+                    _selectedTiles = new List<GameObject>();
+                    string zLevel = frags[0];
+                    int rI = EnvironSettings.FINDLOCATION_SELECTION_INFLATION;
+                    bool haveX = int.TryParse(frags[1], out int xTile);
+                    bool haveY = int.TryParse(frags[2], out int yTile);
+                    List<string> toHighlight = new List<string>() { name };
+                    if (haveX && haveY)
+                    {
+                        for (int x = xTile - rI; x <= xTile + rI; x++)
                         {
-                            var wP1 = MarkPt(1);
-                            if (wP1 != null)
+                            for (int y = yTile - rI; y <= yTile + rI; y++)
                             {
-                                _worldPt0 = (Vector3)wP0;
-                                _worldPt1 = (Vector3)wP1;
-                                var c = (_worldPt0 + _worldPt1) / 2;
-                                SetEnviroCenter(_worldPt0, _worldPt1);
-                                sR.SetWorldPos(c);
-                                sR._followOn = true;
+                                if (x == xTile && y == yTile)//already have this tile
+                                {
+                                    continue;
+                                }
+
+                                toHighlight.Add(zLevel + d + x.ToString() + d + y.ToString());
                             }
-                        }                
+                        }
+                    }
+                    
+                    foreach(var n in toHighlight)
+                    {
+                        var foundTile = GameObject.Find(n);
+                        if (foundTile == null)
+                        {
+                            Debug.LogError("Could not find specified tile");
+                            continue;
+                        }
+                        var mR = foundTile.GetComponent<MeshRenderer>();
+                        if (mR != null)
+                        {
+                            mR.material.EnableKeyword("_EMISSION");
+                            mR.material.SetColor("_EmissionColor", _emissionColor);
+                        }
+
+                        _selectedTiles.Add(foundTile);
                     }
                 }
+                EnvironManager.Instance.Environ.CenterLatLong = _map.WorldToGeoPosition(center);
+
+
             }
+
         }
 
-        /// <summary>
-        /// Marks a point in space. Returns world coordinates or null on failure.
-        /// </summary>
-        private Vector3? MarkPt(int index)
-        {
-            bool hit = Physics.Raycast(Camera.main.ScreenPointToRay(Input.mousePosition), out RaycastHit hitInfo);
-            if (hit)
-            {
-                var gO = hitInfo.transform.gameObject;
-                if (gO.GetComponent<UnityTile>() == null) //check that we've hit a terrain tile and not something else like a button.
-                {
-                    Debug.Log("No hit");
-                    return null;
-                }
-            }
-            return hitInfo.point;
-        }
+        //private IEnumerator PlaceMarkerCoroutine()
+        //{
+        //    #region ALLOW CLICK FROM BUTTON TO CLEAR OUT
 
-        /// <summary>
-        /// Sets the center of the simulation.
-        /// </summary>
-        private void SetEnviroCenter(Vector3 p0, Vector3 p1)
-        {
-            var center = (p0 + p1) / 2;
-            Vector2d latLong = _map.WorldToGeoPosition(center);
-            EnvironManager.Instance.Environ.CenterLatLong = latLong;
-        }
+        //    while (!Input.GetMouseButtonUp(0) && !Input.GetKeyUp(KeyCode.Escape))
+        //    {
+        //        yield return null;
+        //    }
+
+        //    if (Input.GetMouseButtonUp(0)) //after initial button press
+        //    {
+        //        yield return null;
+        //    }
+
+
+        //    #endregion
+
+        //    if (_regionSelectorPrefab != null)
+        //    {
+        //        var p0 = Input.mousePosition;
+        //        if (_selectionRect != null)
+        //        {
+        //            _selectionRect.Destroy();
+        //        }
+        //        _selectionRect = Instantiate(_regionSelectorPrefab);
+        //        _selectionRect.transform.localScale = new Vector3(_regionSize, 1000, _regionSize);
+        //        while (!Input.GetMouseButtonDown(0) && !Input.GetKeyUp(KeyCode.Escape))
+        //        {
+        //            bool hit = Physics.Raycast(Camera.main.ScreenPointToRay(Input.mousePosition), out RaycastHit hitInfo);
+        //            if (hit)
+        //            {
+        //                _selectionRect.transform.position = hitInfo.point;
+        //            }
+
+        //            yield return null;
+        //        }
+
+        //        var p = MarkPt();
+  
+        //        if (p != null)
+        //        {
+        //            Vector2d latLong = _map.WorldToGeoPosition((Vector3)p);
+        //            EnvironManager.Instance.Environ.CenterLatLong = latLong;
+        //        }
+        //    }
+        //}
+
+        ///// <summary>
+        ///// Marks a point in space. Returns world coordinates or null on failure.
+        ///// </summary>
+        //private Vector3? MarkPt()
+        //{
+        //    bool hit = Physics.Raycast(Camera.main.ScreenPointToRay(Input.mousePosition), out RaycastHit hitInfo);
+        //    if (hit)
+        //    {
+        //        var gO = hitInfo.transform.gameObject;
+        //        if (gO.GetComponent<UnityTile>() == null) //check that we've hit a terrain tile and not something else like a button.
+        //        {
+        //            Debug.Log("No hit");
+        //            return null;
+        //        }
+        //    }
+        //    return hitInfo.point;
+        //}
     }
 }
