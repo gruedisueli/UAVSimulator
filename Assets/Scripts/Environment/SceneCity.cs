@@ -46,10 +46,7 @@ namespace Assets.Scripts.Environment
 
         public override void UpdateGameObject()
         {
-            var c = CitySpecs;
-            float cityTileSideLength = (float)UnitUtils.GetCityTileSideLength();
-            var tile = UnitUtils.GetLocalCityTileCoords(c.WorldPos, c.RegionTileWorldCenter, cityTileSideLength);
-            var extents = UnitUtils.TileCoordsToWorldExtents(tile, c.RegionTileWorldCenter, cityTileSideLength, c.EastExt, c.WestExt, c.NorthExt, c.SouthExt);
+            var extents = UnitUtils.GetCityExtents(CitySpecs);
             float xRange = Math.Abs(extents[0][0] - extents[0][1]);
             float zRange = Math.Abs(extents[1][0] - extents[1][1]);
             gameObject.transform.localScale = new Vector3(xRange, 1000, zRange);//setting large y range to get over terrain, for now.

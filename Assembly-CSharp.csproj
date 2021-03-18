@@ -106,6 +106,7 @@
     <Compile Include="Assets\Mapbox\Unity\SourceLayers\SubLayerRealisticStyle.cs" />
     <Compile Include="Assets\Scripts\UI\EventArgs\ModifyElementArgs.cs" />
     <Compile Include="Assets\Mapbox\Unity\MapboxAccess.cs" />
+    <Compile Include="Assets\Scripts\UI\EventArgs\SelectGameObjectArgs.cs" />
     <Compile Include="Assets\Scripts\UI\EventArgs\AddCityArgs.cs" />
     <Compile Include="Assets\Mapbox\Unity\Map\AbstractMapVisualizer.cs" />
     <Compile Include="Assets\Mapbox\Unity\SourceLayers\ISubLayerExtrusionOptions.cs" />
@@ -128,6 +129,7 @@
     <Compile Include="Assets\Mapbox\Unity\Map\InitializeMapWithLocationProvider.cs" />
     <Compile Include="Assets\Scripts\Environment\City.cs" />
     <Compile Include="Assets\Mapbox\Core\mapbox-sdk-cs\Platform\Resource.cs" />
+    <Compile Include="Assets\Scripts\UI\EventArgs\PlayPauseArgs.cs" />
     <Compile Include="Assets\Mapbox\Unity\MeshGeneration\Modifiers\GameObjectModifiers\ColliderModifier.cs" />
     <Compile Include="Assets\Mapbox\Unity\MeshGeneration\Filters\HeightFilter.cs" />
     <Compile Include="Assets\Mapbox\Examples\6_ZoomableMap\Scripts\SpawnOnMap.cs" />
@@ -182,6 +184,7 @@
     <Compile Include="Assets\Mapbox\Unity\LayerProperties\PrefabItemOptions.cs" />
     <Compile Include="Assets\Scripts\UI\CityViewManager.cs" />
     <Compile Include="Assets\Mapbox\Core\mapbox-sdk-cs\Platform\Cache\SQLiteCache\Tiles.cs" />
+    <Compile Include="Assets\Scripts\UI\Tools\DeselectTool.cs" />
     <Compile Include="Assets\Mapbox\Unity\SourceLayers\SubLayerCustomStyleTiled.cs" />
     <Compile Include="Assets\Mapbox\Unity\Telemetry\TelemetryWebgl.cs" />
     <Compile Include="Assets\Mapbox\Unity\SourceLayers\ITerrainLayer.cs" />
@@ -367,6 +370,7 @@
     <Compile Include="Assets\Scripts\UI\EventArgs\IRemoveElementArgs.cs" />
     <Compile Include="Assets\Mapbox\Core\mapbox-sdk-cs\Geocoding\ForwardGeocodeResource.cs" />
     <Compile Include="Assets\Scripts\UI\EventArgs\IAddElementArgs.cs" />
+    <Compile Include="Assets\Scripts\UI\Tools\PlayPauseTool.cs" />
     <Compile Include="Assets\Mapbox\Core\mapbox-sdk-cs\MapMatching\MapMatchingResponse.cs" />
     <Compile Include="Assets\Scripts\Vehicle Control\SignalSystem.cs" />
     <Compile Include="Assets\Mapbox\Unity\SourceLayers\SubLayerFantasyStyle.cs" />
@@ -417,6 +421,7 @@
     <Compile Include="Assets\Mapbox\Core\mapbox-sdk-cs\MapMatching\Tracepoint.cs" />
     <Compile Include="Assets\Mapbox\Unity\SourceLayers\ISubLayerCustomStyle.cs" />
     <Compile Include="Assets\Mapbox\Unity\Location\EditorLocationProvider.cs" />
+    <Compile Include="Assets\Scripts\UI\Tools\SelectableGameObject.cs" />
     <Compile Include="Assets\Scripts\UI\EventArgs\IModifyPropertyArg.cs" />
     <Compile Include="Assets\Mapbox\Unity\MeshGeneration\Modifiers\GameObjectModifiers\AddToCollectionModifier.cs" />
     <Compile Include="Assets\Mapbox\Unity\SourceLayers\ISubLayerRealisticStyle.cs" />
@@ -480,6 +485,7 @@
     <Compile Include="Assets\Mapbox\Unity\LayerProperties\LayerProperties.cs" />
     <Compile Include="Assets\Mapbox\Core\mapbox-sdk-cs\Utils\JsonConverters\LonLatToGeoCoordinateConverter.cs" />
     <Compile Include="Assets\Mapbox\Unity\SourceLayers\ISubLayerFantasyStyle.cs" />
+    <Compile Include="Assets\Scripts\UI\EventArgs\DeselectArgs.cs" />
     <Compile Include="Assets\Scripts\UI\Fields\EditableText.cs" />
     <Compile Include="Assets\Mapbox\Core\mapbox-sdk-cs\Platform\TileJSON\TileJSON.cs" />
     <Compile Include="Assets\Mapbox\Unity\MeshGeneration\Modifiers\GameObjectModifiers\LayerModifier.cs" />
@@ -504,12 +510,6 @@
     <Compile Include="Assets\Mapbox\Core\mapbox-sdk-cs\Map\Tile.cs" />
     <Compile Include="Assets\Mapbox\Core\mapbox-sdk-cs\Map\ClassicRasterTile.cs" />
     <Compile Include="Assets\Mapbox\Unity\MeshGeneration\Modifiers\ModifierStack.cs" />
-    <Compile Include="Assets\Scripts\UI\EventArgs\PlayPauseArgs.cs" />
-    <Compile Include="Assets\Scripts\UI\Tools\PlayPauseTool.cs" />
-    <Compile Include="Assets\Scripts\UI\EventArgs\SelectGameObjectArgs.cs" />
-    <Compile Include="Assets\Scripts\UI\Tools\SelectableGameObject.cs" />
-    <Compile Include="Assets\Scripts\UI\Tools\DeselectTool.cs" />
-    <Compile Include="Assets\Scripts\UI\EventArgs\DeselectArgs.cs" />
   </ItemGroup>
   <ItemGroup>
      <None Include="Assets\Mapbox\Core\Plugins\Mapbox\vector-tile-cs\net46\Mapbox.VectorTile.Geometry.dll" />
