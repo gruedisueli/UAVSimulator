@@ -167,8 +167,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: aa6c68abdec275542adccdd32f6c59e4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _map: {fileID: 555018383}
-  _selectionRectPrefab: {fileID: 4418959899226865003, guid: 81cd812f55853224291950db0d171dce,
+  _regionSelectorPrefab: {fileID: 5483188848856056530, guid: 008c5a71ecd2ccc45a164100b0fc5e92,
     type: 3}
 --- !u!1 &367550003
 GameObject:
@@ -611,7 +610,7 @@ MonoBehaviour:
   _options:
     locationOptions:
       latitudeLongitude: 27.9478, -82.4584
-      zoom: 10
+      zoom: 9
     extentOptions:
       extentType: 0
       defaultExtents:
@@ -639,12 +638,12 @@ MonoBehaviour:
   _initializeOnStart: 1
   _imagery:
     _layerProperty:
-      sourceType: 4
+      sourceType: 5
       sourceOptions:
         isActive: 1
         layerSource:
           Name: Streets
-          Id: mapbox.satellite
+          Id: mapbox://styles/mapbox/satellite-streets-v10
           Modified: 
           UserName: 
       rasterOptions:
@@ -787,6 +786,7 @@ GameObject:
   - component: {fileID: 754875055}
   - component: {fileID: 754875054}
   - component: {fileID: 754875053}
+  - component: {fileID: 754875056}
   m_Layer: 5
   m_Name: Button_SetLocation
   m_TagString: Untagged
@@ -857,9 +857,9 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 94958792}
-        m_TargetAssemblyTypeName: Assets.Scripts.UI.FindLocationManager, Assembly-CSharp
-        m_MethodName: PlaceMarker
+      - m_Target: {fileID: 754875056}
+        m_TargetAssemblyTypeName: Assets.Scripts.UI.Tools.AddTool, Assembly-CSharp
+        m_MethodName: Add
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -907,6 +907,18 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 754875051}
   m_CullTransparentMesh: 0
+--- !u!114 &754875056
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 754875051}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 42d1733d2cbd74e4689884f18496853e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1001 &1178802930
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -914,10 +926,27 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 1246307186655398, guid: 00f5bf1ff996842fc82384f8f686fda6, type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 1401021118005222, guid: 00f5bf1ff996842fc82384f8f686fda6, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1466557346746850, guid: 00f5bf1ff996842fc82384f8f686fda6, type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 114023684558016336, guid: 00f5bf1ff996842fc82384f8f686fda6,
         type: 3}
       propertyPath: m_Value
-      value: 10
+      value: 7
+      objectReference: {fileID: 0}
+    - target: {fileID: 224031879083185220, guid: 00f5bf1ff996842fc82384f8f686fda6,
+        type: 3}
+      propertyPath: m_SizeDelta.y
+      value: 30
       objectReference: {fileID: 0}
     - target: {fileID: 224031879083185220, guid: 00f5bf1ff996842fc82384f8f686fda6,
         type: 3}
@@ -967,32 +996,32 @@ PrefabInstance:
     - target: {fileID: 224538534500426518, guid: 00f5bf1ff996842fc82384f8f686fda6,
         type: 3}
       propertyPath: m_AnchorMax.y
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 224538534500426518, guid: 00f5bf1ff996842fc82384f8f686fda6,
         type: 3}
       propertyPath: m_AnchorMin.y
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 224538534500426518, guid: 00f5bf1ff996842fc82384f8f686fda6,
         type: 3}
       propertyPath: m_SizeDelta.x
-      value: 0
+      value: 231
       objectReference: {fileID: 0}
     - target: {fileID: 224538534500426518, guid: 00f5bf1ff996842fc82384f8f686fda6,
         type: 3}
       propertyPath: m_SizeDelta.y
-      value: 0
+      value: 23
       objectReference: {fileID: 0}
     - target: {fileID: 224538534500426518, guid: 00f5bf1ff996842fc82384f8f686fda6,
         type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: 0
+      value: 127.5
       objectReference: {fileID: 0}
     - target: {fileID: 224538534500426518, guid: 00f5bf1ff996842fc82384f8f686fda6,
         type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: 0
+      value: -45.5
       objectReference: {fileID: 0}
     - target: {fileID: 224709793726594912, guid: 00f5bf1ff996842fc82384f8f686fda6,
         type: 3}
@@ -1087,27 +1116,27 @@ PrefabInstance:
     - target: {fileID: 224722295744740158, guid: 00f5bf1ff996842fc82384f8f686fda6,
         type: 3}
       propertyPath: m_AnchorMax.x
-      value: 0
+      value: 0.35
       objectReference: {fileID: 0}
     - target: {fileID: 224722295744740158, guid: 00f5bf1ff996842fc82384f8f686fda6,
         type: 3}
       propertyPath: m_AnchorMax.y
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 224722295744740158, guid: 00f5bf1ff996842fc82384f8f686fda6,
         type: 3}
       propertyPath: m_AnchorMin.x
-      value: 0
+      value: 0.35
       objectReference: {fileID: 0}
     - target: {fileID: 224771389989224222, guid: 00f5bf1ff996842fc82384f8f686fda6,
         type: 3}
       propertyPath: m_AnchorMax.x
-      value: 0
+      value: 0.35
       objectReference: {fileID: 0}
     - target: {fileID: 224771389989224222, guid: 00f5bf1ff996842fc82384f8f686fda6,
         type: 3}
       propertyPath: m_AnchorMax.y
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 00f5bf1ff996842fc82384f8f686fda6, type: 3}
@@ -1451,7 +1480,7 @@ MonoBehaviour:
   _zoomRate: 200
   _panSpeed: 10
   _zoomDampening: 5
-  _allowZoom: 0
+  _allowZoom: 1
   _allowTilt: 0
   _allowPan: 1
 --- !u!20 &1787361574
@@ -1478,9 +1507,9 @@ Camera:
     width: 1
     height: 1
   near clip plane: 0.3
-  far clip plane: 1000
+  far clip plane: 10000000
   field of view: 60
-  orthographic: 1
+  orthographic: 0
   orthographic size: 256
   m_Depth: -1
   m_CullingMask:

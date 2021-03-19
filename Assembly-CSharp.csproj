@@ -428,6 +428,7 @@
     <Compile Include="Assets\Scripts\UI\EventArgs\IModifyPropertyArg.cs" />
     <Compile Include="Assets\Mapbox\Unity\MeshGeneration\Modifiers\GameObjectModifiers\AddToCollectionModifier.cs" />
     <Compile Include="Assets\Mapbox\Unity\SourceLayers\ISubLayerRealisticStyle.cs" />
+    <Compile Include="Assets\Scripts\UI\Tools\AddRegionTool.cs" />
     <Compile Include="Assets\Scripts\Environment\SceneParkingStructure.cs" />
     <Compile Include="Assets\Mapbox\Unity\MeshGeneration\Modifiers\GameObjectModifiers\MaterialModifier.cs" />
     <Compile Include="Assets\Mapbox\Core\mapbox-sdk-cs\Map\RetinaRasterTile.cs" />
@@ -509,6 +510,7 @@
     <Compile Include="Assets\Mapbox\Unity\Location\AngleSmoothing\AngleSmoothingAverage.cs" />
     <Compile Include="Assets\Mapbox\Core\mapbox-sdk-cs\Directions\Response\Route.cs" />
     <Compile Include="Assets\Mapbox\Unity\DataContainers\LayerPerformanceOptions.cs" />
+    <Compile Include="Assets\Scripts\UI\EventArgs\AddRegionArgs.cs" />
     <Compile Include="Assets\Scripts\Environment\RestrictionZoneBase.cs" />
     <Compile Include="Assets\Mapbox\Core\mapbox-sdk-cs\Map\Tile.cs" />
     <Compile Include="Assets\Mapbox\Core\mapbox-sdk-cs\Map\ClassicRasterTile.cs" />
