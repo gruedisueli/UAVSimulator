@@ -20,12 +20,14 @@ namespace Assets.Scripts.Environment
         public void Initialize(ParkingStructureBase pS, string guid)
         {
             Guid = guid;
+            pS.RemainingSpots = pS.ParkingSpots.Count();
             ParkingStructureSpecs = pS;
             gameObject.tag = "ParkingStructure";
             gameObject.name = "Parking_" + pS.Type;
             gameObject.layer = pS.Layer;
             ParkingCtrl = gameObject.AddComponent<ParkingControl>();
             ParkingCtrl.parkingInfo = pS;
+
 
             UpdateGameObject();
         }

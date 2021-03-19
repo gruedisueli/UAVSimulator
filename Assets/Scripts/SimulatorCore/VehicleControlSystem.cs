@@ -37,12 +37,15 @@ public class VehicleControlSystem : MonoBehaviour
     #region Private Variables
     private Color translucentRed;
     private float watch;
+    private bool playing;
+    private bool vehicleInstantiated;
 
     // INTEGRATION TO-DO: Replace root with the path that it receives;
     private string root = "E:\\Development\\GitHub_Local\\UAVSimulator\\runtime\\";
     private string asset_root = "E:\\Development\\GitHub_Local\\UAVSimulator\\Assets\\";
 
-    private SceneManagerBase sceneManager;
+    // private SceneManagerBase sceneManager;
+    private CityViewManager sceneManager;
     public List<GameObject> vehicles;
     public List<GameObject> movingVehicles;
 
@@ -64,17 +67,23 @@ public class VehicleControlSystem : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        playing = false;
+        vehicleInstantiated = false;
         translucentRed = new Color(Color.cyan.r, Color.cyan.g, Color.cyan.b, 0.50f);
         // 1. instantiate vehicles in parking spots
         // 2. generate call signals
         MIN_DRONE_RANGE = 99999.0f;
         string current_runtime = "42o3601_71o0589"; // INTEGRATION TO-DO: Get current runtime name from UI side to find out which folder to refer to
                                                     // Current Placeholder = Lat_Long of Boston
+        
+        
         simulationParam = ReadSimulationParams(current_runtime);
-        sceneManager = GameObject.Find("EnvironmentManagement").GetComponent<SceneManagerBase>();
+        // TO-DO: Add clause that checks if we are doing simulation in RegionView
+        sceneManager = GameObject.Find("FOA").GetComponent<CityViewManager>();
     
         movingVehicles = new List<GameObject>();
-        InstantiateVehicles();
+        
+        
 
         speedMultiplier = 10.0f;
 
@@ -84,11 +93,14 @@ public class VehicleControlSystem : MonoBehaviour
     // Update is called once per frames
     void Update()
     {
-        watch += Time.deltaTime;
-        if (watch > simulationParam.callGenerationInterval && movingVehicles.Count < simulationParam.maxInFlightVehicles)
+        if (playing)
         {
-            watch = 0.0f;
-            GenerateRandomCalls();
+            watch += Time.deltaTime;
+            if (watch > simulationParam.callGenerationInterval && movingVehicles.Count < simulationParam.maxInFlightVehicles)
+            {
+                watch = 0.0f;
+                GenerateRandomCalls();
+            }
         }
     }
 
@@ -100,12 +112,14 @@ public class VehicleControlSystem : MonoBehaviour
     /// </summary>
     public void PlayPause()
     {
-
+        
+        playing = !playing;
+        if ( playing && !vehicleInstantiated ) InstantiateVehicles();
     }
 
     public void GenerateRandomCalls()
     {
-        int call_type = Mathf.FloorToInt(Random.Range(0.0f, 4.5f));
+        int call_type = Mathf.FloorToInt(Random.Range(0.0f, 3.0f));
         string call_type_string = call_type <= 3 ? "corridor" : "low-altitude";
 
         // strategicDeconfliction == "none"
@@ -174,8 +188,6 @@ public class VehicleControlSystem : MonoBehaviour
                     vehicleInfo.isUTM = true;
                     
                     CallVehicle(vehicle, parking.GetComponent<ParkingControl>(), destinations);
-                    //
-
                 }
             }
         }

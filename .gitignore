@@ -154,3 +154,6 @@ Assets/Buildings/wetransfer-8425dc.zip.meta
 
 #Save games
 Assets/Saves
+Assembly-CSharp-Editor.csproj
+*.csproj
+*.sln

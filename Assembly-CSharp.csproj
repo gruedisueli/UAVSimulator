@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
-    <LangVersion>latest</LangVersion>
+    <LangVersion>7.3</LangVersion>
   </PropertyGroup>
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
@@ -52,6 +52,9 @@
     <UnityBuildTarget>StandaloneWindows64:19</UnityBuildTarget>
     <UnityVersion>2020.1.15f1</UnityVersion>
   </PropertyGroup>
+  <ItemGroup>
+    <Analyzer Include="C:\Program Files (x86)\Microsoft Visual Studio Tools for Unity\16.0\Analyzers\Microsoft.Unity.Analyzers.dll" />
+  </ItemGroup>
   <ItemGroup>
     <Compile Include="Assets\Mapbox\Unity\Utilities\AndroidSettings.cs" />
     <Compile Include="Assets\Mapbox\Unity\Location\Logging\LocationLogReader.cs" />
@@ -106,6 +109,7 @@
     <Compile Include="Assets\Mapbox\Unity\SourceLayers\SubLayerRealisticStyle.cs" />
     <Compile Include="Assets\Scripts\UI\EventArgs\ModifyElementArgs.cs" />
     <Compile Include="Assets\Mapbox\Unity\MapboxAccess.cs" />
+    <Compile Include="Assets\Scripts\UI\EventArgs\SelectGameObjectArgs.cs" />
     <Compile Include="Assets\Scripts\UI\EventArgs\AddCityArgs.cs" />
     <Compile Include="Assets\Mapbox\Unity\Map\AbstractMapVisualizer.cs" />
     <Compile Include="Assets\Mapbox\Unity\SourceLayers\ISubLayerExtrusionOptions.cs" />
@@ -128,6 +132,7 @@
     <Compile Include="Assets\Mapbox\Unity\Map\InitializeMapWithLocationProvider.cs" />
     <Compile Include="Assets\Scripts\Environment\City.cs" />
     <Compile Include="Assets\Mapbox\Core\mapbox-sdk-cs\Platform\Resource.cs" />
+    <Compile Include="Assets\Scripts\UI\EventArgs\PlayPauseArgs.cs" />
     <Compile Include="Assets\Mapbox\Unity\MeshGeneration\Modifiers\GameObjectModifiers\ColliderModifier.cs" />
     <Compile Include="Assets\Mapbox\Unity\MeshGeneration\Filters\HeightFilter.cs" />
     <Compile Include="Assets\Mapbox\Examples\6_ZoomableMap\Scripts\SpawnOnMap.cs" />
@@ -182,6 +187,7 @@
     <Compile Include="Assets\Mapbox\Unity\LayerProperties\PrefabItemOptions.cs" />
     <Compile Include="Assets\Scripts\UI\CityViewManager.cs" />
     <Compile Include="Assets\Mapbox\Core\mapbox-sdk-cs\Platform\Cache\SQLiteCache\Tiles.cs" />
+    <Compile Include="Assets\Scripts\UI\Tools\DeselectTool.cs" />
     <Compile Include="Assets\Mapbox\Unity\SourceLayers\SubLayerCustomStyleTiled.cs" />
     <Compile Include="Assets\Mapbox\Unity\Telemetry\TelemetryWebgl.cs" />
     <Compile Include="Assets\Mapbox\Unity\SourceLayers\ITerrainLayer.cs" />
@@ -367,6 +373,7 @@
     <Compile Include="Assets\Scripts\UI\EventArgs\IRemoveElementArgs.cs" />
     <Compile Include="Assets\Mapbox\Core\mapbox-sdk-cs\Geocoding\ForwardGeocodeResource.cs" />
     <Compile Include="Assets\Scripts\UI\EventArgs\IAddElementArgs.cs" />
+    <Compile Include="Assets\Scripts\UI\Tools\PlayPauseTool.cs" />
     <Compile Include="Assets\Mapbox\Core\mapbox-sdk-cs\MapMatching\MapMatchingResponse.cs" />
     <Compile Include="Assets\Scripts\Vehicle Control\SignalSystem.cs" />
     <Compile Include="Assets\Mapbox\Unity\SourceLayers\SubLayerFantasyStyle.cs" />
@@ -417,6 +424,7 @@
     <Compile Include="Assets\Mapbox\Core\mapbox-sdk-cs\MapMatching\Tracepoint.cs" />
     <Compile Include="Assets\Mapbox\Unity\SourceLayers\ISubLayerCustomStyle.cs" />
     <Compile Include="Assets\Mapbox\Unity\Location\EditorLocationProvider.cs" />
+    <Compile Include="Assets\Scripts\UI\Tools\SelectableGameObject.cs" />
     <Compile Include="Assets\Scripts\UI\EventArgs\IModifyPropertyArg.cs" />
     <Compile Include="Assets\Mapbox\Unity\MeshGeneration\Modifiers\GameObjectModifiers\AddToCollectionModifier.cs" />
     <Compile Include="Assets\Mapbox\Unity\SourceLayers\ISubLayerRealisticStyle.cs" />
@@ -480,6 +488,7 @@
     <Compile Include="Assets\Mapbox\Unity\LayerProperties\LayerProperties.cs" />
     <Compile Include="Assets\Mapbox\Core\mapbox-sdk-cs\Utils\JsonConverters\LonLatToGeoCoordinateConverter.cs" />
     <Compile Include="Assets\Mapbox\Unity\SourceLayers\ISubLayerFantasyStyle.cs" />
+    <Compile Include="Assets\Scripts\UI\EventArgs\DeselectArgs.cs" />
     <Compile Include="Assets\Scripts\UI\Fields\EditableText.cs" />
     <Compile Include="Assets\Mapbox\Core\mapbox-sdk-cs\Platform\TileJSON\TileJSON.cs" />
     <Compile Include="Assets\Mapbox\Unity\MeshGeneration\Modifiers\GameObjectModifiers\LayerModifier.cs" />
@@ -504,12 +513,6 @@
     <Compile Include="Assets\Mapbox\Core\mapbox-sdk-cs\Map\Tile.cs" />
     <Compile Include="Assets\Mapbox\Core\mapbox-sdk-cs\Map\ClassicRasterTile.cs" />
     <Compile Include="Assets\Mapbox\Unity\MeshGeneration\Modifiers\ModifierStack.cs" />
-    <Compile Include="Assets\Scripts\UI\EventArgs\PlayPauseArgs.cs" />
-    <Compile Include="Assets\Scripts\UI\Tools\PlayPauseTool.cs" />
-    <Compile Include="Assets\Scripts\UI\EventArgs\SelectGameObjectArgs.cs" />
-    <Compile Include="Assets\Scripts\UI\Tools\SelectableGameObject.cs" />
-    <Compile Include="Assets\Scripts\UI\Tools\DeselectTool.cs" />
-    <Compile Include="Assets\Scripts\UI\EventArgs\DeselectArgs.cs" />
   </ItemGroup>
   <ItemGroup>
      <None Include="Assets\Mapbox\Core\Plugins\Mapbox\vector-tile-cs\net46\Mapbox.VectorTile.Geometry.dll" />
@@ -1104,35 +1107,44 @@
     <Reference Include="System.Xml.XPath.XDocument">
       <HintPath>C:\Program Files\Unity\Hub\Editor\2020.1.15f1\Editor\Data\MonoBleedingEdge\lib\mono\4.7.1-api\Facades\System.Xml.XPath.XDocument.dll</HintPath>
     </Reference>
-    <Reference Include="Unity.Timeline.Editor">
-      <HintPath>Library\ScriptAssemblies\Unity.Timeline.Editor.dll</HintPath>
-    </Reference>
-    <Reference Include="Unity.VSCode.Editor">
-      <HintPath>Library\ScriptAssemblies\Unity.VSCode.Editor.dll</HintPath>
-    </Reference>
-    <Reference Include="Unity.TextMeshPro.Editor">
-      <HintPath>Library\ScriptAssemblies\Unity.TextMeshPro.Editor.dll</HintPath>
-    </Reference>
-    <Reference Include="UnityEngine.UI">
-      <HintPath>Library\ScriptAssemblies\UnityEngine.UI.dll</HintPath>
-    </Reference>
-    <Reference Include="Unity.Timeline">
-      <HintPath>Library\ScriptAssemblies\Unity.Timeline.dll</HintPath>
-    </Reference>
-    <Reference Include="Unity.Rider.Editor">
-      <HintPath>Library\ScriptAssemblies\Unity.Rider.Editor.dll</HintPath>
-    </Reference>
-    <Reference Include="Unity.VisualStudio.Editor">
-      <HintPath>Library\ScriptAssemblies\Unity.VisualStudio.Editor.dll</HintPath>
-    </Reference>
-    <Reference Include="Unity.TextMeshPro">
-      <HintPath>Library\ScriptAssemblies\Unity.TextMeshPro.dll</HintPath>
-    </Reference>
-    <Reference Include="UnityEditor.UI">
-      <HintPath>Library\ScriptAssemblies\UnityEditor.UI.dll</HintPath>
-    </Reference>
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="Unity.Timeline.Editor.csproj">
+      <Project>{8B707068-4CED-F14C-F72E-BC3C8454B8E5}</Project>
+      <Name>Unity.Timeline.Editor</Name>
+    </ProjectReference>
+    <ProjectReference Include="Unity.VSCode.Editor.csproj">
+      <Project>{9C97C4F1-4E07-B30D-B853-5436D4EF41F0}</Project>
+      <Name>Unity.VSCode.Editor</Name>
+    </ProjectReference>
+    <ProjectReference Include="Unity.TextMeshPro.Editor.csproj">
+      <Project>{C02AD4EC-DC4C-75B2-4530-D72A05BDDFD2}</Project>
+      <Name>Unity.TextMeshPro.Editor</Name>
+    </ProjectReference>
+    <ProjectReference Include="UnityEngine.UI.csproj">
+      <Project>{9037E4C5-26F9-2684-2318-E81FCF3257F6}</Project>
+      <Name>UnityEngine.UI</Name>
+    </ProjectReference>
+    <ProjectReference Include="Unity.Timeline.csproj">
+      <Project>{72F656BC-5C48-06A1-82EB-91EA7021A68E}</Project>
+      <Name>Unity.Timeline</Name>
+    </ProjectReference>
+    <ProjectReference Include="Unity.Rider.Editor.csproj">
+      <Project>{E62DF289-A030-7F6A-7500-58F48937C780}</Project>
+      <Name>Unity.Rider.Editor</Name>
+    </ProjectReference>
+    <ProjectReference Include="Unity.VisualStudio.Editor.csproj">
+      <Project>{7A490CA3-D0F0-6D68-7259-4FDFFE4F1DB0}</Project>
+      <Name>Unity.VisualStudio.Editor</Name>
+    </ProjectReference>
+    <ProjectReference Include="Unity.TextMeshPro.csproj">
+      <Project>{B2FAEE0B-EB47-2747-172F-C21877D70556}</Project>
+      <Name>Unity.TextMeshPro</Name>
+    </ProjectReference>
+    <ProjectReference Include="UnityEditor.UI.csproj">
+      <Project>{1A510ED7-4011-2429-FFE3-DEF7C3339436}</Project>
+      <Name>UnityEditor.UI</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Target Name="GenerateTargetFrameworkMonikerAttribute" />
