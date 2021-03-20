@@ -18,11 +18,22 @@ namespace Assets.Scripts.Environment
     {
         [JsonProperty]
         private string _type = "Cyl_Stacked";
-        public string Type
+        public override string Type
         {
             get
             {
                 return _type;
+            }
+        }
+
+
+        [JsonProperty]
+        private string _description = "A restriction zone consisting of stacked cylindrical sub-zones";
+        public override string Description
+        {
+            get
+            {
+                return _description;
             }
         }
 
@@ -74,6 +85,7 @@ namespace Assets.Scripts.Environment
         public RestrictionZoneCylStack(RestrictionZoneCylStack rZ)
         {
             _type = rZ.Type;
+            _description = rZ.Description;
             _elements = new RestrictionZoneCyl[rZ.Elements.Length];
             for (int i = 0; i < rZ.Elements.Length; i++)
             {

@@ -10,59 +10,46 @@ using Assets.Scripts.UI.EventArgs;
 
 namespace Assets.Scripts.UI.Tools
 {
-    public delegate void StartModify();
-    public delegate void CommitChange(bool commitChange);
-
     /// <summary>
     /// This is a panel JUST for containing things that modify an element.
     /// It SHOULD NOT be used to to add/remove/ etc.
     /// It SHOULD NOT contain other buttoms, etc.
     /// </summary>
-    public class ModifyPanel : MonoBehaviour
+    public class ModifyPanel : PanelBase
     {
-        public event StartModify OnStartModify;
-        public event CommitChange OnCommitChange;
+        public CommitTool CommitTool { get; private set; } = null;
 
-        protected ModifyTool[] _childTools;
-
-        private void Start()
+        protected override void Start()
         {
+            base.Start();
 
-        }
+            CommitTool = FindCompInChildren<CommitTool>();
 
-        private void OnDestroy()
-        {
-
-        }
-
-        /// <summary>
-        /// Called to activate/deactivate this entire game object and children.
-        /// </summary>
-        public virtual void SetActive(bool isActive)
-        {
-            gameObject.SetActive(isActive);
-            if (isActive)
+            if (CommitTool != null)
             {
-                OnStartModify.Invoke();
+                CommitTool.OnCommit += CommitModification;
             }
         }
 
-        /// <summary>
-        /// Called when cancelling changes. Do not confuse this with deactivating this panel. Do that from the outside.
-        /// </summary>
-        public virtual void CancelModification()
+        protected override void OnDestroy()
         {
-            OnCommitChange.Invoke(false);
-            gameObject.SetActive(false);
+            base.OnDestroy();
+
+            if (CommitTool != null)
+            {
+                CommitTool.OnCommit -= CommitModification;
+            }
         }
+
+        //NOTE: cancellation of modification can be handled by the "close tool" attached to this panel. We can even label it "cancel"
 
         /// <summary>
         /// Called when committing the changes. Do not confuse this with deactivating this panel. Do that from the outside.
         /// </summary>
-        public virtual void CommitModification()
+        public virtual void CommitModification(object sender, System.EventArgs args)
         {
-            OnCommitChange.Invoke(true);
             gameObject.SetActive(false);
+            OnPanelClosed.Invoke(this, new System.EventArgs());
         }
 
     }

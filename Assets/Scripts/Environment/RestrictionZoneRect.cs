@@ -17,11 +17,22 @@ namespace Assets.Scripts.Environment
     {
         [JsonProperty]
         private string _type = "Rect";
-        public string Type
+        public override string Type
         {
             get
             {
                 return _type;
+            }
+        }
+
+
+        [JsonProperty]
+        private string _description = "A basic rectangular restriction zone";
+        public override string Description
+        {
+            get
+            {
+                return _description;
             }
         }
 
@@ -94,6 +105,7 @@ namespace Assets.Scripts.Environment
         public RestrictionZoneRect(RestrictionZoneRect rZ)
         {
             _type = rZ.Type;
+            _description = rZ.Description;
             _height = rZ.Height;
             _scale = new SerVect3f(rZ.Scale);
             _position = new SerVect3f(rZ.Position);

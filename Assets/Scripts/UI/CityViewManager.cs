@@ -200,7 +200,7 @@ namespace Assets.Scripts.UI
         protected override SceneDronePort InstantiateCustomDronePort(string guid, GameObject prefab, DronePortCustom dP, bool register)
         {
             var clone = Instantiate(prefab/*, dP.Position, Quaternion.Euler(dP.Rotation.x, dP.Rotation.y, dP.Rotation.z)*/);
-            foreach (var c in clone.GetComponentsInChildren<Transform>())
+            foreach (var c in clone.GetComponentsInChildren<Transform>(true))
             {
                 c.gameObject.AddComponent<SelectableGameObject>();
                 c.gameObject.AddComponent<BoxCollider>();
@@ -222,7 +222,7 @@ namespace Assets.Scripts.UI
         protected override SceneParkingStructure InstantiateCustomParkingStruct(string guid, GameObject prefab, ParkingStructureCustom pS, bool register)
         {
             var clone = Instantiate(prefab/*, pS.Position, Quaternion.Euler(pS.Rotation.x, pS.Rotation.y, pS.Rotation.z)*/);
-            foreach (var c in clone.GetComponentsInChildren<Transform>())
+            foreach (var c in clone.GetComponentsInChildren<Transform>(true))
             {
                 c.gameObject.AddComponent<SelectableGameObject>();
                 c.gameObject.AddComponent<BoxCollider>();

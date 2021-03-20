@@ -37,7 +37,7 @@ namespace Assets.Scripts.Environment
 
             if (_renderers == null)//some scene elements may define this before "Start" is called.
             {
-                _renderers = GetComponentsInChildren<MeshRenderer>();
+                _renderers = GetComponentsInChildren<MeshRenderer>(true);
                 if (_renderers == null)
                 {
                     Debug.LogError("Mesh renderers not found on scene element");
@@ -53,7 +53,7 @@ namespace Assets.Scripts.Environment
                 _defaultMaterial = Instantiate(EnvironManager.Instance.DefaultSceneElementMat);
             }
 
-            _selectableObjs = GetComponentsInChildren<SelectableGameObject>();
+            _selectableObjs = GetComponentsInChildren<SelectableGameObject>(true);
             if (_selectableObjs == null)
             {
                 Debug.LogError("Selectable game object component not found in this scene element or its children");

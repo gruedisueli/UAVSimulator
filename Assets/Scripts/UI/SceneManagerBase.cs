@@ -36,8 +36,6 @@ namespace Assets.Scripts.UI
 
         protected VehicleControlSystem _vehicleControlSystem;
 
-        protected ModifyPanel[] _modifyPanels;
-        protected ModifyTool[] _modifyTools;
         protected AddTool[] _addTools;
         protected RemoveTool[] _removeTools;
         protected SceneChangeTool[] _sceneChangeTools;
@@ -48,6 +46,7 @@ namespace Assets.Scripts.UI
 
         protected SceneElementBase _selectedElement = null;
         protected SceneElementBase _workingCopy = null;
+        protected ElementInfoPanel _currentInfoPanel = null;
 
         #endregion
 
@@ -95,8 +94,6 @@ namespace Assets.Scripts.UI
             }
 
             //gather UI elments
-            _modifyPanels = FindObjectsOfType<ModifyPanel>(true);
-            _modifyTools = FindObjectsOfType<ModifyTool>(true);
             _addTools = FindObjectsOfType<AddTool>(true);
             _removeTools = FindObjectsOfType<RemoveTool>(true);
             _sceneChangeTools = FindObjectsOfType<SceneChangeTool>(true);
@@ -117,15 +114,6 @@ namespace Assets.Scripts.UI
             //event subscription
             //QUESTION: Why register our tools directly on the scene manager and not sub-panels?
             //ANSWER: Because by registering here, we are not wedded to a specific tool hierarchy and can rearrange our tools regardless of sub-panels, etc.
-            foreach (var m in _modifyPanels)
-            {
-                m.OnCommitChange += CommitUpdates;
-                m.OnStartModify += StartModifying;
-            }
-            foreach (var m in _modifyTools)
-            {
-                m.OnElementModified += ElementModify;
-            }
             foreach (var a in _addTools)
             {
                 a.ElementAddedEvent += AddElement;
@@ -154,15 +142,6 @@ namespace Assets.Scripts.UI
         private void OnDestroy()
         {
             //event unsubscription
-            foreach (var m in _modifyPanels)
-            {
-                m.OnCommitChange -= CommitUpdates;
-                m.OnStartModify -= StartModifying;
-            }
-            foreach (var m in _modifyTools)
-            {
-                m.OnElementModified -= ElementModify;
-            }
             foreach (var a in _addTools)
             {
                 a.ElementAddedEvent -= AddElement;
@@ -196,6 +175,21 @@ namespace Assets.Scripts.UI
                 c.OnSceneElementSelected -= SelectElement;
             }
             _playPause.OnPlayPause -= PlayPause;
+            if (_currentInfoPanel != null)
+            {
+                //unsubscribe from events.
+                //start modify
+                _currentInfoPanel.StartModifyTool.OnStartModify -= StartModifying;
+                //cancel modify
+                _currentInfoPanel.ModifyPanel._closeTool.OnClose -= CancelCommit;
+                //commit modify
+                _currentInfoPanel.ModifyPanel.CommitTool.OnCommit -= CommitUpdates;
+                //modification events from tools
+                foreach (var t in _currentInfoPanel.ModifyTools)
+                {
+                    t.OnElementModified -= ElementModify;
+                }
+            }
 
             OnDestroyDerived();
         }
@@ -324,10 +318,64 @@ namespace Assets.Scripts.UI
             {
                 _selectedElement = sE;
                 _selectedElement.SetSelectedState(true);
-                return true;
+
+                //instantiate and turn on info panel
+                GameObject clone = null;
+                if (_selectedElement is SceneCity)
+                {
+                    clone = Instantiate(EnvironManager.Instance.CityInfoPanelPrefab);
+                }
+                else if (_selectedElement is SceneDronePort)
+                {
+                    clone = Instantiate(EnvironManager.Instance.DronePortInfoPanelPrefab);
+                }
+                else if (_selectedElement is SceneParkingStructure)
+                {
+                    clone = Instantiate(EnvironManager.Instance.ParkingInfoPanelPrefab);
+                }
+                else if (_selectedElement is SceneRestrictionZone)
+                {
+                    clone = Instantiate(EnvironManager.Instance.RestrictionInfoPanelPrefab);
+                }
+                bool success = InitInfoPanel(clone);
+                return success;
             }
 
             return false;
+        }
+
+        /// <summary>
+        /// Final setup of info panel. True on success, false if not.
+        /// </summary>
+        private bool InitInfoPanel(GameObject prefab)
+        {
+            if (prefab == null)
+            {
+                Debug.LogError("No info panel prefab provided");
+                return false;
+            }
+            _currentInfoPanel = prefab.GetComponent<CityInfoPanel>();
+            if (_currentInfoPanel == null)
+            {
+                Debug.LogError("Could not find info panel on prefab");
+                return false;
+            }
+            _currentInfoPanel.Initialize(_selectedElement);
+
+            //subscribe to events.
+            //start modify
+            _currentInfoPanel.StartModifyTool.OnStartModify += StartModifying;
+            //cancel modify
+            _currentInfoPanel.ModifyPanel._closeTool.OnClose += CancelCommit;
+            //commit modify
+            _currentInfoPanel.ModifyPanel.CommitTool.OnCommit += CommitUpdates;
+            //modification events from tools
+            foreach(var t in _currentInfoPanel.ModifyTools)
+            {
+                t.OnElementModified += ElementModify;
+            }
+
+            return true;
         }
 
         /// <summary>
@@ -335,8 +383,16 @@ namespace Assets.Scripts.UI
         /// </summary>
         protected virtual void DeselectElement(object sender, DeselectArgs args)
         {
-            _selectedElement.SetSelectedState(false);
-            _selectedElement = null;
+            if (_selectedElement != null)
+            {
+                _selectedElement.SetSelectedState(false);
+                _selectedElement = null;
+            }
+
+            if (_currentInfoPanel != null)
+            {
+                _currentInfoPanel.gameObject.Destroy();
+            }
         }
 
         #endregion
@@ -351,13 +407,14 @@ namespace Assets.Scripts.UI
         /// <summary>
         /// Called when we start modifying a scene element.
         /// </summary>
-        protected void StartModifying()
+        protected void StartModifying(object sender, System.EventArgs args)
         {
             if (_selectedElement == null)
             {
                 Debug.LogError("No object selected");
                 return;
             }
+
             //copy the selected game object
             string guid = Guid.NewGuid().ToString();
             if (_selectedElement is SceneDronePort)
@@ -390,9 +447,25 @@ namespace Assets.Scripts.UI
         }
 
         /// <summary>
+        /// Called when we commit modification of an element.
+        /// </summary>
+        protected void CommitUpdates(object sender, System.EventArgs args)
+        {
+            EndModification(true);
+        }
+
+        /// <summary>
+        /// Called when we cancel modification of an element.
+        /// </summary>
+        protected void CancelCommit(object sender, System.EventArgs args)
+        {
+            EndModification(false);
+        }
+
+        /// <summary>
         /// Called when we finish modification of an element.
         /// </summary>
-        protected void CommitUpdates(bool commit)
+        protected void EndModification(bool commit)
         {
             if (commit) ///throw out old version of selected element and replace in both game and environment
             {

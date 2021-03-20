@@ -26,6 +26,16 @@ namespace Assets.Scripts.Environment
         }
 
         [JsonProperty]
+        private string _description = "";
+        public override string Description
+        {
+            get
+            {
+                return _description;
+            }
+        }
+
+        [JsonProperty]
         private SerVect3f _position = new SerVect3f();
         public override Vector3 Position
         {
@@ -195,6 +205,7 @@ namespace Assets.Scripts.Environment
         public DronePortCustom(DronePortCustom dP)
         {
             _type = dP.Type;
+            _description = dP.Description;
             Position = dP.Position;
             Rotation = dP.Rotation;
             Scale = dP.Scale;

@@ -51,6 +51,10 @@ namespace Assets.Scripts.Environment
         public Material SelectedSceneElementMat { get; private set; } = null;
         public Material DefaultSceneElementMat { get; private set; } = null;
         public Material RestrictionZoneMaterial { get; private set; } = null;
+        public GameObject CityInfoPanelPrefab { get; private set; } = null;
+        public GameObject DronePortInfoPanelPrefab { get; private set; } = null;
+        public GameObject ParkingInfoPanelPrefab { get; private set; } = null;
+        public GameObject RestrictionInfoPanelPrefab { get; private set; } = null;
         
         //public Dictionary<string, RestrictionZoneAssetPack> RestrictionZoneAssets { get; private set; } = new Dictionary<string, RestrictionZoneAssetPack>();
 
@@ -399,6 +403,7 @@ namespace Assets.Scripts.Environment
             ReadDronePorts();
             ReadParkingStructures();
             ReadMaterialAssets();
+            ReadInfoPanelPrefabs();
         }
 
         /// <summary>
@@ -478,6 +483,18 @@ namespace Assets.Scripts.Environment
                 var pfb = AssetUtils.ReadPrefab(rPath, dp.Type);
                 DronePortAssets.Add(dp.Type, new DronePortAssetPack(pfb, dp));
             }
+        }
+
+        /// <summary>
+        /// Gets resources for prefabs of info panels
+        /// </summary>
+        private void ReadInfoPanelPrefabs()
+        {
+            string rPath = "GUI/";
+            CityInfoPanelPrefab = AssetUtils.ReadPrefab(rPath, "CityInfoPanel");
+            DronePortInfoPanelPrefab = AssetUtils.ReadPrefab(rPath, "DronePortInfoPanel");
+            ParkingInfoPanelPrefab = AssetUtils.ReadPrefab(rPath, "ParkingInfoPanel");
+            RestrictionInfoPanelPrefab = AssetUtils.ReadPrefab(rPath, "RestrictionInfoPanel");
         }
 
         private T DeserializeJsonFile<T>(string path)
