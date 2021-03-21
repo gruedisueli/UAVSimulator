@@ -19,18 +19,6 @@ namespace Assets.Scripts.UI.Tools
     {
         public CommitTool CommitTool { get; private set; } = null;
 
-        protected override void Start()
-        {
-            base.Start();
-
-            CommitTool = FindCompInChildren<CommitTool>();
-
-            if (CommitTool != null)
-            {
-                CommitTool.OnCommit += CommitModification;
-            }
-        }
-
         protected override void OnDestroy()
         {
             base.OnDestroy();
@@ -49,7 +37,17 @@ namespace Assets.Scripts.UI.Tools
         public virtual void CommitModification(object sender, System.EventArgs args)
         {
             gameObject.SetActive(false);
-            OnPanelClosed.Invoke(this, new System.EventArgs());
+            OnPanelClosed?.Invoke(this, new System.EventArgs());
+        }
+
+        public virtual void Initialize()
+        {
+            CommitTool = FindCompInChildren<CommitTool>();
+
+            if (CommitTool != null)
+            {
+                CommitTool.OnCommit += CommitModification;
+            }
         }
 
     }

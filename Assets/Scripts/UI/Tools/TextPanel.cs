@@ -13,10 +13,8 @@ namespace Assets.Scripts.UI.Tools
     {
         public Dictionary<ElementPropertyType, TextElement> TextElements { get; protected set; } = new Dictionary<ElementPropertyType, TextElement>();
 
-        protected override void Start()
+        public virtual void Initialize()
         {
-            base.Start();
-
             var tE = GetComponentsInChildren<TextElement>(true);
             if (tE == null || tE.Length == 0)
             {
@@ -24,7 +22,7 @@ namespace Assets.Scripts.UI.Tools
                 return;
             }
 
-            foreach(var e in tE)
+            foreach (var e in tE)
             {
                 try
                 {

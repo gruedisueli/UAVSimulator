@@ -8,7 +8,7 @@ using UnityEngine;
 
 namespace Assets.Scripts.UI.Tools
 {
-    public class CloseTool : MonoBehaviour
+    public class CloseTool : ToolBase
     {
         public EventHandler<System.EventArgs> OnClose;
 

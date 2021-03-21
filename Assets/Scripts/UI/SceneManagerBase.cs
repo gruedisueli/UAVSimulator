@@ -37,16 +37,16 @@ namespace Assets.Scripts.UI
         protected VehicleControlSystem _vehicleControlSystem;
 
         protected AddTool[] _addTools;
-        protected RemoveTool[] _removeTools;
         protected SceneChangeTool[] _sceneChangeTools;
         protected DeselectTool[] _deselectTools;
         protected SavePrompt _savePrompt;
         protected PlayPauseTool _playPause;
 
-
         protected SceneElementBase _selectedElement = null;
         protected SceneElementBase _workingCopy = null;
         protected ElementInfoPanel _currentInfoPanel = null;
+
+        protected Canvas _mainCanvas;
 
         #endregion
 
@@ -69,6 +69,14 @@ namespace Assets.Scripts.UI
             DestinationCollections = new List<GameObject>();
             Routes = new Dictionary<GameObject, List<GameObject>>();
             RestrictionZones = new Dictionary<string, SceneRestrictionZone>();
+
+            //get main canvase
+            _mainCanvas = GetComponentInChildren<Canvas>();
+            if (_mainCanvas == null)
+            {
+                Debug.LogError("Main canvas not found in children of scene manager");
+                return;
+            }
 
             //get mapbox abstract map
             _abstractMap = FindObjectOfType<AbstractMap>(true);
@@ -95,7 +103,6 @@ namespace Assets.Scripts.UI
 
             //gather UI elments
             _addTools = FindObjectsOfType<AddTool>(true);
-            _removeTools = FindObjectsOfType<RemoveTool>(true);
             _sceneChangeTools = FindObjectsOfType<SceneChangeTool>(true);
             _deselectTools = FindObjectsOfType<DeselectTool>(true);
             _savePrompt = FindObjectOfType<SavePrompt>(true);
@@ -117,10 +124,6 @@ namespace Assets.Scripts.UI
             foreach (var a in _addTools)
             {
                 a.ElementAddedEvent += AddElement;
-            }
-            foreach (var r in _removeTools)
-            {
-                r.OnSelectedElementRemoved += RemoveSelectedElement;
             }
             foreach (var t in _sceneChangeTools)
             {
@@ -145,10 +148,6 @@ namespace Assets.Scripts.UI
             foreach (var a in _addTools)
             {
                 a.ElementAddedEvent -= AddElement;
-            }
-            foreach (var r in _removeTools)
-            {
-                r.OnSelectedElementRemoved -= RemoveSelectedElement;
             }
             foreach (var t in _sceneChangeTools)
             {
@@ -189,6 +188,11 @@ namespace Assets.Scripts.UI
                 {
                     t.OnElementModified -= ElementModify;
                 }
+                //removal tool
+                _currentInfoPanel.RemoveTool.OnSelectedElementRemoved -= RemoveSelectedElement;
+
+                //deselect tool
+                _currentInfoPanel.DeselectTool.OnDeselect -= DeselectElement;
             }
 
             OnDestroyDerived();
@@ -354,7 +358,8 @@ namespace Assets.Scripts.UI
                 Debug.LogError("No info panel prefab provided");
                 return false;
             }
-            _currentInfoPanel = prefab.GetComponent<CityInfoPanel>();
+            prefab.transform.SetParent(_mainCanvas.transform);
+            _currentInfoPanel = prefab.GetComponent<ElementInfoPanel>();
             if (_currentInfoPanel == null)
             {
                 Debug.LogError("Could not find info panel on prefab");
@@ -374,6 +379,10 @@ namespace Assets.Scripts.UI
             {
                 t.OnElementModified += ElementModify;
             }
+            //removal tool
+            _currentInfoPanel.RemoveTool.OnSelectedElementRemoved += RemoveSelectedElement;    
+            //deselect tool
+            _currentInfoPanel.DeselectTool.OnDeselect += DeselectElement;
 
             return true;
         }
@@ -711,7 +720,7 @@ namespace Assets.Scripts.UI
         /// <summary>
         /// Removes any type of element from scene.
         /// </summary>
-        protected virtual void RemoveSelectedElement()
+        protected virtual void RemoveSelectedElement(object sender, System.EventArgs args)
         {
             if (_selectedElement == null)
             {

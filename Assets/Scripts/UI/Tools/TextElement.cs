@@ -9,7 +9,7 @@ using UnityEngine.UI;
 
 namespace Assets.Scripts.UI.Tools
 {
-    public abstract class TextElement : MonoBehaviour
+    public class TextElement : MonoBehaviour
     {
         public Text _text;
         public ElementPropertyType _propertyType;
@@ -20,6 +20,11 @@ namespace Assets.Scripts.UI.Tools
         public void SetTextAsValue(string value)
         {
             _text.text = _propertyType.ToString() + ": " + value;
+        }
+
+        public void SetActive(bool isActive)
+        {
+            gameObject.SetActive(isActive);
         }
     }
 }

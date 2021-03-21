@@ -18,7 +18,7 @@ namespace Assets.Scripts.UI.Tools
     /// <summary>
     /// Behavior for adding elements to scene
     /// </summary>
-    public abstract class AddTool : MonoBehaviour
+    public abstract class AddTool : ToolBase
     {
         protected RaycastHit _hitInfo;
         protected Vector3 _position;

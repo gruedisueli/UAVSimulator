@@ -17,7 +17,7 @@ namespace Assets.Scripts.UI.Tools
     /// <summary>
     /// A behavior that allows the user to modify existing simulation elements
     /// </summary>
-    public abstract class ModifyTool : MonoBehaviour
+    public abstract class ModifyTool : ToolBase
     {
         public event ElementModified OnElementModified;
         public ElementPropertyType _propertyType = ElementPropertyType.Unset;

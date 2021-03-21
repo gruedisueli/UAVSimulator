@@ -37,7 +37,7 @@ namespace Assets.Scripts.UI.Tools
                 Debug.LogError("Modify field type is unset");
             }
             string t = _inputField.text;
-            _inputField.text = "";
+            _inputField.SetTextWithoutNotify("");
             switch (_fieldType)
             {
                 case InputFieldType.String_:

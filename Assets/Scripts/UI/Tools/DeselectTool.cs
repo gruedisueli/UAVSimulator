@@ -10,7 +10,7 @@ using Assets.Scripts.UI.EventArgs;
 
 namespace Assets.Scripts.UI.Tools
 {
-    public class DeselectTool : MonoBehaviour
+    public class DeselectTool : ToolBase
     {
         public EventHandler<DeselectArgs> OnDeselect;
 

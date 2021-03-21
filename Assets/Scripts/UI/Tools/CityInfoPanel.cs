@@ -18,9 +18,13 @@ namespace Assets.Scripts.UI.Tools
     /// </summary>
     public class CityInfoPanel : ElementInfoPanel
     {
+        public SceneChangeTool GoToCity { get; private set; }
+
         public override void Initialize(SceneElementBase sceneElement)
         {
             base.Initialize(sceneElement);
+
+            GoToCity = FindCompInChildren<SceneChangeTool>();
 
             var sCity = sceneElement as SceneCity;
             if (sCity == null)
@@ -39,6 +43,27 @@ namespace Assets.Scripts.UI.Tools
             SetTextElement(ElementPropertyType.NorthExt, specs.NorthExt.ToString());
             SetTextElement(ElementPropertyType.SouthExt, specs.SouthExt.ToString());
 
+        }
+
+        protected override void StartModify(object sender, System.EventArgs args)
+        {
+            base.StartModify(sender, args);
+
+            GoToCity.SetInteractable(false);
+        }
+
+        protected override void CommitModify(object sender, System.EventArgs args)
+        {
+            base.CommitModify(sender, args);
+
+            GoToCity.SetInteractable(true);
+        }
+
+        protected override void CancelModify(object sender, System.EventArgs args)
+        {
+            base.CancelModify(sender, args);
+
+            GoToCity.SetInteractable(true);
         }
 
         protected override void ModifyTextValues(IModifyElementArgs args)

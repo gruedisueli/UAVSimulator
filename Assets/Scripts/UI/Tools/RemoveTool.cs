@@ -10,14 +10,12 @@ using Assets.Scripts.UI.EventArgs;
 
 namespace Assets.Scripts.UI.Tools
 {
-    public delegate void SelectedElementRemoved();
-
     /// <summary>
     /// Behavior for removing objects from scene
     /// </summary>
-    public class RemoveTool : MonoBehaviour
+    public class RemoveTool : ToolBase
     {
-        public event SelectedElementRemoved OnSelectedElementRemoved;
+        public EventHandler<System.EventArgs> OnSelectedElementRemoved;
         
         public virtual void Activate()
         {
@@ -31,7 +29,7 @@ namespace Assets.Scripts.UI.Tools
 
         public virtual void Remove()
         {
-            OnSelectedElementRemoved.Invoke();
+            OnSelectedElementRemoved.Invoke(this, new System.EventArgs());
         }
     }
 }

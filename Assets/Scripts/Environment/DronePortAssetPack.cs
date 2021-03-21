@@ -15,7 +15,7 @@ namespace Assets.Scripts.Environment
         public DronePortCustom Specs { get; private set; } = null;
         public Sprite PreviewImage { get; private set; } = null;
 
-        public DronePortAssetPack(GameObject prefab, DronePortCustom specs, Sprite previewImage, string description)
+        public DronePortAssetPack(GameObject prefab, DronePortCustom specs, Sprite previewImage)
         {
             Prefab = prefab;
             Specs = specs;

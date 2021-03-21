@@ -10,7 +10,7 @@ using Assets.Scripts.UI.EventArgs;
 
 namespace Assets.Scripts.UI.Tools
 {
-    public class SceneChangeTool : MonoBehaviour
+    public class SceneChangeTool : ToolBase
     {
         public SceneType _sceneType;
         public event EventHandler<SceneChangeArgs> OnSceneChange;

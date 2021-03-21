@@ -8,7 +8,7 @@ using UnityEngine;
 
 namespace Assets.Scripts.UI.Tools
 {
-    public class CommitTool : MonoBehaviour
+    public class CommitTool : ToolBase
     {
         public EventHandler<System.EventArgs> OnCommit;
 

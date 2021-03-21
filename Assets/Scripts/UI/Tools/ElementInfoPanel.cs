@@ -17,50 +17,14 @@ namespace Assets.Scripts.UI.Tools
         public ModifyPanel ModifyPanel { get; private set; } = null;
         public ModifyTool[] ModifyTools { get; private set; } = null;
         public StartModifyTool StartModifyTool { get; private set; } = null;
+        public RemoveTool RemoveTool { get; private set; } = null;
+        public DeselectTool DeselectTool { get; private set; } = null;
 
         protected Image _image;
         protected TextPanel _infoPanel;
         protected ElementFollower _elementFollower;
 
         protected Dictionary<ElementPropertyType, string> preModifiedValues = new Dictionary<ElementPropertyType, string>();
-
-        protected override void Start()
-        {
-            base.Start();
-
-            ModifyPanel = FindCompInChildren<ModifyPanel>();
-            ModifyTools = GetComponentsInChildren<ModifyTool>(true);
-            if (ModifyTools == null || ModifyTools.Length == 0)
-            {
-                Debug.LogError("Modify tools not found in children of element info panel");
-            }
-            _image = FindCompInChildren<Image>();
-            _infoPanel = FindCompInChildren<TextPanel>();
-            _elementFollower = FindCompInChildren<ElementFollower>();
-            StartModifyTool = FindCompInChildren<StartModifyTool>();
-
-            foreach(var m in ModifyTools)
-            {
-                m.OnElementModified += ModifyTextValues;
-            }
-
-            if (_closeTool != null)
-            {
-                _closeTool.OnClose += Close;
-            }
-
-            if (StartModifyTool != null)
-            {
-                StartModifyTool.OnStartModify += StartModify;
-            }
-
-            if (ModifyPanel != null)
-            {
-                ModifyPanel._closeTool.OnClose += CancelModify;
-                ModifyPanel.CommitTool.OnCommit += CommitModify;
-            }
-
-        }
 
         protected override void OnDestroy()
         {
@@ -81,6 +45,11 @@ namespace Assets.Scripts.UI.Tools
                 ModifyPanel._closeTool.OnClose -= CancelModify;
                 ModifyPanel.CommitTool.OnCommit -= CommitModify;
             }
+
+            if (RemoveTool != null)
+            {
+                RemoveTool.OnSelectedElementRemoved -= Close;
+            }
         }
 
 
@@ -95,26 +64,30 @@ namespace Assets.Scripts.UI.Tools
                 }
             }
 
-            _closeTool.gameObject.SetActive(false);
-            StartModifyTool.gameObject.SetActive(false);
+            _closeTool.SetInteractable(false);
+            StartModifyTool.SetInteractable(false);
+            RemoveTool.SetInteractable(false);
+
             ModifyPanel.SetActive(true);
         }
 
 
         protected virtual void CommitModify(object sender, System.EventArgs args)
         {
-            _closeTool.gameObject.SetActive(true);
-            StartModifyTool.gameObject.SetActive(true);
+            _closeTool.SetInteractable(true);
+            StartModifyTool.SetInteractable(true);
+            RemoveTool.SetInteractable(true);
         }
 
 
         protected virtual void CancelModify(object sender, System.EventArgs args)
         {
-            _closeTool.gameObject.SetActive(true);
-            StartModifyTool.gameObject.SetActive(true);
+            _closeTool.SetInteractable(true);
+            StartModifyTool.SetInteractable(true);
+            RemoveTool.SetInteractable(true);
 
             //reset text to original premodified version.
-            foreach(var kvp in preModifiedValues)
+            foreach (var kvp in preModifiedValues)
             {
                 _infoPanel.TextElements[kvp.Key]._text.text = kvp.Value;
             }
@@ -137,6 +110,49 @@ namespace Assets.Scripts.UI.Tools
 
         public virtual void Initialize(SceneElementBase sceneElement)
         {
+
+            ModifyPanel = FindCompInChildren<ModifyPanel>();
+            ModifyTools = GetComponentsInChildren<ModifyTool>(true);
+            if (ModifyTools == null || ModifyTools.Length == 0)
+            {
+                Debug.LogError("Modify tools not found in children of element info panel");
+            }
+            _image = FindCompInChildren<Image>();
+            _infoPanel = FindCompInChildren<TextPanel>();
+            if (_infoPanel != null)
+            {
+                _infoPanel.Initialize();
+            }
+
+            _elementFollower = FindCompInChildren<ElementFollower>();
+            StartModifyTool = FindCompInChildren<StartModifyTool>();
+            RemoveTool = FindCompInChildren<RemoveTool>();
+            DeselectTool = FindCompInChildren<DeselectTool>();
+
+            foreach (var m in ModifyTools)
+            {
+                m.OnElementModified += ModifyTextValues;
+            }
+
+            if (StartModifyTool != null)
+            {
+                StartModifyTool.OnStartModify += StartModify;
+            }
+
+            if (ModifyPanel != null)
+            {
+                ModifyPanel.Initialize();
+                ModifyPanel._closeTool.OnClose += CancelModify;
+                ModifyPanel.CommitTool.OnCommit += CommitModify;
+                ModifyPanel.SetActive(false);
+            }
+
+            if (RemoveTool != null)
+            {
+                RemoveTool.OnSelectedElementRemoved += Close;
+            }
+
+
             _elementFollower.Initialize(sceneElement);
         }
 

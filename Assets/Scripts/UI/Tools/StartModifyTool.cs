@@ -8,7 +8,7 @@ using UnityEngine;
 
 namespace Assets.Scripts.UI.Tools
 {
-    public class StartModifyTool : MonoBehaviour
+    public class StartModifyTool : ToolBase
     {
         public EventHandler<System.EventArgs> OnStartModify;
 

@@ -48,6 +48,7 @@ namespace Assets.Scripts.Environment
         public string ActiveCity { get; private set; } = "";
         public Dictionary<string, DronePortAssetPack> DronePortAssets { get; private set; } = new Dictionary<string, DronePortAssetPack>();
         public Dictionary<string, ParkingStructureAssetPack> ParkingStructAssets { get; private set; } = new Dictionary<string, ParkingStructureAssetPack>();
+        public Dictionary<string, RestrictionZoneAssetPack> RestrictionZoneAssets { get; private set; } = new Dictionary<string, RestrictionZoneAssetPack>();
         public Material SelectedSceneElementMat { get; private set; } = null;
         public Material DefaultSceneElementMat { get; private set; } = null;
         public Material RestrictionZoneMaterial { get; private set; } = null;
@@ -56,7 +57,6 @@ namespace Assets.Scripts.Environment
         public GameObject ParkingInfoPanelPrefab { get; private set; } = null;
         public GameObject RestrictionInfoPanelPrefab { get; private set; } = null;
         
-        //public Dictionary<string, RestrictionZoneAssetPack> RestrictionZoneAssets { get; private set; } = new Dictionary<string, RestrictionZoneAssetPack>();
 
         /// <summary>
         /// Adds new drone port to environment. False on failure.
@@ -464,7 +464,7 @@ namespace Assets.Scripts.Environment
                 var pS = new ParkingStructureCustom();
                 pS.ParkingSpots = spots;
                 pS.Type = type;
-                ParkingStructAssets.Add(type, new ParkingStructureAssetPack(pfb, pS));
+                ParkingStructAssets.Add(type, new ParkingStructureAssetPack(pfb, pS, null));
             }
         }
 
@@ -481,7 +481,7 @@ namespace Assets.Scripts.Environment
             {
                 DronePortCustom dp = DeserializeJsonFile<DronePortCustom>(filename);
                 var pfb = AssetUtils.ReadPrefab(rPath, dp.Type);
-                DronePortAssets.Add(dp.Type, new DronePortAssetPack(pfb, dp));
+                DronePortAssets.Add(dp.Type, new DronePortAssetPack(pfb, dp, null));
             }
         }
 
