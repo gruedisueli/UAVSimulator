@@ -131,6 +131,11 @@ public class VehicleControlSystem : MonoBehaviour
         
     }
 
+    public void UpdateVehicleCount(int count)
+    {
+       
+    }
+
     public void GenerateRandomCalls()
     {
         int call_type = Mathf.FloorToInt(Random.Range(0.0f, 3.0f));
