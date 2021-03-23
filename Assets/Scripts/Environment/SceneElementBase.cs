@@ -24,7 +24,7 @@ namespace Assets.Scripts.Environment
         protected MeshRenderer[] _renderers;
         protected SelectableGameObject[] _selectableObjs;
 
-        private void Start()
+        private void Awake()
         {
             gameObject.AddComponent<SelectableGameObject>();
 
@@ -59,7 +59,7 @@ namespace Assets.Scripts.Environment
                 Debug.LogError("Selectable game object component not found in this scene element or its children");
                 return;
             }
-            foreach(var o in _selectableObjs)
+            foreach (var o in _selectableObjs)
             {
                 o.OnSelected += Selected;
             }

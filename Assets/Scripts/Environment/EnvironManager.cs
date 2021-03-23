@@ -56,6 +56,7 @@ namespace Assets.Scripts.Environment
         public GameObject DronePortInfoPanelPrefab { get; private set; } = null;
         public GameObject ParkingInfoPanelPrefab { get; private set; } = null;
         public GameObject RestrictionInfoPanelPrefab { get; private set; } = null;
+        public GameObject AddButtonPrefab { get; private set; } = null;
         
 
         /// <summary>
@@ -402,8 +403,10 @@ namespace Assets.Scripts.Environment
             Environ = new Environ();
             ReadDronePorts();
             ReadParkingStructures();
+            ReadRestrictionZones();
             ReadMaterialAssets();
             ReadInfoPanelPrefabs();
+            ReadButtonPrefabs();
         }
 
         /// <summary>
@@ -442,13 +445,13 @@ namespace Assets.Scripts.Environment
             string sPath = SerializationSettings.ROOT + "\\Resources\\ParkingStructures";
             string rPath = "ParkingStructures/";
 
-            //get DAT resources
+            //get DAT and prefab resources
             var files = Directory.GetFiles(sPath, "*.DAT");
             foreach (string filename in files)
             {
                 // Read lines and parse DAT files
                 StreamReader this_file = new StreamReader(filename);
-                string type = filename.Substring(filename.LastIndexOf('\\') + 1, filename.Length - filename.LastIndexOf('\\') - 5);
+                string type = System.IO.Path.GetFileNameWithoutExtension(filename);
                 List<Vector3> spots = new List<Vector3>();
                 string line;
                 while ((line = this_file.ReadLine()) != null)
@@ -464,7 +467,24 @@ namespace Assets.Scripts.Environment
                 var pS = new ParkingStructureCustom();
                 pS.ParkingSpots = spots;
                 pS.Type = type;
-                ParkingStructAssets.Add(type, new ParkingStructureAssetPack(pfb, pS, null));
+                ParkingStructAssets.Add(type, new ParkingStructureAssetPack(pfb, pS, null, ParkingStructCategory.Custom));
+            }
+
+            //get PNG resources (some types don't have DAT or prefabs)
+            files = Directory.GetFiles(sPath, "*.PNG");
+            foreach(string filename in files)
+            {
+                string type = System.IO.Path.GetFileNameWithoutExtension(filename);
+                var sprite = ReadSprite(filename);
+
+                if (ParkingStructAssets.ContainsKey(type))
+                {
+                    ParkingStructAssets[type].PreviewImage = sprite;
+                }
+                else
+                {
+                    ParkingStructAssets.Add(type, new ParkingStructureAssetPack(null, null, sprite, ParkingStructCategory.Rect));
+                }
             }
         }
 
@@ -481,7 +501,62 @@ namespace Assets.Scripts.Environment
             {
                 DronePortCustom dp = DeserializeJsonFile<DronePortCustom>(filename);
                 var pfb = AssetUtils.ReadPrefab(rPath, dp.Type);
-                DronePortAssets.Add(dp.Type, new DronePortAssetPack(pfb, dp, null));
+                DronePortAssets.Add(dp.Type, new DronePortAssetPack(pfb, dp, null, DronePortCategory.Custom));
+            }
+
+            //get PNG resources (some types don't have DAT or prefabs)
+            files = Directory.GetFiles(sPath, "*.PNG");
+            foreach (string filename in files)
+            {
+                string type = System.IO.Path.GetFileNameWithoutExtension(filename);
+                var sprite = ReadSprite(filename);
+
+                if (DronePortAssets.ContainsKey(type))
+                {
+                    DronePortAssets[type].PreviewImage = sprite;
+                }
+                else
+                {
+                    DronePortAssets.Add(type, new DronePortAssetPack(null, null, sprite, DronePortCategory.Rect));
+                }
+            }
+        }
+
+        /// <summary>
+        /// Reads types of restriction zones from assets.
+        /// </summary>
+        private void ReadRestrictionZones()
+        {
+            RestrictionZoneAssets = new Dictionary<string, RestrictionZoneAssetPack>();
+            string sPath = SerializationSettings.ROOT + "\\Resources\\RestrictionZones";
+            string rPath = "RestrictionZones/";
+            var files = Directory.GetFiles(sPath, "*.PNG");
+            foreach(var filename in files)
+            {
+                string type = System.IO.Path.GetFileNameWithoutExtension(filename);
+                var sprite = ReadSprite(filename);
+
+                if (RestrictionZoneAssets.ContainsKey(type))
+                {
+                    RestrictionZoneAssets[type].PreviewImage = sprite;
+                }
+                else
+                {
+                    RestrictionZoneCategory c;
+                    if (type.Contains("Rect"))
+                    {
+                        c = RestrictionZoneCategory.Rect;
+                    }
+                    else if (type.Contains("Cyl_Stacked"))
+                    {
+                        c = RestrictionZoneCategory.CylindricalStacked;
+                    }
+                    else
+                    {
+                        c = RestrictionZoneCategory.Cylindrical;
+                    }
+                    RestrictionZoneAssets.Add(type, new RestrictionZoneAssetPack(null, null, sprite, c));
+                }
             }
         }
 
@@ -495,6 +570,15 @@ namespace Assets.Scripts.Environment
             DronePortInfoPanelPrefab = AssetUtils.ReadPrefab(rPath, "DronePortInfoPanel");
             ParkingInfoPanelPrefab = AssetUtils.ReadPrefab(rPath, "ParkingInfoPanel");
             RestrictionInfoPanelPrefab = AssetUtils.ReadPrefab(rPath, "RestrictionInfoPanel");
+        }
+
+        /// <summary>
+        /// Gets resources for prefabs of buttons
+        /// </summary>
+        private void ReadButtonPrefabs()
+        {
+            string rPath = "GUI/";
+            AddButtonPrefab = AssetUtils.ReadPrefab(rPath, "Button_Add");
         }
 
         private T DeserializeJsonFile<T>(string path)
@@ -547,6 +631,23 @@ namespace Assets.Scripts.Environment
                 Debug.LogError("Cannot find material for " + name);
             }
             return mat;
+        }
+
+        /// <summary>
+        /// Reads sprite from resources of specified file name. Null on failure.
+        /// </summary>
+        private Sprite ReadSprite(string filename)
+        {
+            var b = File.ReadAllBytes(filename);
+            var t = new Texture2D(2, 2);//size will get replaced by incoming file
+            t.LoadImage(b);
+
+            var sprite = Sprite.Create(t, new Rect(0, 0, t.width, t.height), new Vector2());
+            if (sprite == null)
+            {
+                Debug.LogError("Cannot create sprite from " + filename);
+            }
+            return sprite;
         }
     }
 }

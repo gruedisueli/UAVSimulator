@@ -117,7 +117,25 @@ namespace Assets.Scripts.UI.Tools
             {
                 Debug.LogError("Modify tools not found in children of element info panel");
             }
-            _image = FindCompInChildren<Image>();
+            var imgs = GetComponentsInChildren<Image>(true);
+            if (imgs == null || imgs.Length == 0)
+            {
+                Debug.LogError("No image components found on info panel");
+                return;
+            }
+            foreach(var im in imgs)
+            {
+                if(im.gameObject.name == "InfoImage")
+                {
+                    _image = im;
+                    break;
+                }
+            }
+            if (_image == null)
+            {
+                Debug.LogError("Info image not found on info panel");
+                return;
+            }
             _infoPanel = FindCompInChildren<TextPanel>();
             if (_infoPanel != null)
             {

@@ -55,14 +55,14 @@ namespace Assets.Scripts.UI.Tools
         {
             try
             {
-                switch (args.Update.Type)
-                {
-                    case ElementPropertyType.Rotation:
-                        {
-                            SetTextElement(ElementPropertyType.Rotation, (args.Update as ModifyFloatPropertyArg).Value.ToString("F2"));
-                            break;
-                        }
-                }
+                //switch (args.Update.Type)
+                //{
+                //    case ElementPropertyType.Rotation:
+                //        {
+                //            SetTextElement(ElementPropertyType.Rotation, (args.Update as ModifyFloatPropertyArg).Value.ToString("F2"));
+                //            break;
+                //        }
+                //}
 
             }
             catch

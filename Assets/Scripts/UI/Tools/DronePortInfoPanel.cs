@@ -33,6 +33,14 @@ namespace Assets.Scripts.UI.Tools
             SetTextElement(ElementPropertyType.Description, specs.Description);
             SetTextElement(ElementPropertyType.Rotation, specs.Rotation.y.ToString("F2"));
             SetTextElement(ElementPropertyType.MaxVehicleSize, specs.MaximumVehicleSize.ToString("F2"));
+
+            SliderTool sT = GetComponentInChildren<SliderTool>(true);
+            if (sT == null)
+            {
+                Debug.LogError("Slider Tool not found in children of drone port input panel");
+                return;
+            }
+            sT.SetValue(specs.Rotation.y);
         }
 
         protected override void ModifyTextValues(IModifyElementArgs args)

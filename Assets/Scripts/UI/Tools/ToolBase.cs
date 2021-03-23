@@ -14,9 +14,9 @@ namespace Assets.Scripts.UI.Tools
         /// <summary>
         /// If there is a button, or some other selectable component on this game object, this should be populated. Otherwise will be null.
         /// </summary>
-        public Selectable SelectableElement;// { get; private set; }
+        public Selectable SelectableElement { get; private set; } = null;
 
-        private void Awake()
+        protected virtual void Awake()
         {
             SelectableElement = GetComponent<Selectable>();
         }

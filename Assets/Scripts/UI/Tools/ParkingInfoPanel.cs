@@ -32,6 +32,14 @@ namespace Assets.Scripts.UI.Tools
             SetTextElement(ElementPropertyType.Type, t);
             SetTextElement(ElementPropertyType.Description, specs.Description);
             SetTextElement(ElementPropertyType.Rotation, specs.Rotation.y.ToString("F2"));
+
+            SliderTool sT = GetComponentInChildren<SliderTool>(true);
+            if (sT == null)
+            {
+                Debug.LogError("Slider Tool not found in children of parking input panel");
+                return;
+            }
+            sT.SetValue(specs.Rotation.y);
         }
 
         protected override void ModifyTextValues(IModifyElementArgs args)

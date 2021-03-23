@@ -9,17 +9,19 @@ using UnityEngine.UI;
 
 namespace Assets.Scripts.Environment
 {
-    public class DronePortAssetPack
+    public class DronePortAssetPack : AssetPackBase
     {
         public GameObject Prefab { get; private set; } = null;
         public DronePortCustom Specs { get; private set; } = null;
-        public Sprite PreviewImage { get; private set; } = null;
+        public override Sprite PreviewImage { get; set; } = null;
+        public DronePortCategory Category { get; private set; } = DronePortCategory.Unset;
 
-        public DronePortAssetPack(GameObject prefab, DronePortCustom specs, Sprite previewImage)
+        public DronePortAssetPack(GameObject prefab, DronePortCustom specs, Sprite previewImage, DronePortCategory category)
         {
             Prefab = prefab;
             Specs = specs;
             PreviewImage = previewImage;
+            Category = category;
         }
     }
 }

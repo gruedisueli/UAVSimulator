@@ -504,6 +504,7 @@
     <Compile Include="Assets\Scripts\Environment\DronePortCustom.cs" />
     <Compile Include="Assets\Mapbox\Unity\MeshGeneration\Filters\TypeFilter.cs" />
     <Compile Include="Assets\Mapbox\Core\mapbox-sdk-cs\Map\TileResource.cs" />
+    <Compile Include="Assets\Scripts\UI\Tools\ToolBase.cs" />
     <Compile Include="Assets\Mapbox\Core\mapbox-sdk-cs\Utils\JsonConverters\BboxToGeoCoordinateBoundsConverter.cs" />
     <Compile Include="Assets\Mapbox\Unity\DataContainers\GeometryMaterialOptions.cs" />
     <Compile Include="Assets\Scripts\UI\EventArgs\ModifyStringPropertyArg.cs" />
@@ -521,7 +522,11 @@
     <Compile Include="Assets\Mapbox\Core\mapbox-sdk-cs\Map\ClassicRasterTile.cs" />
     <Compile Include="Assets\Scripts\UI\Tools\RestrictionInfoPanel.cs" />
     <Compile Include="Assets\Mapbox\Unity\MeshGeneration\Modifiers\ModifierStack.cs" />
-    <Compile Include="Assets\Scripts\UI\Tools\ToolBase.cs" />
+    <Compile Include="Assets\Scripts\UI\Tools\ButtonPanel.cs" />
+    <Compile Include="Assets\Scripts\UI\Tools\AddButtonPanel.cs" />
+    <Compile Include="Assets\Scripts\UI\Tools\MainButtonPanel.cs" />
+    <Compile Include="Assets\Scripts\Environment\AssetPackBase.cs" />
+    <Compile Include="Assets\Scripts\UI\Tools\SliderTool.cs" />
   </ItemGroup>
   <ItemGroup>
      <None Include="Assets\Mapbox\Core\Plugins\Mapbox\vector-tile-cs\net46\Mapbox.VectorTile.Geometry.dll" />

@@ -71,7 +71,7 @@ namespace Assets.Scripts.UI
             RestrictionZones = new Dictionary<string, SceneRestrictionZone>();
 
             //get main canvase
-            _mainCanvas = GetComponentInChildren<Canvas>();
+            _mainCanvas = GetComponentInChildren<Canvas>(true);
             if (_mainCanvas == null)
             {
                 Debug.LogError("Main canvas not found in children of scene manager");
@@ -193,6 +193,12 @@ namespace Assets.Scripts.UI
 
                 //deselect tool
                 _currentInfoPanel.DeselectTool.OnDeselect -= DeselectElement;
+                //scene change
+                if (_currentInfoPanel is CityInfoPanel)
+                {
+                    var cP = _currentInfoPanel as CityInfoPanel;
+                    cP.GoToCity.OnSceneChange -= ChangeScene;
+                }
             }
 
             OnDestroyDerived();
@@ -383,7 +389,12 @@ namespace Assets.Scripts.UI
             _currentInfoPanel.RemoveTool.OnSelectedElementRemoved += RemoveSelectedElement;    
             //deselect tool
             _currentInfoPanel.DeselectTool.OnDeselect += DeselectElement;
-
+            //scene change
+            if (_currentInfoPanel is CityInfoPanel)
+            {
+                var cP = _currentInfoPanel as CityInfoPanel;
+                cP.GoToCity.OnSceneChange += ChangeScene;
+            }
             return true;
         }
 

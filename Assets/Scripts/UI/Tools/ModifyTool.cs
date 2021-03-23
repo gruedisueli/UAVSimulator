@@ -22,6 +22,11 @@ namespace Assets.Scripts.UI.Tools
         public event ElementModified OnElementModified;
         public ElementPropertyType _propertyType = ElementPropertyType.Unset;
 
+        protected override void Awake()
+        {
+            base.Awake();
+        }
+
         private void Start()
         {
             Init();

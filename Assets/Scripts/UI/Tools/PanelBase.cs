@@ -13,7 +13,7 @@ namespace Assets.Scripts.UI.Tools
         public EventHandler<System.EventArgs> OnPanelClosed;
         public CloseTool _closeTool;
 
-        private void Start()
+        protected virtual void Awake()
         {
             //note: we are explicitly requiring assignment of close tools to panels because there may be multiples in the entire tree structure for the game object.
             //yes, it's a slight inconvenience to wire up in the editor, but potentially saves us debugging headaches.
@@ -29,6 +29,14 @@ namespace Assets.Scripts.UI.Tools
             {
                 _closeTool.OnClose -= Close;
             }
+        }
+
+        /// <summary>
+        /// Toggles visibility of this panel.
+        /// </summary>
+        public void ToggleActive()
+        {
+            gameObject.SetActive(!gameObject.activeSelf);
         }
 
         protected virtual void Close(object sender, System.EventArgs args)
