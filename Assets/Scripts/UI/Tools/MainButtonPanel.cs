@@ -43,12 +43,8 @@ namespace Assets.Scripts.UI.Tools
                 int idx = i;
                 _mainButtons[i].onClick.AddListener(delegate { ButtonClick(idx); });
             }
-            if (_buttonPanels == null || _buttonPanels.Length == 0)
-            {
-                Debug.LogError("Button panels not found on main button panel");
-                return;
-            }
 
+            //it's ok if no button panels are found. Some menus may not have them.
         }
 
         protected void ButtonClick(int index)

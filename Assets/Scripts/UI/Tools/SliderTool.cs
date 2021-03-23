@@ -59,10 +59,16 @@ namespace Assets.Scripts.UI.Tools
         {
             _text.text = _propertyType.ToString() + ": " + f.ToString("F2");
             _value = f;
+            RegisterModification();
         }
 
         protected override IModifyElementArgs GatherInformation()
         {
+            if (_propertyType == ElementPropertyType.Rotation)
+            {
+                return new ModifyElementArgs(new ModifyVector3PropertyArg(_propertyType, new Vector3(0, _value, 0)));
+            }
+
             return new ModifyElementArgs(new ModifyFloatPropertyArg(_propertyType, _value));
         }
     }
