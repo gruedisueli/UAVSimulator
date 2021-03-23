@@ -27,7 +27,6 @@ namespace Assets.Scripts.UI
     public class RegionViewManager : SceneManagerBase
     {
         private GameObject _cityMarkerPrefab;
-        private CityPanel _cityPanel; //CONSIDER JUST GETTING ARRAY ON BASE CLASS.
 
         protected override void Init()
         {
@@ -40,74 +39,12 @@ namespace Assets.Scripts.UI
             }
             _abstractMap.Initialize(EnvironManager.Instance.Environ.CenterLatLong, EnvironSettings.REGION_ZOOM_LEVEL);
 
-            _cityPanel = FindObjectOfType<CityPanel>(true);
-            if (_cityPanel == null)
-            {
-                Debug.LogError("Modify city panel not found");
-                return;
-            }
-
-            _cityPanel.OnCloseCityPanel += DeselectElement;
-
-            _cityPanel.SetActive(false);
         }
 
         protected override void OnDestroyDerived()
         {
-            _cityPanel.OnCloseCityPanel -= DeselectElement;
+            
         }
-
-
-        #region SELECTION
-
-        protected override bool SelectElement(SceneElementBase sE)
-        {
-            bool selectedNew = base.SelectElement(sE);
-
-            if (selectedNew)
-            {
-                SelectCityMarker();
-                SetCityPanelActive(true);
-            }
-
-            return selectedNew;
-        }
-
-        private void SelectCityMarker()
-        {
-            var guid = _selectedElement.Guid;
-            if (_cityPanel != null)
-            {
-                var city = EnvironManager.Instance.GetCity(guid);
-                if (city != null)
-                {
-                    _cityPanel.SetCity(city.CityStats);
-
-                }
-                //if (_cityMarkers.ContainsKey(guid))
-                //{
-                //    var cM = _cityMarkers[guid].GetComponentInChildren<CityMarker>();
-                //    if (cM != null)
-                //    {
-                //        cM.SetColor(Color.red);
-                //        selectedMarker = cM;
-                //    }
-                //}
-            }
-
-        }
-
-        private void SetCityPanelActive(bool isActive)
-        {
-            if (_cityPanel != null)
-            {
-                _cityPanel.SetActive(isActive);
-            }
-        }
-
-
-        #endregion
-
 
         #region ADD/REMOVE ELEMENTS
 
@@ -118,14 +55,6 @@ namespace Assets.Scripts.UI
                 AddNewCity(args as AddCityArgs);
             }
         }
-
-        protected override void RemoveSelectedElement()
-        {
-            base.RemoveSelectedElement();
-
-            SetCityPanelActive(false);
-        }
-
 
         #endregion
 
@@ -192,22 +121,6 @@ namespace Assets.Scripts.UI
             sCity.Initialize(guid, c);
 
             sCity.OnSceneElementSelected += SelectElement;
-
-
-            //var m = Instantiate(_cityMarkerPrefab);
-            //var cM = m.GetComponentInChildren<CityMarker>();
-            //if (cM != null)
-            //{
-            //    cM.SetWorldPos(selectedPt);
-            //    cM.SetName(n);
-            //    cM.SetGuid(guid);
-            //    cM._markerSelected += CityMarkerSelected;
-            //    var tile = GetLocalCityTileCoords(selectedPt, regionTileWorldCenter, cityTileSideLength);
-            //    var extents = TileCoordsToWorldExtents(tile, regionTileWorldCenter, cityTileSideLength, eastExt, westExt, northExt, southExt);
-            //    cM.SetExtents(extents);
-
-            //}
-
 
             if (register)
             {
@@ -283,36 +196,6 @@ namespace Assets.Scripts.UI
 
             _workingCopy.UpdateGameObject();
         }
-
-        ///// <summary>
-        ///// Updates a city
-        ///// </summary>
-        //private void UpdateCityStats(string guid, CityOptions stats)
-        //{
-        //    //City city = EnvironManager.Instance.Environ.GetCity(guid);
-        //    var city = EnvironManager.Instance.GetCity(guid);
-        //    if (city != null)
-        //    {
-        //        city.CityStats = stats;
-        //    }
-        //    else
-        //    {
-        //        return;
-        //    }
-
-        //    if (_cityMarkers.ContainsKey(guid))
-        //    {
-        //        var cM = _cityMarkers[guid].GetComponentInChildren<CityMarker>();
-        //        if (cM != null)
-        //        {
-        //            cM.SetName(stats.Name);
-        //            float cityTileSide = (float)GetCityTileSideLength();
-        //            var tile = GetLocalCityTileCoords(city.CityStats.WorldPos, city.CityStats.RegionTileWorldCenter, cityTileSide);
-        //            var extents = TileCoordsToWorldExtents(tile, city.CityStats.RegionTileWorldCenter, cityTileSide, stats.EastExt, stats.WestExt, stats.NorthExt, stats.SouthExt);
-        //            cM.SetExtents(extents);
-        //        }
-        //    }
-        //}
 
         #endregion
     }

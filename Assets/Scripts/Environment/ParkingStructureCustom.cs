@@ -29,6 +29,17 @@ namespace Assets.Scripts.Environment
             }
         }
 
+
+        [JsonProperty]
+        private string _description = "";
+        public override string Description
+        {
+            get
+            {
+                return _description;
+            }
+        }
+
         [JsonProperty]
         private int _remainingSpots = 0;
         public override int RemainingSpots
@@ -162,6 +173,7 @@ namespace Assets.Scripts.Environment
         public ParkingStructureCustom(ParkingStructureCustom pS)
         {
             _type = pS.Type;
+            _description = pS.Description;
             RemainingSpots = pS.RemainingSpots;
             Position = pS.Position;
             Rotation = pS.Rotation;

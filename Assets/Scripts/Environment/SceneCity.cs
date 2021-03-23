@@ -24,7 +24,7 @@ namespace Assets.Scripts.Environment
             CitySpecs = citySpecs;
             if (_renderers == null)
             {
-                _renderers = GetComponentsInChildren<MeshRenderer>();
+                _renderers = GetComponentsInChildren<MeshRenderer>(true);
                 if (_renderers == null)
                 {
                     Debug.LogError("Mesh renderer not found on city element");

@@ -10,7 +10,7 @@ using Assets.Scripts.UI.EventArgs;
 
 namespace Assets.Scripts.UI.Tools
 {
-    public class PlayPauseTool : MonoBehaviour
+    public class PlayPauseTool : ToolBase
     {
         public EventHandler<PlayPauseArgs> OnPlayPause;
 

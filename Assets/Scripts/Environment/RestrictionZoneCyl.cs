@@ -18,11 +18,22 @@ namespace Assets.Scripts.Environment
     {
         [JsonProperty]
         private string _type = "Cyl";
-        public string Type
+        public override string Type
         {
             get
             {
                 return _type;
+            }
+        }
+
+
+        [JsonProperty]
+        private string _description = "A basic cylindrical restriction zone";
+        public override string Description
+        {
+            get
+            {
+                return _description;
             }
         }
 
@@ -165,6 +176,7 @@ namespace Assets.Scripts.Environment
         public RestrictionZoneCyl(RestrictionZoneCyl rZ)
         {
             _type = rZ.Type;
+            _description = rZ.Description;
             _height = rZ.Height;
             _radius = rZ.Radius;
             _bottom = rZ.Bottom;

@@ -41,6 +41,7 @@ namespace Assets.Scripts
     {
         Unset,
         Type,
+        Description,
         XZPosition,
         Position,
         Rotation,
