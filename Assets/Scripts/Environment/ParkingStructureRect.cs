@@ -178,6 +178,7 @@ namespace Assets.Scripts.Environment
             LandingQueueHead = pS.LandingQueueHead;
             LandingQueueDirection = pS.LandingQueueDirection;
             ParkingSpots = new List<Vector3>(pS.ParkingSpots);
+            ApplyParkingGrid();
             RemainingSpots = ParkingSpots.Count;
         }
 
@@ -192,16 +193,17 @@ namespace Assets.Scripts.Environment
         public void ApplyParkingGrid()
         {
             //TO-DO: Use real numbers for margins - now 20m
-            ParkingSpots = new List<Vector3>();
+            List<Vector3> GeneratedParkingSpots = new List<Vector3>();
             int parkingMargin = 20;
             for (int i = (int)(-(Scale.x / 2)) + parkingMargin; i <= (int)(Scale.x / 2) - parkingMargin; i += parkingMargin)
             {
                 for (int j = (int)(-(Scale.z / 2)) + parkingMargin; j <= (int)(Scale.z / 2) - parkingMargin; j += parkingMargin)
                 {
                     Vector3 v = new Vector3((float)i, 0.0f, (float)j);
-                    ParkingSpots.Add(v);
+                    GeneratedParkingSpots.Add(v);
                 }
             }
+            ParkingSpots = GeneratedParkingSpots;
             RemainingSpots = ParkingSpots.Count;
         }
     }

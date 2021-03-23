@@ -45,9 +45,16 @@ namespace Assets.Scripts.Environment
             if (!Reserved.ContainsKey(vehicle))
             {
                 Reserved.Add(vehicle, spotToReserve);
-                RemainingSpots--;
-                Debug.Log(Type + ": " + vehicle.name + " reserved " + spotToReserve.ToString());
-                success = true;
+                if (Reserved.ContainsKey(vehicle))
+                {
+                    RemainingSpots--;
+                    Debug.Log(Type + "(" + Position.ToString() + "): " + vehicle.name + " reserved " + spotToReserve.ToString());
+                    success = true;
+                }
+                else
+                {
+                    success = false;
+                }
             }
             if (!success) Debug.Log(Type + ": Reservation failed");
 
@@ -130,7 +137,7 @@ namespace Assets.Scripts.Environment
                 guides.Add(current_spot);
                 guides.Add(StandbyPosition);
             }
-            else if (type.Equals("generic_rectangular_lot"))
+            else if (type.Equals("Rect"))
             {
                 guides.Add(spot);
                 guides.Add(StandbyPosition);

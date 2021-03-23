@@ -24,10 +24,12 @@ namespace Assets.Scripts.Environment
             gameObject.name = "DronePort_" + dP.Type;
             gameObject.tag = "DronePort";
             gameObject.layer = dP.Layer;
+            dP.StandbyPosition = new Vector3(0, 400, 0);
+            dP.LandingQueueHead = new Vector3(10, 400, 0);
+            dP.LandingQueueDirection = new Vector3(1, 0, 0);
             DronePortControl control = gameObject.AddComponent<DronePortControl>();
             control.dronePortInfo = dP;
             DronePortCtrl = control;
-
             UpdateGameObject();
         }
 

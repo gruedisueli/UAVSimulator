@@ -246,7 +246,7 @@ namespace Assets.Scripts.UI
             var clone = GameObject.CreatePrimitive(PrimitiveType.Cube);
             var sPS = clone.AddComponent<SceneParkingStructure>();
             sPS.Initialize(pS, guid);
-
+            pS.ApplyParkingGrid();
             if (register)
             {
                 ParkingStructures.Add(guid, sPS);

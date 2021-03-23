@@ -28,14 +28,9 @@ public class ParkingControl : MonoBehaviour
         {
             if (queue.Count > 0 )  // When queue is not empty
             {
-                currentVehicle = queue.Peek();
+                currentVehicle = queue.Dequeue(); 
                 currentVehicleState = currentVehicle.GetComponent<Vehicle>();
-                if (!currentVehicleState.state.Contains("requested"))
-                {
-                    return;
-                }
-                else currentVehicle = queue.Dequeue();
-
+                
                 if (queue.Count > 0)
                 {
                     List<GameObject> queueList = new List<GameObject>(queue.ToArray());
@@ -49,6 +44,10 @@ public class ParkingControl : MonoBehaviour
                             vehicle.moveForward = true;
                         }
                     }
+                }
+                if (currentVehicleState.currentPoint != gameObject)
+                {
+                    return;
                 }
                 state = "busy";
             }

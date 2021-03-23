@@ -32,10 +32,9 @@ public class DronePortControl : MonoBehaviour
         { 
             if ( queue.Count > 0 )
             {
-                currentVehicle = queue.Peek();
+                currentVehicle = queue.Dequeue();
                 currentVehicleState = currentVehicle.GetComponent<Vehicle>();
-                if (currentVehicleState.state != "landing_requested") return;
-                else currentVehicle = queue.Dequeue();
+
                 if ( queue.Count > 0 )
                 {
                     List<GameObject> queueList = new List<GameObject> (queue.ToArray());
@@ -46,6 +45,10 @@ public class DronePortControl : MonoBehaviour
                         vehicle.currentTargetPosition = (gameObject.transform.position + dronePortInfo.LandingQueueHead + dronePortInfo.LandingQueueDirection * (float)place * landingQueueSeparation);
                         vehicle.moveForward = true;
                     }
+                }
+                if (currentVehicleState.currentPoint != gameObject)
+                {
+                    return;
                 }
                 state = "busy";
             }

@@ -54,7 +54,7 @@ public class VehicleControlSystem : MonoBehaviour
     public Dictionary<GameObject, GameObject> parkingLandingMapping;
     public Dictionary<GameObject, List<GameObject>> routes;
 
-    public float speedMultiplier = 2.0f;
+    public float speedMultiplier = 1.0f;
 
     public GameObject TypeAPrefab;
     #endregion
@@ -129,7 +129,11 @@ public class VehicleControlSystem : MonoBehaviour
             {
                 Queue<GameObject> destinations = GetNewRandomDestinations();
                 GameObject parking = GetNearestAvailableParking(destinations.Peek());
-
+                if (parking == null)
+                {
+                    Debug.Log("No available vehicle");
+                    return;
+                }
                 // TO-DO: Augment vehicle type
                 GameObject vehicle = GetAvailableVehicleinParkingStrcuture(parking);
                 if (parking.GetComponent<ParkingControl>().queue.Count < 3) CallVehicle(vehicle, parking.GetComponent<ParkingControl>(), destinations);
@@ -329,7 +333,7 @@ public class VehicleControlSystem : MonoBehaviour
             if (vs.range < MIN_DRONE_RANGE) MIN_DRONE_RANGE = vs.range;
         }
         int parkingCapacity = sceneManager.GetParkingCapacity();
-        int vehiclesToInstantiate = Random.Range(50, parkingCapacity);
+        int vehiclesToInstantiate = Random.Range(parkingCapacity-10, parkingCapacity);
         string drone_path = "Drones/";
 
         // Populate vehiclesToInstantiate number of drones in existing parking structures
