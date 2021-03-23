@@ -773,7 +773,7 @@ namespace Assets.Scripts.UI
                     {
                         if (EnvironManager.Instance.DronePortAssets.ContainsKey(args.Type))
                         {
-                            dP = EnvironManager.Instance.DronePortAssets[args.Type].Specs;
+                            dP = EnvironManager.Instance.DronePortAssets[args.Type].Specs.GetCopy();
                             dP.Position = args.Position;
                             break;
                         }
@@ -811,7 +811,7 @@ namespace Assets.Scripts.UI
                     {
                         if (EnvironManager.Instance.ParkingStructAssets.ContainsKey(args.Type))
                         {
-                            pS = EnvironManager.Instance.ParkingStructAssets[args.Type].Specs;
+                            pS = EnvironManager.Instance.ParkingStructAssets[args.Type].Specs.GetCopy();
                             pS.Position = args.Position;
                             break;
                         }
