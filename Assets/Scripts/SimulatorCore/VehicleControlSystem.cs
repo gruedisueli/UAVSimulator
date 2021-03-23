@@ -116,9 +116,18 @@ public class VehicleControlSystem : MonoBehaviour
         playing = !playing;
         if ( playing )
         {
+            foreach (GameObject gO in GameObject.FindObjectsOfType<GameObject>())
+            {
+                if(gO.name.Contains("Building"))
+                {
+                    gO.AddComponent<BuildingNoise>();
+                    gO.layer = 9;
+                    gO.tag = "Building";
+                }
+            }
 
         }
-        if ( playing && !vehicleInstantiated ) InstantiateVehicles();
+        if ( playing && !vehicleInstantiated) InstantiateVehicles();
         
     }
 
@@ -451,6 +460,7 @@ public class VehicleControlSystem : MonoBehaviour
                     clone.name = "UAV_" + i.ToString();
                     clone.tag = "Vehicle";
                     clone.layer = 10;
+                    clone.AddComponent<VehicleNoise>();
                     TrailRenderer tr = clone.AddComponent<TrailRenderer>();
                     tr.time = 30.0f;
                     Object.Destroy(newDrone);

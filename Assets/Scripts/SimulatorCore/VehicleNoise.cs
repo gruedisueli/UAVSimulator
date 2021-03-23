@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class NoiseTest : MonoBehaviour
+public class VehicleNoise : MonoBehaviour
 {
     //SphereCollider col;
     Vehicle vehicleInfo;
