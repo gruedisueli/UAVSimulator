@@ -41,8 +41,8 @@ public class VehicleControlSystem : MonoBehaviour
     private bool vehicleInstantiated;
 
     // INTEGRATION TO-DO: Replace root with the path that it receives;
-    private string root = "E:\\Development\\GitHub_Local\\UAVSimulator\\runtime\\";
-    private string asset_root = "E:\\Development\\GitHub_Local\\UAVSimulator\\Assets\\";
+    private string root = "runtime\\";
+    private string asset_root = "Assets\\";
 
     // private SceneManagerBase sceneManager;
     private CityViewManager sceneManager;
