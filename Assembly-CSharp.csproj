@@ -129,6 +129,7 @@
     <Compile Include="Assets\Mapbox\Unity\DataContainers\MapboxEnums.cs" />
     <Compile Include="Assets\Mapbox\Core\mapbox-sdk-cs\Platform\Response.cs" />
     <Compile Include="Assets\Mapbox\Unity\Map\TileProviders\TileErrorHandler.cs" />
+    <Compile Include="Assets\Scripts\UI\Tools\ButtonPanel.cs" />
     <Compile Include="Assets\Mapbox\Unity\Map\InitializeMapWithLocationProvider.cs" />
     <Compile Include="Assets\Scripts\Environment\City.cs" />
     <Compile Include="Assets\Mapbox\Core\mapbox-sdk-cs\Platform\Resource.cs" />
@@ -209,6 +210,7 @@
     <Compile Include="Assets\Scripts\UI\MainMenuManager.cs" />
     <Compile Include="Assets\Scripts\UI\CameraAdjustment.cs" />
     <Compile Include="Assets\Mapbox\Examples\8_VoxelMap\Scripts\TextureScaler.cs" />
+    <Compile Include="Assets\Scripts\UI\Tools\AddButtonPanel.cs" />
     <Compile Include="Assets\Mapbox\Examples\6_ZoomableMap\Scripts\SetCameraHeight.cs" />
     <Compile Include="Assets\Mapbox\Core\mapbox-sdk-cs\Map\TileErrorEventArgs.cs" />
     <Compile Include="Assets\Mapbox\Unity\MeshGeneration\Modifiers\MeshModifiers\LoftModifier.cs" />
@@ -217,6 +219,7 @@
     <Compile Include="Assets\Scripts\Environment\RestrictionZoneRect.cs" />
     <Compile Include="Assets\Mapbox\Core\probe-extractor-cs\Probe.cs" />
     <Compile Include="Assets\Scripts\Environment\DronePortBase.cs" />
+    <Compile Include="Assets\Scripts\UI\Tools\MainButtonPanel.cs" />
     <Compile Include="Assets\Scripts\Serialization\SerVect2d.cs" />
     <Compile Include="Assets\Mapbox\Unity\Map\Strategies\MapPlacementAtLocationCenterStrategy.cs" />
     <Compile Include="Assets\Mapbox\Unity\MeshGeneration\Modifiers\GameObjectModifiers\FeatureBehaviourModifier.cs" />
@@ -272,6 +275,7 @@
     <Compile Include="Assets\Mapbox\Core\mapbox-sdk-cs\Platform\IAsyncRequest.cs" />
     <Compile Include="Assets\Scripts\Enums.cs" />
     <Compile Include="Assets\Mapbox\Unity\MeshGeneration\LayerVisualizers\VectorLayerVisualizer.cs" />
+    <Compile Include="Assets\Scripts\UI\Tools\SliderTool.cs" />
     <Compile Include="Assets\Mapbox\Unity\Utilities\NodeEditorElementAttribute.cs" />
     <Compile Include="Assets\Scripts\Environment\DronePortAssetPack.cs" />
     <Compile Include="Assets\Scripts\Environment\Path.cs" />
@@ -432,6 +436,7 @@
     <Compile Include="Assets\Mapbox\Unity\Location\EditorLocationProvider.cs" />
     <Compile Include="Assets\Scripts\UI\Tools\SelectableGameObject.cs" />
     <Compile Include="Assets\Scripts\UI\EventArgs\IModifyPropertyArg.cs" />
+    <Compile Include="Assets\Scripts\Environment\AssetPackBase.cs" />
     <Compile Include="Assets\Mapbox\Unity\MeshGeneration\Modifiers\GameObjectModifiers\AddToCollectionModifier.cs" />
     <Compile Include="Assets\Mapbox\Unity\SourceLayers\ISubLayerRealisticStyle.cs" />
     <Compile Include="Assets\Scripts\UI\Tools\AddRegionTool.cs" />
@@ -525,11 +530,8 @@
     <Compile Include="Assets\Mapbox\Core\mapbox-sdk-cs\Map\ClassicRasterTile.cs" />
     <Compile Include="Assets\Scripts\UI\Tools\RestrictionInfoPanel.cs" />
     <Compile Include="Assets\Mapbox\Unity\MeshGeneration\Modifiers\ModifierStack.cs" />
-    <Compile Include="Assets\Scripts\UI\Tools\ButtonPanel.cs" />
-    <Compile Include="Assets\Scripts\UI\Tools\AddButtonPanel.cs" />
-    <Compile Include="Assets\Scripts\UI\Tools\MainButtonPanel.cs" />
-    <Compile Include="Assets\Scripts\Environment\AssetPackBase.cs" />
-    <Compile Include="Assets\Scripts\UI\Tools\SliderTool.cs" />
+    <Compile Include="Assets\Scripts\SimulatorCore\VehicleNoise.cs" />
+    <Compile Include="Assets\Scripts\SimulatorCore\BuildingNoise.cs" />
   </ItemGroup>
   <ItemGroup>
      <None Include="Assets\Mapbox\Core\Plugins\Mapbox\vector-tile-cs\net46\Mapbox.VectorTile.Geometry.dll" />

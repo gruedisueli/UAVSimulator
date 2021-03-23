@@ -24,8 +24,8 @@ namespace Assets.Scripts.Environment
             gameObject.tag = "ParkingStructure";
             gameObject.name = "Parking_" + pS.Type;
             gameObject.layer = pS.Layer;
-            pS.StandbyPosition = new Vector3(0, 400, 0);
-            pS.LandingQueueHead = new Vector3(10, 400, 0);
+            pS.StandbyPosition = new Vector3(0, 150, 0);
+            pS.LandingQueueHead = new Vector3(10, 150, 0);
             pS.LandingQueueDirection = new Vector3(1, 0, 0);
             ParkingCtrl = gameObject.AddComponent<ParkingControl>();
             ParkingCtrl.parkingInfo = pS;

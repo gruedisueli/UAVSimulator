@@ -65,8 +65,8 @@ public class Vehicle : MonoBehaviour
         this.capacity = capacity;
         this.maxSpeed = maxSpeed;
         this.yawSpeed = yawspeed;
-        this.takeOffSpeed = takeOffSpeed;
-        this.landingSpeed = landingSpeed;
+        this.takeOffSpeed = takeOffSpeed * 2;
+        this.landingSpeed = landingSpeed * 2;
         this.emission = emission;
         this.noise = noise;
         this.range = range;
@@ -326,7 +326,7 @@ public class Vehicle : MonoBehaviour
                     if (wayPointsQueue.Count == 0)
                     {
                         waitTimer = 0.0f;
-                        waitTime = Random.Range(1.0f, 5.0f) / vcs.speedMultiplier;
+                        waitTime = Random.Range(1.0f, 2.0f) / vcs.speedMultiplier;
                         state = "operation_point_arrived";
                         return;
                     }
@@ -413,6 +413,15 @@ public class Vehicle : MonoBehaviour
     {
         this.origin = origin;
     }
-   
-    
+
+    public float GetNoise()
+    {
+        // Returns dB at the noise source
+        // TO-DO : Find more realistic function that calculates noise based on speed
+        //return noise[4] * Mathf.Pow(speed, 4) + noise[3] * Mathf.Pow(speed, 3) + noise [2] * Mathf.Pow(speed, 2) + Mathf.Pow
+
+        return 80;
+    }
+
+
 }

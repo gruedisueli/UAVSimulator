@@ -85,7 +85,7 @@ public class VehicleControlSystem : MonoBehaviour
         
         
 
-        speedMultiplier = 10.0f;
+        speedMultiplier = 2.0f;
 
         watch = 0.0f;
     }
@@ -96,7 +96,7 @@ public class VehicleControlSystem : MonoBehaviour
         if (playing)
         {
             watch += Time.deltaTime;
-            if (watch > simulationParam.callGenerationInterval && movingVehicles.Count < simulationParam.maxInFlightVehicles)
+            if (watch > simulationParam.callGenerationInterval) /*&& movingVehicles.Count < simulationParam.maxInFlightVehicles)*/
             {
                 watch = 0.0f;
                 GenerateRandomCalls();
@@ -114,7 +114,12 @@ public class VehicleControlSystem : MonoBehaviour
     {
         
         playing = !playing;
+        if ( playing )
+        {
+
+        }
         if ( playing && !vehicleInstantiated ) InstantiateVehicles();
+        
     }
 
     public void GenerateRandomCalls()
@@ -208,9 +213,99 @@ public class VehicleControlSystem : MonoBehaviour
         return new Vector3(Random.Range(minPoint.x, maxPoint.x), 0, Random.Range(minPoint.z, maxPoint.z));
     }
 
+    /*
+        public List<Vector3> FindPath(Vector3 origin, Vector3 destination, int angleIncrement)
+        {
+            // For pathfinding, omit drone colliders
+            int head = 0, tail = 0;
+            List<Vector3> visited = new List<Vector3>();
+            List<int> from = new List<int>();
+            List<float> distance = new List<float>();
+            visited.Add(origin);
+            from.Add(-1);
+            distance.Add(0.0f);
+            tail++;
+
+            ///////////////////////////////// TACKLE HERE /////////////////////////////////
+            while (head < tail && Physics.Raycast(visited[head], destination - visited[head], Vector3.Distance(visited[head], destination)) )
+            {
+                RaycastHit currentHitObject = Physics.RaycastAll(visited[head], destination - visited[head], Vector3.Distance(visited[head], destination))[0];
+                Vector3 lastHit = currentHitObject.point;
+            ///////////////////////////////// TACKLE HERE /////////////////////////////////
+                for (int i = angleIncrement; i <= 85; i += angleIncrement)
+                {
+                    Vector3 currentVector = destination - visited[head];
+                    RaycastHit[] hit = Physics.RaycastAll(visited[head], Quaternion.Euler(0, i, 0) * (destination - visited[head]), Vector3.Distance(visited[head], destination));
+                    if (hit.Length == 0 || !hit[0].transform.Equals(currentHitObject.transform)) // If the ray does not hit anything or does not hit the first hitted object anymore
+                    {
+                        Vector3 newWaypoint = RotateAround(lastHit, visited[head], (float)angleIncrement);
+                        visited.Add(newWaypoint);
+                        from.Add(head);
+                        distance.Add(distance[head] + Vector3.Distance(visited[head], newWaypoint));
+                        tail++;
+                        break;
+                    }
+                    else
+                    {
+                        lastHit = hit[0].point;
+                    }
+                }
+
+                // Do the same thing in the opposite direction
+                lastHit = currentHitObject.point;
+                for (int i = angleIncrement; i <= 85; i += angleIncrement)
+                {
+                    Vector3 currentVector = destination - visited[head];
+                    RaycastHit[] hit = Physics.RaycastAll(visited[head], Quaternion.Euler(0, -i, 0) * (destination - visited[head]), Vector3.Distance(visited[head], destination));
+                    if (hit.Length == 0 || !hit[0].transform.Equals(currentHitObject.transform)) // If the ray does not hit anything or does not hit the first hitted object anymore
+                    {
+                        Vector3 newWaypoint = RotateAround(lastHit, visited[head], -(float)angleIncrement);
+                        visited.Add(newWaypoint);
+                        from.Add(head);
+                        distance.Add(distance[head] + Vector3.Distance(visited[head], newWaypoint));
+                        tail++;
+                        break;
+                    }
+                    else
+                    {
+                        lastHit = hit[0].point;
+                    }
+                }
+
+                head++;
+            }
+            // Do the same thing in the opposite direction
+            List<Vector3> path = new List<Vector3>();
+            if (head < tail) // found a path so backtrack
+            {
+                if(head > 0) path = Backtrack(visited, from, distance, head);
+                path.Add(destination);
+            }
+            else // cannot find a path - just fly straight
+            {
+                //path.Add(origin);
+                path.Add(destination);
+            }
+            return path;
+        }*/
+    RaycastHit GetClosestHit(Vector3 current, RaycastHit[] hit)
+    {
+        float minDist = Mathf.Infinity;
+        RaycastHit minHit = hit[0];
+        foreach (RaycastHit h in hit)
+        {
+            if (Vector3.Distance(current, h.point) < minDist)
+            {
+                minHit = h;
+                minDist = Vector3.Distance(current, h.point);
+            }
+        }
+        return minHit;
+    }
     public List<Vector3> FindPath(Vector3 origin, Vector3 destination, int angleIncrement)
     {
         // For pathfinding, omit drone colliders
+        int layerMask = 1 << 9;
         int head = 0, tail = 0;
         List<Vector3> visited = new List<Vector3>();
         List<int> from = new List<int>();
@@ -220,16 +315,14 @@ public class VehicleControlSystem : MonoBehaviour
         distance.Add(0.0f);
         tail++;
 
-        ///////////////////////////////// TACKLE HERE /////////////////////////////////
-        while (head < tail && Physics.Raycast(visited[head], destination - visited[head], Vector3.Distance(visited[head], destination)) )
+        while (Physics.Raycast(visited[head], destination - visited[head], Vector3.Distance(visited[head], destination), layerMask) && head <= tail)
         {
-            RaycastHit currentHitObject = Physics.RaycastAll(visited[head], destination - visited[head], Vector3.Distance(visited[head], destination))[0];
+            RaycastHit currentHitObject = GetClosestHit(visited[head], Physics.RaycastAll(visited[head], destination - visited[head], Vector3.Distance(visited[head], destination), layerMask));
             Vector3 lastHit = currentHitObject.point;
-        ///////////////////////////////// TACKLE HERE /////////////////////////////////
             for (int i = angleIncrement; i <= 85; i += angleIncrement)
             {
                 Vector3 currentVector = destination - visited[head];
-                RaycastHit[] hit = Physics.RaycastAll(visited[head], Quaternion.Euler(0, i, 0) * (destination - visited[head]), Vector3.Distance(visited[head], destination));
+                RaycastHit[] hit = Physics.RaycastAll(visited[head], Quaternion.Euler(0, i, 0) * (destination - visited[head]), Vector3.Distance(visited[head], destination), layerMask);
                 if (hit.Length == 0 || !hit[0].transform.Equals(currentHitObject.transform)) // If the ray does not hit anything or does not hit the first hitted object anymore
                 {
                     Vector3 newWaypoint = RotateAround(lastHit, visited[head], (float)angleIncrement);
@@ -250,7 +343,7 @@ public class VehicleControlSystem : MonoBehaviour
             for (int i = angleIncrement; i <= 85; i += angleIncrement)
             {
                 Vector3 currentVector = destination - visited[head];
-                RaycastHit[] hit = Physics.RaycastAll(visited[head], Quaternion.Euler(0, -i, 0) * (destination - visited[head]), Vector3.Distance(visited[head], destination));
+                RaycastHit[] hit = Physics.RaycastAll(visited[head], Quaternion.Euler(0, -i, 0) * (destination - visited[head]), Vector3.Distance(visited[head], destination), layerMask);
                 if (hit.Length == 0 || !hit[0].transform.Equals(currentHitObject.transform)) // If the ray does not hit anything or does not hit the first hitted object anymore
                 {
                     Vector3 newWaypoint = RotateAround(lastHit, visited[head], -(float)angleIncrement);
@@ -272,7 +365,7 @@ public class VehicleControlSystem : MonoBehaviour
         List<Vector3> path = new List<Vector3>();
         if (head < tail) // found a path so backtrack
         {
-            if(head > 0) path = Backtrack(visited, from, distance, head);
+            if (head > 0) path = Backtrack(visited, from, distance, head);
             path.Add(destination);
         }
         else // cannot find a path - just fly straight
@@ -316,7 +409,7 @@ public class VehicleControlSystem : MonoBehaviour
         // TO-DO: Assign elevation according to the simulation rules
         // Now: All 100m to test obstacle avoidance
         if (origin.transform.position.y > 100.0f) return origin.transform.position.y + 50.0f;
-        return 400.0f;
+        return 152.0f;
     }
     private void InstantiateVehicles()
     {
@@ -344,6 +437,7 @@ public class VehicleControlSystem : MonoBehaviour
             {
                 var sPS = sceneManager.ParkingStructures[key];
                 ParkingControl pC = sPS.ParkingCtrl;
+                if(pC.parkingInfo.Parked.Count == 0 ) pC.parkingInfo.RemainingSpots = pC.parkingInfo.ParkingSpots.Count - pC.parkingInfo.Parked.Count;
                 if (pC.parkingInfo.RemainingSpots > 0)
                 {
                     int vehicleTypeID = Random.Range(0, vehicleTypes.Count);
