@@ -40,6 +40,14 @@ public class VehicleControlSystem : MonoBehaviour
     private bool playing;
     private bool vehicleInstantiated;
 
+    // Visualization related params
+    private bool noiseVisualization;
+    private bool privacyVisualization;
+    private bool routeVisualization;
+    private bool landingCorridorVisualization;
+    private bool demographicVisualization;
+    private bool trailVisualization;
+
     // INTEGRATION TO-DO: Replace root with the path that it receives;
     private string root = "runtime\\";
     private string asset_root = "Assets\\";
@@ -48,6 +56,13 @@ public class VehicleControlSystem : MonoBehaviour
     private CityViewManager sceneManager;
     public List<GameObject> vehicles;
     public List<GameObject> movingVehicles;
+
+    // Background drone related params
+    public List<GameObject> backgroundDrones;
+    public int backgroundDroneCount = 100;
+    public float lowerElevationBound = 100;
+    public float upperElevationBound = 135;
+    public float[][] cityBounds;
 
     public List<GameObject> parkingCollection;
     public List<GameObject> landingCollection;
@@ -75,8 +90,8 @@ public class VehicleControlSystem : MonoBehaviour
         MIN_DRONE_RANGE = 99999.0f;
         string current_runtime = "42o3601_71o0589"; // INTEGRATION TO-DO: Get current runtime name from UI side to find out which folder to refer to
                                                     // Current Placeholder = Lat_Long of Boston
-        
-        
+
+        backgroundDrones = new List<GameObject>();
         simulationParam = ReadSimulationParams(current_runtime);
         // TO-DO: Add clause that checks if we are doing simulation in RegionView
         sceneManager = GameObject.Find("FOA").GetComponent<CityViewManager>();
@@ -88,6 +103,11 @@ public class VehicleControlSystem : MonoBehaviour
         speedMultiplier = 2.0f;
 
         watch = 0.0f;
+
+        var eM = EnvironManager.Instance;
+        var city = eM.GetCurrentCity();
+        cityBounds = UnitUtils.GetCityExtents(city.CityStats);
+        InstantiateBackgroundDrones();
     }
 
     // Update is called once per frames
@@ -112,8 +132,10 @@ public class VehicleControlSystem : MonoBehaviour
     /// </summary>
     public void PlayPause()
     {
-        
         playing = !playing;
+        var eM = EnvironManager.Instance;
+        var city = eM.GetCurrentCity();
+        cityBounds = UnitUtils.GetCityExtents(city.CityStats);
         if ( playing )
         {
             foreach (GameObject gO in GameObject.FindObjectsOfType<GameObject>())
@@ -127,14 +149,13 @@ public class VehicleControlSystem : MonoBehaviour
             }
 
         }
-        if ( playing && !vehicleInstantiated) InstantiateVehicles();
-        
+        if (playing && !vehicleInstantiated)
+        {
+            InstantiateVehicles();
+        }
     }
 
-    public void UpdateVehicleCount(int count)
-    {
-       
-    }
+    
 
     public void GenerateRandomCalls()
     {
@@ -467,7 +488,7 @@ public class VehicleControlSystem : MonoBehaviour
                     clone.layer = 10;
                     clone.AddComponent<VehicleNoise>();
                     TrailRenderer tr = clone.AddComponent<TrailRenderer>();
-                    tr.time = 30.0f;
+                    tr.time = Mathf.Infinity;
                     Object.Destroy(newDrone);
 
                     // Fill in vehivle spec
@@ -483,6 +504,78 @@ public class VehicleControlSystem : MonoBehaviour
                 }
             }
         }
+    }
+
+    private void InstantiateBackgroundDrones()
+    {
+        string path = asset_root + "Resources\\Drones\\";
+        var files = Directory.GetFiles(path, "*.JSON");
+        Dictionary<string, VehicleSpec> vehicleSpecs = new Dictionary<string, VehicleSpec>();
+        List<string> vehicleTypes = new List<string>();
+        foreach (var filename in files)
+        {
+            string json = File.ReadAllText(filename, System.Text.Encoding.UTF8);
+            VehicleSpec vs = JsonUtility.FromJson<VehicleSpec>(json);
+            vehicleTypes.Add(vs.type);
+            vehicleSpecs.Add(vs.type, vs);
+            if (vs.range < MIN_DRONE_RANGE) MIN_DRONE_RANGE = vs.range;
+        }
+        
+        int vehiclesToInstantiate = backgroundDroneCount;
+        string drone_path = "Drones/";
+        Material backgroundTrail = Resources.Load<Material>("Materials/TrailBackGroundDrones");
+        // Populate vehiclesToInstantiate number of drones in existing parking structures
+        for (int i = 0; i < vehiclesToInstantiate; i++)
+        {
+            // INTEGRATION TO-DO: Make this part to select parking structure randomly so that the drones are randomly populated
+            
+            int vehicleTypeID = Random.Range(0, vehicleTypes.Count);
+            var newDrone = Resources.Load<GameObject>(drone_path + vehicleTypes[vehicleTypeID]);
+            var type = vehicleTypes[vehicleTypeID];
+
+            float y = Random.Range(lowerElevationBound, upperElevationBound);
+            Vector3 instantiationSpot = GetRandomPointXZ(y);
+            // instantiate the vehicle at emptySpot
+            var clone = Instantiate(newDrone, instantiationSpot, Quaternion.Euler(0.0f, 0.0f, 0.0f));
+            clone.name = "UAV_BACKGROUND_" + i.ToString();
+            clone.tag = "Vehicle";
+            clone.layer = 10;
+            //clone.AddComponent<VehicleNoise>();
+            TrailRenderer tr = clone.AddComponent<TrailRenderer>();
+            tr.startColor = new Color(1.0f, 1.0f, 1.0f, 0.3f);
+            tr.endColor = new Color(1.0f, 1.0f, 1.0f, 0.3f);
+            tr.material = backgroundTrail;
+            tr.time = 60.0f;
+            Object.Destroy(newDrone);
+
+            // Fill in vehivle spec
+            Vehicle v = clone.AddComponent<Vehicle>();
+            v.SetVehicleInfo(vehicleSpecs[type].type, vehicleSpecs[type].capacity, vehicleSpecs[type].range, vehicleSpecs[type].maxSpeed, vehicleSpecs[type].yawSpeed, vehicleSpecs[type].takeoffSpeed, vehicleSpecs[type].landingSpeed, vehicleSpecs[type].emission, vehicleSpecs[type].noise);
+            //v.currentPoint = v.gameObject.transform.posit;
+            v.isBackgroundDrone = true;
+            Vector3 firstDestination = GetRandomPointXZ(y);
+            v.wayPoints = FindPath(instantiationSpot, firstDestination, 5);
+            v.wayPointsQueue = new Queue<Vector3>();
+            foreach ( Vector3 p in v.wayPoints)
+            {
+                v.wayPointsQueue.Enqueue(p);
+            }
+            v.currentTargetPosition = v.wayPointsQueue.Dequeue();
+            backgroundDrones.Add(clone);
+
+            // Update parking management info
+
+            
+            
+        }
+    }
+
+    public Vector3 GetRandomPointXZ(float y)
+    {
+        
+        float x = Random.Range(cityBounds[0][0], cityBounds[0][1]);
+        float z = Random.Range(cityBounds[1][0], cityBounds[1][1]);
+        return new Vector3(x, y, z);
     }
 
     public GameObject ReserveNearestAvailableParking(GameObject v)
@@ -564,20 +657,23 @@ public class VehicleControlSystem : MonoBehaviour
 
         Queue<GameObject> routedDestinations = new Queue<GameObject>();
         List<GameObject> landings = new List<GameObject>();
+        
         foreach(var sDP in sceneManager.DronePorts.Values)
         {
             landings.Add(sDP.gameObject);
         }
         List<int> indices = new List<int>();
         List<GameObject> destinationList = new List<GameObject>();
-        int value = 0;
+        int value = 0, destinationCount = Random.Range(1, sceneManager.DronePorts.Values.Count + 1);
         float range = MIN_DRONE_RANGE;
 
-        for (int i = 0; i < 4; i++)
+        
+
+        for (int i = 0; i < destinationCount; i++)
         {
             do
             {
-                value = Mathf.RoundToInt(Random.Range(0, landings.Count - 1));
+                value = Mathf.RoundToInt(Random.Range(0, landings.Count));
             } while (indices.Contains(value));
             indices.Add(value);
             destinationList.Add(landings[value]);
@@ -704,5 +800,36 @@ public class VehicleControlSystem : MonoBehaviour
             return false;
         }
     }
+
+    public void UpdateVehicleCount(int count)
+    {
+
+    }
+
+    public void ToggleNoiseVisualization ( bool toggle )
+    {
+        noiseVisualization = toggle;
+    }
+    public void ToggleTrailVisualization(bool toggle)
+    {
+        trailVisualization = toggle;
+    }
+    public void TogglePrivacyVisualization(bool toggle)
+    {
+        privacyVisualization = toggle;
+    }
+    public void ToggleRouteVisualization(bool toggle)
+    {
+        routeVisualization = toggle;
+    }
+    public void ToggleLandingCorridorVisualization(bool toggle)
+    {
+        landingCorridorVisualization = toggle;
+    }
+    public void ToggleDemographicVisualization(bool toggle)
+    {
+        demographicVisualization = toggle;
+    }
+
     #endregion
 }

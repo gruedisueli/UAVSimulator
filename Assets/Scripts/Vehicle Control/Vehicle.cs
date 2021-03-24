@@ -50,6 +50,7 @@ public class Vehicle : MonoBehaviour
     public bool toPark;
     public bool moveForward;
     public bool isUTM;
+    public bool isBackgroundDrone;
     public float waitTimer;
     public float waitTime;
     
@@ -92,151 +93,172 @@ public class Vehicle : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        //destinationList = destination.ToArray();
-
-        //if (state == null) return;
+        // In case of background drone, just keep moving around
         currentLocation = gameObject.transform.position;
-        if ( currentTargetPosition.x == 0.0 && state != "parked" && state != "takeoff_requested" )
+        if (isBackgroundDrone)
         {
-            Debug.Log("Weird!!");
-        }
-        if ( state == "parked" && vcs.movingVehicles.Contains(gameObject) )
-        {
-            vcs.movingVehicles.Remove(gameObject);
-        }
-        if ( state != "parked" && !vcs.movingVehicles.Contains(gameObject) )
-        {
-            vcs.movingVehicles.Add(gameObject);
-        }
-
-        
-        if ( state == "takeoff_requested" )
-        {
-
-        }
-        else if ( state == "takeoff_granted" )
-        {
-            currentSpeed = takeOffSpeed * vcs.speedMultiplier;
-            if (elevation < 0.0f)
-            {
-                if (destination.Count > 0) elevation = vcs.GetElevation(currentPoint, destination.Peek());
-                else
-                {
-                    GameObject reservedParking = vcs.ReserveNearestAvailableParking(gameObject);
-                    destination.Enqueue(reservedParking);
-                    elevation = vcs.GetElevation(currentPoint, destination.Peek());
-                    toPark = true;
-                }
-            }
-            state = "taking_off";
-        }
-        else if (state == "operation_point_arrived")
-        {
-            waitTimer += Time.deltaTime;
-            if (waitTimer > waitTime)
-            {
-                if (destination.Count > 0)
-                {
-                    waitTimer = 0.0f;
-                    state = "move_ready";
-                }
-                else
-                {
-                    GameObject reservedParking = vcs.ReserveNearestAvailableParking(gameObject);
-                    destination.Enqueue(reservedParking);
-                    elevation = vcs.GetElevation(currentPoint, destination.Peek());
-                    toPark = true;
-                    state = "move_ready";
-                }
-            }
-        }
-        else if ( state == "taking_off")
-        {
-            TakeOff();
-        }
-        else if ( state == "move_ready" )
-        {
-            GameObject currentDestination;
-            int j = 0;
-            try
-            {
-                currentDestination = destination.Dequeue();
-            }
-            catch (System.InvalidOperationException e)
-            {
-                Debug.Log("Exception " + this.name);
-                Debug.Log("Current Location: " + currentLocation.ToString());
-                Debug.Log("Current Point: " + currentPoint.name.ToString());
-                currentDestination = currentPoint;
-            }
-            Vector3 currentDestinationVector = currentDestination.transform.position;
-            currentDestinationVector.y = elevation;
-
-            wayPoints = vcs.FindPath(gameObject.transform.position, currentDestinationVector, 5);
-            //if (isUTM) wayPoints.Add(currentDestination.transform.position);
-            wayPointsQueue = new Queue<Vector3>();             
-            foreach (Vector3 v in wayPoints)
-            {
-                wayPointsQueue.Enqueue(v);
-            }
-            currentTargetPosition = wayPointsQueue.Dequeue();
+            state = "background";
             currentSpeed = maxSpeed * vcs.speedMultiplier;
-            currentPoint = currentDestination;
-            state = "moving";           
-        }
-        else if ( state == "moving" )
-        {
-            MoveAlong();
-        }
-        else if ( state == "approaching" )
-        {
-            Vector3 standbyPosition = new Vector3();
-            if (!toPark)
+            if (wayPointsQueue.Count == 0 && Vector3.Distance(currentTargetPosition, transform.position) < arrival_threshold )
             {
-                DronePortControl dp = currentPoint.GetComponent<DronePortControl>();
-                if (!dp.queue.Contains(gameObject)) dp.queue.Enqueue(gameObject);
-                standbyPosition = dp.GetStandbyPosition(gameObject);
+                wayPoints = vcs.FindPath(transform.position, vcs.GetRandomPointXZ(transform.position.y), 5);
+                foreach (Vector3 p in wayPoints)
+                    wayPointsQueue.Enqueue(p);
+                currentTargetPosition = wayPointsQueue.Dequeue();
+                
             }
             else
             {
-                ParkingControl p = currentPoint.GetComponent<ParkingControl>();
-                if(p == null)
-                {
-                    Debug.Log("approaching - exception");
-                }
-                if (!p.queue.Contains(gameObject))
-                {
-                    p.queue.Enqueue(gameObject);
-                }
-                standbyPosition = p.GetStandbyPosition(gameObject);
+                MoveAlong();
             }
-            state = "registeredInQueue";
-            currentTargetPosition = standbyPosition;
         }
-        else if ( state == "registeredInQueue" )
+        //destinationList = destination.ToArray();
+
+        //if (state == null) return;
+        else
         {
-            MoveAlong();
-        }
-        else if ( state == "landing_requested")
-        {
-            currentSpeed = landingSpeed * vcs.speedMultiplier;
-            if (moveForward == true)
+            if (currentTargetPosition.x == 0.0 && state != "parked" && state != "takeoff_requested")
             {
-                state = "registeredInQueue";
+                Debug.Log("Weird!!");
             }
-            // When assigned new standby position
-        }
-        else if ( state == "landing_granted" )
-        {
-            moveForward = false;
-            //currentSpeed = landingSpeed * vcs.speedMultiplier;
-            Land();
-        }
+            if (state == "parked" && vcs.movingVehicles.Contains(gameObject))
+            {
+                vcs.movingVehicles.Remove(gameObject);
+            }
+            if (state != "parked" && !vcs.movingVehicles.Contains(gameObject))
+            {
+                vcs.movingVehicles.Add(gameObject);
+            }
 
-        
 
-        //UpdateToSystem(this);
-        //if ( destination.Count > 0 )  nextDestination = destination.Peek();
+            if (state == "takeoff_requested")
+            {
+
+            }
+            else if (state == "takeoff_granted")
+            {
+                currentSpeed = takeOffSpeed * vcs.speedMultiplier;
+                if (elevation < 0.0f)
+                {
+                    if (destination.Count > 0) elevation = vcs.GetElevation(currentPoint, destination.Peek());
+                    else
+                    {
+                        GameObject reservedParking = vcs.ReserveNearestAvailableParking(gameObject);
+                        destination.Enqueue(reservedParking);
+                        elevation = vcs.GetElevation(currentPoint, destination.Peek());
+                        toPark = true;
+                    }
+                }
+                state = "taking_off";
+            }
+            else if (state == "operation_point_arrived")
+            {
+                waitTimer += Time.deltaTime;
+                if (waitTimer > waitTime)
+                {
+                    if (destination.Count > 0)
+                    {
+                        waitTimer = 0.0f;
+                        state = "move_ready";
+                    }
+                    else
+                    {
+                        GameObject reservedParking = vcs.ReserveNearestAvailableParking(gameObject);
+                        destination.Enqueue(reservedParking);
+                        elevation = vcs.GetElevation(currentPoint, destination.Peek());
+                        toPark = true;
+                        state = "move_ready";
+                    }
+                }
+            }
+            else if (state == "taking_off")
+            {
+                TakeOff();
+            }
+            else if (state == "move_ready")
+            {
+                GameObject currentDestination;
+                int j = 0;
+                try
+                {
+                    currentDestination = destination.Dequeue();
+                }
+                catch (System.InvalidOperationException e)
+                {
+                    Debug.Log("Exception " + this.name);
+                    Debug.Log("Current Location: " + currentLocation.ToString());
+                    Debug.Log("Current Point: " + currentPoint.name.ToString());
+                    currentDestination = currentPoint;
+                }
+                Vector3 currentDestinationVector = currentDestination.transform.position;
+                currentDestinationVector.y = elevation;
+
+                wayPoints = vcs.FindPath(gameObject.transform.position, currentDestinationVector, 5);
+                //if (isUTM) wayPoints.Add(currentDestination.transform.position);
+                wayPointsQueue = new Queue<Vector3>();
+                foreach (Vector3 v in wayPoints)
+                {
+                    wayPointsQueue.Enqueue(v);
+                }
+                currentTargetPosition = wayPointsQueue.Dequeue();
+                currentSpeed = maxSpeed * vcs.speedMultiplier;
+                currentPoint = currentDestination;
+                state = "moving";
+            }
+            else if (state == "moving")
+            {
+                MoveAlong();
+            }
+            else if (state == "approaching")
+            {
+                Vector3 standbyPosition = new Vector3();
+                if (!toPark)
+                {
+                    DronePortControl dp = currentPoint.GetComponent<DronePortControl>();
+                    if (!dp.queue.Contains(gameObject)) dp.queue.Enqueue(gameObject);
+                    standbyPosition = dp.GetStandbyPosition(gameObject);
+                }
+                else
+                {
+                    ParkingControl p = currentPoint.GetComponent<ParkingControl>();
+                    if (p == null)
+                    {
+                        Debug.Log("approaching - exception");
+                    }
+                    if (!p.queue.Contains(gameObject))
+                    {
+                        p.queue.Enqueue(gameObject);
+                    }
+                    standbyPosition = p.GetStandbyPosition(gameObject);
+                }
+                state = "registeredInQueue";
+                currentTargetPosition = standbyPosition;
+            }
+            else if (state == "registeredInQueue")
+            {
+                MoveAlong();
+            }
+            else if (state == "landing_requested")
+            {
+                currentSpeed = landingSpeed * vcs.speedMultiplier;
+                if (moveForward == true)
+                {
+                    state = "registeredInQueue";
+                }
+                // When assigned new standby position
+            }
+            else if (state == "landing_granted")
+            {
+                moveForward = false;
+                //currentSpeed = landingSpeed * vcs.speedMultiplier;
+                Land();
+            }
+
+
+
+            //UpdateToSystem(this);
+            //if ( destination.Count > 0 )  nextDestination = destination.Peek();
+        }
         
     }
     void TakeOff()
@@ -261,6 +283,7 @@ public class Vehicle : MonoBehaviour
         }
     }
 
+    
     void Land()
     {
         //if (assignedLandingGuide.Count == 0) currentTargetPosition.y = elevation;
@@ -308,13 +331,13 @@ public class Vehicle : MonoBehaviour
                     return;
                 }
             }
-            if (Vector3.Distance(gameObject.transform.position, currentTargetPosition) < approaching_threshold && wayPointsQueue.Count == 0 && state == "moving")
+            if (Vector3.Distance(gameObject.transform.position, currentTargetPosition) < approaching_threshold && wayPointsQueue.Count == 0 && state == "moving" )
             {
                 state = "approaching";
             }
             
             Quaternion wantedRotation = Quaternion.LookRotation(currentTargetPosition - transform.position, transform.up);
-            if (state == "moving") transform.rotation = Quaternion.Lerp(transform.rotation, wantedRotation, Time.deltaTime * yawSpeed);
+            if (state == "moving" || state == "background") transform.rotation = Quaternion.Lerp(transform.rotation, wantedRotation, Time.deltaTime * yawSpeed);
             transform.position = Vector3.MoveTowards(transform.position, currentTargetPosition, KMHtoMPS(currentSpeed) * Time.deltaTime);
         }
         else

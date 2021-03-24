@@ -63,6 +63,7 @@
     <Compile Include="C:\Program Files\Unity\Hub\Editor\2020.1.15f1\Editor\Data\Resources\PackageManager\BuiltInPackages\com.unity.ugui\Runtime\UI\Core\InputField.cs" />
     <Compile Include="C:\Program Files\Unity\Hub\Editor\2020.1.15f1\Editor\Data\Resources\PackageManager\BuiltInPackages\com.unity.ugui\Runtime\UI\Core\Text.cs" />
     <Compile Include="C:\Program Files\Unity\Hub\Editor\2020.1.15f1\Editor\Data\Resources\PackageManager\BuiltInPackages\com.unity.ugui\Runtime\UI\Core\GraphicRaycaster.cs" />
+    <Compile Include="C:\Program Files\Unity\Hub\Editor\2020.1.15f1\Editor\Data\Resources\PackageManager\BuiltInPackages\com.unity.ugui\Runtime\UI\Core\Image.cs" />
     <Compile Include="C:\Program Files\Unity\Hub\Editor\2020.1.15f1\Editor\Data\Resources\PackageManager\BuiltInPackages\com.unity.ugui\Runtime\UI\Core\IMaskable.cs" />
     <Compile Include="C:\Program Files\Unity\Hub\Editor\2020.1.15f1\Editor\Data\Resources\PackageManager\BuiltInPackages\com.unity.ugui\Runtime\UI\Core\Utility\VertexHelper.cs" />
     <Compile Include="C:\Program Files\Unity\Hub\Editor\2020.1.15f1\Editor\Data\Resources\PackageManager\BuiltInPackages\com.unity.ugui\Runtime\UI\Core\SetPropertyUtility.cs" />
@@ -73,7 +74,6 @@
     <Compile Include="C:\Program Files\Unity\Hub\Editor\2020.1.15f1\Editor\Data\Resources\PackageManager\BuiltInPackages\com.unity.ugui\Runtime\EventSystem\ExecuteEvents.cs" />
     <Compile Include="C:\Program Files\Unity\Hub\Editor\2020.1.15f1\Editor\Data\Resources\PackageManager\BuiltInPackages\com.unity.ugui\Runtime\UI\Core\VertexModifiers\PositionAsUV1.cs" />
     <Compile Include="C:\Program Files\Unity\Hub\Editor\2020.1.15f1\Editor\Data\Resources\PackageManager\BuiltInPackages\com.unity.ugui\Runtime\EventSystem\InputModules\TouchInputModule.cs" />
-    <Compile Include="C:\Program Files\Unity\Hub\Editor\2020.1.15f1\Editor\Data\Resources\PackageManager\BuiltInPackages\com.unity.ugui\Runtime\UI\Core\Image.cs" />
     <Compile Include="C:\Program Files\Unity\Hub\Editor\2020.1.15f1\Editor\Data\Resources\PackageManager\BuiltInPackages\com.unity.ugui\Runtime\UI\Core\Layout\GridLayoutGroup.cs" />
     <Compile Include="C:\Program Files\Unity\Hub\Editor\2020.1.15f1\Editor\Data\Resources\PackageManager\BuiltInPackages\com.unity.ugui\Runtime\UI\Core\Utility\ObjectPool.cs" />
     <Compile Include="C:\Program Files\Unity\Hub\Editor\2020.1.15f1\Editor\Data\Resources\PackageManager\BuiltInPackages\com.unity.ugui\Runtime\UI\Core\Layout\ContentSizeFitter.cs" />
