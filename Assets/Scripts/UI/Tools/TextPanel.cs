@@ -24,6 +24,7 @@ namespace Assets.Scripts.UI.Tools
 
             foreach (var e in tE)
             {
+                e.SetActive(false);//turn these on manually higher in hierarchy because not all text fields are relevant to all drone port types, etc.
                 try
                 {
                     TextElements.Add(e._propertyType, e);

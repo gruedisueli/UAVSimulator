@@ -18,7 +18,7 @@ namespace Assets.Scripts.UI.Tools
 
         protected virtual void Awake()
         {
-            SelectableElement = GetComponent<Selectable>();
+            SelectableElement = GetComponentInChildren<Selectable>(true);
         }
 
         /// <summary>

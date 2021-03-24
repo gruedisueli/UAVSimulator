@@ -137,60 +137,75 @@ namespace Assets.Scripts.UI
 
         protected override void ElementModify(IModifyElementArgs args)
         {
-            if (_workingCopy == null)
+            if (args.Update.Type == ElementPropertyType.SimulationDroneCount)
             {
-                Debug.LogError("Working copy is null");
-                return;
-            }
-            if (_workingCopy is SceneCity)
-            {
-                var sC = _workingCopy as SceneCity;
-                try
+                if (args.Update is ModifyIntPropertyArg)
                 {
-                    switch (args.Update.Type)
-                    {
-                        case ElementPropertyType.Name:
-                            {
-                                sC.CitySpecs.Name = (args.Update as ModifyStringPropertyArg).Value;
-                                break;
-                            }
-                        case ElementPropertyType.Population:
-                            {
-                                sC.CitySpecs.Population = (args.Update as ModifyIntPropertyArg).Value;
-                                break;
-                            }
-                        case ElementPropertyType.Jobs:
-                            {
-                                sC.CitySpecs.Jobs = (args.Update as ModifyIntPropertyArg).Value;
-                                break;
-                            }
-                        case ElementPropertyType.EastExt:
-                            {
-                                sC.CitySpecs.EastExt = (args.Update as ModifyIntPropertyArg).Value;
-                                break;
-                            }
-                        case ElementPropertyType.WestExt:
-                            {
-                                sC.CitySpecs.WestExt = (args.Update as ModifyIntPropertyArg).Value;
-                                break;
-                            }
-                        case ElementPropertyType.NorthExt:
-                            {
-                                sC.CitySpecs.NorthExt = (args.Update as ModifyIntPropertyArg).Value;
-                                break;
-                            }
-                        case ElementPropertyType.SouthExt:
-                            {
-                                sC.CitySpecs.SouthExt = (args.Update as ModifyIntPropertyArg).Value;
-                                break;
-                            }
-                    }
-
+                    var u = args.Update as ModifyIntPropertyArg;
+                    _vehicleControlSystem.UpdateVehicleCount(u.Value);
                 }
-                catch
+                else
                 {
-                    Debug.LogError("Casting error in working city modification");
+                    Debug.LogError("Format of simulation drone count update args is incorrect");
+                }
+            }
+            else
+            {
+                if (_workingCopy == null)
+                {
+                    Debug.LogError("Working copy is null");
                     return;
+                }
+                if (_workingCopy is SceneCity)
+                {
+                    var sC = _workingCopy as SceneCity;
+                    try
+                    {
+                        switch (args.Update.Type)
+                        {
+                            case ElementPropertyType.Name:
+                                {
+                                    sC.CitySpecs.Name = (args.Update as ModifyStringPropertyArg).Value;
+                                    break;
+                                }
+                            case ElementPropertyType.Population:
+                                {
+                                    sC.CitySpecs.Population = (args.Update as ModifyIntPropertyArg).Value;
+                                    break;
+                                }
+                            case ElementPropertyType.Jobs:
+                                {
+                                    sC.CitySpecs.Jobs = (args.Update as ModifyIntPropertyArg).Value;
+                                    break;
+                                }
+                            case ElementPropertyType.EastExt:
+                                {
+                                    sC.CitySpecs.EastExt = (args.Update as ModifyIntPropertyArg).Value;
+                                    break;
+                                }
+                            case ElementPropertyType.WestExt:
+                                {
+                                    sC.CitySpecs.WestExt = (args.Update as ModifyIntPropertyArg).Value;
+                                    break;
+                                }
+                            case ElementPropertyType.NorthExt:
+                                {
+                                    sC.CitySpecs.NorthExt = (args.Update as ModifyIntPropertyArg).Value;
+                                    break;
+                                }
+                            case ElementPropertyType.SouthExt:
+                                {
+                                    sC.CitySpecs.SouthExt = (args.Update as ModifyIntPropertyArg).Value;
+                                    break;
+                                }
+                        }
+
+                    }
+                    catch
+                    {
+                        Debug.LogError("Casting error in working city modification");
+                        return;
+                    }
                 }
             }
 

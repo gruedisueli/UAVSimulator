@@ -64,9 +64,16 @@ namespace Assets.Scripts.UI.Tools
 
         protected override IModifyElementArgs GatherInformation()
         {
-            if (_propertyType == ElementPropertyType.Rotation)
+            switch (_propertyType)
             {
-                return new ModifyElementArgs(new ModifyVector3PropertyArg(_propertyType, new Vector3(0, _value, 0)));
+                case ElementPropertyType.Rotation:
+                    {
+                        return new ModifyElementArgs(new ModifyVector3PropertyArg(_propertyType, new Vector3(0, _value, 0)));
+                    }
+                case ElementPropertyType.SimulationDroneCount:
+                    {
+                        return new ModifyElementArgs(new ModifyIntPropertyArg(_propertyType, (int)_value));
+                    }
             }
 
             return new ModifyElementArgs(new ModifyFloatPropertyArg(_propertyType, _value));

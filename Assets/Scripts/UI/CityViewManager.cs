@@ -68,22 +68,37 @@ namespace Assets.Scripts.UI
         /// </summary>
         protected override void ElementModify(IModifyElementArgs args)
         {
-            if (_workingCopy == null)
+            if (args.Update.Type == ElementPropertyType.SimulationDroneCount)
             {
-                Debug.LogError("Working copy is null");
-                return;
+                if (args.Update is ModifyIntPropertyArg)
+                {
+                    var u = args.Update as ModifyIntPropertyArg;
+                    _vehicleControlSystem.UpdateVehicleCount(u.Value);
+                }
+                else
+                {
+                    Debug.LogError("Format of simulation drone count update args is incorrect");
+                }
             }
-            if (_workingCopy is SceneDronePort)
+            else
             {
-                DronePortUpdate(args);
-            }
-            else if (_workingCopy is SceneParkingStructure)
-            {
-                ParkingStructureUpdate(args);
-            }
-            else if (_workingCopy is SceneRestrictionZone)
-            {
-                RestrictionZoneUpdate(args);
+                if (_workingCopy == null)
+                {
+                    Debug.LogError("Working copy is null");
+                    return;
+                }
+                if (_workingCopy is SceneDronePort)
+                {
+                    DronePortUpdate(args);
+                }
+                else if (_workingCopy is SceneParkingStructure)
+                {
+                    ParkingStructureUpdate(args);
+                }
+                else if (_workingCopy is SceneRestrictionZone)
+                {
+                    RestrictionZoneUpdate(args);
+                }
             }
         }
 

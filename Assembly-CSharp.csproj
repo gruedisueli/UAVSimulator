@@ -344,6 +344,7 @@
     <Compile Include="Assets\Mapbox\Unity\DataContainers\ElevationModificationOptions.cs" />
     <Compile Include="Assets\Scripts\Environment\ParkingStructureAssetPack.cs" />
     <Compile Include="Assets\Mapbox\Unity\SourceLayers\ISubLayerCustomStyleTiled.cs" />
+    <Compile Include="Assets\Scripts\SimulatorCore\VehicleNoise.cs" />
     <Compile Include="Assets\Mapbox\Unity\Location\LocationProviderFactory.cs" />
     <Compile Include="Assets\Mapbox\Unity\Location\AngleSmoothing\AngleSmoothingNoOp.cs" />
     <Compile Include="Assets\Scripts\UI\Tools\SceneChangeTool.cs" />
@@ -355,6 +356,7 @@
     <Compile Include="Assets\Scripts\Environment\SceneDronePort.cs" />
     <Compile Include="Assets\Scripts\UI\Tools\CommitTool.cs" />
     <Compile Include="Assets\Mapbox\Core\mapbox-sdk-cs\Map\CanonicalTileId.cs" />
+    <Compile Include="Assets\Scripts\SimulatorCore\BuildingNoise.cs" />
     <Compile Include="Assets\Scripts\UI\Tools\TextPanel.cs" />
     <Compile Include="Assets\Mapbox\Core\mapbox-sdk-cs\Geocoding\Response\Geometry.cs" />
     <Compile Include="Assets\Mapbox\Unity\MeshGeneration\Modifiers\MeshModifiers\ReplaceFeatureModifier.cs" />
