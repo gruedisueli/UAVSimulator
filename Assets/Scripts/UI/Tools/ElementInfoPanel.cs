@@ -100,7 +100,6 @@ namespace Assets.Scripts.UI.Tools
         {
             try
             {
-                _infoPanel.TextElements[pT].SetActive(true);//off by default because different modify panels
                 _infoPanel.TextElements[pT].SetTextAsValue(value);
             }
             catch

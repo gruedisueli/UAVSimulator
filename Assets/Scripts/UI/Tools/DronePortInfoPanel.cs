@@ -33,13 +33,9 @@ namespace Assets.Scripts.UI.Tools
             SetTextElement(ElementPropertyType.Description, specs.Description);
             SetTextElement(ElementPropertyType.Rotation, specs.Rotation.y.ToString("F2"));
             SetTextElement(ElementPropertyType.MaxVehicleSize, specs.MaximumVehicleSize.ToString("F2"));
-
-            if (specs is DronePortRect)
-            {
-                var s = specs as DronePortRect;
-                SetTextElement(ElementPropertyType.XScale, s.Scale.x.ToString("F2"));
-                SetTextElement(ElementPropertyType.ZScale, s.Scale.z.ToString("F2"));
-            }
+            SetTextElement(ElementPropertyType.XScale, specs.Scale.x.ToString("F2"));
+            SetTextElement(ElementPropertyType.ZScale, specs.Scale.z.ToString("F2"));
+            
 
             SliderTool[] sliders = GetComponentsInChildren<SliderTool>(true);
             if (sliders == null || sliders.Length == 0)
@@ -79,7 +75,7 @@ namespace Assets.Scripts.UI.Tools
         {
             try
             {
-                switch (args.Update.Type)
+                switch (args.Update.ElementPropertyType)
                 {
                     case ElementPropertyType.Rotation:
                         {

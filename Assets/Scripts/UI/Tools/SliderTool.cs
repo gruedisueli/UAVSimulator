@@ -36,7 +36,7 @@ namespace Assets.Scripts.UI.Tools
                 return;
             }
 
-            _text.text = _propertyType.ToString() + ": " + _slider.value.ToString("F2");
+            _text.text = _isVisibilityModifier ? _visibilityType.ToString() : _propertyType.ToString() + ": " + _slider.value.ToString("F2");
 
             _slider.onValueChanged.AddListener(ValueChanged);
         }
@@ -70,9 +70,14 @@ namespace Assets.Scripts.UI.Tools
                     {
                         return new ModifyElementArgs(new ModifyVector3PropertyArg(_propertyType, new Vector3(0, _value, 0)));
                     }
-                case ElementPropertyType.SimulationDroneCount:
+
+            }
+            
+            switch (_visibilityType)
+            {
+                case VisibilityType.DroneCount:
                     {
-                        return new ModifyElementArgs(new ModifyIntPropertyArg(_propertyType, (int)_value));
+                        return new ModifyElementArgs(new ModifyIntPropertyArg(_visibilityType, (int)_value));
                     }
             }
 

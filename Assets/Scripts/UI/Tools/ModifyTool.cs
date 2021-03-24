@@ -21,10 +21,21 @@ namespace Assets.Scripts.UI.Tools
     {
         public event ElementModified OnElementModified;
         public ElementPropertyType _propertyType = ElementPropertyType.Unset;
+        public VisibilityType _visibilityType = VisibilityType.Unset;
+
+        protected bool _isVisibilityModifier = false;
 
         protected override void Awake()
         {
             base.Awake();
+
+            if (_propertyType != ElementPropertyType.Unset && _visibilityType != VisibilityType.Unset)
+            {
+                Debug.LogError("Incorrect configuration of modification tool. Choose either a visiblity type or property type for modification");
+                return;
+            }
+
+            _isVisibilityModifier = _propertyType != ElementPropertyType.Unset ? false : true;
         }
 
         private void Start()

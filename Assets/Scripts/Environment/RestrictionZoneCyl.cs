@@ -200,7 +200,7 @@ namespace Assets.Scripts.Environment
         {
             try
             {
-                switch (args.Type)
+                switch (args.ElementPropertyType)
                 {
                     //case UpdatePropertyType.Type:
                     //    {

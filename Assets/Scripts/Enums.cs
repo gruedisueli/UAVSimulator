@@ -37,6 +37,13 @@ namespace Assets.Scripts
         CylindricalStacked
     }
 
+    public enum ToolMessageCategory
+    {
+        Unset,
+        ElementModification,
+        VisibilityModification
+    }
+
     public enum ElementPropertyType
     {
         Unset,
@@ -67,8 +74,19 @@ namespace Assets.Scripts
         EastExt,
         WestExt,
         NorthExt,
-        SouthExt,
-        SimulationDroneCount
+        SouthExt
+    }
+
+    public enum VisibilityType
+    {
+        Unset,
+        DroneCount,
+        Noise,
+        Privacy,
+        Routes,
+        FlightTrails,
+        LandingCorridors,
+        Demographics
     }
 
     public enum InputFieldType

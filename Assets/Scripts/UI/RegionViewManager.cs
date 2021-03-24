@@ -137,16 +137,25 @@ namespace Assets.Scripts.UI
 
         protected override void ElementModify(IModifyElementArgs args)
         {
-            if (args.Update.Type == ElementPropertyType.SimulationDroneCount)
+
+            if (args.Update.Category == ToolMessageCategory.VisibilityModification)
             {
-                if (args.Update is ModifyIntPropertyArg)
+                try
                 {
-                    var u = args.Update as ModifyIntPropertyArg;
-                    _vehicleControlSystem.UpdateVehicleCount(u.Value);
+                    switch (args.Update.VisibilityType)
+                    {
+                        case VisibilityType.DroneCount:
+                            {
+                                var u = args.Update as ModifyIntPropertyArg;
+                                _vehicleControlSystem.UpdateVehicleCount(u.Value);
+                                break;
+                            }
+                    }
                 }
-                else
+                catch
                 {
-                    Debug.LogError("Format of simulation drone count update args is incorrect");
+                    Debug.LogError("Casting error in visiblity modification");
+                    return;
                 }
             }
             else
@@ -161,7 +170,7 @@ namespace Assets.Scripts.UI
                     var sC = _workingCopy as SceneCity;
                     try
                     {
-                        switch (args.Update.Type)
+                        switch (args.Update.ElementPropertyType)
                         {
                             case ElementPropertyType.Name:
                                 {

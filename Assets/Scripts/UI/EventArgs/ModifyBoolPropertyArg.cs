@@ -11,11 +11,22 @@ namespace Assets.Scripts.UI.EventArgs
     /// </summary>
     public class ModifyBoolPropertyArg : ModifyPropertyArgBase, IModifyPropertyArg<bool>
     {
-        public override ElementPropertyType Type { get; protected set; }
+        public override ToolMessageCategory Category { get; protected set; }
+        public override VisibilityType VisibilityType { get; protected set; } = VisibilityType.Unset;
+        public override ElementPropertyType ElementPropertyType { get; protected set; }
         public bool Value { get; private set; }
+
         public ModifyBoolPropertyArg(ElementPropertyType type, bool value)
         {
-            Type = type;
+            Category = ToolMessageCategory.ElementModification;
+            ElementPropertyType = type;
+            Value = value;
+        }
+
+        public ModifyBoolPropertyArg(VisibilityType type, bool value)
+        {
+            Category = ToolMessageCategory.VisibilityModification;
+            VisibilityType = type;
             Value = value;
         }
     }

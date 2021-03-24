@@ -68,16 +68,60 @@ namespace Assets.Scripts.UI
         /// </summary>
         protected override void ElementModify(IModifyElementArgs args)
         {
-            if (args.Update.Type == ElementPropertyType.SimulationDroneCount)
+            if (args.Update.Category == ToolMessageCategory.VisibilityModification)
             {
-                if (args.Update is ModifyIntPropertyArg)
+                try
                 {
-                    var u = args.Update as ModifyIntPropertyArg;
-                    _vehicleControlSystem.UpdateVehicleCount(u.Value);
+                    switch (args.Update.VisibilityType)
+                    {
+                        case VisibilityType.DroneCount:
+                            {
+                                var u = args.Update as ModifyIntPropertyArg;
+                                _vehicleControlSystem.UpdateVehicleCount(u.Value);
+                                break;
+                            }
+                        case VisibilityType.Demographics:
+                            {
+                                var u = args.Update as ModifyBoolPropertyArg;
+                                _vehicleControlSystem.ToggleDemographicVisualization(u.Value);
+                                break;
+                            }
+                        case VisibilityType.FlightTrails:
+                            {
+                                var u = args.Update as ModifyBoolPropertyArg;
+                                _vehicleControlSystem.ToggleTrailVisualization(u.Value);
+                                break;
+                            }
+                        case VisibilityType.LandingCorridors:
+                            {
+                                var u = args.Update as ModifyBoolPropertyArg;
+                                _vehicleControlSystem.ToggleLandingCorridorVisualization(u.Value);
+                                break;
+                            }
+                        case VisibilityType.Noise:
+                            {
+                                var u = args.Update as ModifyBoolPropertyArg;
+                                _vehicleControlSystem.ToggleNoiseVisualization(u.Value);
+                                break;
+                            }
+                        case VisibilityType.Privacy:
+                            {
+                                var u = args.Update as ModifyBoolPropertyArg;
+                                _vehicleControlSystem.TogglePrivacyVisualization(u.Value);
+                                break;
+                            }
+                        case VisibilityType.Routes:
+                            {
+                                var u = args.Update as ModifyBoolPropertyArg;
+                                _vehicleControlSystem.ToggleRouteVisualization(u.Value);
+                                break;
+                            }
+                    }
                 }
-                else
+                catch
                 {
-                    Debug.LogError("Format of simulation drone count update args is incorrect");
+                    Debug.LogError("Casting error in visiblity modification");
+                    return;
                 }
             }
             else

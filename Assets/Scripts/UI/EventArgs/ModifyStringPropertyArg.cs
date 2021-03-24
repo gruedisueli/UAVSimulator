@@ -11,11 +11,22 @@ namespace Assets.Scripts.UI.EventArgs
     /// </summary>
     public class ModifyStringPropertyArg : ModifyPropertyArgBase, IModifyPropertyArg<string>
     {
-        public override ElementPropertyType Type { get; protected set; }
+        public override ToolMessageCategory Category { get; protected set; }
+        public override VisibilityType VisibilityType { get; protected set; } = VisibilityType.Unset;
+        public override ElementPropertyType ElementPropertyType { get; protected set; }
         public string Value { get; private set; }
+
         public ModifyStringPropertyArg(ElementPropertyType type, string value)
         {
-            Type = type;
+            Category = ToolMessageCategory.ElementModification;
+            ElementPropertyType = type;
+            Value = value;
+        }
+
+        public ModifyStringPropertyArg(VisibilityType type, string value)
+        {
+            Category = ToolMessageCategory.VisibilityModification;
+            VisibilityType = type;
             Value = value;
         }
     }

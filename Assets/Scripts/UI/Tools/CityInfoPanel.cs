@@ -70,7 +70,7 @@ namespace Assets.Scripts.UI.Tools
         {
             try
             {
-                switch (args.Update.Type)
+                switch (args.Update.ElementPropertyType)
                 {
                     case ElementPropertyType.Name:
                         {

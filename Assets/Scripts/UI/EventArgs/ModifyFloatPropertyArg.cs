@@ -11,11 +11,22 @@ namespace Assets.Scripts.UI.EventArgs
     /// </summary>
     public class ModifyFloatPropertyArg : ModifyPropertyArgBase, IModifyPropertyArg<float>
     {
-        public override ElementPropertyType Type { get; protected set; }
+        public override ToolMessageCategory Category { get; protected set; }
+        public override VisibilityType VisibilityType { get; protected set; } = VisibilityType.Unset;
+        public override ElementPropertyType ElementPropertyType { get; protected set; } = ElementPropertyType.Unset;
         public float Value { get; private set; }
+
         public ModifyFloatPropertyArg(ElementPropertyType type, float value)
         {
-            Type = type;
+            Category = ToolMessageCategory.ElementModification;
+            ElementPropertyType = type;
+            Value = value;
+        }
+
+        public ModifyFloatPropertyArg(VisibilityType type, float value)
+        {
+            Category = ToolMessageCategory.VisibilityModification;
+            VisibilityType = type;
             Value = value;
         }
     }

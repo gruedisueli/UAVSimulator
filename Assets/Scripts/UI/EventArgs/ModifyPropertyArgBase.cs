@@ -8,6 +8,8 @@ namespace Assets.Scripts.UI.EventArgs
 {
     public abstract class ModifyPropertyArgBase
     {
-        public abstract ElementPropertyType Type { get; protected set; } 
+        public abstract ToolMessageCategory Category { get; protected set; }
+        public abstract ElementPropertyType ElementPropertyType { get; protected set; } 
+        public abstract VisibilityType VisibilityType { get; protected set; }
     }
 }

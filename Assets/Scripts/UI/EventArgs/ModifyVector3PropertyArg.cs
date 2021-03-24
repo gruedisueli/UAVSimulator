@@ -13,11 +13,22 @@ namespace Assets.Scripts.UI.EventArgs
     /// </summary>
     public class ModifyVector3PropertyArg : ModifyPropertyArgBase, IModifyPropertyArg<Vector3>
     {
-        public override ElementPropertyType Type { get; protected set; }
+        public override ToolMessageCategory Category { get; protected set; }
+        public override VisibilityType VisibilityType { get; protected set; } = VisibilityType.Unset;
+        public override ElementPropertyType ElementPropertyType { get; protected set; }
         public Vector3 Value { get; private set; }
+
         public ModifyVector3PropertyArg(ElementPropertyType type, Vector3 value)
         {
-            Type = type;
+            Category = ToolMessageCategory.ElementModification;
+            ElementPropertyType = type;
+            Value = value;
+        }
+
+        public ModifyVector3PropertyArg(VisibilityType type, Vector3 value)
+        {
+            Category = ToolMessageCategory.VisibilityModification;
+            VisibilityType = type;
             Value = value;
         }
     }

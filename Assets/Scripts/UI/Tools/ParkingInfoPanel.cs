@@ -46,11 +46,11 @@ namespace Assets.Scripts.UI.Tools
         {
             try
             {
-                switch (args.Update.Type)
+                switch (args.Update.ElementPropertyType)
                 {
                     case ElementPropertyType.Rotation:
                         {
-                            SetTextElement(ElementPropertyType.Rotation, (args.Update as ModifyFloatPropertyArg).Value.ToString("F2"));
+                            SetTextElement(ElementPropertyType.Rotation, (args.Update as ModifyVector3PropertyArg).Value.y.ToString("F2"));
                             break;
                         }
                 }

@@ -374,7 +374,7 @@ namespace Assets.Scripts.UI
                 Debug.LogError("No info panel prefab provided");
                 return false;
             }
-            prefab.transform.SetParent(_mainCanvas.transform);
+            prefab.transform.SetParent(_mainCanvas.transform, false);//IMPORTANT: second argument is "false" to allow for canvas rescaling on different screens.
             _currentInfoPanel = prefab.GetComponent<ElementInfoPanel>();
             if (_currentInfoPanel == null)
             {
@@ -563,7 +563,7 @@ namespace Assets.Scripts.UI
             }
             try
             {
-                switch (args.Update.Type)
+                switch (args.Update.ElementPropertyType)
                 {
                     //case UpdatePropertyType.Type:
                     //    {
@@ -667,7 +667,7 @@ namespace Assets.Scripts.UI
             }
             try
             {
-                switch (args.Update.Type)
+                switch (args.Update.ElementPropertyType)
                 {
                     //case UpdatePropertyType.Type:
                     //    {
