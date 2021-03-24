@@ -67,7 +67,8 @@ namespace Assets.Scripts
         EastExt,
         WestExt,
         NorthExt,
-        SouthExt
+        SouthExt,
+        SimulationDroneCount
     }
 
     public enum InputFieldType

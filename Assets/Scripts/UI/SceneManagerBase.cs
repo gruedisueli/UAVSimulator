@@ -36,6 +36,7 @@ namespace Assets.Scripts.UI
 
         protected VehicleControlSystem _vehicleControlSystem;
 
+        protected ModifyTool[] _modifyTools;//certain modify tools that are not for modifying scene elements but simulation, etc. Modify tools for scene elements get instantiated dynamically.
         protected AddTool[] _addTools;
         protected SceneChangeTool[] _sceneChangeTools;
         protected DeselectTool[] _deselectTools;
@@ -102,6 +103,7 @@ namespace Assets.Scripts.UI
             }
 
             //gather UI elments
+            _modifyTools = FindObjectsOfType<ModifyTool>(true);
             _addTools = FindObjectsOfType<AddTool>(true);
             _sceneChangeTools = FindObjectsOfType<SceneChangeTool>(true);
             _deselectTools = FindObjectsOfType<DeselectTool>(true);
@@ -124,6 +126,10 @@ namespace Assets.Scripts.UI
             foreach (var a in _addTools)
             {
                 a.ElementAddedEvent += AddElement;
+            }
+            foreach (var t in _modifyTools)
+            {
+                t.OnElementModified += ElementModify;
             }
             foreach (var t in _sceneChangeTools)
             {
@@ -148,6 +154,10 @@ namespace Assets.Scripts.UI
             foreach (var a in _addTools)
             {
                 a.ElementAddedEvent -= AddElement;
+            }
+            foreach (var t in _modifyTools)
+            {
+                t.OnElementModified -= ElementModify;
             }
             foreach (var t in _sceneChangeTools)
             {
@@ -577,6 +587,16 @@ namespace Assets.Scripts.UI
                     case ElementPropertyType.Scale:
                         {
                             dP.Scale = (args.Update as ModifyVector3PropertyArg).Value;
+                            break;
+                        }
+                    case ElementPropertyType.XScale:
+                        {
+                            dP.Scale = new Vector3((args.Update as ModifyFloatPropertyArg).Value, dP.Scale.y, dP.Scale.z);
+                            break;
+                        }
+                    case ElementPropertyType.ZScale:
+                        {
+                            dP.Scale = new Vector3(dP.Scale.x, dP.Scale.y, (args.Update as ModifyFloatPropertyArg).Value);
                             break;
                         }
                     case ElementPropertyType.StandByPos:

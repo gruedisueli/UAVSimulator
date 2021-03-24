@@ -42,7 +42,8 @@ namespace Assets.Scripts
         /// </summary>
         private static float GetTileSideLength(double latitude, int zoom, int tileRes, double scaleConstant)
         {
-            return (float)Math.Abs(scaleConstant * Math.Cos(latitude) / Math.Pow(2, zoom) * tileRes);
+            double radians = latitude * Math.PI / 180;
+            return (float)(Math.Abs(scaleConstant * Math.Cos(radians) / Math.Pow(2, zoom)) * tileRes);
         }
 
         /// <summary>

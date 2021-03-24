@@ -24,7 +24,7 @@ namespace Assets.Scripts.UI.Tools
                 Debug.LogError("Provided scene element for drone port info panel is not a drone port");
                 return;
             }
-
+            
             var specs = sceneDP.DronePortSpecs;
             string t = specs.Type;
             var asset = EnvironManager.Instance.DronePortAssets[t];
@@ -34,13 +34,45 @@ namespace Assets.Scripts.UI.Tools
             SetTextElement(ElementPropertyType.Rotation, specs.Rotation.y.ToString("F2"));
             SetTextElement(ElementPropertyType.MaxVehicleSize, specs.MaximumVehicleSize.ToString("F2"));
 
-            SliderTool sT = GetComponentInChildren<SliderTool>(true);
-            if (sT == null)
+            if (specs is DronePortRect)
+            {
+                var s = specs as DronePortRect;
+                SetTextElement(ElementPropertyType.XScale, s.Scale.x.ToString("F2"));
+                SetTextElement(ElementPropertyType.ZScale, s.Scale.z.ToString("F2"));
+            }
+
+            SliderTool[] sliders = GetComponentsInChildren<SliderTool>(true);
+            if (sliders == null || sliders.Length == 0)
             {
                 Debug.LogError("Slider Tool not found in children of drone port input panel");
                 return;
             }
-            sT.SetValue(specs.Rotation.y);
+            foreach (var sT in sliders)
+            {
+                bool scaleActive = specs is DronePortRect ? true : false;
+                switch (sT._propertyType)
+                {
+                    case ElementPropertyType.Rotation:
+                        {
+                            sT.SetValue(specs.Rotation.y);
+                            break;
+                        }
+                    case ElementPropertyType.XScale:
+                        {
+                            sT.SetValue(specs.Scale.x);
+                            sT.SetInteractable(scaleActive);
+                            break;
+                        }
+                    case ElementPropertyType.ZScale:
+                        {
+                            sT.SetValue(specs.Scale.z);
+                            sT.SetInteractable(scaleActive);
+                            break;
+                        }
+                }
+
+            }
+
         }
 
         protected override void ModifyTextValues(IModifyElementArgs args)
@@ -51,7 +83,17 @@ namespace Assets.Scripts.UI.Tools
                 {
                     case ElementPropertyType.Rotation:
                         {
-                            SetTextElement(ElementPropertyType.Rotation, (args.Update as ModifyFloatPropertyArg).Value.ToString("F2"));
+                            SetTextElement(ElementPropertyType.Rotation, (args.Update as ModifyVector3PropertyArg).Value.y.ToString("F2"));
+                            break;
+                        }
+                    case ElementPropertyType.XScale:
+                        {
+                            SetTextElement(ElementPropertyType.XScale, (args.Update as ModifyFloatPropertyArg).Value.ToString("F2"));
+                            break;
+                        }
+                    case ElementPropertyType.ZScale:
+                        {
+                            SetTextElement(ElementPropertyType.ZScale, (args.Update as ModifyFloatPropertyArg).Value.ToString("F2"));
                             break;
                         }
                 }
