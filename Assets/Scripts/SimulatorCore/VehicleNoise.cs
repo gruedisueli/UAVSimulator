@@ -5,6 +5,7 @@ using UnityEngine;
 public class VehicleNoise : MonoBehaviour
 {
     //SphereCollider col;
+
     Vehicle vehicleInfo;
     float noise;
     float radius;
@@ -17,6 +18,7 @@ public class VehicleNoise : MonoBehaviour
         
         //noiseShpere = gameObject.transform.GetChild(1).gameObject;
         vehicleInfo = gameObject.GetComponent<Vehicle>();
+        
 
         radius = 0.0f;
         affected_buildings = new List<Collider>();

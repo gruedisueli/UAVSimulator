@@ -66,6 +66,7 @@ public class Vehicle : MonoBehaviour
 
 
     VehicleControlSystem vcs;
+    TrailRenderer tr;
 
     #region Constructors
 
@@ -92,6 +93,7 @@ public class Vehicle : MonoBehaviour
         wayPoints = new List<Vector3>();
         wayPointsQueue = new Queue<Vector3>();
         vcs = GameObject.Find("SimulationCore").GetComponent<VehicleControlSystem>();
+        tr = gameObject.GetComponent<TrailRenderer>();
         elevation = Mathf.NegativeInfinity;
         state = "parked";
         toPark = false;
@@ -104,6 +106,8 @@ public class Vehicle : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        if (vcs.trailVisualization) tr.enabled = true;
+        else tr.enabled = false;
         // In case of background drone, just keep moving around
         currentLocation = gameObject.transform.position;
         if (isBackgroundDrone)

@@ -5,6 +5,7 @@ using UnityEngine;
 public class BuildingNoise : MonoBehaviour
 {
     // Start is called before the first frame update
+    VehicleControlSystem vcs;
     string material_path = "Materials/";
     Material lowNoiseMaterial;
     Material midNoiseMaterial;
@@ -18,22 +19,30 @@ public class BuildingNoise : MonoBehaviour
         highNoiseMaterial = Resources.Load<Material>(material_path + "HighNoise");
         noNoiseMaterial = Resources.Load<Material>(material_path + "Building");
         affectingVehicles = new List<GameObject>();
+        vcs = GameObject.Find("SimulationCore").GetComponent<VehicleControlSystem>();
     }
 
     // Update is called once per frame
     void Update()
     {
-        if (affectingVehicles.Count == 1)
+        if (vcs.noiseVisualization)
         {
-            gameObject.GetComponent<MeshRenderer>().material = lowNoiseMaterial;
-        }
-        else if (affectingVehicles.Count == 2)
-        {
-            gameObject.GetComponent<MeshRenderer>().material = midNoiseMaterial;
-        }
-        else if (affectingVehicles.Count >= 3)
-        {
-            gameObject.GetComponent<MeshRenderer>().material = highNoiseMaterial;
+            if (affectingVehicles.Count == 1)
+            {
+                gameObject.GetComponent<MeshRenderer>().material = lowNoiseMaterial;
+            }
+            else if (affectingVehicles.Count == 2)
+            {
+                gameObject.GetComponent<MeshRenderer>().material = midNoiseMaterial;
+            }
+            else if (affectingVehicles.Count >= 3)
+            {
+                gameObject.GetComponent<MeshRenderer>().material = highNoiseMaterial;
+            }
+            else
+            {
+                gameObject.GetComponent<MeshRenderer>().material = noNoiseMaterial;
+            }
         }
         else
         {

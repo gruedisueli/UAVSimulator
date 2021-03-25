@@ -98,6 +98,8 @@ public class ParkingControl : MonoBehaviour
                 currentVehicleState.state = "parked";
                 currentVehicleState.toPark = false;
                 currentVehicleState.isUTM = false;
+                TrailRenderer tr = currentVehicle.GetComponent<TrailRenderer>();
+                tr.Clear();
                 currentVehicle = null;
                 state = "idle";
             }

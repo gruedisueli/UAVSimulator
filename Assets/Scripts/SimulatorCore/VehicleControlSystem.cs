@@ -44,12 +44,12 @@ public class VehicleControlSystem : MonoBehaviour
     private bool vehicleInstantiated;
 
     // Visualization related params
-    private bool noiseVisualization;
-    private bool privacyVisualization;
-    private bool routeVisualization;
-    private bool landingCorridorVisualization;
-    private bool demographicVisualization;
-    private bool trailVisualization;
+    public bool noiseVisualization;
+    public bool privacyVisualization;
+    public bool routeVisualization;
+    public bool landingCorridorVisualization;
+    public bool demographicVisualization;
+    public bool trailVisualization;
 
     // INTEGRATION TO-DO: Replace root with the path that it receives;
     private string root = "runtime\\";
@@ -73,6 +73,7 @@ public class VehicleControlSystem : MonoBehaviour
     public Dictionary<GameObject, GameObject> parkingLandingMapping;
     public Dictionary<GameObject, List<GameObject>> routes;
     public Assets.Scripts.DataStructure.Network network;
+    public List<GameObject> networkLines;
 
     public float speedMultiplier = 1.0f;
 
@@ -162,6 +163,7 @@ public class VehicleControlSystem : MonoBehaviour
             if(!networkGenerated)
             {
                 GenerateNetwork();
+                VisualizeNetwork(network);
                 networkGenerated = true;
             }
         }
@@ -184,8 +186,8 @@ public class VehicleControlSystem : MonoBehaviour
                 Queue<GameObject> destinations = Route(parking, destinations_list);
                 // From Here - Replace the part that returns waypoints - consider different ends
                 //           - Visualize corridor
-                //           - Event : no of drones etc.
                 //           - Visualize landing paths
+                //           - Hook-up toggles
                 if (parking == null)
                 {
                     Debug.Log("No available vehicle");
@@ -505,7 +507,9 @@ public class VehicleControlSystem : MonoBehaviour
                     clone.layer = 10;
                     clone.AddComponent<VehicleNoise>();
                     TrailRenderer tr = clone.AddComponent<TrailRenderer>();
+                    tr.material = Resources.Load<Material>("Materials/TrailCorridorDrones");
                     tr.time = Mathf.Infinity;
+                    tr.enabled = false;
                     Object.Destroy(newDrone);
 
                     // Fill in vehivle spec
@@ -911,6 +915,30 @@ public class VehicleControlSystem : MonoBehaviour
     public void ToggleRouteVisualization(bool toggle)
     {
         routeVisualization = toggle;
+        if (routeVisualization)
+        {
+            if(networkGenerated)
+            {
+                foreach (GameObject gO in networkLines)
+                {
+                    LineRenderer lr = gO.GetComponent<LineRenderer>();
+                    lr.enabled = true;
+                }
+            }
+        }
+        else
+        {
+            if (networkGenerated)
+            {
+                foreach (GameObject gO in networkLines)
+                {
+                    LineRenderer lr = gO.GetComponent<LineRenderer>();
+                    lr.enabled = false;
+                }
+            }
+
+        }
+
     }
     public void ToggleLandingCorridorVisualization(bool toggle)
     {
@@ -921,5 +949,29 @@ public class VehicleControlSystem : MonoBehaviour
         demographicVisualization = toggle;
     }
 
+    public void VisualizeNetwork ( Assets.Scripts.DataStructure.Network network )
+    {
+        networkLines = new List<GameObject>();
+        foreach(Corridor c in network.corridors)
+        {
+            GameObject line = new GameObject();
+            LineRenderer lineRenderer = line.AddComponent<LineRenderer>();
+            lineRenderer.positionCount = c.wayPoints.Count + 1;
+            List<Vector3> wayPointsList = new List<Vector3>(c.wayPoints.ToArray());
+            wayPointsList.Insert(0, c.origin.transform.position);
+            Vector3[] wayPointArray = new Vector3[wayPointsList.Count];
+            for(int i = 0; i < wayPointsList.Count; i++)
+            {
+                wayPointArray[i] = new Vector3(wayPointsList[i].x, c.elevation, wayPointsList[i].z);
+            }
+            lineRenderer.SetPositions(wayPointArray);
+            lineRenderer.material = Resources.Load<Material>("Materials/Route");
+            lineRenderer.SetWidth(5.0f, 5.0f);
+            networkLines.Add(line);
+            lineRenderer.enabled = false;
+        }
+    }
+
     #endregion
 }
+
