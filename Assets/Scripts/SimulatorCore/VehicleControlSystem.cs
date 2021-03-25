@@ -1,15 +1,20 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 using UnityEngine;
 using System.Xml.Linq;
 using System.IO;
-using System.Linq;
+
 
 using Assets.Scripts.Vehicle_Control;
 using Assets.Scripts.DataStructure;
 using Assets.Scripts.Environment;
 using Assets.Scripts.UI;
 using Assets.Scripts;
+using Assets.Scripts.UI.EventArgs;
 using DelaunatorSharp;
 
 
@@ -40,10 +45,11 @@ public class VehicleControlSystem : MonoBehaviour
     #region Private Variables
     private Color translucentRed;
     private float watch;
-    private bool playing;
+    
     private bool vehicleInstantiated;
 
     // Visualization related params
+    public bool playing;
     public bool noiseVisualization;
     public bool privacyVisualization;
     public bool routeVisualization;
@@ -84,6 +90,7 @@ public class VehicleControlSystem : MonoBehaviour
 
     private SignalSystem signalSystem;
     private string current_runtime;
+    public event EventHandler<DroneInstantiationArgs> OnDroneInstantiated;
 
     // Start is called before the first frame update
     void Start()
@@ -173,7 +180,7 @@ public class VehicleControlSystem : MonoBehaviour
 
     public void GenerateRandomCalls()
     {
-        int call_type = Mathf.FloorToInt(Random.Range(0.0f, 3.0f));
+        int call_type = Mathf.FloorToInt(UnityEngine.Random.Range(0.0f, 3.0f));
         string call_type_string = call_type <= 3 ? "corridor" : "low-altitude";
 
         // strategicDeconfliction == "none"
@@ -199,13 +206,13 @@ public class VehicleControlSystem : MonoBehaviour
             }
             else // call_type_string == "low-altitude"
             {
-                int withAAO = Mathf.FloorToInt(Random.Range(0.0f, 1.0f));
+                int withAAO = Mathf.FloorToInt(UnityEngine.Random.Range(0.0f, 1.0f));
                 string withAAOString = withAAO == 0 ? "AAO" : "None";
 
                 if (withAAOString.Equals("AAO")) // generating calls with AAO
                 {
                     // Create random polygon
-                    Polygon p = new Polygon(Mathf.RoundToInt(Random.Range(3, 10)));
+                    Polygon p = new Polygon(Mathf.RoundToInt(UnityEngine.Random.Range(3, 10)));
 
                     // Generate random center within the boundary of the maps - Integration TO-DO: Get the boundary coordinates from UI
                     Bounds boston_bd = GameObject.Find("Buildings").GetComponentInChildren<MeshRenderer>().bounds;
@@ -264,7 +271,7 @@ public class VehicleControlSystem : MonoBehaviour
 
     public Vector3 GetRandomAAO( Vector3 minPoint, Vector3 maxPoint )
     {
-        return new Vector3(Random.Range(minPoint.x, maxPoint.x), 0, Random.Range(minPoint.z, maxPoint.z));
+        return new Vector3(UnityEngine.Random.Range(minPoint.x, maxPoint.x), 0, UnityEngine.Random.Range(minPoint.z, maxPoint.z));
     }
 
     /*
@@ -480,7 +487,7 @@ public class VehicleControlSystem : MonoBehaviour
             if (vs.range < MIN_DRONE_RANGE) MIN_DRONE_RANGE = vs.range;
         }
         int parkingCapacity = sceneManager.GetParkingCapacity();
-        int vehiclesToInstantiate = Random.Range(parkingCapacity-10, parkingCapacity);
+        int vehiclesToInstantiate = UnityEngine.Random.Range(parkingCapacity-10, parkingCapacity);
         string drone_path = "Drones/";
 
         // Populate vehiclesToInstantiate number of drones in existing parking structures
@@ -494,7 +501,7 @@ public class VehicleControlSystem : MonoBehaviour
                 if(pC.parkingInfo.Parked.Count == 0 ) pC.parkingInfo.RemainingSpots = pC.parkingInfo.ParkingSpots.Count - pC.parkingInfo.Parked.Count;
                 if (pC.parkingInfo.RemainingSpots > 0)
                 {
-                    int vehicleTypeID = Random.Range(0, vehicleTypes.Count);
+                    int vehicleTypeID = UnityEngine.Random.Range(0, vehicleTypes.Count);
                     var newDrone = Resources.Load<GameObject>(drone_path + vehicleTypes[vehicleTypeID]);
                     var type = vehicleTypes[vehicleTypeID];
                     var emptySpot = pC.parkingInfo.GetEmptySpot();
@@ -510,14 +517,14 @@ public class VehicleControlSystem : MonoBehaviour
                     tr.material = Resources.Load<Material>("Materials/TrailCorridorDrones");
                     tr.time = Mathf.Infinity;
                     tr.enabled = false;
-                    Object.Destroy(newDrone);
+                    UnityEngine.Object.Destroy(newDrone);
 
                     // Fill in vehivle spec
                     Vehicle v = clone.AddComponent<Vehicle>();
                     v.SetVehicleInfo(vehicleSpecs[type].type, vehicleSpecs[type].capacity, vehicleSpecs[type].range, vehicleSpecs[type].maxSpeed, vehicleSpecs[type].yawSpeed, vehicleSpecs[type].takeoffSpeed, vehicleSpecs[type].landingSpeed, vehicleSpecs[type].emission, vehicleSpecs[type].noise);
                     v.currentPoint = sPS.gameObject;
                     vehicles.Add(clone);
-
+                    OnDroneInstantiated?.Invoke(this, new DroneInstantiationArgs(clone));
                     // Update parking management info
                     pC.parkingInfo.ParkAt(emptySpot, clone);
 
@@ -550,11 +557,11 @@ public class VehicleControlSystem : MonoBehaviour
         {
             // INTEGRATION TO-DO: Make this part to select parking structure randomly so that the drones are randomly populated
             
-            int vehicleTypeID = Random.Range(0, vehicleTypes.Count);
+            int vehicleTypeID = UnityEngine.Random.Range(0, vehicleTypes.Count);
             var newDrone = Resources.Load<GameObject>(drone_path + vehicleTypes[vehicleTypeID]);
             var type = vehicleTypes[vehicleTypeID];
 
-            float y = Random.Range(lowerElevationBound, upperElevationBound);
+            float y = UnityEngine.Random.Range(lowerElevationBound, upperElevationBound);
             Vector3 instantiationSpot = GetRandomPointXZ(y);
             // instantiate the vehicle at emptySpot
             var clone = Instantiate(newDrone, instantiationSpot, Quaternion.Euler(0.0f, 0.0f, 0.0f));
@@ -567,7 +574,7 @@ public class VehicleControlSystem : MonoBehaviour
             tr.endColor = new Color(1.0f, 1.0f, 1.0f, 0.3f);
             tr.material = backgroundTrail;
             tr.time = 60.0f;
-            Object.Destroy(newDrone);
+            UnityEngine.Object.Destroy(newDrone);
 
             // Fill in vehivle spec
             Vehicle v = clone.AddComponent<Vehicle>();
@@ -653,8 +660,8 @@ public class VehicleControlSystem : MonoBehaviour
     public Vector3 GetRandomPointXZ(float y)
     {
         
-        float x = Random.Range(cityBounds[0][0], cityBounds[0][1]);
-        float z = Random.Range(cityBounds[1][0], cityBounds[1][1]);
+        float x = UnityEngine.Random.Range(cityBounds[0][0], cityBounds[0][1]);
+        float z = UnityEngine.Random.Range(cityBounds[1][0], cityBounds[1][1]);
         return new Vector3(x, y, z);
     }
 
@@ -691,11 +698,11 @@ public class VehicleControlSystem : MonoBehaviour
     }
     public GameObject GetAvailableVehicleinParkingStrcuture(GameObject parkingStructure)
     {
-        int random = Mathf.RoundToInt(Random.Range(0, parkingStructure.GetComponent<ParkingControl>().parkingInfo.VehicleAt.Keys.Count - 1));
+        int random = Mathf.RoundToInt(UnityEngine.Random.Range(0, parkingStructure.GetComponent<ParkingControl>().parkingInfo.VehicleAt.Keys.Count - 1));
         return parkingStructure.GetComponent<ParkingControl>().parkingInfo.VehicleAt.Keys.ElementAt<GameObject>(random);
     }
 
-    Queue<GameObject> Route (GameObject origin, List<GameObject> destinations)
+    public Queue<GameObject> Route (GameObject origin, List<GameObject> destinations)
     {
         Queue<GameObject> routed_destinations = new Queue<GameObject>();
         destinations.Insert(0, origin);
@@ -758,14 +765,14 @@ public class VehicleControlSystem : MonoBehaviour
         }
         List<int> indices = new List<int>();
         List<GameObject> destinationList = new List<GameObject>();
-        int value = 0, destinationCount = Random.Range(1, sceneManager.DronePorts.Values.Count + 1);
+        int value = 0, destinationCount = UnityEngine.Random.Range(1, sceneManager.DronePorts.Values.Count + 1);
         float range = MIN_DRONE_RANGE;
 
         for (int i = 0; i < destinationCount; i++)
         {
             do
             {
-                value = Mathf.RoundToInt(Random.Range(0, landings.Count));
+                value = Mathf.RoundToInt(UnityEngine.Random.Range(0, landings.Count));
             } while (indices.Contains(value));
             indices.Add(value);
             destinationList.Add(landings[value]);

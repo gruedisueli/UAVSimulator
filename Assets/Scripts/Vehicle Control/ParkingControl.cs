@@ -11,7 +11,6 @@ public class ParkingControl : MonoBehaviour
     public ParkingStructureBase parkingInfo;
     public Queue<GameObject> queue = new Queue<GameObject>();
     public string state; // state = {busy, idle}
-
     public GameObject currentVehicle;
     public Vehicle currentVehicleState;
 
@@ -20,7 +19,6 @@ public class ParkingControl : MonoBehaviour
     void Start()
     {
         state = "idle";
-
     }
     void Update()
     {

@@ -271,6 +271,7 @@
     <Compile Include="Assets\Mapbox\Unity\LayerProperties\VectorSubLayerProperties.cs" />
     <Compile Include="Assets\Mapbox\Unity\DataContainers\ExtentOptions.cs" />
     <Compile Include="Assets\Mapbox\Unity\Utilities\Conversions.cs" />
+    <Compile Include="Assets\Scripts\UI\EventArgs\DroneInstantiationArgs.cs" />
     <Compile Include="Assets\Mapbox\Unity\MeshGeneration\Modifiers\GameObjectModifiers\NoiseOffsetModifier.cs" />
     <Compile Include="Assets\Mapbox\Unity\MeshGeneration\Modifiers\MeshModifiers\ChamferHeightModifier.cs" />
     <Compile Include="Assets\Mapbox\Core\mapbox-sdk-cs\Platform\IAsyncRequest.cs" />
@@ -1155,13 +1156,13 @@
       <Project>{72F656BC-5C48-06A1-82EB-91EA7021A68E}</Project>
       <Name>Unity.Timeline</Name>
     </ProjectReference>
-    <ProjectReference Include="Unity.TextMeshPro.csproj">
-      <Project>{B2FAEE0B-EB47-2747-172F-C21877D70556}</Project>
-      <Name>Unity.TextMeshPro</Name>
-    </ProjectReference>
     <ProjectReference Include="DelaunatorSharp.Runtime.csproj">
       <Project>{9D830427-3BBF-5CE7-38AF-EC0E9DFC23FA}</Project>
       <Name>DelaunatorSharp.Runtime</Name>
+    </ProjectReference>
+    <ProjectReference Include="Unity.TextMeshPro.csproj">
+      <Project>{B2FAEE0B-EB47-2747-172F-C21877D70556}</Project>
+      <Name>Unity.TextMeshPro</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

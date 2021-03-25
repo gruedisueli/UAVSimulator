@@ -271,6 +271,7 @@
     <Compile Include="Assets\Mapbox\Unity\LayerProperties\VectorSubLayerProperties.cs" />
     <Compile Include="Assets\Mapbox\Unity\DataContainers\ExtentOptions.cs" />
     <Compile Include="Assets\Mapbox\Unity\Utilities\Conversions.cs" />
+    <Compile Include="Assets\Scripts\UI\EventArgs\DroneInstantiationArgs.cs" />
     <Compile Include="Assets\Mapbox\Unity\MeshGeneration\Modifiers\GameObjectModifiers\NoiseOffsetModifier.cs" />
     <Compile Include="Assets\Mapbox\Unity\MeshGeneration\Modifiers\MeshModifiers\ChamferHeightModifier.cs" />
     <Compile Include="Assets\Mapbox\Core\mapbox-sdk-cs\Platform\IAsyncRequest.cs" />
@@ -1156,6 +1157,10 @@
       <Project>{E62DF289-A030-7F6A-7500-58F48937C780}</Project>
       <Name>Unity.Rider.Editor</Name>
     </ProjectReference>
+    <ProjectReference Include="DelaunatorSharp.Runtime.csproj">
+      <Project>{9D830427-3BBF-5CE7-38AF-EC0E9DFC23FA}</Project>
+      <Name>DelaunatorSharp.Runtime</Name>
+    </ProjectReference>
     <ProjectReference Include="Unity.VisualStudio.Editor.csproj">
       <Project>{7A490CA3-D0F0-6D68-7259-4FDFFE4F1DB0}</Project>
       <Name>Unity.VisualStudio.Editor</Name>
@@ -1167,10 +1172,6 @@
     <ProjectReference Include="UnityEditor.UI.csproj">
       <Project>{1A510ED7-4011-2429-FFE3-DEF7C3339436}</Project>
       <Name>UnityEditor.UI</Name>
-    </ProjectReference>
-    <ProjectReference Include="DelaunatorSharp.Runtime.csproj">
-      <Project>{9D830427-3BBF-5CE7-38AF-EC0E9DFC23FA}</Project>
-      <Name>DelaunatorSharp.Runtime</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

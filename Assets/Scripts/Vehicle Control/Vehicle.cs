@@ -7,6 +7,8 @@ using System.Collections;
 using UnityEngine;
 using Assets.Scripts.Vehicle_Control;
 using Assets.Scripts.UI.EventArgs;
+using Assets.Scripts.DataStructure;
+
 
 public class Vehicle : MonoBehaviour
 {
@@ -106,6 +108,8 @@ public class Vehicle : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        if (!vcs.playing) currentSpeed = 0;
+        else currentSpeed = maxSpeed;
         if (vcs.trailVisualization) tr.enabled = true;
         else tr.enabled = false;
         // In case of background drone, just keep moving around
@@ -162,7 +166,9 @@ public class Vehicle : MonoBehaviour
                     else
                     {
                         GameObject reservedParking = vcs.ReserveNearestAvailableParking(gameObject);
-                        destination.Enqueue(reservedParking);
+                        List<GameObject> parking_list = new List<GameObject>();
+                        parking_list.Add(reservedParking);
+                        destination = vcs.Route(currentPoint, parking_list);
                         elevation = vcs.GetElevation(currentPoint, destination.Peek());
                         toPark = true;
                     }
@@ -208,16 +214,25 @@ public class Vehicle : MonoBehaviour
                     Debug.Log("Current Point: " + currentPoint.name.ToString());
                     currentDestination = currentPoint;
                 }
+                /*
                 Vector3 currentDestinationVector = currentDestination.transform.position;
                 currentDestinationVector.y = elevation;
 
-                wayPoints = vcs.FindPath(gameObject.transform.position, currentDestinationVector, 5);
+                wayPoints = vcs.FindPath(gameObject.transform.position, currentDestinationVector, 5);*/
                 //if (isUTM) wayPoints.Add(currentDestination.transform.position);
+                foreach(Corridor c in vcs.network.outEdges[currentPoint])
+                {
+                    if ( c.destination.Equals(currentDestination) )
+                    {
+                        wayPointsQueue = c.wayPoints;
+                    }
+                }
+                /*
                 wayPointsQueue = new Queue<Vector3>();
                 foreach (Vector3 v in wayPoints)
                 {
                     wayPointsQueue.Enqueue(v);
-                }
+                }*/
                 currentTargetPosition = wayPointsQueue.Dequeue();
                 currentSpeed = maxSpeed * vcs.speedMultiplier;
                 currentPoint = currentDestination;
