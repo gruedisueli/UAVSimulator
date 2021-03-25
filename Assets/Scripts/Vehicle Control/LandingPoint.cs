@@ -91,7 +91,7 @@ public class LandingPoint : MonoBehaviour
                 {
                     state = "arrived";
                     vehicleOnThisPoint = vcs.from;
-                    if(!vcs.from.GetComponent<Vehicle>().toPark || (vcs.from.GetComponent<Vehicle>().toPark && vcs.from.GetComponent<Vehicle>().destination.Count == 1)) departureQueue.Enqueue(vcs.from);
+                    if(!vcs.from.GetComponent<Vehicle>().toPark || (vcs.from.GetComponent<Vehicle>().toPark && vcs.from.GetComponent<Vehicle>().destination.Count > 0)) departureQueue.Enqueue(vcs.from);
                     signalSystem.RegisterSignal(gameObject, new VehicleControlSignal(vcs.from, "dummy"));
                     // ways to get removed from departureQueue
                     // 1. departure
@@ -105,7 +105,7 @@ public class LandingPoint : MonoBehaviour
                 // wait for a random period
                 int a;
                 a = 0;
-                if (!vcs.from.GetComponent<Vehicle>().toPark || (vcs.from.GetComponent<Vehicle>().toPark && vcs.from.GetComponent<Vehicle>().destination.Count == 1 ))
+                if (!vcs.from.GetComponent<Vehicle>().toPark || (vcs.from.GetComponent<Vehicle>().toPark && vcs.from.GetComponent<Vehicle>().destination.Count > 0 ))
                 {
                     state = "departing";
                     signalSystem.RegisterSignal(DepartureDequeue(), new VehicleControlSignal(gameObject, "takeoffgranted"));

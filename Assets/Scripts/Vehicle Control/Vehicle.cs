@@ -224,7 +224,8 @@ public class Vehicle : MonoBehaviour
                 {
                     if ( c.destination.Equals(currentDestination) )
                     {
-                        wayPointsQueue = c.wayPoints;
+                        wayPointsQueue = new Queue<Vector3>(c.wayPoints.ToArray());
+                        break;
                     }
                 }
                 /*
@@ -245,7 +246,7 @@ public class Vehicle : MonoBehaviour
             else if (state == "approaching")
             {
                 Vector3 standbyPosition = new Vector3();
-                if (!toPark)
+                if (currentPoint.name.Contains("Drone"))
                 {
                     DronePortControl dp = currentPoint.GetComponent<DronePortControl>();
                     if (!dp.queue.Contains(gameObject)) dp.queue.Enqueue(gameObject);

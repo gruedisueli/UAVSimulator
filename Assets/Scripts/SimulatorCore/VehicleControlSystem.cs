@@ -202,6 +202,11 @@ public class VehicleControlSystem : MonoBehaviour
                 }
                 // TO-DO: Augment vehicle type
                 GameObject vehicle = GetAvailableVehicleinParkingStrcuture(parking);
+                if (vehicle == null)
+                {
+                    Debug.Log("No available vehicle");
+                    return;
+                }
                 if (parking.GetComponent<ParkingControl>().queue.Count < 3) CallVehicle(vehicle, parking.GetComponent<ParkingControl>(), destinations);
             }
             else // call_type_string == "low-altitude"
@@ -434,6 +439,8 @@ public class VehicleControlSystem : MonoBehaviour
             //path.Add(origin);
             path.Add(destination);
         }
+
+        if (path.Count == 0) path.Add(destination);
         return path;
     }
 
@@ -698,8 +705,12 @@ public class VehicleControlSystem : MonoBehaviour
     }
     public GameObject GetAvailableVehicleinParkingStrcuture(GameObject parkingStructure)
     {
-        int random = Mathf.RoundToInt(UnityEngine.Random.Range(0, parkingStructure.GetComponent<ParkingControl>().parkingInfo.VehicleAt.Keys.Count - 1));
-        return parkingStructure.GetComponent<ParkingControl>().parkingInfo.VehicleAt.Keys.ElementAt<GameObject>(random);
+        for ( int i = 0; i < parkingStructure.GetComponent<ParkingControl>().parkingInfo.VehicleAt.Keys.Count; i++)
+        {
+            GameObject vehicle_i = parkingStructure.GetComponent<ParkingControl>().parkingInfo.VehicleAt.Keys.ElementAt<GameObject>(i);
+            if (vehicle_i.GetComponent<Vehicle>().state == "parked") return vehicle_i;
+        }
+        return null;
     }
 
     public Queue<GameObject> Route (GameObject origin, List<GameObject> destinations)
