@@ -378,4 +378,44 @@ namespace Assets.Scripts.DataStructure
         }
     }
 
+
+    [Serializable]
+    public class Corridor
+    {
+        public GameObject origin;
+        public GameObject destination;
+        public float elevation;
+        public Queue<Vector3> wayPoints;
+
+        public bool Equals(Corridor p1, Corridor p2)
+        {
+            if (p1.origin.transform.position.Equals(p2.origin.transform.position) && p1.destination.transform.position.Equals(p2.destination.transform.position) && Mathf.Abs(p1.elevation - p2.elevation) < 0.001) return true;
+            else return false;
+        }
+        public Corridor(GameObject org, GameObject dest, float elev)
+        {
+            origin = org;
+            destination = dest;
+            elevation = elev;
+        }
+    }
+
+    [Serializable]
+    public class Network
+    {
+        public List<GameObject> vertices { get; set; }
+        public List<Corridor> corridors { get; set; }
+        public Dictionary<GameObject, List<Corridor>> outEdges { get; set; }
+        public Dictionary<GameObject, List<Corridor>> inEdges { get; set; }
+        public Network()
+        {
+            vertices = new List<GameObject>();
+            corridors = new List<Corridor>();
+            outEdges = new Dictionary<GameObject, List<Corridor>>();
+            inEdges = new Dictionary<GameObject, List<Corridor>>();
+        }
+
+    }
+
+
 }

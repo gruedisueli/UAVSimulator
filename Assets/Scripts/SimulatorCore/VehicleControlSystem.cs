@@ -10,6 +10,7 @@ using Assets.Scripts.DataStructure;
 using Assets.Scripts.Environment;
 using Assets.Scripts.UI;
 using Assets.Scripts;
+using DelaunatorSharp;
 
 
 public class VehicleControlSystem : MonoBehaviour
@@ -18,6 +19,8 @@ public class VehicleControlSystem : MonoBehaviour
     const float AGL_700_METERS = 213.36f;
     const float AGL_1200_METERS = 365.76f;
     public float MIN_DRONE_RANGE;
+    const float UTM_ELEVATION = 152.4f; // 500 AGL ft
+    const float SEPARATION = 25.0f;
 
 
     #region UI Variables
@@ -64,10 +67,12 @@ public class VehicleControlSystem : MonoBehaviour
     public float upperElevationBound = 135;
     public float[][] cityBounds;
 
+    public bool networkGenerated;
     public List<GameObject> parkingCollection;
     public List<GameObject> landingCollection;
     public Dictionary<GameObject, GameObject> parkingLandingMapping;
     public Dictionary<GameObject, List<GameObject>> routes;
+    public Assets.Scripts.DataStructure.Network network;
 
     public float speedMultiplier = 1.0f;
 
@@ -84,6 +89,7 @@ public class VehicleControlSystem : MonoBehaviour
     {
         playing = false;
         vehicleInstantiated = false;
+        networkGenerated = false;
         translucentRed = new Color(Color.cyan.r, Color.cyan.g, Color.cyan.b, 0.50f);
         // 1. instantiate vehicles in parking spots
         // 2. generate call signals
@@ -148,10 +154,16 @@ public class VehicleControlSystem : MonoBehaviour
                 }
             }
 
-        }
-        if (playing && !vehicleInstantiated)
-        {
-            InstantiateVehicles();
+            if (!vehicleInstantiated)
+            {
+                InstantiateVehicles();
+                vehicleInstantiated = true;
+            }
+            if(!networkGenerated)
+            {
+                GenerateNetwork();
+                networkGenerated = true;
+            }
         }
     }
 
@@ -167,8 +179,13 @@ public class VehicleControlSystem : MonoBehaviour
         {
             if (call_type_string.Equals("corridor"))
             {
-                Queue<GameObject> destinations = GetNewRandomDestinations();
-                GameObject parking = GetNearestAvailableParking(destinations.Peek());
+                List<GameObject> destinations_list = GetNewRandomDestinations();
+                GameObject parking = GetNearestAvailableParking(destinations_list[0]);
+                Queue<GameObject> destinations = Route(parking, destinations_list);
+                // From Here - Replace the part that returns waypoints - consider different ends
+                //           - Visualize corridor
+                //           - Event : no of drones etc.
+                //           - Visualize landing paths
                 if (parking == null)
                 {
                     Debug.Log("No available vehicle");
@@ -570,6 +587,65 @@ public class VehicleControlSystem : MonoBehaviour
         }
     }
 
+    public IPoint[] GetVertices(List<GameObject> points)
+    {
+        List<IPoint> pts = new List<IPoint>();
+        foreach(GameObject gO in points)
+        {
+            Vector3 position = gO.transform.position;
+            pts.Add(new Point((double)position.x, (double)position.z));
+        }
+        return pts.ToArray();
+    }
+
+    
+    public int nextHalfEdge(int e)
+    {
+        return (e % 3 == 2) ? e - 2 : e + 1;
+    }
+    public void GenerateNetwork()
+    {
+        List<GameObject> points = new List<GameObject>();
+        foreach(SceneDronePort sdp in sceneManager.DronePorts.Values) points.Add(sdp.gameObject);
+        foreach(SceneParkingStructure sps in sceneManager.ParkingStructures.Values) points.Add(sps.gameObject);
+
+        IPoint[] vertices = GetVertices(points);
+        Delaunator delaunay = new Delaunator(vertices);
+        network.vertices = points;
+        for ( int i = 0; i < delaunay.Triangles.Length; i++ )
+        {
+            if( i > delaunay.Halfedges[i])
+            {
+                GameObject from = points[delaunay.Triangles[i]];
+                GameObject to = points[delaunay.Triangles[nextHalfEdge(i)]];
+                Corridor corridor_from_to = new Corridor(from, to, UTM_ELEVATION);
+                Vector3 corridor_from_to_start = new Vector3(from.transform.position.x, UTM_ELEVATION, from.transform.position.z);
+                Vector3 corridor_from_to_end = new Vector3(to.transform.position.x, UTM_ELEVATION, to.transform.position.z);
+                corridor_from_to_start.y = UTM_ELEVATION;
+                corridor_from_to_end.y = UTM_ELEVATION;
+
+                Corridor corridor_to_from = new Corridor(to, from, UTM_ELEVATION + SEPARATION);
+                Vector3 corridor_to_from_start = new Vector3(to.transform.position.x, UTM_ELEVATION + SEPARATION, to.transform.position.z);
+                Vector3 corridor_to_from_end = new Vector3(from.transform.position.x, UTM_ELEVATION + SEPARATION, from.transform.position.z);
+
+                corridor_from_to.wayPoints = new Queue<Vector3>(FindPath(corridor_from_to_start, corridor_from_to_end, 5).ToArray());
+                corridor_to_from.wayPoints = new Queue<Vector3>(FindPath(corridor_to_from_start, corridor_to_from_end, 5).ToArray());
+                
+                network.corridors.Add(corridor_from_to);
+                network.corridors.Add(corridor_to_from);
+                if (!network.inEdges.ContainsKey(from)) network.inEdges.Add(from, new List<Corridor>());
+                if (!network.outEdges.ContainsKey(from)) network.outEdges.Add(from, new List<Corridor>());
+                if (!network.inEdges.ContainsKey(to)) network.inEdges.Add(to, new List<Corridor>());
+                if (!network.outEdges.ContainsKey(to)) network.outEdges.Add(to, new List<Corridor>());
+
+                network.outEdges[from].Add(corridor_from_to);
+                network.inEdges[from].Add(corridor_to_from);
+                network.outEdges[to].Add(corridor_to_from);
+                network.inEdges[to].Add(corridor_from_to);
+            }
+        }
+
+    }
     public Vector3 GetRandomPointXZ(float y)
     {
         
@@ -615,7 +691,20 @@ public class VehicleControlSystem : MonoBehaviour
         return parkingStructure.GetComponent<ParkingControl>().parkingInfo.VehicleAt.Keys.ElementAt<GameObject>(random);
     }
 
-
+    Queue<GameObject> Route (GameObject origin, List<GameObject> destinations)
+    {
+        Queue<GameObject> routed_destinations = new Queue<GameObject>();
+        destinations.Insert(0, origin);
+        for ( int i = 0; i < destinations.Count - 1; i++ )
+        {
+            foreach(GameObject gO in Dijkstra(destinations[i], destinations[i+1], MIN_DRONE_RANGE))
+            {
+                routed_destinations.Enqueue(gO);
+            }
+        }
+        routed_destinations.Dequeue();
+        return routed_destinations;
+    }
 
 
 
@@ -635,8 +724,9 @@ public class VehicleControlSystem : MonoBehaviour
         {
             GameObject currentNode = queue.Dequeue();
             Vector3 currentPoint = currentNode.transform.position;
-            foreach (GameObject nextNode in sceneManager.Routes[currentNode])
+            foreach (Corridor outEdge in network.outEdges[currentNode])
             {
+                GameObject nextNode = outEdge.destination;
                 Vector3 nextPoint = nextNode.transform.position;
                 if (!distanceTo.ContainsKey(nextNode)) distanceTo.Add(nextNode, float.PositiveInfinity);
                 if (Vector3.Distance(currentPoint, nextPoint) < vehicleRange && distanceTo[nextNode] > distanceTo[currentNode] + Vector3.Distance(currentPoint, nextPoint))
@@ -652,7 +742,7 @@ public class VehicleControlSystem : MonoBehaviour
     }
 
 
-    public Queue<GameObject> GetNewRandomDestinations()
+    public List<GameObject> GetNewRandomDestinations()
     {
 
         Queue<GameObject> routedDestinations = new Queue<GameObject>();
@@ -667,8 +757,6 @@ public class VehicleControlSystem : MonoBehaviour
         int value = 0, destinationCount = Random.Range(1, sceneManager.DronePorts.Values.Count + 1);
         float range = MIN_DRONE_RANGE;
 
-        
-
         for (int i = 0; i < destinationCount; i++)
         {
             do
@@ -678,6 +766,8 @@ public class VehicleControlSystem : MonoBehaviour
             indices.Add(value);
             destinationList.Add(landings[value]);
         }
+        return destinationList;
+        /*
         List<GameObject> shortestPath = new List<GameObject>();
         //Debug.Log("Origin: " + destinationList[0].name + " - " + "Destination: " + destinationList[1].name);
         string routedResult = null;
@@ -692,7 +782,7 @@ public class VehicleControlSystem : MonoBehaviour
         Queue<GameObject> routed = new Queue<GameObject>();
         foreach (GameObject p in shortestPath) routed.Enqueue(p);
 
-        return routed;
+        return routed;*/
     }
     /*
     public Queue<GameObject> GetNewRandomDestinations ()

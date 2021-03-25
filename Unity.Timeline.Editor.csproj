@@ -526,6 +526,9 @@
     <Reference Include="Newtonsoft.Json">
       <HintPath>Assets\References\Newtonsoft Json\Netstandard 2.0\Newtonsoft.Json.dll</HintPath>
     </Reference>
+    <Reference Include="DelaunatorSharp">
+      <HintPath>Library\PackageCache\com.nol1fe.delaunator@af8a2c78e0\Runtime\DelaunatorSharp.dll</HintPath>
+    </Reference>
     <Reference Include="nunit.framework">
       <HintPath>Library\PackageCache\com.unity.ext.nunit@1.0.0\net35\unity-custom\nunit.framework.dll</HintPath>
     </Reference>

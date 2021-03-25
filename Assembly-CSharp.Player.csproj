@@ -185,6 +185,7 @@
     <Compile Include="Assets\Scripts\UI\Tools\StartModifyTool.cs" />
     <Compile Include="Assets\Mapbox\Unity\Telemetry\TelemetryFallback.cs" />
     <Compile Include="Assets\Mapbox\Unity\Location\LocationSmoothing\KalmanFilter.cs" />
+    <Compile Include="Assets\Scripts\UI\Tools\ToggleTool.cs" />
     <Compile Include="Assets\Mapbox\Unity\LayerProperties\PrefabItemOptions.cs" />
     <Compile Include="Assets\Scripts\UI\CityViewManager.cs" />
     <Compile Include="Assets\Mapbox\Core\mapbox-sdk-cs\Platform\Cache\SQLiteCache\Tiles.cs" />
@@ -278,7 +279,6 @@
     <Compile Include="Assets\Scripts\UI\Tools\SliderTool.cs" />
     <Compile Include="Assets\Mapbox\Unity\Utilities\NodeEditorElementAttribute.cs" />
     <Compile Include="Assets\Scripts\Environment\DronePortAssetPack.cs" />
-    <Compile Include="Assets\Scripts\Environment\Path.cs" />
     <Compile Include="Assets\Mapbox\Core\mapbox-sdk-cs\Directions\Overview.cs" />
     <Compile Include="Assets\Mapbox\Unity\LayerProperties\ElevationLayerProperties.cs" />
     <Compile Include="Assets\Mapbox\Unity\MeshGeneration\Interfaces\IFeaturePropertySettable.cs" />
@@ -797,6 +797,9 @@
     <Reference Include="Newtonsoft.Json">
       <HintPath>Assets\References\Newtonsoft Json\Netstandard 2.0\Newtonsoft.Json.dll</HintPath>
     </Reference>
+    <Reference Include="DelaunatorSharp">
+      <HintPath>Library\PackageCache\com.nol1fe.delaunator@af8a2c78e0\Runtime\DelaunatorSharp.dll</HintPath>
+    </Reference>
     <Reference Include="netstandard">
       <HintPath>C:\Program Files\Unity\Hub\Editor\2020.1.15f1\Editor\Data\NetStandard\ref\2.0.0\netstandard.dll</HintPath>
     </Reference>
@@ -1155,6 +1158,10 @@
     <ProjectReference Include="Unity.TextMeshPro.csproj">
       <Project>{B2FAEE0B-EB47-2747-172F-C21877D70556}</Project>
       <Name>Unity.TextMeshPro</Name>
+    </ProjectReference>
+    <ProjectReference Include="DelaunatorSharp.Runtime.csproj">
+      <Project>{9D830427-3BBF-5CE7-38AF-EC0E9DFC23FA}</Project>
+      <Name>DelaunatorSharp.Runtime</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

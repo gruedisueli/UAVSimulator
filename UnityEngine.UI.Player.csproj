@@ -60,8 +60,9 @@
     <Compile Include="C:\Program Files\Unity\Hub\Editor\2020.1.15f1\Editor\Data\Resources\PackageManager\BuiltInPackages\com.unity.ugui\Runtime\UI\Core\Layout\HorizontalLayoutGroup.cs" />
     <Compile Include="C:\Program Files\Unity\Hub\Editor\2020.1.15f1\Editor\Data\Resources\PackageManager\BuiltInPackages\com.unity.ugui\Runtime\UI\Core\Layout\CanvasScaler.cs" />
     <Compile Include="C:\Program Files\Unity\Hub\Editor\2020.1.15f1\Editor\Data\Resources\PackageManager\BuiltInPackages\com.unity.ugui\Runtime\UI\Core\Button.cs" />
-    <Compile Include="C:\Program Files\Unity\Hub\Editor\2020.1.15f1\Editor\Data\Resources\PackageManager\BuiltInPackages\com.unity.ugui\Runtime\UI\Core\InputField.cs" />
     <Compile Include="C:\Program Files\Unity\Hub\Editor\2020.1.15f1\Editor\Data\Resources\PackageManager\BuiltInPackages\com.unity.ugui\Runtime\UI\Core\Text.cs" />
+    <Compile Include="C:\Program Files\Unity\Hub\Editor\2020.1.15f1\Editor\Data\Resources\PackageManager\BuiltInPackages\com.unity.ugui\Runtime\UI\Core\InputField.cs" />
+    <Compile Include="C:\Program Files\Unity\Hub\Editor\2020.1.15f1\Editor\Data\Resources\PackageManager\BuiltInPackages\com.unity.ugui\Runtime\UI\Core\Layout\VerticalLayoutGroup.cs" />
     <Compile Include="C:\Program Files\Unity\Hub\Editor\2020.1.15f1\Editor\Data\Resources\PackageManager\BuiltInPackages\com.unity.ugui\Runtime\UI\Core\GraphicRaycaster.cs" />
     <Compile Include="C:\Program Files\Unity\Hub\Editor\2020.1.15f1\Editor\Data\Resources\PackageManager\BuiltInPackages\com.unity.ugui\Runtime\UI\Core\Image.cs" />
     <Compile Include="C:\Program Files\Unity\Hub\Editor\2020.1.15f1\Editor\Data\Resources\PackageManager\BuiltInPackages\com.unity.ugui\Runtime\UI\Core\IMaskable.cs" />
@@ -110,7 +111,6 @@
     <Compile Include="C:\Program Files\Unity\Hub\Editor\2020.1.15f1\Editor\Data\Resources\PackageManager\BuiltInPackages\com.unity.ugui\Runtime\UI\Core\RawImage.cs" />
     <Compile Include="C:\Program Files\Unity\Hub\Editor\2020.1.15f1\Editor\Data\Resources\PackageManager\BuiltInPackages\com.unity.ugui\Runtime\UI\Core\SpriteState.cs" />
     <Compile Include="C:\Program Files\Unity\Hub\Editor\2020.1.15f1\Editor\Data\Resources\PackageManager\BuiltInPackages\com.unity.ugui\Runtime\UI\Animation\CoroutineTween.cs" />
-    <Compile Include="C:\Program Files\Unity\Hub\Editor\2020.1.15f1\Editor\Data\Resources\PackageManager\BuiltInPackages\com.unity.ugui\Runtime\UI\Core\Layout\VerticalLayoutGroup.cs" />
     <Compile Include="C:\Program Files\Unity\Hub\Editor\2020.1.15f1\Editor\Data\Resources\PackageManager\BuiltInPackages\com.unity.ugui\Runtime\UI\Core\Utility\ListPool.cs" />
     <Compile Include="C:\Program Files\Unity\Hub\Editor\2020.1.15f1\Editor\Data\Resources\PackageManager\BuiltInPackages\com.unity.ugui\Runtime\UI\Core\Navigation.cs" />
     <Compile Include="C:\Program Files\Unity\Hub\Editor\2020.1.15f1\Editor\Data\Resources\PackageManager\BuiltInPackages\com.unity.ugui\Runtime\UI\Core\VertexModifiers\BaseMeshEffect.cs" />
@@ -353,6 +353,9 @@
     </Reference>
     <Reference Include="Newtonsoft.Json">
       <HintPath>Assets\References\Newtonsoft Json\Netstandard 2.0\Newtonsoft.Json.dll</HintPath>
+    </Reference>
+    <Reference Include="DelaunatorSharp">
+      <HintPath>Library\PackageCache\com.nol1fe.delaunator@af8a2c78e0\Runtime\DelaunatorSharp.dll</HintPath>
     </Reference>
     <Reference Include="netstandard">
       <HintPath>C:\Program Files\Unity\Hub\Editor\2020.1.15f1\Editor\Data\NetStandard\ref\2.0.0\netstandard.dll</HintPath>

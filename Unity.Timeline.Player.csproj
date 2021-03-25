@@ -342,6 +342,9 @@
     <Reference Include="Newtonsoft.Json">
       <HintPath>Assets\References\Newtonsoft Json\Netstandard 2.0\Newtonsoft.Json.dll</HintPath>
     </Reference>
+    <Reference Include="DelaunatorSharp">
+      <HintPath>Library\PackageCache\com.nol1fe.delaunator@af8a2c78e0\Runtime\DelaunatorSharp.dll</HintPath>
+    </Reference>
     <Reference Include="netstandard">
       <HintPath>C:\Program Files\Unity\Hub\Editor\2020.1.15f1\Editor\Data\NetStandard\ref\2.0.0\netstandard.dll</HintPath>
     </Reference>
