@@ -16,6 +16,7 @@ namespace Assets.Scripts.UI.Tools
             _follower.Initialize(_drone.gameObject);
             Drone.OnDroneTakeOff += OnTakeOff;
             Drone.OnDroneParking += OnParking;
+            SetActive(false);//drones are instantiated in parking areas, and should be off to start with.
         }
 
         protected override void OnDestroy()
