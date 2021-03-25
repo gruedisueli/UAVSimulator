@@ -28,8 +28,8 @@ namespace Assets.Scripts.UI.Tools
             string t = specs.Type;
             var asset = EnvironManager.Instance.RestrictionZoneAssets[t];
             _image.sprite = asset.PreviewImage;
-            SetTextElement(ElementPropertyType.Type, t);
-            SetTextElement(ElementPropertyType.Description, specs.Description);
+            _infoPanel.SetTextElement(ElementPropertyType.Type, t);
+            _infoPanel.SetTextElement(ElementPropertyType.Description, specs.Description);
 
             //not done building out this panel.
 

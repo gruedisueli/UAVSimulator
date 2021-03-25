@@ -24,6 +24,8 @@ namespace Assets.Scripts.UI
     {
         private FOA_RangeAroundTransformTileProvider _tileProvider;
         private GameObject _cityCenter;
+        private DroneInfoPanel _droneInfoPanel;
+        private List<DroneIcon> _droneIcons = new List<DroneIcon>();
 
         protected override void Init()
         {
@@ -37,6 +39,14 @@ namespace Assets.Scripts.UI
                 Debug.LogError("Tile provider not found");
                 return;
             }
+
+            _droneInfoPanel = FindObjectOfType<DroneInfoPanel>(true);
+            if (_droneInfoPanel == null)
+            {
+                Debug.LogError("Drone Info Panel not found");
+                return;
+            }
+            _droneInfoPanel.SetActive(false);
 
             var eC = EnvironManager.Instance;
             //var city = eC.Environ.GetCity(eC.ActiveCity);
@@ -54,11 +64,21 @@ namespace Assets.Scripts.UI
                 _mainCamera.transform.position = new Vector3(city.CityStats.WorldPos.x, 1000, city.CityStats.WorldPos.z);
                 _abstractMap.Initialize(EnvironManager.Instance.Environ.CenterLatLong, EnvironSettings.CITY_ZOOM_LEVEL);
             }
+
+            _vehicleControlSystem.OnDroneInstantiated += OnDroneInstantiated;
         }
 
         protected override void OnDestroyDerived()
         {
+            foreach(var i in _droneIcons)
+            {
+                if (i != null)
+                {
+                    i.OnSelected -= DroneSelected;
+                }
+            }
 
+            _vehicleControlSystem.OnDroneInstantiated -= OnDroneInstantiated;
         }
 
         #region MODIFICATION
@@ -347,5 +367,53 @@ namespace Assets.Scripts.UI
         }
 
         #endregion
+
+        #region SIMULATION
+
+        /// <summary>
+        /// Called whenever a drone is added to scene.
+        /// </summary>
+        protected void OnDroneInstantiated(object sender, DroneInstantiationArgs args)
+        {
+            var gO = args.Drone;
+
+            var clone = Instantiate(EnvironManager.Instance.DroneIconPrefab);
+            clone.transform.SetParent(_mainCanvas.transform, false);
+            var icon = clone.GetComponentInChildren<DroneIcon>(true);
+            if (icon == null)
+            {
+                Debug.LogError("Could not find Drone Icon Component in Drone Info Panel prefab");
+                return;
+            }
+            var drone = gO.GetComponentInChildren<Vehicle>(true);
+            if (drone == null)
+            {
+                Debug.LogError("Could not find Vehicle Component in children of drone");
+                return;
+            }
+
+            icon.Initialize(drone);
+
+            icon.OnSelected += DroneSelected;
+
+            _droneIcons.Add(icon);
+        }
+
+        /// <summary>
+        /// Called when a drone icon is selected.
+        /// </summary>
+        protected void DroneSelected(object sender, System.EventArgs args)
+        {
+            SceneIconBase icon = sender as SceneIconBase;
+            if (icon == null)
+            {
+                Debug.LogError("Sender of drone selection message is not an icon");
+                return;
+            }
+            _droneInfoPanel.Initialize(icon.gameObject);
+        }
+
+        #endregion
+
     }
 }

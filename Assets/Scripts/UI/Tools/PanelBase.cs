@@ -58,7 +58,7 @@ namespace Assets.Scripts.UI.Tools
             var comp = GetComponentInChildren<T>(true);
             if (comp == null)
             {
-                Debug.LogError($"Could not find child component {typeof(T).ToString()} on UI panel");
+                Debug.Log($"Could not find child component {typeof(T).ToString()} on UI panel");
             }
 
             return comp;

@@ -29,9 +29,9 @@ namespace Assets.Scripts.UI.Tools
             var asset = EnvironManager.Instance.ParkingStructAssets[t];
             _image.sprite = asset.PreviewImage;
 
-            SetTextElement(ElementPropertyType.Type, t);
-            SetTextElement(ElementPropertyType.Description, specs.Description);
-            SetTextElement(ElementPropertyType.Rotation, specs.Rotation.y.ToString("F2"));
+            _infoPanel.SetTextElement(ElementPropertyType.Type, t);
+            _infoPanel.SetTextElement(ElementPropertyType.Description, specs.Description);
+            _infoPanel.SetTextElement(ElementPropertyType.Rotation, specs.Rotation.y.ToString("F2"));
 
             SliderTool sT = GetComponentInChildren<SliderTool>(true);
             if (sT == null)
@@ -50,7 +50,7 @@ namespace Assets.Scripts.UI.Tools
                 {
                     case ElementPropertyType.Rotation:
                         {
-                            SetTextElement(ElementPropertyType.Rotation, (args.Update as ModifyVector3PropertyArg).Value.y.ToString("F2"));
+                            _infoPanel.SetTextElement(ElementPropertyType.Rotation, (args.Update as ModifyVector3PropertyArg).Value.y.ToString("F2"));
                             break;
                         }
                 }

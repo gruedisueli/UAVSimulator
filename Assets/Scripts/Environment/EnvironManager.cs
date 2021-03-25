@@ -57,6 +57,7 @@ namespace Assets.Scripts.Environment
         public GameObject ParkingInfoPanelPrefab { get; private set; } = null;
         public GameObject RestrictionInfoPanelPrefab { get; private set; } = null;
         public GameObject AddButtonPrefab { get; private set; } = null;
+        public GameObject DroneIconPrefab { get; private set; } = null;
         
 
         /// <summary>
@@ -407,6 +408,7 @@ namespace Assets.Scripts.Environment
             ReadMaterialAssets();
             ReadInfoPanelPrefabs();
             ReadButtonPrefabs();
+            ReadIconPrefabs();
         }
 
         /// <summary>
@@ -570,6 +572,15 @@ namespace Assets.Scripts.Environment
             DronePortInfoPanelPrefab = AssetUtils.ReadPrefab(rPath, "DronePortInfoPanel");
             ParkingInfoPanelPrefab = AssetUtils.ReadPrefab(rPath, "ParkingInfoPanel");
             RestrictionInfoPanelPrefab = AssetUtils.ReadPrefab(rPath, "RestrictionInfoPanel");
+        }
+
+        /// <summary>
+        /// Gets resources for prefabs of icons.
+        /// </summary>
+        private void ReadIconPrefabs()
+        {
+            string rPath = "GUI/";
+            DroneIconPrefab = AssetUtils.ReadPrefab(rPath, "DroneIcon");
         }
 
         /// <summary>

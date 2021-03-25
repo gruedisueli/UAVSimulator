@@ -16,7 +16,7 @@ namespace Assets.Scripts.UI.Tools
     public class ElementFollower : MonoBehaviour
     {
         protected Camera _mainCamera = null;
-        protected SceneElementBase _sceneElement = null;
+        protected GameObject _sceneElement = null;
 
         private void Start()
         {
@@ -27,7 +27,7 @@ namespace Assets.Scripts.UI.Tools
             }
         }
 
-        public void Initialize(SceneElementBase target)
+        public void Initialize(GameObject target)
         {
             _sceneElement = target;
         }
@@ -37,7 +37,7 @@ namespace Assets.Scripts.UI.Tools
             if (_sceneElement != null && _mainCamera != null)
             {
                 var rT = gameObject.GetComponent<RectTransform>();
-                var sPt = _mainCamera.WorldToScreenPoint(_sceneElement.gameObject.transform.position);
+                var sPt = _mainCamera.WorldToScreenPoint(_sceneElement.transform.position);
                 rT.position = new Vector3(sPt.x, sPt.y, 0);
             }
         }

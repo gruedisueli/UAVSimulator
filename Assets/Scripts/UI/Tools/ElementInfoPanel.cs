@@ -94,38 +94,33 @@ namespace Assets.Scripts.UI.Tools
         }
 
         /// <summary>
-        /// Sets the value of a text element on this panel.
+        /// Initializes for use with special scene elements.
         /// </summary>
-        protected void SetTextElement(ElementPropertyType pT, string value)
+        public virtual void Initialize(SceneElementBase sceneElement)
         {
-            try
-            {
-                _infoPanel.TextElements[pT].SetTextAsValue(value);
-            }
-            catch
-            {
-                Debug.LogError("Did not find property type in text panel to populate with provided value");
-            }
+            Initialize(sceneElement.gameObject);
         }
 
-        public virtual void Initialize(SceneElementBase sceneElement)
+        /// <summary>
+        /// Initializes for use with generic game objects that are not scene elements.
+        /// </summary>
+        public virtual void Initialize(GameObject sceneElement)
         {
 
             ModifyPanel = FindCompInChildren<ModifyPanel>();
             ModifyTools = GetComponentsInChildren<ModifyTool>(true);
             if (ModifyTools == null || ModifyTools.Length == 0)
             {
-                Debug.LogError("Modify tools not found in children of element info panel");
+                Debug.Log("Modify tools not found in children of element info panel");
             }
             var imgs = GetComponentsInChildren<Image>(true);
             if (imgs == null || imgs.Length == 0)
             {
-                Debug.LogError("No image components found on info panel");
-                return;
+                Debug.Log("No image components found on info panel");
             }
-            foreach(var im in imgs)
+            foreach (var im in imgs)
             {
-                if(im.gameObject.name == "InfoImage")
+                if (im.gameObject.name == "InfoImage")
                 {
                     _image = im;
                     break;
@@ -133,8 +128,7 @@ namespace Assets.Scripts.UI.Tools
             }
             if (_image == null)
             {
-                Debug.LogError("Info image not found on info panel");
-                return;
+                Debug.Log("Info image not found on info panel");
             }
             _infoPanel = FindCompInChildren<TextPanel>();
             if (_infoPanel != null)
@@ -171,7 +165,7 @@ namespace Assets.Scripts.UI.Tools
             }
 
 
-            _elementFollower.Initialize(sceneElement);
+            _elementFollower?.Initialize(sceneElement.gameObject);
         }
 
         protected abstract void ModifyTextValues(IModifyElementArgs args);

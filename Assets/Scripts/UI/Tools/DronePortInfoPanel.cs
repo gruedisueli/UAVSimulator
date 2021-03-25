@@ -29,12 +29,12 @@ namespace Assets.Scripts.UI.Tools
             string t = specs.Type;
             var asset = EnvironManager.Instance.DronePortAssets[t];
             _image.sprite = asset.PreviewImage;
-            SetTextElement(ElementPropertyType.Type, t);
-            SetTextElement(ElementPropertyType.Description, specs.Description);
-            SetTextElement(ElementPropertyType.Rotation, specs.Rotation.y.ToString("F2"));
-            SetTextElement(ElementPropertyType.MaxVehicleSize, specs.MaximumVehicleSize.ToString("F2"));
-            SetTextElement(ElementPropertyType.XScale, specs.Scale.x.ToString("F2"));
-            SetTextElement(ElementPropertyType.ZScale, specs.Scale.z.ToString("F2"));
+            _infoPanel.SetTextElement(ElementPropertyType.Type, t);
+            _infoPanel.SetTextElement(ElementPropertyType.Description, specs.Description);
+            _infoPanel.SetTextElement(ElementPropertyType.Rotation, specs.Rotation.y.ToString("F2"));
+            _infoPanel.SetTextElement(ElementPropertyType.MaxVehicleSize, specs.MaximumVehicleSize.ToString("F2"));
+            _infoPanel.SetTextElement(ElementPropertyType.XScale, specs.Scale.x.ToString("F2"));
+            _infoPanel.SetTextElement(ElementPropertyType.ZScale, specs.Scale.z.ToString("F2"));
             
 
             SliderTool[] sliders = GetComponentsInChildren<SliderTool>(true);
@@ -79,17 +79,17 @@ namespace Assets.Scripts.UI.Tools
                 {
                     case ElementPropertyType.Rotation:
                         {
-                            SetTextElement(ElementPropertyType.Rotation, (args.Update as ModifyVector3PropertyArg).Value.y.ToString("F2"));
+                            _infoPanel.SetTextElement(ElementPropertyType.Rotation, (args.Update as ModifyVector3PropertyArg).Value.y.ToString("F2"));
                             break;
                         }
                     case ElementPropertyType.XScale:
                         {
-                            SetTextElement(ElementPropertyType.XScale, (args.Update as ModifyFloatPropertyArg).Value.ToString("F2"));
+                            _infoPanel.SetTextElement(ElementPropertyType.XScale, (args.Update as ModifyFloatPropertyArg).Value.ToString("F2"));
                             break;
                         }
                     case ElementPropertyType.ZScale:
                         {
-                            SetTextElement(ElementPropertyType.ZScale, (args.Update as ModifyFloatPropertyArg).Value.ToString("F2"));
+                            _infoPanel.SetTextElement(ElementPropertyType.ZScale, (args.Update as ModifyFloatPropertyArg).Value.ToString("F2"));
                             break;
                         }
                 }

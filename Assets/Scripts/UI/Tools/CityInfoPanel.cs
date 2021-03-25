@@ -35,13 +35,13 @@ namespace Assets.Scripts.UI.Tools
 
             var specs = sCity.CitySpecs;
 
-            SetTextElement(ElementPropertyType.Name, specs.Name);
-            SetTextElement(ElementPropertyType.Population, specs.Population.ToString());
-            SetTextElement(ElementPropertyType.Jobs, specs.Jobs.ToString());
-            SetTextElement(ElementPropertyType.EastExt, specs.EastExt.ToString());
-            SetTextElement(ElementPropertyType.WestExt, specs.WestExt.ToString());
-            SetTextElement(ElementPropertyType.NorthExt, specs.NorthExt.ToString());
-            SetTextElement(ElementPropertyType.SouthExt, specs.SouthExt.ToString());
+            _infoPanel.SetTextElement(ElementPropertyType.Name, specs.Name);
+            _infoPanel.SetTextElement(ElementPropertyType.Population, specs.Population.ToString());
+            _infoPanel.SetTextElement(ElementPropertyType.Jobs, specs.Jobs.ToString());
+            _infoPanel.SetTextElement(ElementPropertyType.EastExt, specs.EastExt.ToString());
+            _infoPanel.SetTextElement(ElementPropertyType.WestExt, specs.WestExt.ToString());
+            _infoPanel.SetTextElement(ElementPropertyType.NorthExt, specs.NorthExt.ToString());
+            _infoPanel.SetTextElement(ElementPropertyType.SouthExt, specs.SouthExt.ToString());
 
         }
 
@@ -74,37 +74,37 @@ namespace Assets.Scripts.UI.Tools
                 {
                     case ElementPropertyType.Name:
                         {
-                            SetTextElement(ElementPropertyType.Name, (args.Update as ModifyStringPropertyArg).Value);
+                            _infoPanel.SetTextElement(ElementPropertyType.Name, (args.Update as ModifyStringPropertyArg).Value);
                             break;
                         }
                     case ElementPropertyType.Population:
                         {
-                            SetTextElement(ElementPropertyType.Population, (args.Update as ModifyIntPropertyArg).Value.ToString());
+                            _infoPanel.SetTextElement(ElementPropertyType.Population, (args.Update as ModifyIntPropertyArg).Value.ToString());
                             break;
                         }
                     case ElementPropertyType.Jobs:
                         {
-                            SetTextElement(ElementPropertyType.Jobs, (args.Update as ModifyIntPropertyArg).Value.ToString());
+                            _infoPanel.SetTextElement(ElementPropertyType.Jobs, (args.Update as ModifyIntPropertyArg).Value.ToString());
                             break;
                         }
                     case ElementPropertyType.EastExt:
                         {
-                            SetTextElement(ElementPropertyType.EastExt, (args.Update as ModifyIntPropertyArg).Value.ToString());
+                            _infoPanel.SetTextElement(ElementPropertyType.EastExt, (args.Update as ModifyIntPropertyArg).Value.ToString());
                             break;
                         }
                     case ElementPropertyType.WestExt:
                         {
-                            SetTextElement(ElementPropertyType.WestExt, (args.Update as ModifyIntPropertyArg).Value.ToString());
+                            _infoPanel.SetTextElement(ElementPropertyType.WestExt, (args.Update as ModifyIntPropertyArg).Value.ToString());
                             break;
                         }
                     case ElementPropertyType.NorthExt:
                         {
-                            SetTextElement(ElementPropertyType.NorthExt, (args.Update as ModifyIntPropertyArg).Value.ToString());
+                            _infoPanel.SetTextElement(ElementPropertyType.NorthExt, (args.Update as ModifyIntPropertyArg).Value.ToString());
                             break;
                         }
                     case ElementPropertyType.SouthExt:
                         {
-                            SetTextElement(ElementPropertyType.SouthExt, (args.Update as ModifyIntPropertyArg).Value.ToString());
+                            _infoPanel.SetTextElement(ElementPropertyType.SouthExt, (args.Update as ModifyIntPropertyArg).Value.ToString());
                             break;
                         }
                 }
