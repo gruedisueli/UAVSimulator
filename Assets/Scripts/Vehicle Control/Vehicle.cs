@@ -1,7 +1,12 @@
-﻿using System.Collections;
+﻿using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using System.Collections;
 using UnityEngine;
 using Assets.Scripts.Vehicle_Control;
+using Assets.Scripts.UI.EventArgs;
 
 public class Vehicle : MonoBehaviour
 {
@@ -53,9 +58,13 @@ public class Vehicle : MonoBehaviour
     public bool isBackgroundDrone;
     public float waitTimer;
     public float waitTime;
-    
-    
-    
+
+    public event EventHandler<EventArgs> OnDroneTakeOff;
+    public event EventHandler<EventArgs> OnDroneParking;
+    private EventArgs e;
+
+
+
     VehicleControlSystem vcs;
 
     #region Constructors
@@ -77,6 +86,8 @@ public class Vehicle : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        e = new EventArgs();
+
         arrival_threshold = 0.5f;
         wayPoints = new List<Vector3>();
         wayPointsQueue = new Queue<Vector3>();
@@ -124,10 +135,13 @@ public class Vehicle : MonoBehaviour
             if (state == "parked" && vcs.movingVehicles.Contains(gameObject))
             {
                 vcs.movingVehicles.Remove(gameObject);
+                OnDroneParking?.Invoke(gameObject, e);
+
             }
             if (state != "parked" && !vcs.movingVehicles.Contains(gameObject))
             {
                 vcs.movingVehicles.Add(gameObject);
+                OnDroneTakeOff?.Invoke(gameObject, e);
             }
 
 
@@ -349,7 +363,7 @@ public class Vehicle : MonoBehaviour
                     if (wayPointsQueue.Count == 0)
                     {
                         waitTimer = 0.0f;
-                        waitTime = Random.Range(1.0f, 2.0f) / vcs.speedMultiplier;
+                        waitTime = UnityEngine.Random.Range(1.0f, 2.0f) / vcs.speedMultiplier;
                         state = "operation_point_arrived";
                         return;
                     }
