@@ -72,7 +72,7 @@ public class ParkingControl : MonoBehaviour
             }
             else if (currentVehicleState.state == "landing_requested")
             {
-                if (!parkingInfo.Reserved.ContainsKey(currentVehicle) && parkingInfo.RemainingSpots > 0) parkingInfo.Reserve(currentVehicle);
+                if (!parkingInfo.Reserved.ContainsKey(currentVehicle) && parkingInfo.RemainingSpots > 0) parkingInfo.Reserve(currentVehicle); 
                 try
                 {
                     Vector3 parkingSpotTemp = parkingInfo.Reserved[currentVehicle];
