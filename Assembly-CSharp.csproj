@@ -59,6 +59,7 @@
     <Compile Include="Assets\Mapbox\Unity\MeshGeneration\Components\VertexDebugger.cs" />
     <Compile Include="Assets\Scripts\Environment\SceneRestrictionZone.cs" />
     <Compile Include="Assets\Mapbox\Unity\MeshGeneration\Modifiers\IReplacementCriteria.cs" />
+    <Compile Include="Assets\Scripts\Serialization\SerVect2f.cs" />
     <Compile Include="Assets\Mapbox\Unity\LayerProperties\PresetSubLayerPropertiesFetcher.cs" />
     <Compile Include="Assets\Mapbox\Unity\MeshGeneration\Data\KdTree\NearestNeighbour.cs" />
     <Compile Include="Assets\Mapbox\Core\mapbox-sdk-cs\Platform\Cache\MemoryCache.cs" />
@@ -146,6 +147,7 @@
     <Compile Include="Assets\Scripts\UI\EventArgs\SceneChangeArgs.cs" />
     <Compile Include="Assets\Mapbox\Unity\Map\Interfaces\IMapScalingStrategy.cs" />
     <Compile Include="Assets\Mapbox\Unity\Location\UnityLocationWrappers\MapboxLocationServiceUnityWrapper.cs" />
+    <Compile Include="Assets\Scripts\Environment\AirspaceTile.cs" />
     <Compile Include="Assets\Mapbox\Examples\Scripts\LoadingPanelController.cs" />
     <Compile Include="Assets\Scripts\UI\EventArgs\AddParkingStructArgs.cs" />
     <Compile Include="Assets\Scripts\UI\RegionViewManager.cs" />
@@ -313,6 +315,7 @@
     <Compile Include="Assets\Mapbox\Unity\MeshGeneration\LayerVisualizers\LocationPrefabsLayerVisualizer.cs" />
     <Compile Include="Assets\Mapbox\Core\cheap-ruler-cs\CheapRuler.cs" />
     <Compile Include="Assets\Mapbox\Unity\MeshGeneration\Modifiers\MeshGenerationBase.cs" />
+    <Compile Include="Assets\Scripts\Environment\AirspaceFeature.cs" />
     <Compile Include="Assets\Mapbox\Core\probe-extractor-cs\ProbeExtractor.cs" />
     <Compile Include="Assets\Mapbox\Unity\MeshGeneration\Interfaces\LayerVisualizerBase.cs" />
     <Compile Include="Assets\Mapbox\Core\mapbox-sdk-cs\Platform\Cache\ICache.cs" />
@@ -520,6 +523,7 @@
     <Compile Include="Assets\Mapbox\Unity\DataContainers\GeometryMaterialOptions.cs" />
     <Compile Include="Assets\Scripts\UI\EventArgs\ModifyStringPropertyArg.cs" />
     <Compile Include="Assets\Mapbox\Unity\SourceLayers\MapboxDefaultImagery.cs" />
+    <Compile Include="Assets\Scripts\UI\Tools\DownloadAirspaceTool.cs" />
     <Compile Include="Assets\Mapbox\Unity\MeshGeneration\Modifiers\MeshModifier.cs" />
     <Compile Include="Assets\Mapbox\Unity\Map\Interfaces\ITileProvider.cs" />
     <Compile Include="Assets\Scripts\UI\Tools\ElementFollower.cs" />
@@ -533,6 +537,7 @@
     <Compile Include="Assets\Mapbox\Core\mapbox-sdk-cs\Map\ClassicRasterTile.cs" />
     <Compile Include="Assets\Scripts\UI\Tools\RestrictionInfoPanel.cs" />
     <Compile Include="Assets\Mapbox\Unity\MeshGeneration\Modifiers\ModifierStack.cs" />
+    <Compile Include="Assets\Scripts\MapboxCustom\FOA_PolygonMesh.cs" />
   </ItemGroup>
   <ItemGroup>
      <None Include="Assets\Mapbox\Core\Plugins\Mapbox\vector-tile-cs\net46\Mapbox.VectorTile.Geometry.dll" />

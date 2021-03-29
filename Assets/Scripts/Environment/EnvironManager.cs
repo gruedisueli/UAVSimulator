@@ -4,8 +4,12 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.IO;
+using System.Net;
 
 using UnityEngine;
+
+using Mapbox.VectorTile;
+using Mapbox.Unity.MeshGeneration.Data;
 
 using Newtonsoft.Json;
 
@@ -58,7 +62,74 @@ namespace Assets.Scripts.Environment
         public GameObject RestrictionInfoPanelPrefab { get; private set; } = null;
         public GameObject AddButtonPrefab { get; private set; } = null;
         public GameObject DroneIconPrefab { get; private set; } = null;
-        
+        public Dictionary<string, AirspaceTile> AirspaceTiles { get; private set; } = new Dictionary<string, AirspaceTile>();
+
+
+        /// <summary>
+        /// Gets airspace data from our tileset on Mapbox
+        /// </summary>
+        public void DownloadAirspace(UnityTile t)
+        {
+            var id = t.CanonicalTileId;
+            Debug.Log($"Starting airspace download for tile {id}");
+            if (AirspaceTiles.ContainsKey(id.ToString()))
+            {
+                //tile already present. No need to rebuild.
+                return;
+            }
+            string prefix = "https://api.mapbox.com/v4/grudy.0odj258s/";
+            string suffix = ".mvt?access_token=pk.eyJ1IjoiZ3J1ZHkiLCJhIjoiY2tocXd2ZGFnMDQ1ZjJ6b3ludnhncHl0MyJ9.iZ16F7U0RSHytFNP7IEpmg";
+
+            string url = prefix + id.Z.ToString() + "/" + id.X.ToString() + "/" + id.Y.ToString() + suffix;
+            byte[] b = null;
+
+            b = TryDownload(url);
+
+            if (b == null)
+            {
+                Debug.Log($"Download from {url} failed");
+                return;
+            }
+            Debug.Log($"Downloaded {url}");
+
+            var reader = new VectorTileReader(b);
+            var layer = reader.GetLayer("Class_Airspace-apq25l");
+
+            AirspaceTiles.Add(id.ToString(), new AirspaceTile(layer, t));
+        }
+
+        /// <summary>
+        /// Tries to download from url. Null on failure.
+        /// </summary>
+        private byte[] TryDownload(string url)
+        {
+            byte[] b = null;
+
+            try
+            {
+                HttpWebRequest request = (HttpWebRequest)WebRequest.Create(url);
+                request.AutomaticDecompression = DecompressionMethods.GZip;
+
+                using (HttpWebResponse response = (HttpWebResponse)request.GetResponse())
+                {
+                    using (Stream str = response.GetResponseStream())
+                    {
+                        using (var memoryStream = new MemoryStream())
+                        {
+                            str.CopyTo(memoryStream);
+                            b = memoryStream.ToArray();
+                        }
+                    }
+                }
+
+            }
+            catch (Exception e)
+            {
+                Debug.Log(e.Message);
+            }
+
+            return b;
+        }
 
         /// <summary>
         /// Adds new drone port to environment. False on failure.
@@ -409,6 +480,18 @@ namespace Assets.Scripts.Environment
             ReadInfoPanelPrefabs();
             ReadButtonPrefabs();
             ReadIconPrefabs();
+
+            var layer = ReadVTile();
+            var feat = layer.GetFeature(0);
+            var geom = feat.Geometry<float>();
+        }
+
+        private VectorTileLayer ReadVTile()
+        {
+            string path = "C:\\Users\\grued\\Downloads\\377.mvt";
+            var b = File.ReadAllBytes(path);
+            var reader = new VectorTileReader(b);
+            return reader.GetLayer("Class_Airspace-apq25l");
         }
 
         /// <summary>

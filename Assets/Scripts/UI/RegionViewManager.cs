@@ -6,12 +6,9 @@ using System.Text;
 using System.Threading.Tasks;
 
 using UnityEngine;
-using UnityEngine.UI;
-using UnityEngine.SceneManagement;
 
-using Mapbox.Unity.Map;
 using Mapbox.Unity.MeshGeneration.Data;
-using Mapbox.Unity.Utilities;
+using Mapbox.Unity.Map;
 
 using Assets.Scripts.Environment;
 using Assets.Scripts.Serialization;
@@ -26,8 +23,9 @@ namespace Assets.Scripts.UI
     /// </summary>
     public class RegionViewManager : SceneManagerBase
     {
-        private GameObject _cityMarkerPrefab;
 
+        private GameObject _cityMarkerPrefab;
+        //private List<UnityTile> _tiles = new List<UnityTile>();
         protected override void Init()
         {
             string rPath = "GUI/";
@@ -37,13 +35,14 @@ namespace Assets.Scripts.UI
                 Debug.LogError("City marker prefab not found");
                 return;
             }
-            _abstractMap.Initialize(EnvironManager.Instance.Environ.CenterLatLong, EnvironSettings.REGION_ZOOM_LEVEL);
 
+            _abstractMap.Initialize(EnvironManager.Instance.Environ.CenterLatLong, EnvironSettings.REGION_ZOOM_LEVEL);
+            _largeScaleMap.Initialize(EnvironManager.Instance.Environ.CenterLatLong, EnvironSettings.AIRSPACE_ZOOM_LEVEL);
         }
 
         protected override void OnDestroyDerived()
         {
-            
+            //_abstractMap.OnTileFinished -= PullAirspaceOffMapbox;
         }
 
         #region ADD/REMOVE ELEMENTS
@@ -131,7 +130,6 @@ namespace Assets.Scripts.UI
         }
 
         #endregion
-
 
         #region MODIFICATION
 
@@ -223,4 +221,5 @@ namespace Assets.Scripts.UI
 
         #endregion
     }
+
 }

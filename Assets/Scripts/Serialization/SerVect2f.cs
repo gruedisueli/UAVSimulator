@@ -9,12 +9,12 @@ using UnityEngine;
 using Newtonsoft.Json;
 
 /// <summary>
-/// A json-serializable version of Vector3
+/// A json-serializable version of Vector2
 /// </summary>
 namespace Assets.Scripts.Serialization
 {
     [JsonObject(MemberSerialization.OptIn)]
-    public class SerVect3f
+    public class SerVect2f
     {
         [JsonProperty]
         private float _x = 0;
@@ -42,42 +42,26 @@ namespace Assets.Scripts.Serialization
                 _y = value;
             }
         }
-        [JsonProperty]
-        private float _z = 0;
-        public float Z
-        {
-            get
-            {
-                return _z;
-            }
-            set
-            {
-                _z = value;
-            }
-        }
 
-        public SerVect3f(Vector3 v)
+        public SerVect2f(Vector2 v)
         {
             _x = v.x;
             _y = v.y;
-            _z = v.z;
         }
 
-        public SerVect3f(float x, float y, float z)
+        public SerVect2f(float x, float y)
         {
             _x = x;
             _y = y;
-            _z = z;
         }
 
-        public SerVect3f(SerVect3f v)
+        public SerVect2f(SerVect2f v)
         {
             _x = v.X;
             _y = v.Y;
-            _z = v.Z;
         }
 
-        public SerVect3f()
+        public SerVect2f()
         {
 
         }
@@ -85,9 +69,9 @@ namespace Assets.Scripts.Serialization
         /// <summary>
         /// Returns a vector3 based on this object.
         /// </summary>
-        public Vector3 ToVector3()
+        public Vector2 ToVector2()
         {
-            return new Vector3(_x, _y, _z);
+            return new Vector2(_x, _y);
         }
     }
 }

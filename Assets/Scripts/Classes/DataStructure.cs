@@ -84,7 +84,7 @@ namespace Assets.Scripts.DataStructure
         }
         public Polygon(Vector3[] vertecies)
         {
-            Vector3[] polygon = vertecies;
+            polygon = vertecies;
         }
 
         private Vector3[] MakeRandomPolygon(int num_vertices, float width, float height)
