@@ -47,6 +47,11 @@ namespace Assets.Scripts.Environment
             }
         }
 
+        public AirspaceTile()
+        {
+
+        }
+
         public AirspaceTile(VectorTileLayer layer, UnityTile tile)
         {
             //var regionTileSideLength = UnitUtils.GetRegionTileSideLength();
@@ -58,6 +63,12 @@ namespace Assets.Scripts.Environment
             {
                 var feature = layer.GetFeature(i);
                 var f = new VectorFeatureUnity(feature, tile, layer.Extent);
+
+                if (f.Points.Count == 0)
+                {
+                    Debug.Log("Feature has 0 points in it");
+                    continue;
+                }
                 //parse class. some classes we can ignore for now.
                 AirspaceClass aC;
                 if (f.Properties.ContainsKey("CLASS"))
@@ -117,6 +128,9 @@ namespace Assets.Scripts.Environment
                     Debug.LogError("Airspace feature does not contain UPPER_VAL property");
                     continue;
                 }
+                
+                float upperValM = upperValFT * 0.3048f;
+                float lowerValM = lowerValFT * 0.3048f;
 
                 //build mesh data.
                 MeshData mD = new MeshData();
@@ -124,11 +138,7 @@ namespace Assets.Scripts.Environment
                 FOA_PolygonMesh pM = new FOA_PolygonMesh();
                 pM.Run(f, mD);
 
-
-                float upperValM = upperValFT * 0.3048f;
-                float lowerValM = lowerValFT * 0.3048f;
-
-                _features.Add(feature.Id.ToString(), new AirspaceFeature(f.Points, tileCenter, aC, feature.Id.ToString(), lowerValM, upperValM));
+                _features.Add(feature.Id.ToString(), new AirspaceFeature(mD, tileCenter, f.Points, aC, feature.Id.ToString(), lowerValM, upperValM));
             }
         }
     }

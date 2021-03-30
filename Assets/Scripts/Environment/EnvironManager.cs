@@ -62,7 +62,6 @@ namespace Assets.Scripts.Environment
         public GameObject RestrictionInfoPanelPrefab { get; private set; } = null;
         public GameObject AddButtonPrefab { get; private set; } = null;
         public GameObject DroneIconPrefab { get; private set; } = null;
-        public Dictionary<string, AirspaceTile> AirspaceTiles { get; private set; } = new Dictionary<string, AirspaceTile>();
 
 
         /// <summary>
@@ -70,13 +69,9 @@ namespace Assets.Scripts.Environment
         /// </summary>
         public void DownloadAirspace(UnityTile t)
         {
+
             var id = t.CanonicalTileId;
             Debug.Log($"Starting airspace download for tile {id}");
-            if (AirspaceTiles.ContainsKey(id.ToString()))
-            {
-                //tile already present. No need to rebuild.
-                return;
-            }
             string prefix = "https://api.mapbox.com/v4/grudy.0odj258s/";
             string suffix = ".mvt?access_token=pk.eyJ1IjoiZ3J1ZHkiLCJhIjoiY2tocXd2ZGFnMDQ1ZjJ6b3ludnhncHl0MyJ9.iZ16F7U0RSHytFNP7IEpmg";
 
@@ -95,7 +90,9 @@ namespace Assets.Scripts.Environment
             var reader = new VectorTileReader(b);
             var layer = reader.GetLayer("Class_Airspace-apq25l");
 
-            AirspaceTiles.Add(id.ToString(), new AirspaceTile(layer, t));
+            var aTile = new AirspaceTile(layer, t);
+
+            Instance.Environ.AirspaceTiles.Add(id.ToString(), aTile);
         }
 
         /// <summary>

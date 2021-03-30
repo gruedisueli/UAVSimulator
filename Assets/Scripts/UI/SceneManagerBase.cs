@@ -51,6 +51,8 @@ namespace Assets.Scripts.UI
 
         protected Canvas _mainCanvas;
 
+        protected float _airspaceYScale = 10;
+
         #endregion
 
         #region PROPERTIES
@@ -1103,10 +1105,27 @@ namespace Assets.Scripts.UI
         {
             if (_largeScaleMap != null)
             {
+                EnvironManager.Instance.Environ.AirspaceTiles = new Dictionary<string, AirspaceTile>();
+
                 UnityTile[] tiles = _largeScaleMap.GetComponentsInChildren<UnityTile>(true);
                 foreach (var t in tiles)
                 {
                     EnvironManager.Instance.DownloadAirspace(t);
+                }
+            }
+        }
+
+        /// <summary>
+        /// Instantiates airspace elements if we have them.
+        /// </summary>
+        protected void BuildAirspace()
+        {
+            //instantiate airspace.
+            foreach (var aT in EnvironManager.Instance.Environ.AirspaceTiles.Values)
+            {
+                foreach (var f in aT.Features.Values)
+                {
+                    f.CreateGeometry(_airspaceYScale);
                 }
             }
         }

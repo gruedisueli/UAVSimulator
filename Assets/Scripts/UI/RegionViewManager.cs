@@ -61,6 +61,8 @@ namespace Assets.Scripts.UI
 
         protected override void InstantiateObjects()
         {
+            BuildAirspace();
+
             foreach (var kvp in EnvironManager.Instance.GetCities())
             {
                 var c = kvp.Value;
