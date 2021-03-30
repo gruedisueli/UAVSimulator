@@ -131,4 +131,15 @@ namespace Assets.Scripts
         City,
         Quit
     }
+
+    public enum AirspaceClass
+    {
+        Unset,
+        A,
+        B,
+        C,
+        D,
+        E,
+        G
+    }
 }

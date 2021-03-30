@@ -344,6 +344,7 @@ namespace Assets.Scripts.UI
         protected override void InstantiateObjects()
         {
             // (Eunu? stll relevant?) TO-DO: Also register the restriction zones for drone ports and parking structures
+            BuildAirspace();
 
             var eM = EnvironManager.Instance;
             var city = eM.GetCurrentCity();

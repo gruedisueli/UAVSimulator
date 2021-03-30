@@ -9,12 +9,12 @@ using UnityEngine;
 using Newtonsoft.Json;
 
 /// <summary>
-/// A json-serializable version of Vector3
+/// A json-serializable version of Vector4
 /// </summary>
 namespace Assets.Scripts.Serialization
 {
     [JsonObject(MemberSerialization.OptIn)]
-    public class SerVect3f
+    public class SerVect4f
     {
         [JsonProperty]
         private float _x = 0;
@@ -55,29 +55,45 @@ namespace Assets.Scripts.Serialization
                 _z = value;
             }
         }
+        [JsonProperty]
+        private float _w = 0;
+        public float W
+        {
+            get
+            {
+                return _w;
+            }
+            set
+            {
+                _w = value;
+            }
+        }
 
-        public SerVect3f(Vector3 v)
+        public SerVect4f(Vector4 v)
         {
             _x = v.x;
             _y = v.y;
             _z = v.z;
+            _w = v.w;
         }
 
-        public SerVect3f(float x, float y, float z)
+        public SerVect4f(float x, float y, float z, float w)
         {
             _x = x;
             _y = y;
             _z = z;
+            _w = w;
         }
 
-        public SerVect3f(SerVect3f v)
+        public SerVect4f(SerVect4f v)
         {
             _x = v.X;
             _y = v.Y;
             _z = v.Z;
+            _w = v.W;
         }
 
-        public SerVect3f()
+        public SerVect4f()
         {
 
         }
@@ -85,9 +101,9 @@ namespace Assets.Scripts.Serialization
         /// <summary>
         /// Returns a vector3 based on this object.
         /// </summary>
-        public Vector3 ToVector3()
+        public Vector4 ToVector4()
         {
-            return new Vector3(_x, _y, _z);
+            return new Vector4(_x, _y, _z, _w);
         }
     }
 }

@@ -30,7 +30,8 @@ namespace Assets.Scripts.UI
     {
         #region PROTECTED FIELDS
 
-        protected AbstractMap _abstractMap;
+        public AbstractMap _abstractMap;
+        public AbstractMap _largeScaleMap;
 
         protected Camera _mainCamera;
 
@@ -42,12 +43,15 @@ namespace Assets.Scripts.UI
         protected DeselectTool[] _deselectTools;
         protected SavePrompt _savePrompt;
         protected PlayPauseTool _playPause;
+        protected DownloadAirspaceTool _downloadAirspaceTool;
 
         protected SceneElementBase _selectedElement = null;
         protected SceneElementBase _workingCopy = null;
         protected ElementInfoPanel _currentInfoPanel = null;
 
         protected Canvas _mainCanvas;
+
+        protected float _airspaceYScale = 10;
 
         #endregion
 
@@ -80,11 +84,15 @@ namespace Assets.Scripts.UI
             }
 
             //get mapbox abstract map
-            _abstractMap = FindObjectOfType<AbstractMap>(true);
+            //_abstractMap = FindObjectOfType<AbstractMap>(true);
             if (_abstractMap == null)
             {
-                Debug.LogError("Abstract map not found");
+                Debug.LogError("Abstract map not specified");
                 return;
+            }
+            if (_largeScaleMap == null) //it's ok not to specify this.
+            {
+                Debug.Log("Large scale map not specified for this view.");
             }
 
             //get main camera
@@ -119,6 +127,7 @@ namespace Assets.Scripts.UI
                 Debug.LogError("Play pause tool not found");
                 return;
             }
+            _downloadAirspaceTool = FindObjectOfType<DownloadAirspaceTool>(true);
 
             //event subscription
             //QUESTION: Why register our tools directly on the scene manager and not sub-panels?
@@ -140,6 +149,10 @@ namespace Assets.Scripts.UI
                 t.OnDeselect += DeselectElement;
             }
             _playPause.OnPlayPause += PlayPause;
+            if (_downloadAirspaceTool != null)
+            {
+                _downloadAirspaceTool.OnDownloadAirspace += GetAirspaceData;
+            }
 
             Init();
 
@@ -209,6 +222,10 @@ namespace Assets.Scripts.UI
                     var cP = _currentInfoPanel as CityInfoPanel;
                     cP.GoToCity.OnSceneChange -= ChangeScene;
                 }
+            }
+            if (_downloadAirspaceTool != null)
+            {
+                _downloadAirspaceTool.OnDownloadAirspace += GetAirspaceData;
             }
 
             OnDestroyDerived();
@@ -1079,6 +1096,41 @@ namespace Assets.Scripts.UI
 
         #endregion
 
-        
+        #region AIRSPACE 
+
+        /// <summary>
+        /// Gets airspace data from our tileset on Mapbox 
+        /// </summary>
+        protected void GetAirspaceData(object sender, System.EventArgs args)
+        {
+            if (_largeScaleMap != null)
+            {
+                EnvironManager.Instance.Environ.AirspaceTiles = new Dictionary<string, AirspaceTile>();
+
+                UnityTile[] tiles = _largeScaleMap.GetComponentsInChildren<UnityTile>(true);
+                foreach (var t in tiles)
+                {
+                    EnvironManager.Instance.DownloadAirspace(t);
+                }
+            }
+        }
+
+        /// <summary>
+        /// Instantiates airspace elements if we have them.
+        /// </summary>
+        protected void BuildAirspace()
+        {
+            //instantiate airspace.
+            foreach (var aT in EnvironManager.Instance.Environ.AirspaceTiles.Values)
+            {
+                foreach (var f in aT.Features.Values)
+                {
+                    f.CreateGeometry(_airspaceYScale);
+                }
+            }
+        }
+
+        #endregion
+
     }
 }

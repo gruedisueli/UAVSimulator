@@ -56,6 +56,23 @@ namespace Assets.Scripts.Environment
             }
         }
 
+        [JsonProperty]
+        private Dictionary<string, AirspaceTile> _airspaceTiles = new Dictionary<string, AirspaceTile>();
+        /// <summary>
+        /// The airspace tiles for this region.
+        /// </summary>
+        public Dictionary<string, AirspaceTile> AirspaceTiles
+        {
+            get
+            {
+                return _airspaceTiles;
+            }
+            set
+            {
+                _airspaceTiles = value;
+            }
+        }
+
         public Environ()
         {
 
