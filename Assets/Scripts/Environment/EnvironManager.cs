@@ -477,18 +477,6 @@ namespace Assets.Scripts.Environment
             ReadInfoPanelPrefabs();
             ReadButtonPrefabs();
             ReadIconPrefabs();
-
-            var layer = ReadVTile();
-            var feat = layer.GetFeature(0);
-            var geom = feat.Geometry<float>();
-        }
-
-        private VectorTileLayer ReadVTile()
-        {
-            string path = "C:\\Users\\grued\\Downloads\\377.mvt";
-            var b = File.ReadAllBytes(path);
-            var reader = new VectorTileReader(b);
-            return reader.GetLayer("Class_Airspace-apq25l");
         }
 
         /// <summary>
