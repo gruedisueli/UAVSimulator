@@ -1,0 +1,12 @@
+{
+  "type": "LowAltitude",
+  "capacity": 0,
+  "maxSpeed": 150,
+  "landingSpeed": 100,
+  "takeoffSpeed": 100,
+  "yawSpeed": 50,
+  "range": 5000,
+  "size": 1,
+  "emission": [ 1.0, 1.0, 1.0, 1.0, 1.0 ],
+  "noise": [ 1.0, 1.0, 1.0, 1.0, 1.0 ]
+}

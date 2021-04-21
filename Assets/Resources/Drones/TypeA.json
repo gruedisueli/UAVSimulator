@@ -1,5 +1,5 @@
 {
-  "type": "TypeA",
+  "type": "corridor",
   "capacity": 5,
   "maxSpeed": 200,
   "landingSpeed": 60,

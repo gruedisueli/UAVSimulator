@@ -5,18 +5,26 @@ using Assets.Scripts.Vehicle_Control;
 using Assets.Scripts.DataStructure;
 using Assets.Scripts.Environment;
 
-public class DronePortControl : MonoBehaviour
+public class DronePortControl : TrafficControl
 {
-    public float landingQueueSeparation = 10.0f;
-    public DronePortBase dronePortInfo;
-    public Queue<GameObject> queue;
     
-    public string state; // state = {busy, idle}
-    float watch;
-    float waitTime;
-    public GameObject currentVehicle;
-    public Vehicle currentVehicleState;
-    // Start is called before the first frame update
+    public DronePortBase dronePortInfo;
+    protected override void AssignLandingCorridor()
+    {
+        List<Vector3> landingGuide = dronePortInfo.GetLandingGuide("landing");
+        List<Vector3> translatedLandingGuide = new List<Vector3>();
+        foreach (Vector3 v in landingGuide) translatedLandingGuide.Add(dronePortInfo.TranslateLandingGuidePosition(v));
+        vehicleState.wayPointsQueue = toQueue(translatedLandingGuide);
+    }
+
+    protected override void AssignTakeOffCorridor()
+    {
+        List<Vector3> landingGuide = dronePortInfo.GetLandingGuide("takeoff");
+        List<Vector3> translatedLandingGuide = new List<Vector3>();
+        foreach (Vector3 v in landingGuide) translatedLandingGuide.Add(dronePortInfo.TranslateLandingGuidePosition(v));
+        vehicleState.wayPointsQueue = toQueue(translatedLandingGuide);
+    }
+    /*
     void Start()
     {
         state = "idle";
@@ -119,4 +127,5 @@ public class DronePortControl : MonoBehaviour
             return (gameObject.transform.position + dronePortInfo.LandingQueueHead + dronePortInfo.LandingQueueDirection * (float)place * landingQueueSeparation);
         }
     }
+    */
 }

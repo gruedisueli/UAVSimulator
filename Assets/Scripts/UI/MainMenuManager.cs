@@ -27,5 +27,10 @@ namespace Assets.Scripts.UI
             EnvironManager.Instance.LoadSaved();
             SceneManager.LoadScene(UISettings.REGIONVIEW_SCENEPATH, LoadSceneMode.Single);
         }
+
+        public void About()
+        {
+
+        }
     }
 }

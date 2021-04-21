@@ -108,6 +108,8 @@ public class Vehicle : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+    }
+        /*
         if (!vcs.playing) currentSpeed = 0;
         else currentSpeed = maxSpeed;
         if (vcs.trailVisualization) tr.enabled = true;
@@ -213,27 +215,28 @@ public class Vehicle : MonoBehaviour
                     Debug.Log("Current Location: " + currentLocation.ToString());
                     Debug.Log("Current Point: " + currentPoint.name.ToString());
                     currentDestination = currentPoint;
-                }
+                }*/
                 /*
                 Vector3 currentDestinationVector = currentDestination.transform.position;
                 currentDestinationVector.y = elevation;
 
                 wayPoints = vcs.FindPath(gameObject.transform.position, currentDestinationVector, 5);*/
                 //if (isUTM) wayPoints.Add(currentDestination.transform.position);
-                foreach(Corridor c in vcs.network.outEdges[currentPoint])
+                /*foreach(Corridor c in vcs.network.outEdges[currentPoint])
                 {
                     if ( c.destination.Equals(currentDestination) )
                     {
                         wayPointsQueue = new Queue<Vector3>(c.wayPoints.ToArray());
                         break;
                     }
-                }
+                }*/
                 /*
                 wayPointsQueue = new Queue<Vector3>();
                 foreach (Vector3 v in wayPoints)
                 {
                     wayPointsQueue.Enqueue(v);
                 }*/
+                /*
                 currentTargetPosition = wayPointsQueue.Dequeue();
                 currentSpeed = maxSpeed * vcs.speedMultiplier;
                 currentPoint = currentDestination;
@@ -332,14 +335,6 @@ public class Vehicle : MonoBehaviour
             else
             {
                 currentTargetPosition = assignedLandingGuide.Dequeue();
-                //Debug
-                if (Mathf.Abs(currentTargetPosition.x) > 10000 || Mathf.Abs(currentTargetPosition.z) > 10000)
-                {
-                    int a;
-                    a = 0;
-                }
-                //~Debug
-
                 return;
             }
         }
@@ -479,6 +474,6 @@ public class Vehicle : MonoBehaviour
 
         return 80;
     }
-
+                */
 
 }

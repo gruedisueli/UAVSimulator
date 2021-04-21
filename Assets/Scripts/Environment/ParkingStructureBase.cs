@@ -144,6 +144,12 @@ namespace Assets.Scripts.Environment
                 guides.Add(StandbyPosition);
             }
 
+            else if (type.Equals("Circular_Stack_LowAltitude"))
+            {
+                guides.Add(spot);
+                guides.Add(new Vector3(0, spot.y, 0));
+                guides.Add(StandbyPosition);
+            }
             if (mode == "parking") guides.Reverse();
 
             return guides;

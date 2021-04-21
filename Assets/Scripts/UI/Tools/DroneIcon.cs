@@ -8,9 +8,9 @@ namespace Assets.Scripts.UI.Tools
 {
     public class DroneIcon : SceneIconBase
     {
-        public Vehicle Drone { get; protected set; }
+        public DroneBase Drone { get; protected set; }
 
-        public void Initialize(Vehicle _drone)
+        public void Initialize(DroneBase _drone)
         {
             Drone = _drone;
             _follower.Initialize(_drone.gameObject);

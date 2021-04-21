@@ -17,7 +17,7 @@ public class AAOControl : MonoBehaviour
         bool isFinished = false;
         foreach(GameObject vehicle in vehiclesInOperation)
         {
-            if ( vehicle.GetComponent<Vehicle>().state != "parked" )
+            if ( vehicle.GetComponent<DroneBase>().state != "parked" )
             {
                 isFinished = false;
                 break;
