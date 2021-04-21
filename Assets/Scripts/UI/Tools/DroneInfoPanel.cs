@@ -15,7 +15,7 @@ namespace Assets.Scripts.UI.Tools
     public class DroneInfoPanel : ElementInfoPanel
     {
         protected DroneIcon _icon;
-        protected Vehicle _drone;
+        protected DroneBase _drone;
 
         public override void Initialize(GameObject drone)
         {

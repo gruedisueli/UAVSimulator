@@ -91,7 +91,7 @@ public class LandingPoint : MonoBehaviour
                 {
                     state = "arrived";
                     vehicleOnThisPoint = vcs.from;
-                    if(!vcs.from.GetComponent<Vehicle>().toPark || (vcs.from.GetComponent<Vehicle>().toPark && vcs.from.GetComponent<Vehicle>().destination.Count > 0)) departureQueue.Enqueue(vcs.from);
+                    if(!vcs.from.GetComponent<DroneBase>().toPark || (vcs.from.GetComponent<DroneBase>().toPark && vcs.from.GetComponent<DroneBase>().destinationQueue.Count > 0)) departureQueue.Enqueue(vcs.from);
                     signalSystem.RegisterSignal(gameObject, new VehicleControlSignal(vcs.from, "dummy"));
                     // ways to get removed from departureQueue
                     // 1. departure
@@ -105,17 +105,17 @@ public class LandingPoint : MonoBehaviour
                 // wait for a random period
                 int a;
                 a = 0;
-                if (!vcs.from.GetComponent<Vehicle>().toPark || (vcs.from.GetComponent<Vehicle>().toPark && vcs.from.GetComponent<Vehicle>().destination.Count > 0 ))
+                if (!vcs.from.GetComponent<DroneBase>().toPark || (vcs.from.GetComponent<DroneBase>().toPark && vcs.from.GetComponent<DroneBase>().destinationQueue.Count > 0 ))
                 {
                     state = "departing";
                     signalSystem.RegisterSignal(DepartureDequeue(), new VehicleControlSignal(gameObject, "takeoffgranted"));
                 }
-                else if (vcs.from.GetComponent<Vehicle>().toPark && vcs.from.GetComponent<Vehicle>().destination.Count == 0 )
+                else if (vcs.from.GetComponent<DroneBase>().toPark && vcs.from.GetComponent<DroneBase>().destinationQueue.Count == 0 )
                 {
                     GameObject vehicle = vcs.from;
-                    vehicle.GetComponent<Vehicle>().state = "standby";
+                    vehicle.GetComponent<DroneBase>().state = "standby";
                     //vehicle.GetComponent<Vehicle>().currentPoint.GetComponent<Parking>().Park( vehicle );
-                    vehicle.GetComponent<Vehicle>().toPark = false;
+                    vehicle.GetComponent<DroneBase>().toPark = false;
                     state = "idle";
                 }
             }

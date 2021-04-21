@@ -161,7 +161,7 @@ public class RestrictionZone2 : MonoBehaviour
     public Queue<Vector3> AvoidRestrictionZones(Vector3 point1, Vector3 point2, GameObject vehicle)
     {
         Queue<Vector3> avoidingRoutes = new Queue<Vector3>();
-        Vehicle v = vehicle.GetComponent<Vehicle>();
+        DroneBase v = vehicle.GetComponent<DroneBase>();
         var result = GoAroundRestrictionZone(point1, point2, v.elevation);
         
         // Debug

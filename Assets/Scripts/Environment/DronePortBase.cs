@@ -42,7 +42,6 @@ namespace Assets.Scripts.Environment
 
             List<Vector3> guides = new List<Vector3>();
 
-            guides.Add(LandingQueueHead);
             guides.Add(StandbyPosition);
             guides.Add(LandingPoint);
 

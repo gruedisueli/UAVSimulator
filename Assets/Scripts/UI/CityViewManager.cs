@@ -65,7 +65,7 @@ namespace Assets.Scripts.UI
                 _abstractMap.Initialize(EnvironManager.Instance.Environ.CenterLatLong, EnvironSettings.CITY_ZOOM_LEVEL);
             }
 
-            _vehicleControlSystem.OnDroneInstantiated += OnDroneInstantiated;
+            _vehicleControlSystem.droneInstantiator.OnDroneInstantiated += OnDroneInstantiated;
         }
 
         protected override void OnDestroyDerived()
@@ -78,7 +78,7 @@ namespace Assets.Scripts.UI
                 }
             }
 
-            _vehicleControlSystem.OnDroneInstantiated -= OnDroneInstantiated;
+            _vehicleControlSystem.droneInstantiator.OnDroneInstantiated -= OnDroneInstantiated;
         }
 
         #region MODIFICATION
@@ -386,7 +386,7 @@ namespace Assets.Scripts.UI
                 Debug.LogError("Could not find Drone Icon Component in Drone Info Panel prefab");
                 return;
             }
-            var drone = gO.GetComponentInChildren<Vehicle>(true);
+            var drone = gO.GetComponentInChildren<DroneBase>(true);
             if (drone == null)
             {
                 Debug.LogError("Could not find Vehicle Component in children of drone");

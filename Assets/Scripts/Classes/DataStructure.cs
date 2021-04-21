@@ -414,7 +414,6 @@ namespace Assets.Scripts.DataStructure
             outEdges = new Dictionary<GameObject, List<Corridor>>();
             inEdges = new Dictionary<GameObject, List<Corridor>>();
         }
-
     }
 
 

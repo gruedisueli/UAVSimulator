@@ -6,7 +6,7 @@ public class VehicleNoise : MonoBehaviour
 {
     //SphereCollider col;
 
-    Vehicle vehicleInfo;
+    DroneBase vehicleInfo;
     float noise;
     float radius;
     List<Collider> affected_buildings;
@@ -15,9 +15,9 @@ public class VehicleNoise : MonoBehaviour
     void Start()
     {
 
-        
+
         //noiseShpere = gameObject.transform.GetChild(1).gameObject;
-        vehicleInfo = gameObject.GetComponent<Vehicle>();
+        vehicleInfo = gameObject.GetComponent<DroneBase>();
         
 
         radius = 0.0f;
