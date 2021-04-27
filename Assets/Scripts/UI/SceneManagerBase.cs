@@ -1090,11 +1090,11 @@ namespace Assets.Scripts.UI
                     Vector3 corridor_to_from_start = new Vector3(toPosition.x, UTM_ELEVATION + UTM_SEPARATION, toPosition.z);
                     Vector3 corridor_to_from_end = new Vector3(fromPosition.x, UTM_ELEVATION + UTM_SEPARATION, fromPosition.z);
 
-                    var wayPoints = FindPath(corridor_from_to_start, corridor_from_to_end, 5);
+                    var wayPoints = FindPath(corridor_from_to_start, corridor_from_to_end, 5, 1 << 9 | 1 << 8);
                     wayPoints.Insert(0, corridor_from_to_start);
                     corridor_from_to.wayPoints = new Queue<Vector3>(wayPoints);
 
-                    wayPoints = FindPath(corridor_to_from_start, corridor_to_from_end, 5);
+                    wayPoints = FindPath(corridor_to_from_start, corridor_to_from_end, 5, 1 << 9 | 1 << 8);
                     wayPoints.Insert(0, corridor_to_from_start);
                     corridor_to_from.wayPoints = new Queue<Vector3>(wayPoints);
 
@@ -1151,10 +1151,10 @@ namespace Assets.Scripts.UI
             newPoint = newPoint + pivot;
             return newPoint;
         }
-        public List<Vector3> FindPath(Vector3 origin, Vector3 destination, int angleIncrement)
+        public List<Vector3> FindPath(Vector3 origin, Vector3 destination, int angleIncrement, int layerMask )
         {
             // For pathfinding, omit drone colliders
-            int layerMask = 1 << 9;
+
             int head = 0, tail = 0;
             List<Vector3> visited = new List<Vector3>();
             List<int> from = new List<int>();

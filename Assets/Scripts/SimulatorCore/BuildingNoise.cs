@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Assets.Scripts.SimulatorCore;
 
 public class BuildingNoise : MonoBehaviour
 {
@@ -12,6 +13,8 @@ public class BuildingNoise : MonoBehaviour
     Material highNoiseMaterial;
     Material noNoiseMaterial;
     List<GameObject> affectingVehicles;
+    SimulationAnalyzer simulationAnalyzer;
+
     void Start()
     {
         lowNoiseMaterial = Resources.Load<Material>(material_path + "LowNoise");
@@ -20,6 +23,7 @@ public class BuildingNoise : MonoBehaviour
         noNoiseMaterial = Resources.Load<Material>(material_path + "Building");
         affectingVehicles = new List<GameObject>();
         vcs = GameObject.Find("SimulationCore").GetComponent<VehicleControlSystem>();
+        simulationAnalyzer = GameObject.Find("SimulationCore").GetComponent<SimulationAnalyzer>();
     }
 
     // Update is called once per frame
@@ -52,10 +56,44 @@ public class BuildingNoise : MonoBehaviour
     }
     public void AddNoise(GameObject affectingVehicle)
     {
-        if (!affectingVehicles.Contains(affectingVehicle)) affectingVehicles.Add(affectingVehicle);
+        if (!affectingVehicles.Contains(affectingVehicle))
+        {
+            if (affectingVehicles.Count == 0)
+            {
+                simulationAnalyzer.SendMessage("AddLowNoiseBuilding", this.gameObject);
+            }
+            else if (affectingVehicles.Count == 1)
+            {
+                simulationAnalyzer.SendMessage("AddMediumNoiseBuilding", this.gameObject);
+                simulationAnalyzer.SendMessage("RemoveLowNoiseBuilding", this.gameObject);
+            }
+            else if (affectingVehicles.Count == 2)
+            {
+                simulationAnalyzer.SendMessage("AddHighNoiseBuilding", this.gameObject);
+                simulationAnalyzer.SendMessage("RemoveMediumNoiseBuilding", this.gameObject);
+            }
+            affectingVehicles.Add(affectingVehicle);
+        }
     }
     public void DecreaseNoise(GameObject affectingVehicle)
     {
-        if (affectingVehicles.Contains(affectingVehicle)) affectingVehicles.Remove(affectingVehicle);
+        if (affectingVehicles.Contains(affectingVehicle))
+        {
+            if (affectingVehicles.Count == 3)
+            {
+                simulationAnalyzer.SendMessage("RemoveHighNoiseBuilding", this.gameObject);
+                simulationAnalyzer.SendMessage("AddMediumNoiseBuilding", this.gameObject);
+            }
+            else if (affectingVehicles.Count == 2)
+            {
+                simulationAnalyzer.SendMessage("RemoveMediumNoiseBuilding", this.gameObject);
+                simulationAnalyzer.SendMessage("AddLowNoiseBuilding", this.gameObject);
+            }
+            else if (affectingVehicles.Count == 1)
+            {
+                simulationAnalyzer.SendMessage("RemoveLowNoiseBuilding", this.gameObject);
+            }
+            affectingVehicles.Remove(affectingVehicle);
+        }
     }
 }

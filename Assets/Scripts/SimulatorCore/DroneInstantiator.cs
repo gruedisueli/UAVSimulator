@@ -78,10 +78,6 @@ namespace Assets.Scripts.SimulatorCore
                             tr.time = Mathf.Infinity;
                             tr.enabled = false;
 
-                            var sc = clone.AddComponent<SphereCollider>();
-                            sc.radius = 1.0f;
-                            sc.center = Vector3.zero;
-
 
                             UnityEngine.Object.Destroy(newDrone);
 
@@ -94,6 +90,18 @@ namespace Assets.Scripts.SimulatorCore
                             // Update parking management info
                             clone.transform.GetChild(0).gameObject.GetComponent<MeshRenderer>().enabled = false;
                             pC.parkingInfo.ParkAt(emptySpot, clone);
+
+                            var sc = clone.AddComponent<SphereCollider>();
+                            sc.radius = 1.0f;
+                            sc.center = Vector3.zero;
+
+                            GameObject sphere = GameObject.CreatePrimitive(PrimitiveType.Sphere);
+                            sphere.transform.localScale = new Vector3(0.0f, 0.0f, 0.0f);
+                            sphere.transform.parent = clone.transform;
+                            sphere.transform.localPosition = new Vector3(0.0f, 0.0f, 0.0f);
+                            MeshRenderer mr = sphere.GetComponent<MeshRenderer>();
+                            mr.material = Resources.Load<Material>("Materials/NoiseSphere");
+                            mr.enabled = false;
 
                             break;
                         }
@@ -185,6 +193,15 @@ namespace Assets.Scripts.SimulatorCore
                             
                             pC.parkingInfo.ParkAt(emptySpot, clone);
 
+                            GameObject sphere = GameObject.CreatePrimitive(PrimitiveType.Sphere);
+                            sphere.transform.localScale = new Vector3(0.0f, 0.0f, 0.0f);
+                            sphere.transform.parent = clone.transform;
+                            sphere.transform.localPosition = new Vector3(0.0f, 0.0f, 0.0f);
+                            MeshRenderer mr = sphere.GetComponent<MeshRenderer>();
+                            mr.material = Resources.Load<Material>("Materials/NoiseSphere");
+                            mr.enabled = false;
+
+
                             break;
                         }
                     }
@@ -233,7 +250,7 @@ namespace Assets.Scripts.SimulatorCore
                 //v.currentPoint = v.gameObject.transform.posit;
                 v.isBackgroundDrone = true;
                 Vector3 firstDestination = vcs.GetRandomPointXZ(y);
-                v.wayPointsQueue = new Queue<Vector3>(sceneManager.FindPath(instantiationSpot, firstDestination, 5));
+                v.wayPointsQueue = new Queue<Vector3>(sceneManager.FindPath(instantiationSpot, firstDestination, 5, 1 << 8 | 1 << 9 | 1 << 13));
                 v.targetPosition = v.wayPointsQueue.Dequeue();
                 backgroundDrones.Add(clone);
 

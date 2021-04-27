@@ -352,12 +352,19 @@ namespace Assets.Scripts.UI
             {
                 var dP = kvp.Value;
                 InstantiateDronePort(kvp.Key, dP, true);
+                var rZ = new RestrictionZoneCyl(dP.Position, 0.0f, 200.0f, 100.0f);
+                rZ.Layer = 13;
+                InstantiateRestrictionZone(Guid.NewGuid().ToString(), rZ, true);
+                
             }
 
             foreach (var kvp in city.ParkingStructures)
             {
                 var pS = kvp.Value;
                 InstantiateParkingStructure(kvp.Key, pS, true);
+                var rZ = new RestrictionZoneCyl(pS.Position, 0.0f, 200.0f, 100.0f);
+                rZ.Layer = 13;
+                InstantiateRestrictionZone(Guid.NewGuid().ToString(), rZ, true);
             }
 
             foreach (var kvp in city.RestrictionZones)

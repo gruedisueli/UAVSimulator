@@ -14,7 +14,7 @@ namespace Assets.Scripts.Environment
 {
     public abstract class RestrictionZoneBase
     {
-        public int Layer { get; } = 8;
+        public int Layer { get; set; } = 8;
         public abstract string Type { get; }
         public abstract string Description { get; }
         public abstract void UpdateParams(ModifyPropertyArgBase args);

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using Assets.Scripts.DataStructure;
+using Assets.Scripts.SimulatorCore;
 
 public abstract class TrafficControl : MonoBehaviour
 {
@@ -16,17 +17,41 @@ public abstract class TrafficControl : MonoBehaviour
     }
     protected GameObject currentVehicle { get; set; }
     protected DroneBase vehicleState { get; set; }
+    private SimulationAnalyzer sa;
 
     // Start is called before the first frame update
     void Start()
     {
         queue = new Queue<GameObject>();
+        sa = GameObject.Find("SimulationCore").GetComponent<SimulationAnalyzer>();
     }
 
     // Update is called once per frame
     void Update()
     {
         //if (!vcs.playing) return;
+        if (queueLength > 3)
+        {
+            if (this is ParkingControl && !sa.congestedParkingStructures.Contains(this.gameObject))
+            {
+                sa.congestedParkingStructures.Add(this.gameObject);
+            }
+            else if (this is DronePortControl && !sa.congestedDronePorts.Contains(this.gameObject))
+            {
+                sa.congestedDronePorts.Add(this.gameObject);
+            }
+        }
+        else
+        {
+            if (this is ParkingControl && sa.congestedParkingStructures.Contains(this.gameObject))
+            {
+                sa.congestedParkingStructures.Remove(this.gameObject);
+            }
+            else if (this is DronePortControl && sa.congestedDronePorts.Contains(this.gameObject))
+            {
+                sa.congestedDronePorts.Remove(this.gameObject);
+            }
+        }
         if ( !busy && queue.Count > 0 )
         {
             currentVehicle = queue.Dequeue();

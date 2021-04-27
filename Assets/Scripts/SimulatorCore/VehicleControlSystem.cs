@@ -56,6 +56,48 @@ public class VehicleControlSystem : MonoBehaviour
     public bool demographicVisualization;
     public bool trailVisualization;
 
+    private bool _simplifiedMeshToggle;
+    public delegate void OnSimplifiedMeshToggleDelegate(bool toggle, Mesh m);
+    public event OnSimplifiedMeshToggleDelegate OnSimplifiedMeshToggle;
+    public Mesh simplifiedMesh;
+    public bool simplifiedMeshToggle
+    {
+        get
+        {
+            return _simplifiedMeshToggle;
+        }
+        set
+        {
+            if (value != _simplifiedMeshToggle && OnSimplifiedMeshToggle != null)
+            {
+                OnSimplifiedMeshToggle(!simplifiedMeshToggle, simplifiedMesh);
+            }
+            _simplifiedMeshToggle = value;
+        }
+    }
+    
+
+    private bool _noiseShpereVisualization;
+
+    public delegate void OnNoiseSphereToggleDelegate(bool toggle);
+    public event OnNoiseSphereToggleDelegate OnNoiseSphereToggle;
+    public bool noiseShpereVisualization
+    {
+        get
+        {
+            return _noiseShpereVisualization;
+        }
+        set
+        {
+            if (value != _noiseShpereVisualization && OnNoiseSphereToggle != null)
+            {
+                OnNoiseSphereToggle(!noiseShpereVisualization);
+            }
+            _noiseShpereVisualization = value; 
+        }
+    }
+    
+
     // INTEGRATION TO-DO: Replace root with the path that it receives;
     private string root = "runtime\\";
     
@@ -64,7 +106,7 @@ public class VehicleControlSystem : MonoBehaviour
     public CityViewManager sceneManager;
     public List<GameObject> corridorDrones;
     public List<GameObject> lowAltitudeDrones;
-    public List<GameObject> movingVehicles;
+    
 
     // Background drone related params
     public List<GameObject> backgroundDrones;
@@ -81,10 +123,12 @@ public class VehicleControlSystem : MonoBehaviour
 
     public List<GameObject> networkLines;
     public bool networkGenerated;
+    private Dictionary<Corridor, GameObject> routeLineObject;
 
     public float speedMultiplier = 1.0f;
 
     public GameObject TypeAPrefab;
+
     
 
 
@@ -93,7 +137,7 @@ public class VehicleControlSystem : MonoBehaviour
 
 
 
-
+    
     private string current_runtime;
     public DroneInstantiator droneInstantiator;
 
@@ -119,9 +163,8 @@ public class VehicleControlSystem : MonoBehaviour
         sceneManager = GameObject.Find("FOA").GetComponent<CityViewManager>();
         corridorDrones = new List<GameObject>();
         lowAltitudeDrones = new List<GameObject>();
-        movingVehicles = new List<GameObject>();
-        
-        
+        routeLineObject = new Dictionary<Corridor, GameObject>();
+
 
         speedMultiplier = 2.0f;
 
@@ -134,15 +177,31 @@ public class VehicleControlSystem : MonoBehaviour
         droneInstantiator = new DroneInstantiator(this);
         droneInstantiator.ReadVehicleSpecs();
         droneInstantiator.InstantiateBackgroundDrones(sceneManager, backgroundDroneCount, DRONE_SCALE, lowerElevationBound, upperElevationBound);
+
+        GameObject cube = GameObject.CreatePrimitive(PrimitiveType.Cube);
+        simplifiedMesh = cube.GetComponent<MeshFilter>().mesh;
+        cube.Destroy();
+
     }
 
     // Update is called once per frames
     void Update()
     {
+
+        if (Input.GetKeyDown(KeyCode.B))
+        {
+            noiseShpereVisualization = !noiseShpereVisualization;
+        }
+
+        if (Input.GetKeyDown(KeyCode.N))
+        {
+            simplifiedMeshToggle = !simplifiedMeshToggle;
+        }
+
         if (playing)
         {
             watch += Time.deltaTime;
-            if (watch > simulationParam.callGenerationInterval) /*&& movingVehicles.Count < simulationParam.maxInFlightVehicles)*/
+            if (watch > simulationParam.callGenerationInterval)
             {
                 watch = 0.0f;
                 GenerateRandomCalls();
@@ -469,7 +528,7 @@ public class VehicleControlSystem : MonoBehaviour
         {
             var gO = sPS.gameObject;
             // find the nearest one with parked vehicles
-            if (sPS.ParkingCtrl.parkingInfo.VehicleAt.Keys.Count > 0 && sPS.ParkingStructureSpecs.Type.Contains("LowAltitude") && sPS.ParkingCtrl.queueLength < 2)
+            if (sPS.ParkingCtrl.parkingInfo.VehicleAt.Keys.Count > 0 && sPS.ParkingStructureSpecs.Type.Contains("LowAltitude") && sPS.ParkingCtrl.queueLength < 3)
             {
                 if (Vector3.Distance(AAOCenter, gO.transform.position) < minDistance)
                 {
@@ -557,6 +616,20 @@ public class VehicleControlSystem : MonoBehaviour
         }
 
     }
+    private void CongestionLevelChangeHandler(Corridor c, int congestionLevel)
+    {
+        GameObject line = routeLineObject[c];
+        LineRenderer lr = line.GetComponent<LineRenderer>();
+        if (congestionLevel == 1) lr.material = Resources.Load<Material>("Materials/Route_Low_Congestion");
+        else if (congestionLevel == 2) lr.material = Resources.Load<Material>("Materials/Route_Medium_Congestion");
+        else if (congestionLevel == 3) lr.material = Resources.Load<Material>("Materials/Route_High_Congestion");
+        else lr.material = Resources.Load<Material>("Materials/Route");
+
+        SimulationAnalyzer sa = gameObject.GetComponent<SimulationAnalyzer>();
+        if (congestionLevel > 0 && !sa.congestedCorridors.Contains(c)) sa.congestedCorridors.Add(c);
+        else if (congestionLevel == 0 && sa.congestedCorridors.Contains(c)) sa.congestedCorridors.Remove(c);
+
+    }
     public void ToggleLandingCorridorVisualization(bool toggle)
     {
         landingCorridorVisualization = toggle;
@@ -566,12 +639,23 @@ public class VehicleControlSystem : MonoBehaviour
         demographicVisualization = toggle;
     }
 
+    public void ToggleNoiseShpere(bool toggle)
+    {
+        noiseShpereVisualization = toggle;
+    }
+
+    public void ToggleSimplifiedMesh(bool toggle)
+    {
+        simplifiedMeshToggle = toggle;
+    }
+
     public void VisualizeNetwork ( Assets.Scripts.DataStructure.Network network )
     {
         networkLines = new List<GameObject>();
         foreach(Corridor c in network.corridors)
         {
             GameObject line = new GameObject();
+            line.name = "Corridor_" + c.origin.name + "_" + c.destination.name;
             LineRenderer lineRenderer = line.AddComponent<LineRenderer>();
             lineRenderer.positionCount = c.wayPoints.Count;
             List<Vector3> wayPointsList = new List<Vector3>(c.wayPoints.ToArray());
@@ -586,6 +670,8 @@ public class VehicleControlSystem : MonoBehaviour
             lineRenderer.SetWidth(5.0f, 5.0f);
             networkLines.Add(line);
             lineRenderer.enabled = false;
+            routeLineObject.Add(c, line);
+            c.OnCongestionLevelChange += CongestionLevelChangeHandler;
         }
     }
 

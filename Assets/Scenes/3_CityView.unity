@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 0.44657844, g: 0.49641222, b: 0.57481694, a: 1}
+  m_IndirectSpecularColor: {r: 0.44657898, g: 0.4964133, b: 0.5748178, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -5509,6 +5509,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1769595579}
   - component: {fileID: 1769595578}
+  - component: {fileID: 1769595580}
   m_Layer: 0
   m_Name: SimulationCore
   m_TagString: Untagged
@@ -5529,6 +5530,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   MIN_DRONE_RANGE: 0
+  DRONE_SCALE: 5
   simulationParam:
     maxSpeed: 0
     verticalSeparation: 0
@@ -5550,18 +5552,21 @@ MonoBehaviour:
   landingCorridorVisualization: 0
   demographicVisualization: 0
   trailVisualization: 0
-  vehicles: []
+  sceneManager: {fileID: 0}
+  corridorDrones: []
+  lowAltitudeDrones: []
   movingVehicles: []
   backgroundDrones: []
   backgroundDroneCount: 100
   lowerElevationBound: 100
   upperElevationBound: 135
-  networkGenerated: 0
   parkingCollection: []
   landingCollection: []
   networkLines: []
+  networkGenerated: 0
   speedMultiplier: 1
   TypeAPrefab: {fileID: 0}
+  droneInstantiator: {fileID: 0}
 --- !u!4 &1769595579
 Transform:
   m_ObjectHideFlags: 0
@@ -5576,6 +5581,18 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 6
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1769595580
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1769595577}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4c341094932365848ae8ca41005f2901, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1001 &1821120959
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -5861,6 +5878,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _abstractMap: {fileID: 1538595736}
+  _largeScaleMap: {fileID: 0}
 --- !u!1001 &1927502756
 PrefabInstance:
   m_ObjectHideFlags: 0

@@ -382,10 +382,45 @@ namespace Assets.Scripts.DataStructure
     [Serializable]
     public class Corridor
     {
+
+        public delegate void OnCongestionLevelChangeDelegate(Corridor corridor, int congestionLevel);
+        public event OnCongestionLevelChangeDelegate OnCongestionLevelChange;
+
         public GameObject origin;
         public GameObject destination;
         public float elevation;
         public Queue<Vector3> wayPoints;
+        public List<GameObject> dronesInCorridor;
+        public float speedSum;
+        public float maxSpeed;
+
+        private int _congestionLevel;
+        public int congestionLevel
+        {
+            get
+            {
+                return _congestionLevel;
+            }
+            set
+            {
+                if (_congestionLevel == value) return;
+                else
+                {
+                    _congestionLevel = value;
+                    if (OnCongestionLevelChange != null)
+                    {
+                        OnCongestionLevelChange(this, _congestionLevel);
+                    }
+                }
+            }
+        }
+        public float averageSpeed
+        {
+            get
+            {
+                return speedSum / dronesInCorridor.Count;
+            }
+        }
 
         public bool Equals(Corridor p1, Corridor p2)
         {
@@ -397,7 +432,36 @@ namespace Assets.Scripts.DataStructure
             origin = org;
             destination = dest;
             elevation = elev;
+            dronesInCorridor = new List<GameObject>();
+            speedSum = 0.0f;
+            _congestionLevel = 0;
+            maxSpeed = 200.0f;
         }
+        public void AddDrone ( GameObject drone )
+        {
+            CorridorDrone cd = drone.GetComponent<CorridorDrone>();
+            cd.OnInCorridorSpeedChange += SpeedChangeHandler;
+            dronesInCorridor.Add(drone);
+        }
+
+        public void RemoveDrone(GameObject drone)
+        {
+            CorridorDrone cd = drone.GetComponent<CorridorDrone>();
+            cd.OnInCorridorSpeedChange -= SpeedChangeHandler;
+            dronesInCorridor.Remove(drone);
+        }
+
+        private void SpeedChangeHandler(float oldSpeed, float newSpeed)
+        {
+            speedSum -= oldSpeed;
+            speedSum += newSpeed;
+            if (averageSpeed / maxSpeed > 0.7f && averageSpeed / maxSpeed < 0.8f) congestionLevel = 1;
+            else if (averageSpeed / maxSpeed > 0.6f && averageSpeed / maxSpeed < 0.7f) congestionLevel = 2;
+            else if (averageSpeed / maxSpeed <= 0.6f && dronesInCorridor.Count > 0) congestionLevel = 3;
+            else congestionLevel = 0;
+        }
+
+
     }
 
     [Serializable]
@@ -407,6 +471,8 @@ namespace Assets.Scripts.DataStructure
         public List<Corridor> corridors { get; set; }
         public Dictionary<GameObject, List<Corridor>> outEdges { get; set; }
         public Dictionary<GameObject, List<Corridor>> inEdges { get; set; }
+
+
         public Network()
         {
             vertices = new List<GameObject>();
