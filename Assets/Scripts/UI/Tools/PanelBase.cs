@@ -8,7 +8,7 @@ using UnityEngine;
 
 namespace Assets.Scripts.UI.Tools
 {
-    public abstract class PanelBase : MonoBehaviour
+    public class PanelBase : MonoBehaviour
     {
         public EventHandler<System.EventArgs> OnPanelClosed;
         public CloseTool _closeTool;

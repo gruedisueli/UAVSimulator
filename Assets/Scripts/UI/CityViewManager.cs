@@ -136,6 +136,18 @@ namespace Assets.Scripts.UI
                                 _vehicleControlSystem.ToggleRouteVisualization(u.Value);
                                 break;
                             }
+                        case VisibilityType.NoiseSpheres:
+                            {
+                                var u = args.Update as ModifyBoolPropertyArg;
+                                _vehicleControlSystem.noiseShpereVisualization = u.Value;
+                                break;
+                            }
+                        case VisibilityType.VehicleMeshSimple:
+                            {
+                                var u = args.Update as ModifyBoolPropertyArg;
+                                _vehicleControlSystem.simplifiedMeshToggle = u.Value;
+                                break;
+                            }
                     }
                 }
                 catch

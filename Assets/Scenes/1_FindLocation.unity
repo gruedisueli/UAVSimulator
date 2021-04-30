@@ -169,6 +169,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _regionSelectorPrefab: {fileID: 5483188848856056530, guid: 008c5a71ecd2ccc45a164100b0fc5e92,
     type: 3}
+  _canvas: {fileID: 541402231}
 --- !u!1 &367550003
 GameObject:
   m_ObjectHideFlags: 0

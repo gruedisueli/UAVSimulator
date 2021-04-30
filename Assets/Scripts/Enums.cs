@@ -47,6 +47,7 @@ namespace Assets.Scripts
     //NOTE***  explicitly numbering some of these so we don't break things in Unity editor when we add/remove items from this list.
     public enum ElementPropertyType
     {
+        Settings = -1,
         Unset = 0,
         Type = 1,
         Description = 2,
@@ -99,7 +100,18 @@ namespace Assets.Scripts
         IsUTM = 49,
         IsBackgroundDrone = 50,
         WaitTimer = 51,
-        WaitTime = 52
+        WaitTime = 52,
+        AverageSpeed = 53,
+        Throughput = 54,
+        GrossEnergyConsumption = 55,
+        GrossEmission = 56,
+        HighNoiseBuildings = 57,
+        MediumNoiseBuildings = 58,
+        LowNoiseBuildings = 59,
+        FlyingDrones = 60,
+        CongestedCorridors = 61,
+        CongestedParkingStructures = 62,
+        CongestedDronePorts = 63
     }
 
     public enum VisibilityType
@@ -111,7 +123,9 @@ namespace Assets.Scripts
         Routes = 4,
         FlightTrails = 5,
         LandingCorridors = 6,
-        Demographics = 7
+        Demographics = 7,
+        NoiseSpheres = 8,
+        VehicleMeshSimple = 9
     }
 
     public enum InputFieldType

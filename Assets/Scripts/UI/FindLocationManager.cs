@@ -23,6 +23,7 @@ namespace Assets.Scripts.UI
     public class FindLocationManager : MonoBehaviour
     {
         public GameObject _regionSelectorPrefab;
+        public Canvas _canvas;
         private GameObject _selectionRect;
 
         private AbstractMap _map;
@@ -58,7 +59,7 @@ namespace Assets.Scripts.UI
 
         public void CreateProject()
         {
-            SceneManager.LoadScene(UISettings.REGIONVIEW_SCENEPATH, LoadSceneMode.Single);
+            StartCoroutine(LoadAsyncOperation(UISettings.REGIONVIEW_SCENEPATH));
         }
 
         public void PlaceMarker(IAddElementArgs args)
@@ -166,7 +167,7 @@ namespace Assets.Scripts.UI
         //        }
 
         //        var p = MarkPt();
-  
+
         //        if (p != null)
         //        {
         //            Vector2d latLong = _map.WorldToGeoPosition((Vector3)p);
@@ -192,5 +193,18 @@ namespace Assets.Scripts.UI
         //    }
         //    return hitInfo.point;
         //}
+
+        IEnumerator LoadAsyncOperation(int scenePath)
+        {
+            var pG = Instantiate(EnvironManager.Instance.ProgressBarPrefab, _canvas.gameObject.transform);
+            var progressBar = pG.GetComponent<ProgressBar>();
+            progressBar.Init("LOADING");
+            AsyncOperation loadScene = SceneManager.LoadSceneAsync(scenePath);
+            while (loadScene.progress < 1)
+            {
+                progressBar.SetCompletion(loadScene.progress);
+                yield return new WaitForEndOfFrame();
+            }
+        }
     }
 }

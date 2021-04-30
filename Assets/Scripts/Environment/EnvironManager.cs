@@ -14,6 +14,7 @@ using Mapbox.Unity.MeshGeneration.Data;
 using Newtonsoft.Json;
 
 using Assets.Scripts.Serialization;
+using Assets.Scripts.MapboxCustom;
 
 namespace Assets.Scripts.Environment
 {
@@ -62,6 +63,8 @@ namespace Assets.Scripts.Environment
         public GameObject RestrictionInfoPanelPrefab { get; private set; } = null;
         public GameObject AddButtonPrefab { get; private set; } = null;
         public GameObject DroneIconPrefab { get; private set; } = null;
+        public FOA_MapboxSettings MapboxSettings { get; private set; } = null;
+        public GameObject ProgressBarPrefab { get; private set; } = null;
 
 
         /// <summary>
@@ -477,6 +480,8 @@ namespace Assets.Scripts.Environment
             ReadInfoPanelPrefabs();
             ReadButtonPrefabs();
             ReadIconPrefabs();
+            ReadMapboxSettings();
+            ReadProgressBarPrefabs();
         }
 
         /// <summary>
@@ -503,6 +508,15 @@ namespace Assets.Scripts.Environment
         public void SetActiveCity(string guid)
         {
             ActiveCity = guid;
+        }
+
+        /// <summary>
+        /// Updates access token in MapboxSettings file. Writes to actual file.
+        /// </summary>
+        public void SetAccessToken(string token)
+        {
+            MapboxSettings.AccessToken = token;
+            SerializeJsonFile(MapboxSettings, SerializationSettings.ROOT + "\\Resources\\Mapbox\\MapboxConfiguration.txt");
         }
 
         /// <summary>
@@ -631,6 +645,24 @@ namespace Assets.Scripts.Environment
         }
 
         /// <summary>
+        /// Reads Mapbox settings from assets.
+        /// </summary>
+        private void ReadMapboxSettings()
+        {
+            DronePortAssets = new Dictionary<string, DronePortAssetPack>();
+            string sPath = SerializationSettings.ROOT + "\\Resources\\Mapbox";
+            var files = Directory.GetFiles(sPath, "*.TXT");
+            if (files.Length != 1)
+            {
+                Debug.LogError("Could not locate Mapbox Settings file");
+                return;
+            }
+            var filename = files[0];
+
+            MapboxSettings = DeserializeJsonFile<FOA_MapboxSettings>(filename);
+        }
+
+        /// <summary>
         /// Gets resources for prefabs of info panels
         /// </summary>
         private void ReadInfoPanelPrefabs()
@@ -640,6 +672,15 @@ namespace Assets.Scripts.Environment
             DronePortInfoPanelPrefab = AssetUtils.ReadPrefab(rPath, "DronePortInfoPanel");
             ParkingInfoPanelPrefab = AssetUtils.ReadPrefab(rPath, "ParkingInfoPanel");
             RestrictionInfoPanelPrefab = AssetUtils.ReadPrefab(rPath, "RestrictionInfoPanel");
+        }
+
+        /// <summary>
+        /// Gets resources for prefabs of progress bars
+        /// </summary>
+        private void ReadProgressBarPrefabs()
+        {
+            string rPath = "GUI/";
+            ProgressBarPrefab = AssetUtils.ReadPrefab(rPath, "ProgressBar");
         }
 
         /// <summary>

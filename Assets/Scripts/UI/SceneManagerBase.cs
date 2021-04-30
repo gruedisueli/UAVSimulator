@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -35,6 +36,7 @@ namespace Assets.Scripts.UI
 
         public AbstractMap _abstractMap;
         public AbstractMap _largeScaleMap;
+        public Canvas _canvas;
 
         protected Camera _mainCamera;
 
@@ -268,6 +270,22 @@ namespace Assets.Scripts.UI
         #region CHANGE SCENE/QUIT
 
         /// <summary>
+        /// Handles ansynchronous loading of scenes.
+        /// </summary>
+        protected IEnumerator LoadAsyncOperation(int scenePath)
+        {
+            var pG = Instantiate(EnvironManager.Instance.ProgressBarPrefab, _canvas.gameObject.transform);
+            var progressBar = pG.GetComponent<ProgressBar>();
+            progressBar.Init("LOADING");
+            AsyncOperation loadScene = SceneManager.LoadSceneAsync(scenePath);
+            while (loadScene.progress < 1)
+            {
+                progressBar.SetCompletion(loadScene.progress);
+                yield return new WaitForEndOfFrame();
+            }
+        }
+
+        /// <summary>
         /// Called when changing scenes in any way, or quitting
         /// </summary>
         protected void ChangeScene(object sender, SceneChangeArgs args)
@@ -328,13 +346,13 @@ namespace Assets.Scripts.UI
             if (_selectedElement is SceneCity)
             {
                 EnvironManager.Instance.SetActiveCity(_selectedElement.Guid);
-                SceneManager.LoadScene(UISettings.CITYVIEW_SCENEPATH, LoadSceneMode.Single);
+                StartCoroutine(LoadAsyncOperation(UISettings.CITYVIEW_SCENEPATH));
             }
         }
 
         protected void GoToFindLoc()
         {
-            SceneManager.LoadScene(UISettings.FINDLOCATION_SCENEPATH, LoadSceneMode.Single);
+            StartCoroutine(LoadAsyncOperation(UISettings.FINDLOCATION_SCENEPATH));
         }
 
 
@@ -343,7 +361,7 @@ namespace Assets.Scripts.UI
         /// </summary>
         protected void GoToRegion()
         {
-            SceneManager.LoadScene(UISettings.REGIONVIEW_SCENEPATH, LoadSceneMode.Single);
+            StartCoroutine(LoadAsyncOperation(UISettings.REGIONVIEW_SCENEPATH));
         }
 
         #endregion
