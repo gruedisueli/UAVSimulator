@@ -1081,6 +1081,8 @@ namespace Assets.Scripts.UI
                 if ( !sps.ParkingStructureSpecs.Type.Contains("LowAltitude") ) points.Add(sps.gameObject);
             }
 
+            if (points.Count < 3) return;
+
             IPoint[] vertices = GetVertices(points);
             Delaunator delaunay = new Delaunator(vertices);
             network = new Assets.Scripts.DataStructure.Network();

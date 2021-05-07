@@ -649,7 +649,6 @@ namespace Assets.Scripts.Environment
         /// </summary>
         private void ReadMapboxSettings()
         {
-            DronePortAssets = new Dictionary<string, DronePortAssetPack>();
             string sPath = SerializationSettings.ROOT + "\\Resources\\Mapbox";
             var files = Directory.GetFiles(sPath, "*.TXT");
             if (files.Length != 1)

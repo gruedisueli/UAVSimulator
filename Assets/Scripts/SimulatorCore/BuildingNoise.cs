@@ -29,6 +29,7 @@ public class BuildingNoise : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        if (!vcs.playing) return;
         if (vcs.noiseVisualization)
         {
             if (affectingVehicles.Count == 1)

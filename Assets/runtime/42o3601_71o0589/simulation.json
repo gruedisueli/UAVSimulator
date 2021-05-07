@@ -1,0 +1,15 @@
+{
+  "maxSpeed": 300,
+  "verticalSeparation": 10,
+  "horizontalSeparation": 50,
+  "maxVehicleCount": 200,
+  "maxYawSpeed": 30,
+  "landingSpeed": 40,
+  "takeoffSpeed": 100,
+  "callGenerationInterval": 2,
+  "maxInFlightVehicles": 100,
+  "inCorridorSeparation": 100,
+  "strategicDeconfliction": "none",
+  "tacticalDeconfliction": "senseandavoid",
+  "lowAltitudeBoundary": 150
+}

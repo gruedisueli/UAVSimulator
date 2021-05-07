@@ -10,17 +10,17 @@ namespace Assets.Scripts.SimulatorCore
 {
     public class SimulationAnalyzer : MonoBehaviour
     {
-        public float averageSpeed { get; set; }
-        public float throughput { get; set; }
-        public float grossEnergyConsumption { get; set; }
-        public float grossEmission { get; set; }
-        public List<GameObject> highNoiseBuildings  { get; set; }
-        public List<GameObject> mediumNoiseBuildings { get; set; }
-        public List<GameObject> lowNoiseBuildings { get; set; }
-        public List<GameObject> flyingDrones { get; set; }
-        public List<Corridor> congestedCorridors { get; set; }
-        public List<GameObject> congestedParkingStructures { get; set; }
-        public List<GameObject> congestedDronePorts { get; set; }
+        public float averageSpeed; //{ get; set; }
+        public float throughput; //{ get; set; }
+        public float grossEnergyConsumption; //{ get; set; }
+        public float grossEmission; //{ get; set; }
+        public List<GameObject> highNoiseBuildings;  //{ get; set; }
+        public List<GameObject> mediumNoiseBuildings; //{ get; set; }
+        public List<GameObject> lowNoiseBuildings; //{ get; set; }
+        public List<GameObject> flyingDrones; //{ get; set; }
+        public List<Corridor> congestedCorridors; //{ get; set; }
+        public List<GameObject> congestedParkingStructures; //{ get; set; }
+        public List<GameObject> congestedDronePorts; //{ get; set; }
 
         void Start()
         {

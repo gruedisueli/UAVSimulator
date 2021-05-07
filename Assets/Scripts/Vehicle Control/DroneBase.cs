@@ -72,6 +72,7 @@ public abstract class DroneBase : MonoBehaviour
     private SphereCollider sphereCollider;
     private GameObject noiseShpere;
     private Mesh originalMesh;
+
     // Start is called before the first frame update
     void Start()
     {
@@ -165,6 +166,11 @@ public abstract class DroneBase : MonoBehaviour
         if (state == "move") transform.rotation = Quaternion.Lerp(transform.rotation, wantedRotation, Time.deltaTime * yawSpeed);
         transform.position = Vector3.MoveTowards(transform.position, targetPosition, KMHtoMPS(currentSpeed) * Time.deltaTime * vcs.speedMultiplier);
     }
+
+    // GetNextAction() implements state machine
+    // Below corresponds to the one for CorridorDrone
+    // For LowAltitudeDrone, land granting procedure gets slightly different
+    // (Refer to LowAltitudeDrone.cs - GetNextAction() )
     protected virtual void GetNextAction()
     {
         if (state == "wait")
@@ -192,7 +198,6 @@ public abstract class DroneBase : MonoBehaviour
                 TrafficControl tc = currentCommunicationPoint.GetComponent<TrafficControl>();
                 tc.FreeUp();
                 ParkEvent();
-                isParked = true;
             }
             else
             {
@@ -207,6 +212,7 @@ public abstract class DroneBase : MonoBehaviour
         OnDroneParking?.Invoke(gameObject, e);
         simulationAnalyzer.SendMessage("RemoveFlyingDrone", this.gameObject);
         gameObject.transform.GetChild(0).gameObject.GetComponent<MeshRenderer>().enabled = false;
+        isParked = true;
     }
     protected void TakeOffEvent()
     {
@@ -241,17 +247,12 @@ public abstract class DroneBase : MonoBehaviour
     {
     }
 
-    #region Public Methods
-    public bool UpdateState ( string state )
+    protected float KMHtoMPS(float speed)
     {
-        this.state = state;
-        if (this.state == state) return true;
-        else return false;
+        return (speed * 1000) / 3600;
     }
 
-
-
-    
+    #region Public Methods
 
     public float GetNoise()
     {
@@ -275,15 +276,21 @@ public abstract class DroneBase : MonoBehaviour
         this.range = range;
         this.state = state;
     }
+
+    public void HideMesh()
+    {
+        MeshRenderer mr = gameObject.transform.GetChild(0).gameObject.GetComponent<MeshRenderer>();
+        mr.enabled = false;
+    }
+    public void ShowMesh()
+    {
+        MeshRenderer mr = gameObject.transform.GetChild(0).gameObject.GetComponent<MeshRenderer>();
+        mr.enabled = true;
+    }
     #endregion
 
+
     #region Private Methods
-
-
-    protected float KMHtoMPS(float speed)
-    {
-        return (speed * 1000) / 3600;
-    }
 
     private void NoiseSphereToggleHandler(bool toggle)
     {
