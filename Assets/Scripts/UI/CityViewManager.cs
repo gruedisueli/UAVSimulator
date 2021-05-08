@@ -272,6 +272,27 @@ namespace Assets.Scripts.UI
             return sRZ;
         }
 
+        private SceneRestrictionZone InstantiateRestrictionZone(string guid, RestrictionZoneBase rZ, bool register, Transform parentTransform)
+        {
+            var zoneParent = new GameObject();
+
+            var sRZ = zoneParent.AddComponent<SceneRestrictionZone>();
+            sRZ.gameObject.transform.parent = parentTransform;
+            sRZ.Initialize(guid, rZ);
+
+            if (register)
+            {
+                RestrictionZones.Add(guid, sRZ);
+            }
+
+            sRZ.OnSceneElementSelected += SelectElement;
+            foreach(GameObject gO in sRZ.SubElements)
+            {
+                gO.GetComponent<SelectableGameObject>().OnSelected += sRZ.Selected;
+            }
+            return sRZ;
+        }
+
         protected override SceneDronePort InstantiateRectDronePort(string guid, DronePortRect dP, bool register)
         {
             var clone = GameObject.CreatePrimitive(PrimitiveType.Cube);
@@ -363,20 +384,20 @@ namespace Assets.Scripts.UI
             foreach (var kvp in city.DronePorts)
             {
                 var dP = kvp.Value;
-                InstantiateDronePort(kvp.Key, dP, true);
+                var sdP = InstantiateDronePort(kvp.Key, dP, true);
                 var rZ = new RestrictionZoneCyl(dP.Position, 0.0f, 200.0f, 100.0f);
                 rZ.Layer = 13;
-                InstantiateRestrictionZone(Guid.NewGuid().ToString(), rZ, true);
+                var srZ = InstantiateRestrictionZone(Guid.NewGuid().ToString(), rZ, true, sdP.gameObject.transform);
                 
             }
 
             foreach (var kvp in city.ParkingStructures)
             {
                 var pS = kvp.Value;
-                InstantiateParkingStructure(kvp.Key, pS, true);
+                var spS = InstantiateParkingStructure(kvp.Key, pS, true);
                 var rZ = new RestrictionZoneCyl(pS.Position, 0.0f, 200.0f, 100.0f);
                 rZ.Layer = 13;
-                InstantiateRestrictionZone(Guid.NewGuid().ToString(), rZ, true);
+                var srZ = InstantiateRestrictionZone(Guid.NewGuid().ToString(), rZ, true, spS.gameObject.transform);
             }
 
             foreach (var kvp in city.RestrictionZones)

@@ -63,7 +63,6 @@ namespace Assets.Scripts.Environment
                 c.layer = gameObject.layer;
                 c.AddComponent<SelectableGameObject>();
             }
-
         }
 
         /// <summary>

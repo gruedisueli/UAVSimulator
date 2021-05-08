@@ -375,7 +375,8 @@ namespace Assets.Scripts.UI
         {
             if (_selectedElement == null) //only change selection if we don't have something selected
             {
-                _selectedElement = sE;
+                if (sE.gameObject.layer != 13) _selectedElement = sE;
+                else _selectedElement = sE.gameObject.transform.parent.gameObject.GetComponent<SceneElementBase>();
                 _selectedElement.SetSelectedState(true);
 
                 //instantiate and turn on info panel

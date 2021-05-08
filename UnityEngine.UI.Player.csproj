@@ -62,6 +62,7 @@
     <Compile Include="C:\Program Files\Unity\Hub\Editor\2020.1.15f1\Editor\Data\Resources\PackageManager\BuiltInPackages\com.unity.ugui\Runtime\UI\Core\Layout\CanvasScaler.cs" />
     <Compile Include="C:\Program Files\Unity\Hub\Editor\2020.1.15f1\Editor\Data\Resources\PackageManager\BuiltInPackages\com.unity.ugui\Runtime\UI\Core\Button.cs" />
     <Compile Include="C:\Program Files\Unity\Hub\Editor\2020.1.15f1\Editor\Data\Resources\PackageManager\BuiltInPackages\com.unity.ugui\Runtime\UI\Core\InputField.cs" />
+    <Compile Include="C:\Program Files\Unity\Hub\Editor\2020.1.15f1\Editor\Data\Resources\PackageManager\BuiltInPackages\com.unity.ugui\Runtime\UI\Core\Layout\VerticalLayoutGroup.cs" />
     <Compile Include="C:\Program Files\Unity\Hub\Editor\2020.1.15f1\Editor\Data\Resources\PackageManager\BuiltInPackages\com.unity.ugui\Runtime\UI\Core\GraphicRaycaster.cs" />
     <Compile Include="C:\Program Files\Unity\Hub\Editor\2020.1.15f1\Editor\Data\Resources\PackageManager\BuiltInPackages\com.unity.ugui\Runtime\UI\Core\Image.cs" />
     <Compile Include="C:\Program Files\Unity\Hub\Editor\2020.1.15f1\Editor\Data\Resources\PackageManager\BuiltInPackages\com.unity.ugui\Runtime\UI\Core\IMaskable.cs" />
@@ -110,7 +111,6 @@
     <Compile Include="C:\Program Files\Unity\Hub\Editor\2020.1.15f1\Editor\Data\Resources\PackageManager\BuiltInPackages\com.unity.ugui\Runtime\UI\Core\RawImage.cs" />
     <Compile Include="C:\Program Files\Unity\Hub\Editor\2020.1.15f1\Editor\Data\Resources\PackageManager\BuiltInPackages\com.unity.ugui\Runtime\UI\Core\SpriteState.cs" />
     <Compile Include="C:\Program Files\Unity\Hub\Editor\2020.1.15f1\Editor\Data\Resources\PackageManager\BuiltInPackages\com.unity.ugui\Runtime\UI\Animation\CoroutineTween.cs" />
-    <Compile Include="C:\Program Files\Unity\Hub\Editor\2020.1.15f1\Editor\Data\Resources\PackageManager\BuiltInPackages\com.unity.ugui\Runtime\UI\Core\Layout\VerticalLayoutGroup.cs" />
     <Compile Include="C:\Program Files\Unity\Hub\Editor\2020.1.15f1\Editor\Data\Resources\PackageManager\BuiltInPackages\com.unity.ugui\Runtime\UI\Core\Utility\ListPool.cs" />
     <Compile Include="C:\Program Files\Unity\Hub\Editor\2020.1.15f1\Editor\Data\Resources\PackageManager\BuiltInPackages\com.unity.ugui\Runtime\UI\Core\Navigation.cs" />
     <Compile Include="C:\Program Files\Unity\Hub\Editor\2020.1.15f1\Editor\Data\Resources\PackageManager\BuiltInPackages\com.unity.ugui\Runtime\UI\Core\VertexModifiers\BaseMeshEffect.cs" />

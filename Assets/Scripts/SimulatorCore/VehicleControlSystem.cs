@@ -16,6 +16,7 @@ using Assets.Scripts.Environment;
 using Assets.Scripts.UI;
 using Assets.Scripts;
 using Assets.Scripts.Serialization;
+using Assets.Scripts.UI.Tools;
 
 
 
@@ -192,6 +193,7 @@ public class VehicleControlSystem : MonoBehaviour
     // Update is called once per frames
     void Update()
     {
+        var debug = sceneManager.RestrictionZones.Values.ElementAt<SceneRestrictionZone>(0).GetComponent<SelectableGameObject>();
         if (!buildingNoiseAttachmentStarted) StartCoroutine(AttachBuildingNoiseComponent());
         if (isBuildingNoiseComponentAttached && !droneInstantiator.corridorDroneInstantiationStarted ) StartCoroutine(droneInstantiator.InstantiateCorridorDrones(sceneManager, DRONE_SCALE, _canvas));
         else if (isBuildingNoiseComponentAttached && droneInstantiator.isCorridorDroneInstantiated && !droneInstantiator.lowAltitudeDroneInstantiationStarted ) StartCoroutine(droneInstantiator.InstantiateLowAltitudeDrones(sceneManager, DRONE_SCALE, _canvas));

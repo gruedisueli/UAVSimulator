@@ -20,7 +20,7 @@ namespace Assets.Scripts.UI.Tools
             if (!EventSystem.current.IsPointerOverGameObject())//prevent selection of objects behind GUI
             {
                 Debug.Log("Clicked selectable game object");
-                OnSelected.Invoke(this, new SelectGameObjectArgs());
+                if ( OnSelected != null) OnSelected.Invoke(this, new SelectGameObjectArgs());
             }
         }
     }

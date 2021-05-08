@@ -73,7 +73,7 @@ namespace Assets.Scripts.Environment
             }
         }
 
-        private void Selected(object sender, SelectGameObjectArgs args)
+        public void Selected(object sender, SelectGameObjectArgs args)
         {
             if (!EventSystem.current.IsPointerOverGameObject())//prevent selection of objects behind GUI
             {
