@@ -375,8 +375,11 @@ namespace Assets.Scripts.UI
         {
             if (_selectedElement == null) //only change selection if we don't have something selected
             {
+                // if sE is not the restriction zone for a parking structure or a drone port sE gets selected
+                // Otherwise, sE's parent, which is a parking structure or a drone port gets selected
                 if (sE.gameObject.layer != 13) _selectedElement = sE;
                 else _selectedElement = sE.gameObject.transform.parent.gameObject.GetComponent<SceneElementBase>();
+
                 _selectedElement.SetSelectedState(true);
 
                 //instantiate and turn on info panel
