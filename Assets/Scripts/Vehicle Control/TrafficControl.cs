@@ -4,10 +4,13 @@ using UnityEngine;
 using Assets.Scripts.DataStructure;
 using Assets.Scripts.SimulatorCore;
 
+/// <summary>
+/// Base class for control towers such as those on drone ports and parking structures.
+/// </summary>
 public abstract class TrafficControl : MonoBehaviour
 {
     protected bool busy { get; set; } // = {idle, busy}
-    protected Queue<GameObject> queue { get; set; }
+    protected Queue<GameObject> queue { get; set; }//@Eunu comment. how do we manage take-off and landing queues? Aren't they different? Or does everything just get put into one queue since the tower can only do one thing at a time?
     public int queueLength
     {
         get
@@ -15,8 +18,8 @@ public abstract class TrafficControl : MonoBehaviour
             return queue.Count;
         }
     }
-    protected GameObject currentVehicle { get; set; }
-    protected DroneBase vehicleState { get; set; }
+    protected GameObject currentVehicle { get; set; }//vehicle that is currently executing takeoff/landing? @Eunu comment
+    protected DroneBase vehicleState { get; set; }//@Eunu comment
     private SimulationAnalyzer sa;
 
     // Start is called before the first frame update
@@ -29,8 +32,8 @@ public abstract class TrafficControl : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        //if (!vcs.playing) return;
-        if (queueLength > 3)
+        //if (!vcs.playing) return
+        if (queueLength > 3)//this is congested
         {
             if (this is ParkingControl && !sa.congestedParkingStructures.Contains(this.gameObject))
             {
@@ -41,7 +44,7 @@ public abstract class TrafficControl : MonoBehaviour
                 sa.congestedDronePorts.Add(this.gameObject);
             }
         }
-        else
+        else//not congested
         {
             if (this is ParkingControl && sa.congestedParkingStructures.Contains(this.gameObject))
             {
@@ -52,21 +55,21 @@ public abstract class TrafficControl : MonoBehaviour
                 sa.congestedDronePorts.Remove(this.gameObject);
             }
         }
-        if ( !busy && queue.Count > 0 )
+
+        if ( !busy && queue.Count > 0 )//get next vehicle in queue
         {
             currentVehicle = queue.Dequeue();
             vehicleState = currentVehicle.GetComponent<DroneBase>();
             busy = true;
         }
-
         else if ( vehicleState != null )
         {
-            if (vehicleState.state == "pending")
+            if (vehicleState.state == "pending")//if vehicle is waiting for landing to be granted, grant it.
             {
                 AssignLandingCorridor();
                 GrantLanding();
             }
-            else if (vehicleState.state == "idle" )
+            else if (vehicleState.state == "idle" )//if vehicle is sitting idle on pad, allow takeoff
             {
                 AssignTakeOffCorridor();
                 GrantTakeOff();
@@ -75,19 +78,26 @@ public abstract class TrafficControl : MonoBehaviour
     }
 
 
-
+    /// <summary>
+    /// Assigns a landing corridor to the specific vehicle we are going to send commands to.
+    /// </summary>
     protected virtual void AssignLandingCorridor()
     {
         vehicleState.wayPointsQueue = new Queue<Vector3>();
         vehicleState.wayPointsQueue.Enqueue(gameObject.transform.position);
     }
 
+    /// <summary>
+    /// To be implemented in the derived classes
+    /// </summary>
     protected virtual void AssignTakeOffCorridor()
     {
-        // To be implemented in the derived classes
+        
     }
 
-
+    /// <summary>
+    /// @Eunu comment
+    /// </summary>
     public void FreeUp()
     {
         currentVehicle = null;
@@ -95,21 +105,33 @@ public abstract class TrafficControl : MonoBehaviour
         busy = false;
     }
 
+    /// <summary>
+    /// Adds a drone to the queue.
+    /// </summary>
     public void RegisterInQueue(GameObject drone)
     {
         queue.Enqueue(drone);
     }
 
-    
+    /// <summary>
+    /// Grants landing to current vehicle we are issuing commands to.
+    /// </summary>
     private void GrantLanding()
     {
         currentVehicle.SendMessage("LandGranted");
     }
+
+    /// <summary>
+    /// Grants takeoff to current vehicle we are issuing commands to.
+    /// </summary>
     private void GrantTakeOff()
     {
         currentVehicle.SendMessage("TakeoffGranted");
     }
 
+    /// <summary>
+    /// @Eunu comment
+    /// </summary>
     protected Queue<Vector3> toQueue(List<Vector3> points)
     {
         Queue<Vector3> result = new Queue<Vector3>();
@@ -119,6 +141,10 @@ public abstract class TrafficControl : MonoBehaviour
         }
         return result;
     }
+
+    /// <summary>
+    /// Determine if a vehicle is in the queue.
+    /// </summary>
     public bool QueueContains(GameObject v)
     {
         if (queue.Contains(v)) return true;

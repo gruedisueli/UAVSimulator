@@ -3,6 +3,9 @@ using System.Collections.Generic;
 using UnityEngine;
 using Assets.Scripts.Vehicle_Control;
 
+/// <summary>
+/// @Eunu is this obsolete?
+/// </summary>
 public class SignalSystem : MonoBehaviour
 {
     // Start is called before the first frame update

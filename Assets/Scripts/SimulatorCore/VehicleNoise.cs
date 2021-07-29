@@ -2,6 +2,9 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+/// <summary>
+/// Gets attached to a single drone and monitors this drone's noise effects on other simulation elements. @Eunu, correct?
+/// </summary>
 public class VehicleNoise : MonoBehaviour
 {
     //SphereCollider col;
@@ -35,6 +38,9 @@ public class VehicleNoise : MonoBehaviour
         CheckNoise();
     }
 
+    /// <summary>
+    /// Updates noise info, adding/removing elements that are affected to/frome our list field.
+    /// </summary>
     void CheckNoise()
     {
         Collider[] hitColliders = Physics.OverlapSphere(gameObject.transform.position, radius / 2);
@@ -44,7 +50,7 @@ public class VehicleNoise : MonoBehaviour
         {
             if (hitCollider.gameObject.tag == "Building")
             {
-                hitCollider.SendMessage("AddNoise", gameObject);
+                hitCollider.SendMessage("AddNoise", gameObject);//@Eunu why do we use a "send message" here instead of calling public function? Just wondering if it's more efficient for some reason? I never use these messages so that's why I ask.
                 if (!affected_buildings.Contains(hitCollider)) affected_buildings.Add(hitCollider);
             }
         }

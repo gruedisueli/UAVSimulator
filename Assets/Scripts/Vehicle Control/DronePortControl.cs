@@ -5,10 +5,17 @@ using Assets.Scripts.Vehicle_Control;
 using Assets.Scripts.DataStructure;
 using Assets.Scripts.Environment;
 
+/// <summary>
+/// This is like a control tower for a single drone port.
+/// </summary>
 public class DronePortControl : TrafficControl
 {
     
     public DronePortBase dronePortInfo;
+
+    /// <summary>
+    /// Assigns a landing corridor (waypoints) to a specific drone registered to the control tower.
+    /// </summary>
     protected override void AssignLandingCorridor()
     {
         List<Vector3> landingGuide = dronePortInfo.GetLandingGuide("landing");
@@ -17,6 +24,9 @@ public class DronePortControl : TrafficControl
         vehicleState.wayPointsQueue = toQueue(translatedLandingGuide);
     }
 
+    /// <summary>
+    /// Assigns a take off corridor (waypoints) to a specific drone registered to the control tower.
+    /// </summary>
     protected override void AssignTakeOffCorridor()
     {
         List<Vector3> landingGuide = dronePortInfo.GetLandingGuide("takeoff");

@@ -2,6 +2,9 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+/// <summary>
+/// Controls low-altitude drones. @Eunu, correct? What does AAO stand for?
+/// </summary>
 public class AAOControl : MonoBehaviour
 {
     // Start is called before the first frame update
@@ -15,6 +18,7 @@ public class AAOControl : MonoBehaviour
     void Update()
     {
         bool isFinished = false;
+        //only allow vehicles to exist as long as they are completing a trip. Destroy when done with polygon path. @Eunu, correct?
         foreach(GameObject vehicle in vehiclesInOperation)
         {
             if ( vehicle.GetComponent<DroneBase>().state != "parked" )
@@ -33,11 +37,19 @@ public class AAOControl : MonoBehaviour
         }
 
     }
+
+    /// <summary>
+    /// Adds a new drone to simulation.
+    /// </summary>
     public void AddVehicle (GameObject g)
     {
         if(vehiclesInOperation == null) vehiclesInOperation = new List<GameObject>();
         vehiclesInOperation.Add(g);
     }
+
+    /// <summary>
+    /// Returns the number of vehicles in operation.
+    /// </summary>
     public int GetVehicleCount()
     {
         return vehiclesInOperation.Count;

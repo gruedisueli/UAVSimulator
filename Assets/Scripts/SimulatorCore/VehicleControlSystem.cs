@@ -20,27 +20,29 @@ using Assets.Scripts.UI.Tools;
 
 
 
-
+/// <summary>
+/// Sort of a main control system for the entire fleet of drones in the simulation.
+/// </summary>
 public class VehicleControlSystem : MonoBehaviour
 {
 
-    const float AGL_700_METERS = 213.36f;
-    const float AGL_1200_METERS = 365.76f;
-    public float MIN_DRONE_RANGE;
-    public float DRONE_SCALE = 5.0f;
+    const float AGL_700_METERS = 213.36f;//AGL 700 in meters, not feet. "700" is a feet measurement.
+    const float AGL_1200_METERS = 365.76f;//AGL 1200 in meters, not feet. "1200" is a feet measurement.
+    public float MIN_DRONE_RANGE;//@EUNU comment
+    public float DRONE_SCALE = 5.0f;//@EUNU comment
     public Canvas _canvas;
 
 
     #region UI Variables
 
     public SimulationParam simulationParam;
-    private Dictionary<string, float> statistics;
+    private Dictionary<string, float> statistics;//@EUNU remove/not used?
 
-    
+
     #endregion
 
     #region Vehicle Info
-    private Dictionary<GameObject, string> activeVehicles;
+    private Dictionary<GameObject, string> activeVehicles;//@EUNU comment. Does this include parked drones?
     #endregion
 
 
@@ -130,7 +132,7 @@ public class VehicleControlSystem : MonoBehaviour
     public bool networkGenerated;
     private Dictionary<Corridor, GameObject> routeLineObject;
 
-    public float speedMultiplier = 1.0f;
+    public float speedMultiplier = 1.0f;//@EUNU comment
 
     public GameObject TypeAPrefab;
 
@@ -140,9 +142,9 @@ public class VehicleControlSystem : MonoBehaviour
 
     #endregion
 
-    private string current_runtime;
+    private string current_runtime;//@EUNU comment. remove?
     private float progress = 0.0f;
-    private List<GameObject> hiddenDrones;
+    private List<GameObject> hiddenDrones;//@EUNU comment
     public DroneInstantiator droneInstantiator;
 
 
@@ -155,7 +157,7 @@ public class VehicleControlSystem : MonoBehaviour
         networkGenerated = false;
         translucentRed = new Color(Color.cyan.r, Color.cyan.g, Color.cyan.b, 0.50f);
 
-        MIN_DRONE_RANGE = 99999.0f;
+        MIN_DRONE_RANGE = 99999.0f;//@EUNU comment
         string current_runtime = "42o3601_71o0589"; // INTEGRATION TO-DO: Get current runtime name from UI side to find out which folder to refer to
                                                     // Current Placeholder = Lat_Long of Boston
 
@@ -169,7 +171,7 @@ public class VehicleControlSystem : MonoBehaviour
         hiddenDrones = new List<GameObject>();
 
 
-        speedMultiplier = 2.0f;
+        speedMultiplier = 2.0f;//@EUNU comment
 
         watch = 0.0f;
 
@@ -193,19 +195,26 @@ public class VehicleControlSystem : MonoBehaviour
     // Update is called once per frames
     void Update()
     {
-        var debug = sceneManager.RestrictionZones.Values.ElementAt<SceneRestrictionZone>(0).GetComponent<SelectableGameObject>();
+        var debug = sceneManager.RestrictionZones.Values.ElementAt<SceneRestrictionZone>(0).GetComponent<SelectableGameObject>();//@EUNU comment/remove?
+
+        #region Basic Initialization Stuff. //@EUNU comment why we don't do this in setup? Seems like something that only happens once?
+
         if (!buildingNoiseAttachmentStarted) StartCoroutine(AttachBuildingNoiseComponent());
         if (isBuildingNoiseComponentAttached && !droneInstantiator.corridorDroneInstantiationStarted ) StartCoroutine(droneInstantiator.InstantiateCorridorDrones(sceneManager, DRONE_SCALE, _canvas));
         else if (isBuildingNoiseComponentAttached && droneInstantiator.isCorridorDroneInstantiated && !droneInstantiator.lowAltitudeDroneInstantiationStarted ) StartCoroutine(droneInstantiator.InstantiateLowAltitudeDrones(sceneManager, DRONE_SCALE, _canvas));
-        
+
+        #endregion
+
+        #region Typical play actions
 
         if (playing && isBuildingNoiseComponentAttached && droneInstantiator.isCorridorDroneInstantiated && droneInstantiator.isLowAltitudeDroneInstantiated )
         {
             watch += Time.deltaTime;
-
+            //periodic check-in
             if (watch > simulationParam.callGenerationInterval)
             {
                 var sa = gameObject.GetComponent<SimulationAnalyzer>();
+                //make sure we don't have excess drones in simulation.
                 if (sa.flyingDrones.Count + droneInstantiator.backgroundDrones.Count >= droneCount && droneInstantiator.backgroundDrones.Count > 0)
                 {
                     var droneToRemove = droneInstantiator.backgroundDrones[0];
@@ -213,9 +222,11 @@ public class VehicleControlSystem : MonoBehaviour
                     droneToRemove.Destroy();
                 }
                 watch = 0.0f;
-                GenerateRandomCalls();
+                GenerateRandomCalls();//@EUNU comment
             }
         }
+
+        #endregion
     }
 
 
@@ -241,6 +252,9 @@ public class VehicleControlSystem : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// Coroutine that iterates through all the objects in scene and attaches noise components to those things that should get it.
+    /// </summary>
     private IEnumerator AttachBuildingNoiseComponent()
     {
         int totalChildren = 0;
@@ -277,6 +291,9 @@ public class VehicleControlSystem : MonoBehaviour
         pG.Destroy();
     }
 
+    /// <summary>
+    /// Generates random calls for drone actions (only low-altitude and corridor drones, not background). //@EUNU is this corret?
+    /// </summary>
     public void GenerateRandomCalls()
     {
         int call_type = Mathf.FloorToInt(UnityEngine.Random.Range(0.0f, 3.0f));
@@ -373,7 +390,9 @@ public class VehicleControlSystem : MonoBehaviour
 
 
 
-
+    /// <summary>
+    /// Gives a specific drone a call to go somewhere.
+    /// </summary>
     private void CallVehicle(GameObject vehicle, ParkingControl parking, Queue<GameObject> destinations)
     {
         DroneBase vehicleInfo = vehicle.GetComponent<DroneBase>();
@@ -381,6 +400,9 @@ public class VehicleControlSystem : MonoBehaviour
         parking.CallVehecleInParkingStructure(vehicle);
     }
 
+    /// <summary>
+    /// //@EUNU comment.
+    /// </summary>
     public float GetElevation(GameObject origin, GameObject destination)
     {
         // TO-DO: Assign elevation according to the simulation rules
@@ -389,6 +411,9 @@ public class VehicleControlSystem : MonoBehaviour
         return 152.0f;
     }
 
+    /// <summary>
+    /// Gives us a random point on the map. //@EUNU correct?
+    /// </summary>
     public Vector3 GetRandomPointXZ(float y)
     {
         
@@ -397,6 +422,9 @@ public class VehicleControlSystem : MonoBehaviour
         return new Vector3(x, y, z);
     }
 
+    /// <summary>
+    /// //@EUNU comment. is this called?
+    /// </summary>
     public GameObject ReserveNearestAvailableParking(GameObject v)
     {
         float min_dist = float.PositiveInfinity;
@@ -420,6 +448,10 @@ public class VehicleControlSystem : MonoBehaviour
         sceneManager.ParkingStructures[nearestGuid].ParkingStructureSpecs.Reserve(v);
         return nearest;
     }
+
+    /// <summary>
+    /// Parses simulation params from options file.
+    /// </summary>
     private SimulationParam ReadSimulationParams(string runtime_name)
     {
         string path = root + runtime_name + "\\" + "simulation.json";
@@ -428,6 +460,10 @@ public class VehicleControlSystem : MonoBehaviour
 
         return sp;
     }
+
+    /// <summary>
+    /// Finds an available vehicle in the parking structure.
+    /// </summary>
     public GameObject GetAvailableVehicleinParkingStrcuture(GameObject parkingStructure)
     {
         ParkingControl pC = parkingStructure.GetComponent<ParkingControl>();
@@ -443,6 +479,9 @@ public class VehicleControlSystem : MonoBehaviour
         return null;
     }
 
+    /// <summary>
+    /// Generates a route from origin through specified destinations. May go through additional intermediate points as needed.//@EUNU correct?
+    /// </summary>
     public Queue<GameObject> Route (GameObject origin, List<GameObject> destinations)
     {
         Queue<GameObject> routed_destinations = new Queue<GameObject>();
@@ -461,7 +500,10 @@ public class VehicleControlSystem : MonoBehaviour
 
 
 
-    // assumes a vehicle gets fully charged at each stop
+    /// <summary>
+    /// Finds shortest path in corridor network from one point to another. @Eunu correct?
+    /// Assumes a vehicle gets fully charged at each stop @Eunu are we calculating charge?
+    /// </summary>
     List<GameObject> Dijkstra(GameObject origin, GameObject destination, float vehicleRange)
     {
         Dictionary<GameObject, float> distanceTo = new Dictionary<GameObject, float>();
@@ -494,7 +536,9 @@ public class VehicleControlSystem : MonoBehaviour
         return pathTo[destination];
     }
 
-
+    /// <summary>
+    /// Gets some random destinations for a CORRIDOR drone. @Eunu correct?
+    /// </summary>
     public List<GameObject> GetNewRandomDestinations()
     {
 
@@ -522,6 +566,9 @@ public class VehicleControlSystem : MonoBehaviour
         return destinationList;
     }
 
+    /// <summary>
+    /// Finds nearest parking structure with an available drone to first destination in call. @Eunu correct?
+    /// </summary>
     public GameObject GetNearestAvailableParking(GameObject firstDestination)
     {
         Vector3 pickUpLocation = firstDestination.transform.position;
@@ -548,6 +595,9 @@ public class VehicleControlSystem : MonoBehaviour
 
     }
 
+    /// <summary>
+    /// Gets nearest parking structure to center of low-altitude drone path. @Eunu correct?
+    /// </summary>
     public GameObject GetNearestAvailableParking(Vector3 AAOCenter)
     {
         GameObject closestParking = null;
@@ -573,6 +623,9 @@ public class VehicleControlSystem : MonoBehaviour
 
     }
 
+    /// <summary>
+    /// @Eunu remove?
+    /// </summary>
     public bool Register(DroneBase v)
     {
         return true;
@@ -587,6 +640,10 @@ public class VehicleControlSystem : MonoBehaviour
             return false;
         }*/
     }
+
+    /// <summary>
+    /// @Eunu comment
+    /// </summary>
     public bool UpdateVehicleStatus(DroneBase v)
     {
         if (activeVehicles.ContainsKey(v.gameObject))
@@ -601,11 +658,14 @@ public class VehicleControlSystem : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// Allows user to specify number of drones in simulation at runtime.
+    /// </summary>
     public void UpdateVehicleCount(int count)
     {
         droneCount = count;
         SimulationAnalyzer sa = gameObject.GetComponent<SimulationAnalyzer>();
-        if ( count < droneInstantiator.backgroundDrones.Count + sa.flyingDrones.Count )
+        if ( count < droneInstantiator.backgroundDrones.Count + sa.flyingDrones.Count)//if too many drones are in simulation, we need to remove some.
         {
             int dronesToRemove = droneInstantiator.backgroundDrones.Count + sa.flyingDrones.Count - count;
             if (droneInstantiator.backgroundDrones.Count > 0)
@@ -635,11 +695,11 @@ public class VehicleControlSystem : MonoBehaviour
                 }
             }
         }
-        else if ( count == droneInstantiator.backgroundDrones.Count + sa.flyingDrones.Count )
+        else if ( count == droneInstantiator.backgroundDrones.Count + sa.flyingDrones.Count )//no reason to change anything.
         {
             return;
         }
-        else
+        else//we should add some
         {
             int dronesToAdd = count - (droneInstantiator.backgroundDrones.Count + sa.flyingDrones.Count);
             if ( hiddenDrones.Count > 0 )
@@ -667,18 +727,33 @@ public class VehicleControlSystem : MonoBehaviour
 
     }
 
+    /// <summary>
+    /// Allows user to toggle noise visualization at runtime.
+    /// </summary>
     public void ToggleNoiseVisualization ( bool toggle )
     {
         noiseVisualization = toggle;
     }
+
+    /// <summary>
+    /// Allows user to toggle trail visualization at runtime.
+    /// </summary>
     public void ToggleTrailVisualization(bool toggle)
     {
         trailVisualization = toggle;
     }
+
+    /// <summary>
+    /// Allows user to toggle privacy visualization at runtime.
+    /// </summary>
     public void TogglePrivacyVisualization(bool toggle)
     {
         privacyVisualization = toggle;
     }
+
+    /// <summary>
+    /// Allows user to toggle route visualization at runtime.
+    /// </summary>
     public void ToggleRouteVisualization(bool toggle)
     {
         routeVisualization = toggle;
@@ -707,6 +782,10 @@ public class VehicleControlSystem : MonoBehaviour
         }
 
     }
+
+    /// <summary>
+    /// Function to be called when congestion level changes in a corridor.
+    /// </summary>
     private void CongestionLevelChangeHandler(Corridor c, int congestionLevel)
     {
         GameObject line = routeLineObject[c];
@@ -721,25 +800,42 @@ public class VehicleControlSystem : MonoBehaviour
         else if (congestionLevel == 0 && sa.congestedCorridors.Contains(c)) sa.congestedCorridors.Remove(c);
 
     }
+
+    /// <summary>
+    /// Allows user to toggle landing corridor visualization at runtime.
+    /// </summary>
     public void ToggleLandingCorridorVisualization(bool toggle)
     {
         landingCorridorVisualization = toggle;
     }
+
+    /// <summary>
+    /// Allows user to toggle demographics visualization at runtime.
+    /// </summary>
     public void ToggleDemographicVisualization(bool toggle)
     {
         demographicVisualization = toggle;
     }
 
+    /// <summary>
+    /// Allows user to toggle noise sphere visualization at runtime
+    /// </summary>
     public void ToggleNoiseShpere(bool toggle)
     {
         noiseShpereVisualization = toggle;
     }
 
+    /// <summary>
+    /// Allows user to toggle simplified mesh visualization at runtime.
+    /// </summary>
     public void ToggleSimplifiedMesh(bool toggle)
     {
         simplifiedMeshToggle = toggle;
     }
 
+    /// <summary>
+    /// @Eunu comment.
+    /// </summary>
     public void VisualizeNetwork ( Assets.Scripts.DataStructure.Network network )
     {
         networkLines = new List<GameObject>();

@@ -16,11 +16,11 @@ namespace Assets.Scripts.DataStructure
         public float maxSpeed;
         public float landingSpeed;
         public float takeoffSpeed;
-        public float yawSpeed;
+        public float yawSpeed;//@Eunu comment
         public float range;
-        public float size;
-        public List<float> emission;
-        public List<float> noise;
+        public float size;//@Eunu comment
+        public List<float> emission;//@Eunu comment
+        public List<float> noise;//@Eunu comment
     }
 
     [Serializable]
@@ -28,47 +28,58 @@ namespace Assets.Scripts.DataStructure
     public class SimulationParam
     {
         public float maxSpeed;
-        public float verticalSeparation;
-        public float horizontalSeparation;
+        public float verticalSeparation;//@Eunu comment
+        public float horizontalSeparation;//@Eunu comment
         public float maxVehicleCount;
         public float takeoffSpeed;
         public float landingSpeed;
-        public float maxYawSpeed;
-        public float callGenerationInterval;
-        public float maxInFlightVehicles;
-        public float inCorridorSeparation;
-        public float lowAltitudeBoundary;
-        public string strategicDeconfliction;
-        public string tacticalDeconfliction;
-        
+        public float maxYawSpeed;//@Eunu comment
+        public float callGenerationInterval;//@Eunu comment
+        public float maxInFlightVehicles;//@Eunu comment. How is this different from max vehicle count? Or do we use this?
+        public float inCorridorSeparation;//@Eunu comment
+        public float lowAltitudeBoundary;//@Eunu comment
+        public string strategicDeconfliction;//@Eunu comment
+        public string tacticalDeconfliction;//@Eunu comment
+
     }
     #endregion
 
-    [Serializable]
     #region Simulation Info
-    class SimulationStat
+    /// <summary>
+    /// @Eunu comment.
+    /// </summary>
+    [Serializable]
+    public class SimulationStat
     {
-        public float throughput;
-        public float affectedArea;
-        public float emission;
-        public List<GameObject> vehicles;
+        public float throughput;//@Eunu comment
+        public float affectedArea;//@Eunu comment
+        public float emission;//@Eunu comment
+        public List<GameObject> vehicles;//@Eunu comment
     }
     #endregion
 
-   
 
+    /// <summary>
+    /// @Eunu comment. What's difference from simulation stat?
+    /// </summary>
     public class SimulationAnalysis
     {
-        public List<GameObject> drones; 
-        public double emission;
-        public double noise;
+        public List<GameObject> drones; //@Eunu comment
+        public double emission;//@Eunu comment
+        public double noise;//@Eunu comment
     }
 
+    /// <summary>
+    /// A basic polygon
+    /// </summary>
     public class Polygon
     {
         public Vector3[] polygon;
         public Bounds bBox;
 
+        /// <summary>
+        /// Build a random polygon of set number of vertices, of arbitrary width/height
+        /// </summary>
         public Polygon(int vertexCount)
         {
             polygon = new Vector3[vertexCount];
@@ -77,16 +88,27 @@ namespace Assets.Scripts.DataStructure
             
             polygon = MakeRandomPolygon(vertexCount, width, height);
         }
+
+        /// <summary>
+        /// Build a random polygon of set number of vertices, of specified width/height
+        /// </summary>
         public Polygon(int vertexCount, float width, float height)
         {
             Vector3[] polygon = new Vector3[vertexCount];
             polygon = MakeRandomPolygon(vertexCount, width, height);
         }
+
+        /// <summary>
+        /// Building polygon using explicitly defined vertices.
+        /// </summary>
         public Polygon(Vector3[] vertecies)
         {
             polygon = vertecies;
         }
 
+        /// <summary>
+        /// Makes random polygon vertex list with specified number of vertices, width, and height.
+        /// </summary>
         private Vector3[] MakeRandomPolygon(int num_vertices, float width, float height)
         {
             float minX = Mathf.Infinity, minZ = Mathf.Infinity, maxX = Mathf.NegativeInfinity, maxZ = Mathf.NegativeInfinity;
@@ -146,6 +168,9 @@ namespace Assets.Scripts.DataStructure
             return points;
         }
 
+        /// <summary>
+        /// Converts polygon 3d vertices into 2d XZ ones., where X = unity X and Y = unity Z in the Vector2 struct.
+        /// </summary>
         private Vector2[] Vec3toVec2()
         {
             List<Vector2> vec2 = new List<Vector2>();
@@ -158,6 +183,10 @@ namespace Assets.Scripts.DataStructure
             }
             return vec2.ToArray();
         }
+
+        /// <summary>
+        /// Moves all polygon vertices by same vector (moves the polygon)
+        /// </summary>
         public void Move(Vector3 target)
         {
             for (int i = 0; i < polygon.Length; i++)
@@ -167,6 +196,9 @@ namespace Assets.Scripts.DataStructure
             
         }
 
+        /// <summary>
+        /// Extrudes 2d polygon into a mesh.
+        /// </summary>
         public Mesh CreateExtrusion(float height)
         {
             // convert polygon to triangles
@@ -220,6 +252,9 @@ namespace Assets.Scripts.DataStructure
             return m;
         }
 
+        /// <summary>
+        /// Tests point for 2d inclusion in 2d polygon.
+        /// </summary>
         public bool isPointInPolygon(Vector3 point)
         {
             Vector2[] polygonV2 = Vec3toVec2();
@@ -241,6 +276,9 @@ namespace Assets.Scripts.DataStructure
             return oddNodes;
         }
 
+        /// <summary>
+        /// Generates random points within the extruded polygon.
+        /// </summary>
         public List<Vector3> GeneratePointsinExtrusion(int count, float height)
         {
             List<Vector3> generatedPoints = new List<Vector3>();
@@ -260,15 +298,24 @@ namespace Assets.Scripts.DataStructure
         }
     }
 
+    /// <summary>
+    /// @Eunu Comment.
+    /// </summary>
     public class Triangulator
     {
         private List<Vector2> m_points = new List<Vector2>();
 
+        /// <summary>
+        /// Basic constructor, does not actually "triangulate" the set of points.
+        /// </summary>
         public Triangulator(Vector2[] points)
         {
             m_points = new List<Vector2>(points);
         }
 
+        /// <summary>
+        /// @Eunu comment
+        /// </summary>
         public int[] Triangulate()
         {
             List<int> indices = new List<int>();
@@ -326,6 +373,9 @@ namespace Assets.Scripts.DataStructure
             return indices.ToArray();
         }
 
+        /// <summary>
+        /// @Eunu Comment. What is meant by "Area" of a triangulation.
+        /// </summary>
         private float Area()
         {
             int n = m_points.Count;
@@ -339,6 +389,9 @@ namespace Assets.Scripts.DataStructure
             return (A * 0.5f);
         }
 
+        /// <summary>
+        /// @Eunu comment
+        /// </summary>
         private bool Snip(int u, int v, int w, int n, int[] V)
         {
             int p;
@@ -358,6 +411,9 @@ namespace Assets.Scripts.DataStructure
             return true;
         }
 
+        /// <summary>
+        /// @Eunu comment
+        /// </summary>
         private bool InsideTriangle(Vector2 A, Vector2 B, Vector2 C, Vector2 P)
         {
             float ax, ay, bx, by, cx, cy, apx, apy, bpx, bpy, cpx, cpy;
@@ -378,7 +434,9 @@ namespace Assets.Scripts.DataStructure
         }
     }
 
-
+    /// <summary>
+    /// A pathway for a corridor drone.
+    /// </summary>
     [Serializable]
     public class Corridor
     {
@@ -389,12 +447,15 @@ namespace Assets.Scripts.DataStructure
         public GameObject origin;
         public GameObject destination;
         public float elevation;
-        public Queue<Vector3> wayPoints;
+        public Queue<Vector3> wayPoints;//@Eunu comment. What do waypoints mean within a single corridor? Why is it a Queue?
         public List<GameObject> dronesInCorridor;
-        public float speedSum;
-        public float maxSpeed;
+        public float speedSum;//@Eunu comment
+        public float maxSpeed;//max allowed speed in corridor? @Eunu comment?
 
         private int _congestionLevel;
+        /// <summary>
+        /// Get or set the congestion level for the corridor. On set to new value, invokes event.
+        /// </summary>
         public int congestionLevel
         {
             get
@@ -422,11 +483,18 @@ namespace Assets.Scripts.DataStructure
             }
         }
 
+        /// <summary>
+        /// Compares two corridors for positional equivalency
+        /// </summary>
         public bool Equals(Corridor p1, Corridor p2)
         {
             if (p1.origin.transform.position.Equals(p2.origin.transform.position) && p1.destination.transform.position.Equals(p2.destination.transform.position) && Mathf.Abs(p1.elevation - p2.elevation) < 0.001) return true;
             else return false;
         }
+
+        /// <summary>
+        /// Builds corridor between two points at specified elevation.
+        /// </summary>
         public Corridor(GameObject org, GameObject dest, float elev)
         {
             origin = org;
@@ -437,6 +505,10 @@ namespace Assets.Scripts.DataStructure
             _congestionLevel = 0;
             maxSpeed = 200.0f;
         }
+
+        /// <summary>
+        /// @Eunu comment. Are we actually adding a drone? 
+        /// </summary>
         public void AddDrone ( GameObject drone )
         {
             CorridorDrone cd = drone.GetComponent<CorridorDrone>();
@@ -444,6 +516,9 @@ namespace Assets.Scripts.DataStructure
             dronesInCorridor.Add(drone);
         }
 
+        /// <summary>
+        /// @Eunu comment. Are we actually removing a drone? 
+        /// </summary>
         public void RemoveDrone(GameObject drone)
         {
             CorridorDrone cd = drone.GetComponent<CorridorDrone>();
@@ -451,6 +526,9 @@ namespace Assets.Scripts.DataStructure
             dronesInCorridor.Remove(drone);
         }
 
+        /// <summary>
+        /// @Eunu comment.
+        /// </summary>
         private void SpeedChangeHandler(float oldSpeed, float newSpeed)
         {
             speedSum -= oldSpeed;
@@ -464,6 +542,9 @@ namespace Assets.Scripts.DataStructure
 
     }
 
+    /// <summary>
+    /// The network of all the corridors in the simulation. @Eunu comment.
+    /// </summary>
     [Serializable]
     public class Network
     {

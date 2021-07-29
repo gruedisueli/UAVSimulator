@@ -9,7 +9,9 @@ using Assets.Scripts.Vehicle_Control;
 using Assets.Scripts.UI.EventArgs;
 using Assets.Scripts.DataStructure;
 
-
+/// <summary>
+/// @Eunu is this obsolete?
+/// </summary>
 public class Vehicle : MonoBehaviour
 {
     // constants

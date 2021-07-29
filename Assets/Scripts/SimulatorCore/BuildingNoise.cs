@@ -3,6 +3,9 @@ using System.Collections.Generic;
 using UnityEngine;
 using Assets.Scripts.SimulatorCore;
 
+/// <summary>
+/// Gets atached to every building in simulation that want to monitor sound on.
+/// </summary>
 public class BuildingNoise : MonoBehaviour
 {
     // Start is called before the first frame update
@@ -55,6 +58,11 @@ public class BuildingNoise : MonoBehaviour
         }
 
     }
+
+    /// <summary>
+    /// Increases reported noise level on building.
+    /// Noise level is affected by number of nearby drones, but not proximity to drones. @Eunu, correct?
+    /// </summary>
     public void AddNoise(GameObject affectingVehicle)
     {
         if (!affectingVehicles.Contains(affectingVehicle))
@@ -76,6 +84,10 @@ public class BuildingNoise : MonoBehaviour
             affectingVehicles.Add(affectingVehicle);
         }
     }
+
+    /// <summary>
+    /// Reduces reported noise level on building.
+    /// </summary>
     public void DecreaseNoise(GameObject affectingVehicle)
     {
         if (affectingVehicles.Contains(affectingVehicle))

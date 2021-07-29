@@ -2,6 +2,9 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+/// <summary>
+/// @Eunu is this obsolete?
+/// </summary>
 public class AvoidanceTest : MonoBehaviour
 {
     // Start is called before the first frame update

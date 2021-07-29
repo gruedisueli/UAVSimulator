@@ -15,14 +15,15 @@ using Assets.Scripts.Serialization;
 
 namespace Assets.Scripts.SimulatorCore
 {
-    // Drone Infos
-    
+    /// <summary>
+    /// Manages the actual instantiation of drone game objects in the simulation.
+    /// </summary>
     public class DroneInstantiator: MonoBehaviour
     {
 
         private VehicleControlSystem vcs;
-        private Dictionary<string, VehicleSpec> vehicleSpecs;
-        private Dictionary<string, string> vehicleTypes;
+        private Dictionary<string, VehicleSpec> vehicleSpecs;//list of specs for different types of drones. @Eunu, correct?
+        private Dictionary<string, string> vehicleTypes;//list of possible types of vehicles. @Eunu, Correct? Do these become the keys for vehicle specs? What are the key value pairs in this dictionary?
         private string asset_root = SerializationSettings.ROOT + "\\";
         
         public bool isCorridorDroneInstantiated;
@@ -51,6 +52,9 @@ namespace Assets.Scripts.SimulatorCore
             ReadVehicleSpecs();
         }
         
+        /// <summary>
+        /// Main method called for instantiating drones in the simulation.
+        /// </summary>
         public void InstantiateDrones(CityViewManager sceneManager, float scale, Canvas _canvas)
         {
             StartCoroutine(InstantiateCorridorDrones(sceneManager, scale, _canvas));
@@ -60,6 +64,10 @@ namespace Assets.Scripts.SimulatorCore
             }
             
         }
+
+        /// <summary>
+        /// Coroutine for instantiation of corridor drones.
+        /// </summary>
         public IEnumerator InstantiateCorridorDrones(CityViewManager sceneManager, float scale, Canvas _canvas)
         {
             
@@ -152,6 +160,9 @@ namespace Assets.Scripts.SimulatorCore
             isCorridorDroneInstantiated = true;
         }
 
+        /// <summary>
+        /// Parses vehicle specs from external file.
+        /// </summary>
         public void ReadVehicleSpecs()
         {
             if (vehicleTypes.Keys.Count > 0) return;
@@ -168,6 +179,10 @@ namespace Assets.Scripts.SimulatorCore
                 vs.range = Mathf.Infinity;
             }
         }
+
+        /// <summary>
+        /// Coroutine for instantiation of low altitude drones.
+        /// </summary>
         public IEnumerator InstantiateLowAltitudeDrones(CityViewManager sceneManager, float scale, Canvas _canvas)
         {
             float progress = 0.0f;
@@ -264,6 +279,9 @@ namespace Assets.Scripts.SimulatorCore
             //return vehicles;
         }
 
+        /// <summary>
+        /// Coroutine for instantiation of background drones. @Eunu please comment on when we use this versus "AddBackgroundDrone()"
+        /// </summary>
         public IEnumerator InstantiateBackgroundDrones(CityViewManager sceneManager, int backgroundDroneCount, float scale, float lowerElevationBound, float upperElevationBound, Canvas _canvas)
         {
             float progress = 0.0f;
@@ -323,6 +341,9 @@ namespace Assets.Scripts.SimulatorCore
             isBackgroundDroneInstantiated = true;
         }
 
+        /// <summary>
+        /// @Eunu, comment. See comment for coroutine above.
+        /// </summary>
         public void AddBackgroundDrone(CityViewManager sceneManager, float scale, float lowerElevationBound, float upperElevationBound)
         {
             string drone_path = "Drones/";

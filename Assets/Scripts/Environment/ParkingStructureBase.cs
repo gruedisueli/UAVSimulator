@@ -20,16 +20,16 @@ namespace Assets.Scripts.Environment
         public abstract Vector3 Position { get; set; }
         public abstract Vector3 Rotation { get; set; }
         public abstract Vector3 Scale { get; set; }
-        public abstract Vector3 StandbyPosition { get; set; }
-        public abstract Vector3 LandingQueueHead { get; set; }
-        public abstract Vector3 LandingQueueDirection { get; set; }
+        public abstract Vector3 StandbyPosition { get; set; }//@Eunu comment
+        public abstract Vector3 LandingQueueHead { get; set; }//@Eunu comment
+        public abstract Vector3 LandingQueueDirection { get; set; }//@Eunu comment
         public abstract List<Vector3> ParkingSpots { get; set; }
 
         public abstract ParkingStructureBase GetCopy();
 
-        public abstract Dictionary<Vector3, GameObject> Parked { get; set; }
-        public abstract Dictionary<GameObject, Vector3> VehicleAt { get; set; }
-        public abstract Dictionary<GameObject, Vector3> Reserved { get; set; }
+        public abstract Dictionary<Vector3, GameObject> Parked { get; set; }//@Eunu comment. What are the key value pairs here?
+        public abstract Dictionary<GameObject, Vector3> VehicleAt { get; set; }//@Eunu comment
+        public abstract Dictionary<GameObject, Vector3> Reserved { get; set; }//@Eunu comment
 
         public void Reserve(GameObject vehicle)
         {

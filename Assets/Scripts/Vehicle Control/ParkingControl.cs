@@ -5,10 +5,16 @@ using Assets.Scripts.Vehicle_Control;
 using Assets.Scripts.DataStructure;
 using Assets.Scripts.Environment;
 
+/// <summary>
+/// This is like a control tower for a single parking structure.
+/// </summary>
 public class ParkingControl : TrafficControl
 {
     public ParkingStructureBase parkingInfo;
 
+    /// <summary>
+    /// Assigns a landing corridor (waypoints) to a specific drone registered to this parking structure.
+    /// </summary>
     protected override void AssignLandingCorridor()
     {
         Vector3 parkingSpot = parkingInfo.GetEmptySpot();
@@ -19,6 +25,9 @@ public class ParkingControl : TrafficControl
         parkingInfo.ParkAt(parkingSpot, currentVehicle);
     }
 
+    /// <summary>
+    /// Assigns a takeoff corridor (waypoints) to a specific drone registered to this parking structure.
+    /// </summary>
     protected override void AssignTakeOffCorridor()
     {
         Vector3 parkingSpot = parkingInfo.VehicleAt[currentVehicle];
@@ -29,6 +38,9 @@ public class ParkingControl : TrafficControl
         parkingInfo.Unpark(currentVehicle);
     }
 
+    /// <summary>
+    /// Calls a specific vehicle in the parking structure to enter the queue for departure.
+    /// </summary>
     public void CallVehecleInParkingStructure(GameObject vehicle)
     {
         queue.Enqueue(vehicle);

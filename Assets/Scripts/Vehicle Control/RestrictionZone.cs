@@ -2,6 +2,9 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+/// <summary>
+/// @Eunu is this obsolete?
+/// </summary>
 public class RestrictionZone2 : MonoBehaviour
 {
     private List<GameObject> restrictionZones;

@@ -3,6 +3,9 @@ using System.Collections.Generic;
 using UnityEngine;
 using Assets.Scripts.DataStructure;
 
+/// <summary>
+/// A type of drone confined to travelling in corridors
+/// </summary>
 public class CorridorDrone : DroneBase
 {
     Corridor currentCorridor { get; set; }
@@ -31,6 +34,9 @@ public class CorridorDrone : DroneBase
         }
     }
 
+    /// <summary>
+    /// @Eunu comment on how we get next point. Not sure I fully understand how network works.
+    /// </summary>
     protected override Queue<Vector3> GetWayPointsToNextDestination()
     {
         foreach (Corridor c in vcs.sceneManager.network.outEdges[currentCommunicationPoint])
@@ -38,12 +44,16 @@ public class CorridorDrone : DroneBase
             if (c.destination.Equals(destinationQueue.Peek()))
             {
                 currentCorridor = c;
-                c.AddDrone(this.gameObject);
+                c.AddDrone(this.gameObject); //register drone to corridor.
                 return (new Queue<Vector3>(c.wayPoints));
             }
         }
         return new Queue<Vector3>();
     }
+
+    /// <summary>
+    /// Move function specific to this type of drone.
+    /// </summary>
     protected override void Move()
     {
         // Move() can be different between:
@@ -70,6 +80,9 @@ public class CorridorDrone : DroneBase
         }
     }
 
+    /// <summary>
+    /// Set state to pending, register drone in queue
+    /// </summary>
     protected override void Pending()
     {
         state = "pending";
@@ -77,6 +90,9 @@ public class CorridorDrone : DroneBase
         inCorridorSpeed = 0.0f;
     }
 
+    /// <summary>
+    /// Set state to landing and deregister drone from corridor.
+    /// </summary>
     public override void LandGranted()
     {
         state = "land";

@@ -2,6 +2,10 @@
 using System.Collections.Generic;
 using UnityEngine;
 using Assets.Scripts.Vehicle_Control;
+
+/// <summary>
+/// @Eunu is this obsolete? Should it be deleted?
+/// </summary>
 public class LandingPoint : MonoBehaviour
 {
 

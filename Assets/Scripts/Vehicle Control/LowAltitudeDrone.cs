@@ -2,10 +2,13 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+/// <summary>
+/// A type of drone that goes through a series of destinations not in the corridors themselves, within the altitude range of other low-altitude drones and not within corridor altitudes. @Eunu, correct?
+/// </summary>
 public class LowAltitudeDrone : DroneBase
 {
     // Start is called before the first frame update
-    private Queue<Vector3> operationPoints;
+    private Queue<Vector3> operationPoints;//the list of points the drone will travel through. @Eunu correct?
     protected override void Move()
     {
         if (state == "move")
@@ -23,6 +26,9 @@ public class LowAltitudeDrone : DroneBase
         }
     }
 
+    /// <summary>
+    /// Manages getting next action in state machine.
+    /// </summary>
     protected override void GetNextAction()
     {
         if (state == "wait")
@@ -59,6 +65,9 @@ public class LowAltitudeDrone : DroneBase
         }
     }
 
+    /// <summary>
+    /// Sets operation points for this drone.
+    /// </summary>
     public void SetOperationPoints ( Queue<Vector3> operationPts )
     {
         operationPoints = operationPts;
