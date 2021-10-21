@@ -30,11 +30,13 @@ namespace Assets.Scripts.UI.Tools
         {
             base.OnDestroy();
 
-            foreach (var m in ModifyTools)
+            if (ModifyTools != null)
             {
-                m.OnElementModified -= ModifyTextValues;
+                foreach (var m in ModifyTools)
+                {
+                    m.OnElementModified -= ModifyTextValues;
+                }
             }
-
             if (StartModifyTool != null)
             {
                 StartModifyTool.OnStartModify -= StartModify;

@@ -19,6 +19,7 @@ using Mapbox.Unity.Utilities;
 using Assets.Scripts.UI.Tools;
 using Assets.Scripts.UI.EventArgs;
 using Assets.Scripts.DataStructure;
+using Assets.Scripts.SimulatorCore;
 
 using DelaunatorSharp;
 
@@ -113,7 +114,7 @@ namespace Assets.Scripts.UI
             _vehicleControlSystem = FindObjectOfType<VehicleControlSystem>(true);
             if (_vehicleControlSystem == null)
             {
-                Debug.LogError("Vehicle control system not found");
+                Debug.Log("Vehicle control system not found");
             }
 
             //gather UI elments
@@ -1187,8 +1188,10 @@ namespace Assets.Scripts.UI
             from.Add(-1);
             distance.Add(0.0f);
             tail++;
+            int iter = 0;
+            int maxIter = 1000;
 
-            while (Physics.Raycast(visited[head], destination - visited[head], Vector3.Distance(visited[head], destination), layerMask) && head <= tail)
+            while (iter <= maxIter && head < visited.Count && Physics.Raycast(visited[head], destination - visited[head], Vector3.Distance(visited[head], destination), layerMask) && head <= tail)
             {
                 RaycastHit currentHitObject = GetClosestHit(visited[head], Physics.RaycastAll(visited[head], destination - visited[head], Vector3.Distance(visited[head], destination), layerMask));
                 Vector3 lastHit = currentHitObject.point;
@@ -1233,7 +1236,13 @@ namespace Assets.Scripts.UI
                 }
 
                 head++;
+                iter++;
             }
+            if (iter == maxIter)
+            {
+                Debug.LogError("Error finding route");
+            }
+
             // Do the same thing in the opposite direction
             List<Vector3> path = new List<Vector3>();
             if (head < tail) // found a path so backtrack

@@ -346,6 +346,7 @@ namespace Assets.Scripts.UI
             if (register)
             {
                 ParkingStructures.Add(guid, sPS);
+                _vehicleControlSystem.InstantiateCorridorAndLowAltDrones();
             }
 
             sPS.OnSceneElementSelected += SelectElement;
@@ -362,6 +363,7 @@ namespace Assets.Scripts.UI
             if (register)
             {
                 ParkingStructures.Add(guid, sPS);
+                _vehicleControlSystem.InstantiateCorridorAndLowAltDrones();
             }
 
             sPS.OnSceneElementSelected += SelectElement;

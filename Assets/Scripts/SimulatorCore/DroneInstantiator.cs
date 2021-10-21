@@ -38,10 +38,9 @@ namespace Assets.Scripts.SimulatorCore
         public List<GameObject> lowAltitudeDrones;
 
         public event EventHandler<DroneInstantiationArgs> OnDroneInstantiated;
-        
+       
 
-
-        public DroneInstantiator(VehicleControlSystem vcs)
+        public void Init(VehicleControlSystem vcs)
         {
             vehicleSpecs = new Dictionary<string, VehicleSpec>();
             vehicleTypes = new Dictionary<string, string>();
@@ -51,114 +50,113 @@ namespace Assets.Scripts.SimulatorCore
             this.vcs = vcs;
             ReadVehicleSpecs();
         }
-        
+
         /// <summary>
         /// Main method called for instantiating drones in the simulation.
         /// </summary>
         public void InstantiateDrones(CityViewManager sceneManager, float scale, Canvas _canvas)
         {
-            StartCoroutine(InstantiateCorridorDrones(sceneManager, scale, _canvas));
-            if ( isCorridorDroneInstantiated )
-            {
-                StartCoroutine(InstantiateLowAltitudeDrones(sceneManager, scale, _canvas));
-            }
-            
+            StartCoroutine(InstantiateCorridorOrLowAltDrones(sceneManager, scale, _canvas, true));
+            StartCoroutine(InstantiateCorridorOrLowAltDrones(sceneManager, scale, _canvas, false));
         }
 
-        /// <summary>
-        /// Coroutine for instantiation of corridor drones.
-        /// </summary>
-        public IEnumerator InstantiateCorridorDrones(CityViewManager sceneManager, float scale, Canvas _canvas)
-        {
+        ///// <summary>
+        ///// Coroutine for instantiation of corridor drones.
+        ///// </summary>
+        //public IEnumerator InstantiateCorridorDrones(CityViewManager sceneManager, float scale, Canvas _canvas)
+        //{
             
-            float progress = 0.0f;
-            int parkingCapacity = sceneManager.GetParkingCapacity();
-            int lowAltitudeOnlyCapacity = sceneManager.GetParkingCapacity("LowAltitude");
-            int vehiclesToInstantiate = UnityEngine.Random.Range(parkingCapacity - lowAltitudeOnlyCapacity - 10, parkingCapacity - lowAltitudeOnlyCapacity);
-            string drone_path = "Drones/";
-            List<GameObject> vehicles = new List<GameObject>();
-            List<string> corridorTypeNames = new List<string>();
+        //    string drone_path = "Drones/";
+        //    float progress = 0.0f;
+        //    List<GameObject> vehicles = new List<GameObject>();
+        //    int parkingCapacity = sceneManager.GetParkingCapacity();
+        //    int lowAltitudeOnlyCapacity = sceneManager.GetParkingCapacity("LowAltitude");
+        //    int vehiclesToInstantiate = UnityEngine.Random.Range(parkingCapacity - lowAltitudeOnlyCapacity - 10 - corridorDrones.Count, parkingCapacity - lowAltitudeOnlyCapacity - corridorDrones.Count);
 
-            var pG = Instantiate(EnvironManager.Instance.ProgressBarPrefab, _canvas.gameObject.transform);
-            var progressBar = pG.GetComponent<ProgressBar>();
-            progressBar.Init("Instantiating drones");
+        //    if (vehiclesToInstantiate < 0) yield break;
 
-            corridorDroneInstantiationStarted = true;
+        //    List<string> corridorTypeNames = new List<string>();
+
+        //    var pG = Instantiate(EnvironManager.Instance.ProgressBarPrefab, _canvas.gameObject.transform);
+        //    var progressBar = pG.GetComponent<ProgressBar>();
+        //    progressBar.Init("Instantiating drones");
+
+        //    corridorDroneInstantiationStarted = true;
         
 
-            foreach ( string type in vehicleTypes.Keys )
-            {
-                if (type.Equals("corridor")) corridorTypeNames.Add(vehicleTypes[type]);
-            }
+        //    foreach ( string type in vehicleTypes.Keys )
+        //    {
+        //        if (type.Equals("corridor")) corridorTypeNames.Add(vehicleTypes[type]);
+        //    }
 
-            for (int i = 0; i < vehiclesToInstantiate; i++)
-            {
-                foreach (var key in sceneManager.ParkingStructures.Keys)
-                {
-                    var sPS = sceneManager.ParkingStructures[key];
-                    ParkingControl pC = sPS.ParkingCtrl;
-                    if (!sPS.ParkingStructureSpecs.Type.Contains("LowAltitude"))
-                    {
-                        if (pC.parkingInfo.Parked.Count == 0) pC.parkingInfo.RemainingSpots = pC.parkingInfo.ParkingSpots.Count - pC.parkingInfo.Parked.Count;
-                        if (pC.parkingInfo.RemainingSpots > 0)
-                        {
-                            int vehicleTypeID = UnityEngine.Random.Range(0, corridorTypeNames.Count);
-                            var newDrone = Resources.Load<GameObject>(drone_path + corridorTypeNames[vehicleTypeID]);
-                            var type = corridorTypeNames[vehicleTypeID];
-                            var emptySpot = pC.parkingInfo.GetEmptySpot();
-                            var translatedSpot = pC.parkingInfo.TranslateParkingSpot(emptySpot);
+        //    for (int i = 0; i < vehiclesToInstantiate; i++)
+        //    {
+        //        foreach (var key in sceneManager.ParkingStructures.Keys)
+        //        {
+        //            var sPS = sceneManager.ParkingStructures[key];
+        //            ParkingControl pC = sPS.ParkingCtrl;
+        //            if (!sPS.ParkingStructureSpecs.Type.Contains("LowAltitude"))
+        //            {
+        //                if (pC.parkingInfo.Parked.Count == 0) pC.parkingInfo.RemainingSpots = pC.parkingInfo.ParkingSpots.Count - pC.parkingInfo.Parked.Count;
+        //                if (pC.parkingInfo.RemainingSpots > 0)
+        //                {
+        //                    int vehicleTypeID = UnityEngine.Random.Range(0, corridorTypeNames.Count);
+        //                    var newDrone = Resources.Load<GameObject>(drone_path + corridorTypeNames[vehicleTypeID]);
+        //                    var type = corridorTypeNames[vehicleTypeID];
+        //                    var emptySpot = pC.parkingInfo.GetEmptySpot();
+        //                    var translatedSpot = pC.parkingInfo.TranslateParkingSpot(emptySpot);
 
-                            // instantiate the vehicle at emptySpot
-                            var clone = Instantiate(newDrone, translatedSpot, Quaternion.Euler(0.0f, 0.0f, 0.0f));
-                            clone.name = "UAV_" + i.ToString();
-                            clone.tag = "Vehicle";
-                            clone.layer = 10;
-                            // Only for video
-                            clone.transform.localScale = new Vector3(scale, scale, scale);
-                            // ~Only for video
-                            clone.AddComponent<VehicleNoise>();
-                            TrailRenderer tr = clone.AddComponent<TrailRenderer>();
-                            tr.material = Resources.Load<Material>("Materials/TrailCorridorDrones");
-                            tr.time = Mathf.Infinity;
-                            tr.enabled = false;
+        //                    // instantiate the vehicle at emptySpot
+        //                    var clone = Instantiate(newDrone, translatedSpot, Quaternion.Euler(0.0f, 0.0f, 0.0f));
+        //                    clone.name = "UAV_" + i.ToString();
+        //                    clone.tag = "Vehicle";
+        //                    clone.layer = 10;
+        //                    // Only for video
+        //                    clone.transform.localScale = new Vector3(scale, scale, scale);
+        //                    // ~Only for video
+        //                    clone.AddComponent<VehicleNoise>();
+        //                    TrailRenderer tr = clone.AddComponent<TrailRenderer>();
+        //                    tr.material = Resources.Load<Material>("Materials/TrailCorridorDrones");
+        //                    tr.time = Mathf.Infinity;
+        //                    tr.enabled = false;
 
 
-                            //newDrone.Destroy();
+        //                    //newDrone.Destroy();
 
-                            // Fill in vehivle spec
-                            CorridorDrone v = clone.AddComponent<CorridorDrone>();
-                            v.Initialize(vehicleSpecs[type].type, vehicleSpecs[type].capacity, vehicleSpecs[type].range, vehicleSpecs[type].maxSpeed, vehicleSpecs[type].yawSpeed, vehicleSpecs[type].takeoffSpeed, vehicleSpecs[type].landingSpeed, vehicleSpecs[type].emission, vehicleSpecs[type].noise, "idle");
-                            v.currentCommunicationPoint = sPS.gameObject;
-                            vehicles.Add(clone);
-                            OnDroneInstantiated?.Invoke(this, new DroneInstantiationArgs(clone));
-                            // Update parking management info
-                            clone.transform.GetChild(0).gameObject.GetComponent<MeshRenderer>().enabled = false;
-                            pC.parkingInfo.ParkAt(emptySpot, clone);
+        //                    // Fill in vehivle spec
+        //                    CorridorDrone v = clone.AddComponent<CorridorDrone>();
+        //                    v.Initialize(vehicleSpecs[type].type, vehicleSpecs[type].capacity, vehicleSpecs[type].range, vehicleSpecs[type].maxSpeed, vehicleSpecs[type].yawSpeed, vehicleSpecs[type].takeoffSpeed, vehicleSpecs[type].landingSpeed, vehicleSpecs[type].emission, vehicleSpecs[type].noise, "idle");
+        //                    v.currentCommunicationPoint = sPS.gameObject;
+        //                    vehicles.Add(clone);
+        //                    OnDroneInstantiated?.Invoke(this, new DroneInstantiationArgs(clone));
+        //                    // Update parking management info
+        //                    clone.transform.GetChild(0).gameObject.GetComponent<MeshRenderer>().enabled = false;
+        //                    pC.parkingInfo.ParkAt(emptySpot, clone);
 
-                            var sc = clone.AddComponent<SphereCollider>();
-                            sc.radius = 1.0f;
-                            sc.center = Vector3.zero;
+        //                    var sc = clone.AddComponent<SphereCollider>();
+        //                    sc.radius = 1.0f;
+        //                    sc.center = Vector3.zero;
 
-                            GameObject sphere = GameObject.CreatePrimitive(PrimitiveType.Sphere);
-                            sphere.transform.localScale = new Vector3(0.0f, 0.0f, 0.0f);
-                            sphere.transform.parent = clone.transform;
-                            sphere.transform.localPosition = new Vector3(0.0f, 0.0f, 0.0f);
-                            MeshRenderer mr = sphere.GetComponent<MeshRenderer>();
-                            mr.material = Resources.Load<Material>("Materials/NoiseSphere");
-                            mr.enabled = false;
-                            corridorDrones.Add(clone);
-                            break;
-                        }
-                    }
-                }
-                progress = (float)i / (float)vehiclesToInstantiate;
-                progressBar.SetCompletion(progress);
-                yield return null;
-            }
-            //return vehicles;
-            pG.Destroy();
-            isCorridorDroneInstantiated = true;
-        }
+        //                    GameObject sphere = GameObject.CreatePrimitive(PrimitiveType.Sphere);
+        //                    sphere.transform.localScale = new Vector3(0.0f, 0.0f, 0.0f);
+        //                    sphere.transform.parent = clone.transform;
+        //                    sphere.transform.localPosition = new Vector3(0.0f, 0.0f, 0.0f);
+        //                    MeshRenderer mr = sphere.GetComponent<MeshRenderer>();
+        //                    mr.material = Resources.Load<Material>("Materials/NoiseSphere");
+        //                    mr.enabled = false;
+        //                    corridorDrones.Add(clone);
+        //                    break;
+        //                }
+        //            }
+        //        }
+        //        progress = (float)i / (float)vehiclesToInstantiate;
+        //        progressBar.SetCompletion(progress);
+        //        yield return null;
+        //    }
+        //    //return vehicles;
+        //    pG.Destroy();
+        //    isCorridorDroneInstantiated = true;
+        //}
 
         /// <summary>
         /// Parses vehicle specs from external file.
@@ -180,104 +178,106 @@ namespace Assets.Scripts.SimulatorCore
             }
         }
 
-        /// <summary>
-        /// Coroutine for instantiation of low altitude drones.
-        /// </summary>
-        public IEnumerator InstantiateLowAltitudeDrones(CityViewManager sceneManager, float scale, Canvas _canvas)
-        {
-            float progress = 0.0f;
-            List<GameObject> vehicles = new List<GameObject>();
-            int parkingCapacity = sceneManager.GetParkingCapacity();
-            int vehiclesToInstantiate = UnityEngine.Random.Range(parkingCapacity - 10, parkingCapacity);
-            string drone_path = "Drones/";
+        ///// <summary>
+        ///// Coroutine for instantiation of low altitude drones.
+        ///// </summary>
+        //public IEnumerator InstantiateLowAltitudeDrones(CityViewManager sceneManager, float scale, Canvas _canvas)
+        //{
+        //    string drone_path = "Drones/";
+        //    float progress = 0.0f;
+        //    List<GameObject> vehicles = new List<GameObject>();
+        //    int parkingCapacity = sceneManager.GetParkingCapacity();
+        //    int vehiclesToInstantiate = UnityEngine.Random.Range(parkingCapacity - 10, parkingCapacity);
 
-            var pG = Instantiate(EnvironManager.Instance.ProgressBarPrefab, _canvas.gameObject.transform);
-            var progressBar = pG.GetComponent<ProgressBar>();
-            progressBar.Init("Instantiating drones");
+        //    if (vehiclesToInstantiate < 0) yield break;
 
-
-            List<string> lowAltitudeTypeNames = new List<string>();
-
-            lowAltitudeDroneInstantiationStarted = true;
-
-            foreach (string type in vehicleTypes.Keys)
-            {
-                if (type.Equals("LowAltitude")) lowAltitudeTypeNames.Add(vehicleTypes[type]);
-            }
-
-            // Populate vehiclesToInstantiate number of drones in existing parking structures
-            for (int i = 0; i < vehiclesToInstantiate; i++)
-            {
-                foreach (var key in sceneManager.ParkingStructures.Keys)
-                {
-                    var sPS = sceneManager.ParkingStructures[key];
-                    ParkingControl pC = sPS.ParkingCtrl;
-                    if (sPS.ParkingStructureSpecs.Type.Contains("LowAltitude"))
-                    {
-                        if (pC.parkingInfo.Parked.Count == 0) pC.parkingInfo.RemainingSpots = pC.parkingInfo.ParkingSpots.Count - pC.parkingInfo.Parked.Count;
-                        if (pC.parkingInfo.RemainingSpots > 0)
-                        {
-                            int vehicleTypeID = UnityEngine.Random.Range(0, lowAltitudeTypeNames.Count);
-                            var newDrone = Resources.Load<GameObject>(drone_path + lowAltitudeTypeNames[vehicleTypeID]);
-                            var type = lowAltitudeTypeNames[vehicleTypeID];
-                            var emptySpot = pC.parkingInfo.GetEmptySpot();
-                            var translatedSpot = pC.parkingInfo.TranslateParkingSpot(emptySpot);
-
-                            // instantiate the vehicle at emptySpot
-                            var clone = Instantiate(newDrone, translatedSpot, Quaternion.Euler(0.0f, 0.0f, 0.0f));
-                            clone.name = "UAV_" + i.ToString();
-                            clone.tag = "Vehicle";
-                            clone.layer = 10;
-                            // Only for video
-                            clone.transform.localScale = new Vector3(scale, scale, scale);
-                            // ~Only for video
-                            clone.AddComponent<VehicleNoise>();
-                            TrailRenderer tr = clone.AddComponent<TrailRenderer>();
-                            tr.material = Resources.Load<Material>("Materials/TrailLowAltitudeDrone");
-                            tr.time = Mathf.Infinity;
-                            tr.enabled = false;
-
-                            var sc = clone.AddComponent<SphereCollider>();
-                            sc.radius = 1.0f;
-                            sc.center = Vector3.zero;
+        //    var pG = Instantiate(EnvironManager.Instance.ProgressBarPrefab, _canvas.gameObject.transform);
+        //    var progressBar = pG.GetComponent<ProgressBar>();
+        //    progressBar.Init("Instantiating drones");
 
 
-                            //newDrone.Destroy();
+        //    List<string> lowAltitudeTypeNames = new List<string>();
 
-                            // Fill in vehivle spec
-                            LowAltitudeDrone v = clone.AddComponent<LowAltitudeDrone>();
-                            v.Initialize(vehicleSpecs[type].type, vehicleSpecs[type].capacity, vehicleSpecs[type].range, vehicleSpecs[type].maxSpeed, vehicleSpecs[type].yawSpeed, vehicleSpecs[type].takeoffSpeed, vehicleSpecs[type].landingSpeed, vehicleSpecs[type].emission, vehicleSpecs[type].noise, "idle");
-                            v.currentCommunicationPoint = sPS.gameObject;
-                            v.approaching_threshold = 100.0f;
-                            vehicles.Add(clone);
-                            OnDroneInstantiated?.Invoke(this, new DroneInstantiationArgs(clone));
-                            // Update parking management info
-                            clone.transform.GetChild(0).gameObject.GetComponent<MeshRenderer>().enabled = false;
+        //    lowAltitudeDroneInstantiationStarted = true;
+
+        //    foreach (string type in vehicleTypes.Keys)
+        //    {
+        //        if (type.Equals("LowAltitude")) lowAltitudeTypeNames.Add(vehicleTypes[type]);
+        //    }
+
+        //    // Populate vehiclesToInstantiate number of drones in existing parking structures
+        //    for (int i = 0; i < vehiclesToInstantiate; i++)
+        //    {
+        //        foreach (var key in sceneManager.ParkingStructures.Keys)
+        //        {
+        //            var sPS = sceneManager.ParkingStructures[key];
+        //            ParkingControl pC = sPS.ParkingCtrl;
+        //            if (sPS.ParkingStructureSpecs.Type.Contains("LowAltitude"))
+        //            {
+        //                if (pC.parkingInfo.Parked.Count == 0) pC.parkingInfo.RemainingSpots = pC.parkingInfo.ParkingSpots.Count - pC.parkingInfo.Parked.Count;
+        //                if (pC.parkingInfo.RemainingSpots > 0)
+        //                {
+        //                    int vehicleTypeID = UnityEngine.Random.Range(0, lowAltitudeTypeNames.Count);
+        //                    var newDrone = Resources.Load<GameObject>(drone_path + lowAltitudeTypeNames[vehicleTypeID]);
+        //                    var type = lowAltitudeTypeNames[vehicleTypeID];
+        //                    var emptySpot = pC.parkingInfo.GetEmptySpot();
+        //                    var translatedSpot = pC.parkingInfo.TranslateParkingSpot(emptySpot);
+
+        //                    // instantiate the vehicle at emptySpot
+        //                    var clone = Instantiate(newDrone, translatedSpot, Quaternion.Euler(0.0f, 0.0f, 0.0f));
+        //                    clone.name = "UAV_" + i.ToString();
+        //                    clone.tag = "Vehicle";
+        //                    clone.layer = 10;
+        //                    // Only for video
+        //                    clone.transform.localScale = new Vector3(scale, scale, scale);
+        //                    // ~Only for video
+        //                    clone.AddComponent<VehicleNoise>();
+        //                    TrailRenderer tr = clone.AddComponent<TrailRenderer>();
+        //                    tr.material = Resources.Load<Material>("Materials/TrailLowAltitudeDrone");
+        //                    tr.time = Mathf.Infinity;
+        //                    tr.enabled = false;
+
+        //                    var sc = clone.AddComponent<SphereCollider>();
+        //                    sc.radius = 1.0f;
+        //                    sc.center = Vector3.zero;
+
+
+        //                    //newDrone.Destroy();
+
+        //                    // Fill in vehivle spec
+        //                    LowAltitudeDrone v = clone.AddComponent<LowAltitudeDrone>();
+        //                    v.Initialize(vehicleSpecs[type].type, vehicleSpecs[type].capacity, vehicleSpecs[type].range, vehicleSpecs[type].maxSpeed, vehicleSpecs[type].yawSpeed, vehicleSpecs[type].takeoffSpeed, vehicleSpecs[type].landingSpeed, vehicleSpecs[type].emission, vehicleSpecs[type].noise, "idle");
+        //                    v.currentCommunicationPoint = sPS.gameObject;
+        //                    v.approaching_threshold = 100.0f;
+        //                    vehicles.Add(clone);
+        //                    OnDroneInstantiated?.Invoke(this, new DroneInstantiationArgs(clone));
+        //                    // Update parking management info
+        //                    clone.transform.GetChild(0).gameObject.GetComponent<MeshRenderer>().enabled = false;
                             
-                            pC.parkingInfo.ParkAt(emptySpot, clone);
+        //                    pC.parkingInfo.ParkAt(emptySpot, clone);
 
-                            GameObject sphere = GameObject.CreatePrimitive(PrimitiveType.Sphere);
-                            sphere.transform.localScale = new Vector3(0.0f, 0.0f, 0.0f);
-                            sphere.transform.parent = clone.transform;
-                            sphere.transform.localPosition = new Vector3(0.0f, 0.0f, 0.0f);
-                            MeshRenderer mr = sphere.GetComponent<MeshRenderer>();
-                            mr.material = Resources.Load<Material>("Materials/NoiseSphere");
-                            mr.enabled = false;
+        //                    GameObject sphere = GameObject.CreatePrimitive(PrimitiveType.Sphere);
+        //                    sphere.transform.localScale = new Vector3(0.0f, 0.0f, 0.0f);
+        //                    sphere.transform.parent = clone.transform;
+        //                    sphere.transform.localPosition = new Vector3(0.0f, 0.0f, 0.0f);
+        //                    MeshRenderer mr = sphere.GetComponent<MeshRenderer>();
+        //                    mr.material = Resources.Load<Material>("Materials/NoiseSphere");
+        //                    mr.enabled = false;
 
-                            lowAltitudeDrones.Add(clone);
+        //                    lowAltitudeDrones.Add(clone);
 
-                            break;
-                        }
-                    }
-                }
-                progress = (float)i / (float)vehiclesToInstantiate;
-                progressBar.SetCompletion(progress);
-                yield return null;
-            }
-            pG.Destroy();
-            isLowAltitudeDroneInstantiated = true;
-            //return vehicles;
-        }
+        //                    break;
+        //                }
+        //            }
+        //        }
+        //        progress = (float)i / (float)vehiclesToInstantiate;
+        //        progressBar.SetCompletion(progress);
+        //        yield return null;
+        //    }
+        //    pG.Destroy();
+        //    isLowAltitudeDroneInstantiated = true;
+        //    //return vehicles;
+        //}
 
         /// <summary>
         /// Coroutine for instantiation of background drones. @Eunu please comment on when we use this versus "AddBackgroundDrone()"
@@ -339,6 +339,104 @@ namespace Assets.Scripts.SimulatorCore
             }
             pG.Destroy();
             isBackgroundDroneInstantiated = true;
+        }
+
+        /// <summary>
+        /// Main coroutine for instantiating drones of low altitude or corridor type.
+        /// </summary>
+        private IEnumerator InstantiateCorridorOrLowAltDrones(CityViewManager sceneManager, float scale, Canvas _canvas, bool isCorridor)
+        {
+            string drone_path = "Drones/";
+            string droneType = isCorridor ? "corridor" : "LowAltitude";
+            float progress = 0.0f;
+            int parkingCapacity = sceneManager.GetParkingCapacity();
+            int typeSpecificCapacity = sceneManager.GetParkingCapacity(droneType);
+            int currentDroneCt = isCorridor ? corridorDrones.Count : lowAltitudeDrones.Count;
+            int vehiclesToInstantiate = UnityEngine.Random.Range(parkingCapacity - typeSpecificCapacity - 10 - currentDroneCt, parkingCapacity - typeSpecificCapacity - currentDroneCt);
+
+            if (vehiclesToInstantiate < 0) yield break;
+
+            List<string> typeNames = new List<string>();
+
+            var pG = Instantiate(EnvironManager.Instance.ProgressBarPrefab, _canvas.gameObject.transform);
+            var progressBar = pG.GetComponent<ProgressBar>();
+            progressBar.Init("Instantiating drones");
+
+            if (isCorridor) corridorDroneInstantiationStarted = true;
+            else lowAltitudeDroneInstantiationStarted = true;
+
+
+
+            foreach (string type in vehicleTypes.Keys)
+            {
+                if (type.Equals(droneType)) typeNames.Add(vehicleTypes[type]);
+            }
+
+            for (int i = 0; i < vehiclesToInstantiate; i++)
+            {
+                foreach (var key in sceneManager.ParkingStructures.Keys)
+                {
+                    var sPS = sceneManager.ParkingStructures[key];
+                    ParkingControl pC = sPS.ParkingCtrl;
+                    bool isLE = sPS.ParkingStructureSpecs.Type.Contains("LowAltitude");
+                    if (isCorridor ? !isLE : isLE)
+                    {
+                        if (pC.RemainingSpots > 0)
+                        {
+                            int vehicleTypeID = UnityEngine.Random.Range(0, typeNames.Count);
+                            var newDrone = Resources.Load<GameObject>(drone_path + typeNames[vehicleTypeID]);
+                            var type = typeNames[vehicleTypeID];
+                            var emptySpot = pC.GetEmptySpot();
+                            var translatedSpot = pC.TranslateParkingSpot(emptySpot);
+
+                            // instantiate the vehicle at emptySpot
+                            var clone = Instantiate(newDrone, translatedSpot, Quaternion.Euler(0.0f, 0.0f, 0.0f));
+                            clone.name = "UAV_" + i.ToString();
+                            clone.tag = "Vehicle";
+                            clone.layer = 10;
+                            // Only for video
+                            clone.transform.localScale = new Vector3(scale, scale, scale);
+                            // ~Only for video
+                            clone.AddComponent<VehicleNoise>();
+                            TrailRenderer tr = clone.AddComponent<TrailRenderer>();
+                            tr.material = Resources.Load<Material>("Materials/TrailCorridorDrones");
+                            tr.time = Mathf.Infinity;
+                            tr.enabled = false;
+
+                            // Fill in vehicle spec
+                            DroneBase v = isCorridor ? (DroneBase)clone.AddComponent<CorridorDrone>() : (DroneBase)clone.AddComponent<LowAltitudeDrone>();
+                            v.Initialize(vehicleSpecs[type].type, vehicleSpecs[type].capacity, vehicleSpecs[type].range, vehicleSpecs[type].maxSpeed, vehicleSpecs[type].yawSpeed, vehicleSpecs[type].takeoffSpeed, vehicleSpecs[type].landingSpeed, vehicleSpecs[type].emission, vehicleSpecs[type].noise, "idle");
+                            v.currentCommunicationPoint = sPS.gameObject;
+                            OnDroneInstantiated?.Invoke(this, new DroneInstantiationArgs(clone));
+                            // Update parking management info
+                            clone.transform.GetChild(0).gameObject.GetComponent<MeshRenderer>().enabled = false;
+                            pC.ParkAt(emptySpot, clone);
+
+                            var sc = clone.AddComponent<SphereCollider>();
+                            sc.radius = 1.0f;
+                            sc.center = Vector3.zero;
+
+                            GameObject sphere = GameObject.CreatePrimitive(PrimitiveType.Sphere);
+                            sphere.transform.localScale = new Vector3(0.0f, 0.0f, 0.0f);
+                            sphere.transform.parent = clone.transform;
+                            sphere.transform.localPosition = new Vector3(0.0f, 0.0f, 0.0f);
+                            MeshRenderer mr = sphere.GetComponent<MeshRenderer>();
+                            mr.material = Resources.Load<Material>("Materials/NoiseSphere");
+                            mr.enabled = false;
+                            if (isCorridor) corridorDrones.Add(clone);
+                            else lowAltitudeDrones.Add(clone);
+                            break;
+                        }
+                    }
+                }
+                progress = (float)i / (float)vehiclesToInstantiate;
+                progressBar.SetCompletion(progress);
+                yield return null;
+            }
+            //return vehicles;
+            pG.Destroy();
+            if (isCorridor) isCorridorDroneInstantiated = true;
+            else isLowAltitudeDroneInstantiated = true;
         }
 
         /// <summary>

@@ -41,20 +41,6 @@ namespace Assets.Scripts.Environment
         }
 
         [JsonProperty]
-        private int _remainingSpots = 0;
-        public override int RemainingSpots
-        {
-            get
-            {
-                return _remainingSpots;
-            }
-            set
-            {
-                _remainingSpots = value;
-            }
-        }
-
-        [JsonProperty]
         private SerVect3f _position = new SerVect3f();
         public override Vector3 Position
         {
@@ -161,10 +147,6 @@ namespace Assets.Scripts.Environment
             }
         }
 
-        public override Dictionary<Vector3, GameObject> Parked { get; set; } = new Dictionary<Vector3, GameObject>();
-        public override Dictionary<GameObject, Vector3> VehicleAt { get; set; } = new Dictionary<GameObject, Vector3>();
-        public override Dictionary<GameObject, Vector3> Reserved { get; set; } = new Dictionary<GameObject, Vector3>();
-
         /// <summary>
         /// Empty constructor for json deserialization
         /// </summary>
@@ -182,7 +164,6 @@ namespace Assets.Scripts.Environment
         {
             _type = pS.Type;
             _description = pS.Description;
-            RemainingSpots = pS.RemainingSpots;
             Position = pS.Position;
             Rotation = pS.Rotation;
             Scale = pS.Scale;
@@ -191,7 +172,6 @@ namespace Assets.Scripts.Environment
             LandingQueueDirection = pS.LandingQueueDirection;
             ParkingSpots = new List<Vector3>(pS.ParkingSpots);
             ApplyParkingGrid();
-            RemainingSpots = ParkingSpots.Count;
         }
 
         public override ParkingStructureBase GetCopy()
@@ -216,7 +196,6 @@ namespace Assets.Scripts.Environment
                 }
             }
             ParkingSpots = GeneratedParkingSpots;
-            RemainingSpots = ParkingSpots.Count;
         }
     }
 }

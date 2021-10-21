@@ -180,9 +180,10 @@ public class VehicleControlSystem : MonoBehaviour
         cityBounds = UnitUtils.GetCityExtents(city.CityStats);
 
 
-        
 
-        droneInstantiator = new DroneInstantiator(this);
+        
+        droneInstantiator = gameObject.AddComponent<DroneInstantiator>();
+        droneInstantiator.Init(this);
         droneInstantiator.ReadVehicleSpecs();
         
 
@@ -195,13 +196,13 @@ public class VehicleControlSystem : MonoBehaviour
     // Update is called once per frames
     void Update()
     {
-        var debug = sceneManager.RestrictionZones.Values.ElementAt<SceneRestrictionZone>(0).GetComponent<SelectableGameObject>();//@EUNU comment/remove?
+        //var debug = sceneManager.RestrictionZones.Values.ElementAt<SceneRestrictionZone>(0).GetComponent<SelectableGameObject>();//@EUNU comment/remove?
 
         #region Basic Initialization Stuff. //@EUNU comment why we don't do this in setup? Seems like something that only happens once?
 
         if (!buildingNoiseAttachmentStarted) StartCoroutine(AttachBuildingNoiseComponent());
-        if (isBuildingNoiseComponentAttached && !droneInstantiator.corridorDroneInstantiationStarted ) StartCoroutine(droneInstantiator.InstantiateCorridorDrones(sceneManager, DRONE_SCALE, _canvas));
-        else if (isBuildingNoiseComponentAttached && droneInstantiator.isCorridorDroneInstantiated && !droneInstantiator.lowAltitudeDroneInstantiationStarted ) StartCoroutine(droneInstantiator.InstantiateLowAltitudeDrones(sceneManager, DRONE_SCALE, _canvas));
+        //if (isBuildingNoiseComponentAttached && !droneInstantiator.corridorDroneInstantiationStarted ) StartCoroutine(droneInstantiator.InstantiateCorridorDrones(sceneManager, DRONE_SCALE, _canvas));
+        //else if (isBuildingNoiseComponentAttached && droneInstantiator.isCorridorDroneInstantiated && !droneInstantiator.lowAltitudeDroneInstantiationStarted ) StartCoroutine(droneInstantiator.InstantiateLowAltitudeDrones(sceneManager, DRONE_SCALE, _canvas));
 
         #endregion
 
@@ -233,6 +234,15 @@ public class VehicleControlSystem : MonoBehaviour
     #region Methods
 
     /// <summary>
+    /// Instantiates drones as needed.
+    /// </summary>
+    public void InstantiateCorridorAndLowAltDrones()
+    {
+        if (droneInstantiator != null) droneInstantiator.InstantiateDrones(sceneManager, DRONE_SCALE, _canvas);
+        else Debug.LogError("Drone instantiator is null");
+    }
+
+    /// <summary>
     /// Called (from scene manager) whenever we push the button that plays/pauses simulation. If currently playing, pauses simulation, else plays simulation.
     /// </summary>
     public void PlayPause()
@@ -244,10 +254,21 @@ public class VehicleControlSystem : MonoBehaviour
         if ( playing )
         {
             if ( !droneInstantiator.isBackgroundDroneInstantiated ) StartCoroutine (droneInstantiator.InstantiateBackgroundDrones(sceneManager, backgroundDroneCount, DRONE_SCALE, lowerElevationBound, upperElevationBound, _canvas));
+            if (sceneManager.network == null)
+            {
+                sceneManager.GenerateNetwork();
+            }
             if (!networkGenerated)
             {
-                VisualizeNetwork(sceneManager.network);
-                networkGenerated = true;
+                if (sceneManager.network != null)
+                {
+                    VisualizeNetwork(sceneManager.network);
+                    networkGenerated = true;
+                }
+                else
+                {
+                    Debug.Log("Network is null");
+                }
             }
         }
     }
@@ -351,7 +372,7 @@ public class VehicleControlSystem : MonoBehaviour
                         return;
                     }
                     // Generate 
-                    Mesh m = p.CreateExtrusion(simulationParam.lowAltitudeBoundary);
+                    //Mesh m = p.CreateExtrusion(simulationParam.lowAltitudeBoundary);
                     var AAO = new GameObject("AAO_" + vehicle.name);
                     /*
                     AAO.AddComponent<MeshFilter>().mesh = m;
@@ -434,7 +455,7 @@ public class VehicleControlSystem : MonoBehaviour
         {
             var sPS = sceneManager.ParkingStructures[key];
             var gO = sPS.gameObject;
-            if (sPS.ParkingStructureSpecs.RemainingSpots > 0)
+            if (sPS.ParkingCtrl.RemainingSpots > 0)
             {
                 if (Vector3.Distance(gO.transform.position, v.transform.position) < min_dist)
                 {
@@ -445,7 +466,7 @@ public class VehicleControlSystem : MonoBehaviour
             }
         }
         // DEBUG: different vehicles competeing for a spot
-        sceneManager.ParkingStructures[nearestGuid].ParkingStructureSpecs.Reserve(v);
+        sceneManager.ParkingStructures[nearestGuid].ParkingCtrl.Reserve(v);
         return nearest;
     }
 
@@ -467,13 +488,20 @@ public class VehicleControlSystem : MonoBehaviour
     public GameObject GetAvailableVehicleinParkingStrcuture(GameObject parkingStructure)
     {
         ParkingControl pC = parkingStructure.GetComponent<ParkingControl>();
-        for ( int i = 0; i < pC.parkingInfo.VehicleAt.Keys.Count; i++)
+        for ( int i = 0; i < pC.VehicleAt.Keys.Count; i++)
         {
-            GameObject vehicle_i = pC.parkingInfo.VehicleAt.Keys.ElementAt<GameObject>(i);
-            DroneBase db = vehicle_i.GetComponent<DroneBase>();
-            if (db != null && db.state == "idle" && db.destinationQueue.Count == 0 && !pC.QueueContains(vehicle_i))
+            try
             {
-                return vehicle_i;
+                GameObject vehicle_i = pC.VehicleAt.Keys.ElementAt<GameObject>(i);
+                DroneBase db = vehicle_i.GetComponent<DroneBase>();
+                if (db != null && db.state == "idle" && db.destinationQueue.Count == 0 && !pC.QueueContains(vehicle_i))
+                {
+                    return vehicle_i;
+                }
+            }
+            catch
+            {
+                bool caughtit = true;
             }
         }
         return null;
@@ -580,7 +608,7 @@ public class VehicleControlSystem : MonoBehaviour
         {
             var gO = sPS.gameObject;
             // find the nearest one with parked vehicles
-            if (sPS.ParkingCtrl.parkingInfo.VehicleAt.Keys.Count > 0 && sPS.ParkingCtrl.queueLength < 3 && !sPS.ParkingStructureSpecs.Type.Contains("LowAltitude"))
+            if (sPS.ParkingCtrl.VehicleAt.Keys.Count > 0 && sPS.ParkingCtrl.queueLength < 3 && !sPS.ParkingStructureSpecs.Type.Contains("LowAltitude"))
             {
                 if (Vector3.Distance(pickUpLocation, gO.transform.position) < minDistance)
                 {
@@ -608,7 +636,7 @@ public class VehicleControlSystem : MonoBehaviour
         {
             var gO = sPS.gameObject;
             // find the nearest one with parked vehicles
-            if (sPS.ParkingCtrl.parkingInfo.VehicleAt.Keys.Count > 0 && sPS.ParkingStructureSpecs.Type.Contains("LowAltitude") && sPS.ParkingCtrl.queueLength < 3)
+            if (sPS.ParkingCtrl.VehicleAt.Keys.Count > 0 && sPS.ParkingStructureSpecs.Type.Contains("LowAltitude") && sPS.ParkingCtrl.queueLength < 3)
             {
                 if (Vector3.Distance(AAOCenter, gO.transform.position) < minDistance)
                 {
