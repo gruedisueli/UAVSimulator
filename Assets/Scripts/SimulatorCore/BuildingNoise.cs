@@ -6,57 +6,27 @@ using Assets.Scripts.SimulatorCore;
 /// <summary>
 /// Gets atached to every building in simulation that want to monitor sound on.
 /// </summary>
-public class BuildingNoise : MonoBehaviour
+public class BuildingNoise
 {
     // Start is called before the first frame update
     VehicleControlSystem vcs;
-    string material_path = "Materials/";
     Material lowNoiseMaterial;
     Material midNoiseMaterial;
     Material highNoiseMaterial;
     Material noNoiseMaterial;
-    List<GameObject> affectingVehicles;
+    List<GameObject> affectingVehicles = new List<GameObject>();
     SimulationAnalyzer simulationAnalyzer;
+    GameObject building;
 
-    void Start()
+    public BuildingNoise(Material lowNoise, Material midNoise, Material highNoise, Material noNoise, VehicleControlSystem controlSys, SimulationAnalyzer analyzer, GameObject bldg)
     {
-        lowNoiseMaterial = Resources.Load<Material>(material_path + "LowNoise");
-        midNoiseMaterial = Resources.Load<Material>(material_path + "MidNoise");
-        highNoiseMaterial = Resources.Load<Material>(material_path + "HighNoise");
-        noNoiseMaterial = Resources.Load<Material>(material_path + "Building");
-        affectingVehicles = new List<GameObject>();
-        vcs = GameObject.Find("SimulationCore").GetComponent<VehicleControlSystem>();
-        simulationAnalyzer = GameObject.Find("SimulationCore").GetComponent<SimulationAnalyzer>();
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-        if (!vcs.playing) return;
-        if (vcs.noiseVisualization)
-        {
-            if (affectingVehicles.Count == 1)
-            {
-                gameObject.GetComponent<MeshRenderer>().material = lowNoiseMaterial;
-            }
-            else if (affectingVehicles.Count == 2)
-            {
-                gameObject.GetComponent<MeshRenderer>().material = midNoiseMaterial;
-            }
-            else if (affectingVehicles.Count >= 3)
-            {
-                gameObject.GetComponent<MeshRenderer>().material = highNoiseMaterial;
-            }
-            else
-            {
-                gameObject.GetComponent<MeshRenderer>().material = noNoiseMaterial;
-            }
-        }
-        else
-        {
-            gameObject.GetComponent<MeshRenderer>().material = noNoiseMaterial;
-        }
-
+        lowNoiseMaterial = lowNoise;
+        midNoiseMaterial = midNoise;
+        highNoiseMaterial = highNoise;
+        noNoiseMaterial = noNoise;
+        vcs = controlSys;
+        simulationAnalyzer = analyzer;
+        building = bldg;
     }
 
     /// <summary>
@@ -69,19 +39,20 @@ public class BuildingNoise : MonoBehaviour
         {
             if (affectingVehicles.Count == 0)
             {
-                simulationAnalyzer.SendMessage("AddLowNoiseBuilding", this.gameObject);
+                simulationAnalyzer.SendMessage("AddLowNoiseBuilding", building);
             }
             else if (affectingVehicles.Count == 1)
             {
-                simulationAnalyzer.SendMessage("AddMediumNoiseBuilding", this.gameObject);
-                simulationAnalyzer.SendMessage("RemoveLowNoiseBuilding", this.gameObject);
+                simulationAnalyzer.SendMessage("AddMediumNoiseBuilding", building);
+                simulationAnalyzer.SendMessage("RemoveLowNoiseBuilding", building);
             }
             else if (affectingVehicles.Count == 2)
             {
-                simulationAnalyzer.SendMessage("AddHighNoiseBuilding", this.gameObject);
-                simulationAnalyzer.SendMessage("RemoveMediumNoiseBuilding", this.gameObject);
+                simulationAnalyzer.SendMessage("AddHighNoiseBuilding", building);
+                simulationAnalyzer.SendMessage("RemoveMediumNoiseBuilding", building);
             }
             affectingVehicles.Add(affectingVehicle);
+            UpdateVisual();
         }
     }
 
@@ -94,19 +65,47 @@ public class BuildingNoise : MonoBehaviour
         {
             if (affectingVehicles.Count == 3)
             {
-                simulationAnalyzer.SendMessage("RemoveHighNoiseBuilding", this.gameObject);
-                simulationAnalyzer.SendMessage("AddMediumNoiseBuilding", this.gameObject);
+                simulationAnalyzer.SendMessage("RemoveHighNoiseBuilding", building);
+                simulationAnalyzer.SendMessage("AddMediumNoiseBuilding", building);
             }
             else if (affectingVehicles.Count == 2)
             {
-                simulationAnalyzer.SendMessage("RemoveMediumNoiseBuilding", this.gameObject);
-                simulationAnalyzer.SendMessage("AddLowNoiseBuilding", this.gameObject);
+                simulationAnalyzer.SendMessage("RemoveMediumNoiseBuilding", building);
+                simulationAnalyzer.SendMessage("AddLowNoiseBuilding", building);
             }
             else if (affectingVehicles.Count == 1)
             {
-                simulationAnalyzer.SendMessage("RemoveLowNoiseBuilding", this.gameObject);
+                simulationAnalyzer.SendMessage("RemoveLowNoiseBuilding", building);
             }
             affectingVehicles.Remove(affectingVehicle);
+            UpdateVisual();
+        }
+    }
+
+    private void UpdateVisual()
+    {
+        if (vcs.noiseVisualization)
+        {
+            if (affectingVehicles.Count == 1)
+            {
+                building.GetComponent<MeshRenderer>().material = lowNoiseMaterial;
+            }
+            else if (affectingVehicles.Count == 2)
+            {
+                building.GetComponent<MeshRenderer>().material = midNoiseMaterial;
+            }
+            else if (affectingVehicles.Count >= 3)
+            {
+                building.GetComponent<MeshRenderer>().material = highNoiseMaterial;
+            }
+            else
+            {
+                building.GetComponent<MeshRenderer>().material = noNoiseMaterial;
+            }
+        }
+        else
+        {
+            building.GetComponent<MeshRenderer>().material = noNoiseMaterial;
         }
     }
 }

@@ -14,6 +14,7 @@ public class VehicleNoise : MonoBehaviour
     float radius;
     List<Collider> affected_buildings;
     GameObject noiseShpere;
+    VehicleControlSystem vcs;
     // Start is called before the first frame update
     void Start()
     {
@@ -25,6 +26,11 @@ public class VehicleNoise : MonoBehaviour
 
         radius = 0.0f;
         affected_buildings = new List<Collider>();
+    }
+
+    public void Init(VehicleControlSystem controlSys)
+    {
+        vcs = controlSys;
     }
 
     // Update is called once per frame
@@ -50,7 +56,15 @@ public class VehicleNoise : MonoBehaviour
         {
             if (hitCollider.gameObject.tag == "Building")
             {
-                hitCollider.SendMessage("AddNoise", gameObject);//@Eunu why do we use a "send message" here instead of calling public function? Just wondering if it's more efficient for some reason? I never use these messages so that's why I ask.
+                var n = hitCollider.gameObject.name;
+                if (vcs.BuildingNoiseElements.ContainsKey(n))
+                {
+                    vcs.BuildingNoiseElements[n].AddNoise(gameObject);
+                }
+                else
+                {
+                    Debug.LogError("Building not found in noise element dictionary");
+                }
                 if (!affected_buildings.Contains(hitCollider)) affected_buildings.Add(hitCollider);
             }
         }
@@ -60,7 +74,15 @@ public class VehicleNoise : MonoBehaviour
         {
             if (!hitColliders_list.Contains(affected_building))
             {
-                affected_building.SendMessage("DecreaseNoise", gameObject);
+                var n = affected_building.gameObject.name;
+                if (vcs.BuildingNoiseElements.ContainsKey(n))
+                {
+                    vcs.BuildingNoiseElements[n].DecreaseNoise(gameObject);
+                }
+                else
+                {
+                    Debug.LogError("Building not found in noise element dictionary");
+                }
                 affected_building_copy.Remove(affected_building);
             }
         }

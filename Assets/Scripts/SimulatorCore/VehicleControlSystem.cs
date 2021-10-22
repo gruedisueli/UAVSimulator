@@ -105,6 +105,11 @@ public class VehicleControlSystem : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// List of all buildings and their noise objects. Not using Unity "components" because instantiation of them is slow at runtime.
+    /// </summary>
+    public Dictionary<string, BuildingNoise> BuildingNoiseElements { get; private set; } = new Dictionary<string, BuildingNoise>();
+
 
     // INTEGRATION TO-DO: Replace root with the path that it receives;
     private string root; 
@@ -278,17 +283,25 @@ public class VehicleControlSystem : MonoBehaviour
     /// </summary>
     private IEnumerator AttachBuildingNoiseComponent()
     {
+        buildingNoiseAttachmentStarted = true;
         int totalChildren = 0;
         int done = 0;
         Transform citySimulatorMapTransform = GameObject.Find("CitySimulatorMap").transform;
+        string material_path = "Materials/";
+        var lowNoiseMaterial = Resources.Load<Material>(material_path + "LowNoise");
+        var midNoiseMaterial = Resources.Load<Material>(material_path + "MidNoise");
+        var highNoiseMaterial = Resources.Load<Material>(material_path + "HighNoise");
+        var noNoiseMaterial = Resources.Load<Material>(material_path + "Building");
+        var simulationAnalyzer = GetComponent<SimulationAnalyzer>();
 
         var pG = Instantiate(EnvironManager.Instance.ProgressBarPrefab, _canvas.gameObject.transform);
         var progressBar = pG.GetComponent<ProgressBar>();
         progressBar.Init("Adding Noise Calculation Components");
-        buildingNoiseAttachmentStarted = true;
         foreach (Transform child in citySimulatorMapTransform)
             totalChildren += child.childCount;
 
+        int childrenPerFrame = 100;//how many buildings to process per frame (yield return null finishes coroutine's work in frame)
+        int subprocessCt = 0;
         foreach (Transform child in citySimulatorMapTransform)
         {
             foreach (Transform grandchild in child)
@@ -296,15 +309,30 @@ public class VehicleControlSystem : MonoBehaviour
                 //Debug.Log("The name of current object:" + grandchild.gameObject.name);
                 //if (grandchild.gameObject.name.Contains("Buildings"))
                 //{
-                var bN = grandchild.gameObject.AddComponent<BuildingNoise>();
+                var n = grandchild.gameObject.name;
+                if (!n.Contains("Building")) continue;
+                var bN = new BuildingNoise(lowNoiseMaterial, midNoiseMaterial, highNoiseMaterial, noNoiseMaterial, this, simulationAnalyzer, grandchild.gameObject);
+                if (!BuildingNoiseElements.ContainsKey(n))
+                {
+                    BuildingNoiseElements.Add(n, bN);
+                }
+                else
+                {
+                    Debug.LogError("Building name already present in dictionary for building noise elements");
+                }
                 grandchild.gameObject.layer = 9;
                 grandchild.gameObject.tag = "Building";
                     
                 //}
                 done++;
-                progress = (float)done / (float)totalChildren;
-                progressBar.SetCompletion(progress);
-                yield return null;
+                subprocessCt++;
+                if (subprocessCt == childrenPerFrame)
+                {
+                    subprocessCt = 0;
+                    progress = (float)done / (float)totalChildren;
+                    progressBar.SetCompletion(progress);
+                    yield return null;
+                }
             }
         }
 

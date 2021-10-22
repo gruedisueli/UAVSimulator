@@ -397,7 +397,8 @@ namespace Assets.Scripts.SimulatorCore
                             // Only for video
                             clone.transform.localScale = new Vector3(scale, scale, scale);
                             // ~Only for video
-                            clone.AddComponent<VehicleNoise>();
+                            var vN = clone.AddComponent<VehicleNoise>();
+                            vN.Init(vcs);
                             TrailRenderer tr = clone.AddComponent<TrailRenderer>();
                             tr.material = Resources.Load<Material>("Materials/TrailCorridorDrones");
                             tr.time = Mathf.Infinity;
