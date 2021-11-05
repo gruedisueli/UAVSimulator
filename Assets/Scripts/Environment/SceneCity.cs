@@ -15,13 +15,15 @@ namespace Assets.Scripts.Environment
         public override string Guid { get; protected set; }
         public CityOptions CitySpecs { get; protected set; }
 
-        private readonly Color _colorDefault = new Color(1, 1, 1, 0.5f);
-        private readonly Color _selectedColor = Color.red;
+        private Material _defaultMat;
+        private Material _selMat;
 
         public void Initialize(string guid, CityOptions citySpecs)
         {
             Guid = guid;
             CitySpecs = citySpecs;
+            _defaultMat = Resources.Load<Material>("Materials/CityDefault");
+            _selMat = Resources.Load<Material>("Materials/CitySelected");
             if (_renderers == null)
             {
                 _renderers = GetComponentsInChildren<MeshRenderer>(true);
@@ -31,8 +33,12 @@ namespace Assets.Scripts.Environment
                 }
                 else
                 {
-                    _renderers[0].materials[0].color = _colorDefault;
+                    _renderers[0].material = _defaultMat;
                 }
+            }
+            else
+            {
+                _renderers[0].material = _defaultMat;
             }
 
             UpdateGameObject();
@@ -41,7 +47,7 @@ namespace Assets.Scripts.Environment
         public override void SetSelectedState(bool isSelected)
         {
             //base.SetSelectedState(isSelected);
-            _renderers[0].materials[0].color = isSelected ? _selectedColor : _colorDefault;
+            _renderers[0].material = isSelected ? _selMat : _defaultMat;
         }
 
         public override void UpdateGameObject()

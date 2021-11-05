@@ -801,7 +801,7 @@ MonoBehaviour:
         earthRadius: 6372798
       unityLayerOptions:
         addToLayer: 1
-        layerId: 8
+        layerId: 14
       sideWallOptions:
         isActive: 0
         wallHeight: 10
@@ -1771,7 +1771,7 @@ MonoBehaviour:
         earthRadius: 6372798
       unityLayerOptions:
         addToLayer: 1
-        layerId: 8
+        layerId: 14
       sideWallOptions:
         isActive: 0
         wallHeight: 10
@@ -2493,7 +2493,7 @@ MonoBehaviour:
   _panSpeed: 1000
   _zoomDampening: 5
   _allowZoom: 1
-  _allowTilt: 1
+  _allowTilt: 0
   _allowPan: 1
 --- !u!20 &1787361574
 Camera:
@@ -2521,8 +2521,8 @@ Camera:
   near clip plane: 10
   far clip plane: 5000000
   field of view: 60
-  orthographic: 0
-  orthographic size: 256
+  orthographic: 1
+  orthographic size: 100000
   m_Depth: -1
   m_CullingMask:
     serializedVersion: 2

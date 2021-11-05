@@ -51,7 +51,8 @@ public class VehicleControlSystem : MonoBehaviour
     private Color translucentRed;
     private float watch;
     private int droneCount;
-    
+    private int buildingCt = 0;
+
     private bool buildingNoiseAttachmentStarted;
     private bool isBuildingNoiseComponentAttached;
 
@@ -311,6 +312,9 @@ public class VehicleControlSystem : MonoBehaviour
                 //{
                 var n = grandchild.gameObject.name;
                 if (!n.Contains("Building")) continue;
+                n = "Building_" + buildingCt.ToString();//give unique name
+                buildingCt++;
+                grandchild.gameObject.name = n;
                 var bN = new BuildingNoise(lowNoiseMaterial, midNoiseMaterial, highNoiseMaterial, noNoiseMaterial, this, simulationAnalyzer, grandchild.gameObject);
                 if (!BuildingNoiseElements.ContainsKey(n))
                 {

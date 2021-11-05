@@ -18,7 +18,7 @@ public class BackgroundDrone : DroneBase
         currentSpeed = maxSpeed * vcs.speedMultiplier;
         if (Vector3.Distance(targetPosition, transform.position) < arrival_threshold)
         {
-            if ( wayPointsQueue.Count == 0 ) wayPointsQueue = new Queue<Vector3>(vcs.sceneManager.FindPath(transform.position, vcs.GetRandomPointXZ(transform.position.y), 5, 1 << 8 | 1 << 9 | 1 << 13)); //note use of bit-wise shift operators as a handy way to create a layer mask
+            if ( wayPointsQueue.Count == 0 ) wayPointsQueue = new Queue<Vector3>(vcs.sceneManager.FindPath(transform.position, vcs.GetRandomPointXZ(transform.position.y), 5, 1 << 8 | 1 << 9 | 1 << 13 | 1 << 14)); //note use of bit-wise shift operators as a handy way to create a layer mask
             targetPosition = wayPointsQueue.Dequeue();
         }
         else

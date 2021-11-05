@@ -148,6 +148,13 @@ namespace Assets.Scripts.UI
                                 _vehicleControlSystem.simplifiedMeshToggle = u.Value;
                                 break;
                             }
+                        case VisibilityType.RestrictionZones:
+                            {
+                                //see: https://answers.unity.com/questions/348974/edit-camera-culling-mask.html
+                                var u = args.Update as ModifyBoolPropertyArg;
+                                LayerVisibility("RestrictionZone", u.Value);
+                                break;
+                            }
                     }
                 }
                 catch
@@ -388,7 +395,7 @@ namespace Assets.Scripts.UI
                 var dP = kvp.Value;
                 var sdP = InstantiateDronePort(kvp.Key, dP, true);
                 var rZ = new RestrictionZoneCyl(dP.Position, 0.0f, 200.0f, 100.0f);
-                rZ.Layer = 13;
+                rZ.Layer = 13;//landing zone
                 var srZ = InstantiateRestrictionZone(Guid.NewGuid().ToString(), rZ, true, sdP.gameObject.transform);
                 
             }
@@ -398,7 +405,7 @@ namespace Assets.Scripts.UI
                 var pS = kvp.Value;
                 var spS = InstantiateParkingStructure(kvp.Key, pS, true);
                 var rZ = new RestrictionZoneCyl(pS.Position, 0.0f, 200.0f, 100.0f);
-                rZ.Layer = 13;
+                rZ.Layer = 13;//landing zone
                 var srZ = InstantiateRestrictionZone(Guid.NewGuid().ToString(), rZ, true, spS.gameObject.transform);
             }
 

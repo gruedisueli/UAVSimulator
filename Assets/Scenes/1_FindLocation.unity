@@ -672,7 +672,7 @@ MonoBehaviour:
         earthRadius: 6372798
       unityLayerOptions:
         addToLayer: 1
-        layerId: 8
+        layerId: 14
       sideWallOptions:
         isActive: 0
         wallHeight: 10

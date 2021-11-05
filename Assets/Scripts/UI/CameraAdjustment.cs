@@ -29,6 +29,7 @@ namespace Assets.Scripts.UI
         public bool _allowZoom = true;
         public bool _allowTilt = false;
         public bool _allowPan = true;
+        public float _minOrthoZoom = 6000.0f;
 
         private float _xDeg = 0.0f;
         private float _yDeg = 0.0f;
@@ -36,6 +37,7 @@ namespace Assets.Scripts.UI
         private Quaternion _desiredRotation;
         private Quaternion _rotation;
         private Camera _camera;
+        private bool _isPerspective;
 
         void Start() { Init(); }
         void OnEnable() { Init(); }
@@ -46,6 +48,7 @@ namespace Assets.Scripts.UI
             _rotation = _camera.transform.rotation;
             _currentRotation = _camera.transform.rotation;
             _desiredRotation = _camera.transform.rotation;
+            _isPerspective = !_camera.orthographic;
 
             _xDeg = Vector3.Angle(Vector3.right, _camera.transform.right);
             _yDeg = Vector3.Angle(Vector3.up, _camera.transform.up);
@@ -94,9 +97,17 @@ namespace Assets.Scripts.UI
             //zoom
             if (_allowZoom)
             {
-                // calculate position based on the new currentDistance 
-                var transZoom = Vector3.forward * Input.GetAxis("Mouse ScrollWheel") * _zoomRate;
-                _camera.transform.Translate(transZoom);
+                if (_isPerspective)
+                {
+                    // calculate position based on the new currentDistance 
+                    var transZoom = Vector3.forward * Input.GetAxis("Mouse ScrollWheel") * _zoomRate;
+                    _camera.transform.Translate(transZoom);
+                }
+                else
+                {
+                    float s = _camera.orthographicSize + Input.GetAxis("Mouse ScrollWheel") * _zoomRate * -1.0f;
+                    _camera.orthographicSize = s > _minOrthoZoom ? s : _minOrthoZoom;
+                }
             }
         }
 

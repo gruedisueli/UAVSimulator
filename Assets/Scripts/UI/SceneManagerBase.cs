@@ -1333,6 +1333,22 @@ namespace Assets.Scripts.UI
             }
         }
 
+        /// <summary>
+        /// Turns layer on or off
+        /// </summary>
+        protected void LayerVisibility(string layerName, bool on)
+        {
+            var layer = LayerMask.NameToLayer(layerName);
+            if (on)
+            {
+                _mainCamera.cullingMask |= 1 << layer;
+            }
+            else
+            {
+                _mainCamera.cullingMask &= ~(1 << layer);
+            }
+        }
+
         #endregion
 
     }
