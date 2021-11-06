@@ -36,6 +36,12 @@ namespace Assets.Scripts.UI
                 return;
             }
 
+            RangeTileProviderOptions range = new RangeTileProviderOptions();
+            range.east = EnvironSettings.REGION_TILE_EXTENTS;
+            range.west = EnvironSettings.REGION_TILE_EXTENTS;
+            range.north = EnvironSettings.REGION_TILE_EXTENTS;
+            range.south = EnvironSettings.REGION_TILE_EXTENTS;
+            _abstractMap.SetExtentOptions(range);
             _abstractMap.Initialize(EnvironManager.Instance.Environ.CenterLatLong, EnvironSettings.REGION_ZOOM_LEVEL);
             _largeScaleMap.Initialize(EnvironManager.Instance.Environ.CenterLatLong, EnvironSettings.AIRSPACE_ZOOM_LEVEL);
         }
@@ -61,7 +67,6 @@ namespace Assets.Scripts.UI
 
         protected override void InstantiateObjects()
         {
-            BuildAirspace();
 
             foreach (var kvp in EnvironManager.Instance.GetCities())
             {
@@ -71,64 +76,8 @@ namespace Assets.Scripts.UI
                     InstantiateCity(kvp.Key, c.CityStats, true);
                 }
             }
-        }
 
-        protected override SceneDronePort InstantiateCustomDronePort(string guid, GameObject prefab, DronePortCustom dP, bool register)
-        {
-            throw new NotImplementedException();
-        }
-
-        protected override SceneParkingStructure InstantiateCustomParkingStruct(string guid, GameObject prefab, ParkingStructureCustom pS, bool register)
-        {
-            throw new NotImplementedException();
-        }
-
-        protected override SceneDronePort InstantiateDronePort(string guid, DronePortBase dP, bool register)
-        {
-            throw new NotImplementedException();
-        }
-
-        protected override SceneParkingStructure InstantiateParkingStructure(string guid, ParkingStructureBase pS, bool register)
-        {
-            throw new NotImplementedException();
-        }
-
-        protected override SceneDronePort InstantiateRectDronePort(string guid, DronePortRect dP, bool register)
-        {
-            throw new NotImplementedException();
-        }
-
-        protected override SceneParkingStructure InstantiateRectParkingStruct(string guid, ParkingStructureRect pS, bool register)
-        {
-            throw new NotImplementedException();
-        }
-
-        protected override SceneRestrictionZone InstantiateRestrictionZone(string guid, RestrictionZoneBase rZ, bool register)
-        {
-            throw new NotImplementedException();
-        }
-
-
-        /// <summary>
-        /// Places a marker at a city.
-        /// </summary>
-        protected override SceneCity InstantiateCity(string guid, CityOptions cityOptions, bool register)
-        {
-            var c = cityOptions;
-
-            var clone = GameObject.CreatePrimitive(PrimitiveType.Cube);
-            
-            var sCity = clone.AddComponent<SceneCity>();
-            sCity.Initialize(guid, c);
-
-            sCity.OnSceneElementSelected += SelectElement;
-
-            if (register)
-            {
-                Cities.Add(guid, sCity);
-            }
-
-            return sCity;
+            InstantiateSimulationObjects(false, true);
         }
 
         #endregion
@@ -148,6 +97,61 @@ namespace Assets.Scripts.UI
                             {
                                 var u = args.Update as ModifyIntPropertyArg;
                                 _vehicleControlSystem.UpdateVehicleCount(u.Value);
+                                break;
+                            }
+                        case VisibilityType.Demographics:
+                            {
+                                var u = args.Update as ModifyBoolPropertyArg;
+                                _vehicleControlSystem.ToggleDemographicVisualization(u.Value);
+                                break;
+                            }
+                        case VisibilityType.FlightTrails:
+                            {
+                                var u = args.Update as ModifyBoolPropertyArg;
+                                _vehicleControlSystem.ToggleTrailVisualization(u.Value);
+                                break;
+                            }
+                        case VisibilityType.LandingCorridors:
+                            {
+                                var u = args.Update as ModifyBoolPropertyArg;
+                                _vehicleControlSystem.ToggleLandingCorridorVisualization(u.Value);
+                                break;
+                            }
+                        case VisibilityType.Noise:
+                            {
+                                var u = args.Update as ModifyBoolPropertyArg;
+                                _vehicleControlSystem.ToggleNoiseVisualization(u.Value);
+                                break;
+                            }
+                        case VisibilityType.Privacy:
+                            {
+                                var u = args.Update as ModifyBoolPropertyArg;
+                                _vehicleControlSystem.TogglePrivacyVisualization(u.Value);
+                                break;
+                            }
+                        case VisibilityType.Routes:
+                            {
+                                var u = args.Update as ModifyBoolPropertyArg;
+                                _vehicleControlSystem.ToggleRouteVisualization(u.Value);
+                                break;
+                            }
+                        case VisibilityType.NoiseSpheres:
+                            {
+                                var u = args.Update as ModifyBoolPropertyArg;
+                                _vehicleControlSystem.noiseShpereVisualization = u.Value;
+                                break;
+                            }
+                        case VisibilityType.VehicleMeshSimple:
+                            {
+                                var u = args.Update as ModifyBoolPropertyArg;
+                                _vehicleControlSystem.simplifiedMeshToggle = u.Value;
+                                break;
+                            }
+                        case VisibilityType.RestrictionZones:
+                            {
+                                //see: https://answers.unity.com/questions/348974/edit-camera-culling-mask.html
+                                var u = args.Update as ModifyBoolPropertyArg;
+                                LayerVisibility("RestrictionZone", u.Value);
                                 break;
                             }
                     }

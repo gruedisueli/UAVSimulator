@@ -61,6 +61,29 @@ namespace Assets.Scripts
         }
 
         /// <summary>
+        /// Gets 2d extents of region view.
+        /// </summary>
+        /// <returns></returns>
+        public static float[][] GetRegionExtents()
+        {
+            //tiles are placed from a center tile
+            //center tile's transform has xz coords measured from an origin in lower right corner.
+            //therefore, center transform xz = {-0.5 * (region tile side), 0.5 * (region tile side)}
+            //then increment to get extents to all sides.
+            float regionTileSide = GetRegionTileSideLength();
+            float halfTile = regionTileSide * 0.5f;
+            float centerX = halfTile * -1.0f;
+            float centerZ = halfTile;
+            float ext = regionTileSide * EnvironSettings.REGION_TILE_EXTENTS;
+            float maxX = centerX + halfTile + ext;
+            float minX = centerX - halfTile - ext;
+            float minZ = centerZ - halfTile - ext;
+            float maxZ = centerZ + halfTile + ext;
+            return new float[][] { new float[] { minX, maxX }, new float[] { minZ, maxZ } };
+
+        }
+
+        /// <summary>
         /// Finds the local tile coordinates (x,y) within the larger region tile where provided world coordinate is located. X,Y coords are relative to region tile min pt.
         /// </summary>
         private static int[] GetLocalCityTileCoords(Vector3 sampleWorldPos, Vector3 regionTileMinCorner, float cityTileSideLength)

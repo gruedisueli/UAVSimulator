@@ -54,7 +54,7 @@ namespace Assets.Scripts.SimulatorCore
         /// <summary>
         /// Main method called for instantiating drones in the simulation.
         /// </summary>
-        public void InstantiateDrones(CityViewManager sceneManager, float scale, Canvas _canvas)
+        public void InstantiateDrones(SceneManagerBase sceneManager, float scale, Canvas _canvas)
         {
             StartCoroutine(InstantiateCorridorOrLowAltDrones(sceneManager, scale, _canvas, true));
             StartCoroutine(InstantiateCorridorOrLowAltDrones(sceneManager, scale, _canvas, false));
@@ -282,7 +282,7 @@ namespace Assets.Scripts.SimulatorCore
         /// <summary>
         /// Coroutine for instantiation of background drones. @Eunu please comment on when we use this versus "AddBackgroundDrone()"
         /// </summary>
-        public IEnumerator InstantiateBackgroundDrones(CityViewManager sceneManager, int backgroundDroneCount, float scale, float lowerElevationBound, float upperElevationBound, Canvas _canvas)
+        public IEnumerator InstantiateBackgroundDrones(SceneManagerBase sceneManager, int backgroundDroneCount, float scale, float lowerElevationBound, float upperElevationBound, Canvas _canvas)
         {
             float progress = 0.0f;
             int vehiclesToInstantiate = backgroundDroneCount;
@@ -344,7 +344,7 @@ namespace Assets.Scripts.SimulatorCore
         /// <summary>
         /// Main coroutine for instantiating drones of low altitude or corridor type.
         /// </summary>
-        private IEnumerator InstantiateCorridorOrLowAltDrones(CityViewManager sceneManager, float scale, Canvas _canvas, bool isCorridor)
+        private IEnumerator InstantiateCorridorOrLowAltDrones(SceneManagerBase sceneManager, float scale, Canvas _canvas, bool isCorridor)
         {
             string drone_path = "Drones/";
             string droneType = isCorridor ? "corridor" : "LowAltitude";
@@ -443,7 +443,7 @@ namespace Assets.Scripts.SimulatorCore
         /// <summary>
         /// @Eunu, comment. See comment for coroutine above.
         /// </summary>
-        public void AddBackgroundDrone(CityViewManager sceneManager, float scale, float lowerElevationBound, float upperElevationBound)
+        public void AddBackgroundDrone(SceneManagerBase sceneManager, float scale, float lowerElevationBound, float upperElevationBound)
         {
             string drone_path = "Drones/";
             Material backgroundTrail = Resources.Load<Material>("Materials/TrailBackGroundDrones");

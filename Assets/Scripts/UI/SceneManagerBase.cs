@@ -69,7 +69,7 @@ namespace Assets.Scripts.UI
         public Dictionary<string, SceneRestrictionZone> RestrictionZones { get; protected set; }
 
         public List<GameObject> DestinationCollections { get; protected set; }
-        public Assets.Scripts.DataStructure.Network network { get; protected set; }
+        public Assets.Scripts.DataStructure.Network network { get; protected set; } = null;
 
 
         #endregion
@@ -495,19 +495,19 @@ namespace Assets.Scripts.UI
             {
                 var sDP = _selectedElement as SceneDronePort;
                 var specs = sDP.DronePortSpecs.GetCopy();
-                _workingCopy = InstantiateDronePort(guid, specs, false);
+                _workingCopy = InstantiateDronePort(guid, specs, false, true, false);
             }
             else if (_selectedElement is SceneParkingStructure)
             {
                 var sPS = _selectedElement as SceneParkingStructure;
                 var specs = sPS.ParkingStructureSpecs.GetCopy();
-                _workingCopy = InstantiateParkingStructure(guid, specs, false);
+                _workingCopy = InstantiateParkingStructure(guid, specs, false, true, false);
             }
             else if (_selectedElement is SceneRestrictionZone)
             {
                 var sRS = _selectedElement as SceneRestrictionZone;
                 var specs = sRS.RestrictionZoneSpecs.GetCopy();
-                _workingCopy = InstantiateRestrictionZone(guid, specs, false);
+                _workingCopy = InstantiateRestrictionZone(guid, specs, false, true);
             }
             else if (_selectedElement is SceneCity)
             {
@@ -550,21 +550,21 @@ namespace Assets.Scripts.UI
                     var wC = _workingCopy as SceneDronePort;
                     RemoveDronePort(guidOld);
                     EnvironManager.Instance.AddDronePort(guidNew, wC.DronePortSpecs);
-                    _selectedElement = InstantiateDronePort(guidNew, wC.DronePortSpecs, true);
+                    _selectedElement = InstantiateDronePort(guidNew, wC.DronePortSpecs, true, true, false);
                 }
                 else if (_workingCopy is SceneParkingStructure)
                 {
                     var wC = _workingCopy as SceneParkingStructure;
                     RemoveParkingStructure(guidOld);
                     EnvironManager.Instance.AddParkingStructure(guidNew, wC.ParkingStructureSpecs);
-                    _selectedElement = InstantiateParkingStructure(guidNew, wC.ParkingStructureSpecs, true);
+                    _selectedElement = InstantiateParkingStructure(guidNew, wC.ParkingStructureSpecs, true, true, false);
                 }
                 else if (_workingCopy is SceneRestrictionZone)
                 {
                     var wC = _workingCopy as SceneRestrictionZone;
                     RemoveRestrictionZone(guidOld);
                     EnvironManager.Instance.AddRestrictionZone(guidNew, wC.RestrictionZoneSpecs);
-                    _selectedElement = InstantiateRestrictionZone(guidNew, wC.RestrictionZoneSpecs, true);
+                    _selectedElement = InstantiateRestrictionZone(guidNew, wC.RestrictionZoneSpecs, true, true);
                 }
                 else if (_workingCopy is SceneCity)
                 {
@@ -855,7 +855,7 @@ namespace Assets.Scripts.UI
             }
             string guid = Guid.NewGuid().ToString();
             EnvironManager.Instance.AddDronePort(guid, dP);
-            InstantiateDronePort(guid, dP, true);
+            InstantiateDronePort(guid, dP, true, true, false);
         }
 
         /// <summary>
@@ -893,7 +893,7 @@ namespace Assets.Scripts.UI
             }
             string guid = Guid.NewGuid().ToString();
             EnvironManager.Instance.AddParkingStructure(guid, pS);
-            InstantiateParkingStructure(guid, pS, true);
+            InstantiateParkingStructure(guid, pS, true, true, false);
         }
 
         /// <summary>
@@ -926,7 +926,7 @@ namespace Assets.Scripts.UI
             }
             string guid = Guid.NewGuid().ToString();
             EnvironManager.Instance.AddRestrictionZone(guid, rZ);
-            InstantiateRestrictionZone(guid, rZ, true);
+            InstantiateRestrictionZone(guid, rZ, true, true);
         }
 
         /// <summary>
@@ -939,7 +939,7 @@ namespace Assets.Scripts.UI
             string guid = Guid.NewGuid().ToString();
             var p = args.Position;
 
-            var tileBounds = Conversions.TileBounds(uT.UnwrappedTileId);
+            //var tileBounds = Conversions.TileBounds(uT.UnwrappedTileId);
             var regionTileWorldCenter = uT.gameObject.transform.position;
             CityOptions s = new CityOptions();
             s.WorldPos = p;
@@ -1029,44 +1029,251 @@ namespace Assets.Scripts.UI
         #region INSTANTIATE ELEMENTS
 
         /// <summary>
-        /// Instantiates a rectangular parking structure in the project. Does not update environment.
+        /// Instantiates main objects required for drone simulation.
         /// </summary>
-        protected abstract SceneParkingStructure InstantiateRectParkingStruct(string guid, ParkingStructureRect pS, bool register);
+        protected void InstantiateSimulationObjects(bool selectable, bool simpleGeom)
+        {
+            // TO-DO: register the restriction zones for drone ports and parking structures
+            BuildAirspace();
 
-        /// <summary>
-        /// Instantiates a custom parking structure in the project. Does not update environment.
-        /// </summary>
-        protected abstract SceneParkingStructure InstantiateCustomParkingStruct(string guid, GameObject prefab, ParkingStructureCustom pS, bool register);
+            var env = EnvironManager.Instance.Environ;
+            foreach (var kvp in env.DronePorts)
+            {
+                var dP = kvp.Value;
+                var sdP = InstantiateDronePort(kvp.Key, dP, true, selectable, simpleGeom);
+                var rZ = new RestrictionZoneCyl(dP.Position, 0.0f, 200.0f, 100.0f);
+                rZ.Layer = 13;//landing zone
+                var srZ = InstantiateRestrictionZone(Guid.NewGuid().ToString(), rZ, true, sdP.gameObject.transform);
 
-        /// <summary>
-        /// Instantiates a custom drone port in the project. Does not update environment.
-        /// </summary>
-        protected abstract SceneDronePort InstantiateCustomDronePort(string guid, GameObject prefab, DronePortCustom dP, bool register);
+            }
 
-        /// <summary>
-        /// Instantiates a generic rectangular drone port in project. Does not update environment.
-        /// </summary>
-        protected abstract SceneDronePort InstantiateRectDronePort(string guid, DronePortRect dP, bool register);
+            foreach (var kvp in env.ParkingStructures)
+            {
+                var pS = kvp.Value;
+                var spS = InstantiateParkingStructure(kvp.Key, pS, true, selectable, simpleGeom);
+                var rZ = new RestrictionZoneCyl(pS.Position, 0.0f, 200.0f, 100.0f);
+                rZ.Layer = 13;//landing zone
+                var srZ = InstantiateRestrictionZone(Guid.NewGuid().ToString(), rZ, true, spS.gameObject.transform);
+            }
 
-        /// <summary>
-        /// Instantiates a restriction zone. Does not update enviornment.
-        /// </summary>
-        protected abstract SceneRestrictionZone InstantiateRestrictionZone(string guid, RestrictionZoneBase rZ, bool register);
+            foreach (var kvp in env.RestrictionZones)
+            {
+                var rZ = kvp.Value;
+                InstantiateRestrictionZone(kvp.Key, rZ, true, selectable);
+            }
+        }
 
         /// <summary>
         /// Instantiates a parking structure. Does not update enviornment.
         /// </summary>
-        protected abstract SceneParkingStructure InstantiateParkingStructure(string guid, ParkingStructureBase pS, bool register);
+        protected SceneParkingStructure InstantiateParkingStructure(string guid, ParkingStructureBase pS, bool register, bool selectable, bool simpleGeom)
+        {
+            SceneParkingStructure sPS = null;
+            if (pS is ParkingStructureRect)
+            {
+                sPS = InstantiateRectParkingStruct(guid, pS as ParkingStructureRect, register);
+            }
+            else if (pS is ParkingStructureCustom)
+            {
+                var pfb = simpleGeom ? GameObject.CreatePrimitive(PrimitiveType.Cube) : EnvironManager.Instance.ParkingStructAssets[pS.Type].Prefab;
+                sPS = InstantiateCustomParkingStruct(guid, pfb, pS as ParkingStructureCustom, register, selectable);
+            }
+            else
+            {
+                Debug.LogError("Parking structure type requested for instantiation not recognized");
+                return null;
+            }
+
+            if (selectable) sPS.OnSceneElementSelected += SelectElement;
+
+            return sPS;
+        }
+
+        /// <summary>
+        /// Instantiates a rectangular parking structure in the project. Does not update environment.
+        /// </summary>
+        protected SceneParkingStructure InstantiateRectParkingStruct(string guid, ParkingStructureRect pS, bool register)
+        {
+            var clone = GameObject.CreatePrimitive(PrimitiveType.Cube);
+            var sPS = clone.AddComponent<SceneParkingStructure>();
+            sPS.Initialize(pS, guid);
+            pS.ApplyParkingGrid();
+            if (register)
+            {
+                ParkingStructures.Add(guid, sPS);
+                _vehicleControlSystem.InstantiateCorridorAndLowAltDrones();
+            }
+
+            //sPS.OnSceneElementSelected += SelectElement;
+
+            return sPS;
+        }
+
+        /// <summary>
+        /// Instantiates a custom parking structure in the project. Does not update environment.
+        /// </summary>
+        protected SceneParkingStructure InstantiateCustomParkingStruct(string guid, GameObject prefab, ParkingStructureCustom pS, bool register, bool selectable)
+        {
+            var clone = Instantiate(prefab);
+            foreach (var c in clone.GetComponentsInChildren<Transform>(true))
+            {
+                if (selectable) c.gameObject.AddComponent<SelectableGameObject>();
+                c.gameObject.AddComponent<BoxCollider>();
+            }
+            var sPS = clone.AddComponent<SceneParkingStructure>();
+            clone.AddComponent<BoxCollider>();
+            sPS.Initialize(pS, guid);
+
+            if (register)
+            {
+                ParkingStructures.Add(guid, sPS);
+                _vehicleControlSystem.InstantiateCorridorAndLowAltDrones();
+            }
+
+            //sPS.OnSceneElementSelected += SelectElement;
+
+            return sPS;
+        }
 
         /// <summary>
         /// Instantiates a drone port. Does not update enviornment.
         /// </summary>
-        protected abstract SceneDronePort InstantiateDronePort(string guid, DronePortBase dP, bool register);
+        protected SceneDronePort InstantiateDronePort(string guid, DronePortBase dP, bool register, bool selectable, bool simpleGeom)
+        {
+            SceneDronePort sDP = null;
+            if (dP is DronePortRect)
+            {
+                sDP = InstantiateRectDronePort(guid, dP as DronePortRect, register);
+            }
+            else if (dP is DronePortCustom)
+            {
+                var pfb = simpleGeom ? GameObject.CreatePrimitive(PrimitiveType.Cube) : EnvironManager.Instance.DronePortAssets[dP.Type].Prefab;
+                sDP = InstantiateCustomDronePort(guid, pfb, dP as DronePortCustom, register, selectable);
+            }
+            else
+            {
+                Debug.LogError("Drone port type requested for instantiation not recognized");
+                return null;
+            }
+
+            if (selectable) sDP.OnSceneElementSelected += SelectElement;
+
+            return sDP;
+        }
+
+        /// <summary>
+        /// Instantiates a custom drone port in the project. Does not update environment.
+        /// </summary>
+        protected SceneDronePort InstantiateCustomDronePort(string guid, GameObject prefab, DronePortCustom dP, bool register, bool selectable)
+        {
+            var clone = Instantiate(prefab);
+            foreach (var c in clone.GetComponentsInChildren<Transform>(true))
+            {
+                if (selectable) c.gameObject.AddComponent<SelectableGameObject>();
+                c.gameObject.AddComponent<BoxCollider>();
+            }
+            var sDP = clone.AddComponent<SceneDronePort>();
+            clone.AddComponent<BoxCollider>();
+            sDP.Initialize(dP, guid);
+
+            if (register)
+            {
+                DronePorts.Add(guid, sDP);
+            }
+
+            //if (selectable) sDP.OnSceneElementSelected += SelectElement;
+
+            return sDP;
+        }
+
+        /// <summary>
+        /// Instantiates a generic rectangular drone port in project. Does not update environment.
+        /// </summary>
+        protected SceneDronePort InstantiateRectDronePort(string guid, DronePortRect dP, bool register)
+        {
+            var clone = GameObject.CreatePrimitive(PrimitiveType.Cube);
+            var sDP = clone.AddComponent<SceneDronePort>();
+            sDP.Initialize(dP, guid);
+
+            if (register)
+            {
+                DronePorts.Add(guid, sDP);
+            }
+
+            //if (selectable) sDP.OnSceneElementSelected += SelectElement;
+
+            return sDP;
+        }
+
+        /// <summary>
+        /// Instantiates a restriction zone. Does not update enviornment.
+        /// </summary>
+        protected SceneRestrictionZone InstantiateRestrictionZone(string guid, RestrictionZoneBase rZ, bool register, bool selectable)
+        {
+            var zoneParent = new GameObject();
+
+            var sRZ = zoneParent.AddComponent<SceneRestrictionZone>();
+            sRZ.Initialize(guid, rZ);
+
+            if (register)
+            {
+                RestrictionZones.Add(guid, sRZ);
+            }
+
+            if (selectable) sRZ.OnSceneElementSelected += SelectElement;
+
+            return sRZ;
+        }
+
+        /// <summary>
+        /// Instantiates a restriction zone with parent. Does not update enviornment.
+        /// </summary>
+        protected SceneRestrictionZone InstantiateRestrictionZone(string guid, RestrictionZoneBase rZ, bool register, Transform parentTransform, bool selectable)
+        {
+            var zoneParent = new GameObject();
+
+            var sRZ = zoneParent.AddComponent<SceneRestrictionZone>();
+            sRZ.gameObject.transform.parent = parentTransform;
+            sRZ.Initialize(guid, rZ);
+
+            if (register)
+            {
+                RestrictionZones.Add(guid, sRZ);
+            }
+
+            if (selectable)
+            {
+                sRZ.OnSceneElementSelected += SelectElement;
+                foreach (GameObject gO in sRZ.SubElements)
+                {
+                    gO.GetComponent<SelectableGameObject>().OnSelected += sRZ.Selected;
+                }
+            }
+
+            return sRZ;
+        }
 
         /// <summary>
         /// Places a marker at a city.
         /// </summary>
-        protected abstract SceneCity InstantiateCity(string guid, CityOptions cityOptions, bool register);
+        protected SceneCity InstantiateCity(string guid, CityOptions cityOptions, bool register)
+        {
+            var c = cityOptions;
+
+            var clone = GameObject.CreatePrimitive(PrimitiveType.Cube);
+
+            var sCity = clone.AddComponent<SceneCity>();
+            sCity.Initialize(guid, c);
+
+            sCity.OnSceneElementSelected += SelectElement;
+
+            if (register)
+            {
+                Cities.Add(guid, sCity);
+            }
+
+            return sCity;
+        }
 
         #endregion
 

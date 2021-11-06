@@ -136,14 +136,13 @@ namespace Assets.Scripts.Environment
         /// </summary>
         public bool AddDronePort(string guid, DronePortBase dP)
         {
-            var city = GetCurrentCity();
-            if (city == null)
+            if (Environ == null)
             {
                 return false;
             }
-            if (!city.DronePorts.ContainsKey(guid))
+            if (!Environ.DronePorts.ContainsKey(guid))
             {
-                city.DronePorts.Add(guid, dP);
+                Environ.DronePorts.Add(guid, dP);
                 return true;
             }
             else
@@ -158,14 +157,13 @@ namespace Assets.Scripts.Environment
         /// </summary>
         public bool AddParkingStructure(string guid, ParkingStructureBase pS)
         {
-            var city = GetCurrentCity();
-            if (city == null)
+            if (Environ == null)
             {
                 return false;
             }
-            if (!city.ParkingStructures.ContainsKey(guid))
+            if (!Environ.ParkingStructures.ContainsKey(guid))
             {
-                city.ParkingStructures.Add(guid, pS);
+                Environ.ParkingStructures.Add(guid, pS);
                 return true;
             }
             else
@@ -180,14 +178,13 @@ namespace Assets.Scripts.Environment
         /// </summary>
         public bool AddRestrictionZone(string guid, RestrictionZoneBase rZ)
         {
-            var city = GetCurrentCity();
-            if (city == null)
+            if (Environ == null)
             {
                 return false;
             }
-            if (!city.RestrictionZones.ContainsKey(guid))
+            if (!Environ.RestrictionZones.ContainsKey(guid))
             {
-                city.RestrictionZones.Add(guid, rZ);
+                Environ.RestrictionZones.Add(guid, rZ);
                 return true;
             }
             else
@@ -202,14 +199,13 @@ namespace Assets.Scripts.Environment
         /// </summary>
         public bool RemoveDronePort(string guid)
         {
-            var city = GetCurrentCity();
-            if (city == null)
+            if (Environ == null)
             {
                 return false;
             }
-            if (city.DronePorts.ContainsKey(guid))
+            if (Environ.DronePorts.ContainsKey(guid))
             {
-                city.DronePorts.Remove(guid);
+                Environ.DronePorts.Remove(guid);
                 return true;
             }
             else
@@ -224,14 +220,13 @@ namespace Assets.Scripts.Environment
         /// </summary>
         public bool RemoveParkingStructure(string guid)
         {
-            var city = GetCurrentCity();
-            if (city == null)
+            if (Environ == null)
             {
                 return false;
             }
-            if (city.ParkingStructures.ContainsKey(guid))
+            if (Environ.ParkingStructures.ContainsKey(guid))
             {
-                city.ParkingStructures.Remove(guid);
+                Environ.ParkingStructures.Remove(guid);
                 return true;
             }
             else
@@ -246,14 +241,13 @@ namespace Assets.Scripts.Environment
         /// </summary>
         public bool RemoveRestrictionZone(string guid)
         {
-            var city = GetCurrentCity();
-            if (city == null)
+            if (Environ == null)
             {
                 return false;
             }
-            if (city.RestrictionZones.ContainsKey(guid))
+            if (Environ.RestrictionZones.ContainsKey(guid))
             {
-                city.RestrictionZones.Remove(guid);
+                Environ.RestrictionZones.Remove(guid);
                 return true;
             }
             else
@@ -268,14 +262,13 @@ namespace Assets.Scripts.Environment
         /// </summary>
         public DronePortBase GetDronePort(string guid)
         {
-            var city = GetCurrentCity();
-            if (city == null)
+            if (Environ == null)
             {
                 return null;
             }
-            if (city.DronePorts.ContainsKey(guid))
+            if (Environ.DronePorts.ContainsKey(guid))
             {
-                return city.DronePorts[guid];
+                return Environ.DronePorts[guid];
             }
             else
             {
@@ -311,14 +304,13 @@ namespace Assets.Scripts.Environment
         /// </summary>
         public ParkingStructureBase GetParkingStructure(string guid)
         {
-            var city = GetCurrentCity();
-            if (city == null)
+            if (Environ == null)
             {
                 return null;
             }
-            if (city.ParkingStructures.ContainsKey(guid))
+            if (Environ.ParkingStructures.ContainsKey(guid))
             {
-                return city.ParkingStructures[guid];
+                return Environ.ParkingStructures[guid];
             }
             else
             {
@@ -354,14 +346,13 @@ namespace Assets.Scripts.Environment
         /// </summary>
         public RestrictionZoneBase GetRestrictionZone(string guid)
         {
-            var city = GetCurrentCity();
-            if (city == null)
+            if (Environ == null)
             {
                 return null;
             }
-            if (city.RestrictionZones.ContainsKey(guid))
+            if (Environ.RestrictionZones.ContainsKey(guid))
             {
-                return city.RestrictionZones[guid];
+                return Environ.RestrictionZones[guid];
             }
             else
             {

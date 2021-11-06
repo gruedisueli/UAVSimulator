@@ -117,7 +117,7 @@ public class VehicleControlSystem : MonoBehaviour
     
 
     // private SceneManagerBase sceneManager;
-    public CityViewManager sceneManager;
+    public SceneManagerBase sceneManager;
     public List<GameObject> corridorDrones;
     public List<GameObject> lowAltitudeDrones;
     
@@ -126,7 +126,7 @@ public class VehicleControlSystem : MonoBehaviour
     public int backgroundDroneCount = 100;
     public float lowerElevationBound = 100;
     public float upperElevationBound = 135;
-    public float[][] cityBounds;
+    public float[][] mapBounds;
 
     
     public List<GameObject> parkingCollection;
@@ -152,10 +152,10 @@ public class VehicleControlSystem : MonoBehaviour
     private float progress = 0.0f;
     private List<GameObject> hiddenDrones;//@EUNU comment
     public DroneInstantiator droneInstantiator;
+    private bool _isRegionView = false;
 
 
-    // Start is called before the first frame update
-    void Start()
+    void Awake()
     {
         root = SerializationSettings.ROOT + "\\runtime\\";
         droneCount = 200;
@@ -170,7 +170,7 @@ public class VehicleControlSystem : MonoBehaviour
         
         simulationParam = ReadSimulationParams(current_runtime);
         // TO-DO: Add clause that checks if we are doing simulation in RegionView
-        sceneManager = GameObject.Find("FOA").GetComponent<CityViewManager>();
+        sceneManager = GameObject.Find("FOA").GetComponent<SceneManagerBase>();
         corridorDrones = new List<GameObject>();
         lowAltitudeDrones = new List<GameObject>();
         routeLineObject = new Dictionary<Corridor, GameObject>();
@@ -180,10 +180,16 @@ public class VehicleControlSystem : MonoBehaviour
         speedMultiplier = 2.0f;//@EUNU comment
 
         watch = 0.0f;
+        _isRegionView = !(sceneManager is CityViewManager);
 
-        var eM = EnvironManager.Instance;
-        var city = eM.GetCurrentCity();
-        cityBounds = UnitUtils.GetCityExtents(city.CityStats);
+
+        if (!_isRegionView)
+        {
+            var eM = EnvironManager.Instance;
+            var city = eM.GetCurrentCity();
+            mapBounds = UnitUtils.GetCityExtents(city.CityStats);
+        }
+        else mapBounds = UnitUtils.GetRegionExtents();
 
 
 
@@ -206,7 +212,7 @@ public class VehicleControlSystem : MonoBehaviour
 
         #region Basic Initialization Stuff. //@EUNU comment why we don't do this in setup? Seems like something that only happens once?
 
-        if (!buildingNoiseAttachmentStarted) StartCoroutine(AttachBuildingNoiseComponent());
+        if (!_isRegionView && !buildingNoiseAttachmentStarted) StartCoroutine(AttachBuildingNoiseComponent());
         //if (isBuildingNoiseComponentAttached && !droneInstantiator.corridorDroneInstantiationStarted ) StartCoroutine(droneInstantiator.InstantiateCorridorDrones(sceneManager, DRONE_SCALE, _canvas));
         //else if (isBuildingNoiseComponentAttached && droneInstantiator.isCorridorDroneInstantiated && !droneInstantiator.lowAltitudeDroneInstantiationStarted ) StartCoroutine(droneInstantiator.InstantiateLowAltitudeDrones(sceneManager, DRONE_SCALE, _canvas));
 
@@ -214,7 +220,7 @@ public class VehicleControlSystem : MonoBehaviour
 
         #region Typical play actions
 
-        if (playing && isBuildingNoiseComponentAttached && droneInstantiator.isCorridorDroneInstantiated && droneInstantiator.isLowAltitudeDroneInstantiated )
+        if (playing && droneInstantiator.isCorridorDroneInstantiated && droneInstantiator.isLowAltitudeDroneInstantiated && (_isRegionView || isBuildingNoiseComponentAttached))
         {
             watch += Time.deltaTime;
             //periodic check-in
@@ -254,9 +260,14 @@ public class VehicleControlSystem : MonoBehaviour
     public void PlayPause()
     {
         playing = !playing;
-        var eM = EnvironManager.Instance;
-        var city = eM.GetCurrentCity();
-        cityBounds = UnitUtils.GetCityExtents(city.CityStats);
+        if (!_isRegionView)
+        {
+            var eM = EnvironManager.Instance;
+            var city = eM.GetCurrentCity();
+            mapBounds = UnitUtils.GetCityExtents(city.CityStats);
+        }
+        else mapBounds = UnitUtils.GetRegionExtents();
+
         if ( playing )
         {
             if ( !droneInstantiator.isBackgroundDroneInstantiated ) StartCoroutine (droneInstantiator.InstantiateBackgroundDrones(sceneManager, backgroundDroneCount, DRONE_SCALE, lowerElevationBound, upperElevationBound, _canvas));
@@ -470,8 +481,8 @@ public class VehicleControlSystem : MonoBehaviour
     public Vector3 GetRandomPointXZ(float y)
     {
         
-        float x = UnityEngine.Random.Range(cityBounds[0][0], cityBounds[0][1]);
-        float z = UnityEngine.Random.Range(cityBounds[1][0], cityBounds[1][1]);
+        float x = UnityEngine.Random.Range(mapBounds[0][0], mapBounds[0][1]);
+        float z = UnityEngine.Random.Range(mapBounds[1][0], mapBounds[1][1]);
         return new Vector3(x, y, z);
     }
 
@@ -899,6 +910,7 @@ public class VehicleControlSystem : MonoBehaviour
     public void VisualizeNetwork ( Assets.Scripts.DataStructure.Network network )
     {
         networkLines = new List<GameObject>();
+        float width = _isRegionView ? UISettings.REGIONVIEW_NETWORK_WIDTH : UISettings.CITYVIEW_NETWORK_WIDTH;
         foreach(Corridor c in network.corridors)
         {
             GameObject line = new GameObject();
@@ -914,7 +926,7 @@ public class VehicleControlSystem : MonoBehaviour
             }
             lineRenderer.SetPositions(wayPointArray);
             lineRenderer.material = Resources.Load<Material>("Materials/Route");
-            lineRenderer.SetWidth(5.0f, 5.0f);
+            lineRenderer.SetWidth(width, width);
             networkLines.Add(line);
             lineRenderer.enabled = false;
             routeLineObject.Add(c, line);
