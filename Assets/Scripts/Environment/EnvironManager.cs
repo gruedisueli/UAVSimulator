@@ -65,6 +65,8 @@ namespace Assets.Scripts.Environment
         public GameObject DroneIconPrefab { get; private set; } = null;
         public FOA_MapboxSettings MapboxSettings { get; private set; } = null;
         public GameObject ProgressBarPrefab { get; private set; } = null;
+        public GameObject ParkingSpritePrefab { get; private set; } = null;
+        public GameObject PortSpritePrefab { get; private set; } = null;
 
 
         /// <summary>
@@ -561,6 +563,8 @@ namespace Assets.Scripts.Environment
                     ParkingStructAssets.Add(type, new ParkingStructureAssetPack(null, null, sprite, ParkingStructCategory.Rect));
                 }
             }
+
+            ParkingSpritePrefab = Resources.Load<GameObject>("Sprites/ParkingSprite");
         }
 
         /// <summary>
@@ -595,6 +599,8 @@ namespace Assets.Scripts.Environment
                     DronePortAssets.Add(type, new DronePortAssetPack(null, null, sprite, DronePortCategory.Rect));
                 }
             }
+
+            PortSpritePrefab = Resources.Load<GameObject>("Sprites/PortSprite");
         }
 
         /// <summary>

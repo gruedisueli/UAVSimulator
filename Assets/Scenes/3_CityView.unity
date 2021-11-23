@@ -6747,7 +6747,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   MIN_DRONE_RANGE: 0
-  DRONE_SCALE: 5
+  DRONE_SCALE: 1
+  scaleMultiplier: 5
   _canvas: {fileID: 2088846165}
   simulationParam:
     maxSpeed: 0
@@ -7759,6 +7760,7 @@ MonoBehaviour:
   _allowZoom: 1
   _allowTilt: 1
   _allowPan: 1
+  _minOrthoZoom: 6000
 --- !u!1001 &2024123717
 PrefabInstance:
   m_ObjectHideFlags: 0

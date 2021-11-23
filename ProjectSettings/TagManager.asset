@@ -46,3 +46,9 @@ TagManager:
   - name: Default
     uniqueID: 0
     locked: 0
+  - name: Drones
+    uniqueID: 4024902335
+    locked: 0
+  - name: Infrastructure
+    uniqueID: 1712082461
+    locked: 0

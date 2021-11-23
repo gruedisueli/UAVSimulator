@@ -75,7 +75,7 @@ public abstract class DroneBase : MonoBehaviour
     private TrailRenderer tr;
     private SphereCollider sphereCollider;
     private GameObject noiseShpere;
-    private Mesh originalMesh;
+    private Mesh originalMesh = null;
 
     // Start is called before the first frame update
     void Start()
@@ -89,7 +89,7 @@ public abstract class DroneBase : MonoBehaviour
         tr = gameObject.GetComponent<TrailRenderer>();
         sphereCollider = gameObject.GetComponent<SphereCollider>();
         isParked = true;
-        originalMesh = gameObject.transform.GetChild(0).gameObject.GetComponent<MeshFilter>().mesh;
+        if (!vcs.IsRegionView) originalMesh = gameObject.transform.GetChild(0).gameObject.GetComponent<MeshFilter>().mesh;
 
 
         if (this is CorridorDrone || this is LowAltitudeDrone)
@@ -225,7 +225,11 @@ public abstract class DroneBase : MonoBehaviour
     {
         OnDroneParking?.Invoke(gameObject, e);
         simulationAnalyzer.SendMessage("RemoveFlyingDrone", this.gameObject);
-        gameObject.transform.GetChild(0).gameObject.GetComponent<MeshRenderer>().enabled = false;
+        if (!vcs.IsRegionView) gameObject.transform.GetChild(0).gameObject.GetComponent<MeshRenderer>().enabled = false;
+        else
+        {
+            gameObject.transform.GetChild(0).gameObject.GetComponent<SpriteRenderer>().enabled = false;
+        }
         isParked = true;
     }
 
@@ -236,7 +240,11 @@ public abstract class DroneBase : MonoBehaviour
     {
         if (isParked)
         {
-            gameObject.transform.GetChild(0).gameObject.GetComponent<MeshRenderer>().enabled = true;
+            if (!vcs.IsRegionView) gameObject.transform.GetChild(0).gameObject.GetComponent<MeshRenderer>().enabled = true;
+            else
+            {
+                gameObject.transform.GetChild(0).gameObject.GetComponent<SpriteRenderer>().enabled = true;
+            }
             OnDroneTakeOff?.Invoke(gameObject, e);
             simulationAnalyzer.SendMessage("AddFlyingDrone", this.gameObject);
             isParked = false;
@@ -323,8 +331,15 @@ public abstract class DroneBase : MonoBehaviour
     /// </summary>
     public void HideMesh()
     {
-        MeshRenderer mr = gameObject.transform.GetChild(0).gameObject.GetComponent<MeshRenderer>();
-        mr.enabled = false;
+        if (!vcs.IsRegionView)
+        {
+            MeshRenderer mr = gameObject.transform.GetChild(0).gameObject.GetComponent<MeshRenderer>();
+            mr.enabled = false;
+        }
+        else
+        {
+            gameObject.transform.GetChild(0).gameObject.GetComponent<SpriteRenderer>().enabled = false;
+        }
     }
 
     /// <summary>
@@ -332,8 +347,15 @@ public abstract class DroneBase : MonoBehaviour
     /// </summary>
     public void ShowMesh()
     {
-        MeshRenderer mr = gameObject.transform.GetChild(0).gameObject.GetComponent<MeshRenderer>();
-        mr.enabled = true;
+        if (!vcs.IsRegionView)
+        {
+            MeshRenderer mr = gameObject.transform.GetChild(0).gameObject.GetComponent<MeshRenderer>();
+            mr.enabled = true;
+        }
+        else
+        {
+            gameObject.transform.GetChild(0).gameObject.GetComponent<SpriteRenderer>().enabled = true;
+        }
     }
     #endregion
 
@@ -362,6 +384,7 @@ public abstract class DroneBase : MonoBehaviour
     /// </summary>
     private void MeshSwapHandler (bool toggle, Mesh m)
     {
+        if (vcs.IsRegionView) return;
         MeshFilter mf = gameObject.transform.GetChild(0).gameObject.GetComponent<MeshFilter>();
         if(toggle)
         {

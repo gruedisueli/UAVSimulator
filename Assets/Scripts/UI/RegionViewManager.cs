@@ -220,9 +220,9 @@ namespace Assets.Scripts.UI
                         return;
                     }
                 }
+                _workingCopy.UpdateGameObject();
             }
 
-            _workingCopy.UpdateGameObject();
         }
 
         #endregion

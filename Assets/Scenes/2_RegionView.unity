@@ -392,7 +392,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   MIN_DRONE_RANGE: 0
-  DRONE_SCALE: 5
+  DRONE_SCALE: 1
+  scaleMultiplier: 800
   _canvas: {fileID: 1495986657}
   simulationParam:
     maxSpeed: 0
@@ -426,7 +427,7 @@ MonoBehaviour:
   landingCollection: []
   networkLines: []
   networkGenerated: 0
-  speedMultiplier: 1
+  speedMultiplier: 10
   TypeAPrefab: {fileID: 0}
   droneInstantiator: {fileID: 0}
 --- !u!4 &246965925

@@ -286,7 +286,7 @@ namespace Assets.Scripts.SimulatorCore
         {
             float progress = 0.0f;
             int vehiclesToInstantiate = backgroundDroneCount;
-            string drone_path = "Drones/";
+            string drone_path = vcs.IsRegionView ? "Sprites/DroneSprite" : "Drones/";
             Material backgroundTrail = Resources.Load<Material>("Materials/TrailBackGroundDrones");
             // Populate vehiclesToInstantiate number of drones in existing parking structures
 
@@ -299,14 +299,15 @@ namespace Assets.Scripts.SimulatorCore
                 // INTEGRATION TO-DO: Make this part to select parking structure randomly so that the drones are randomly populated
 
                 int vehicleTypeID = UnityEngine.Random.Range(0, vehicleSpecs.Keys.Count);
-                var newDrone = Resources.Load<GameObject>(drone_path + vehicleSpecs.Keys.ToList()[vehicleTypeID]);
+                string path = vcs.IsRegionView ? drone_path : drone_path + vehicleSpecs.Keys.ToList()[vehicleTypeID];
+                var newDrone = Resources.Load<GameObject>(path);
                 var type = vehicleSpecs.Keys.ToList()[vehicleTypeID];
 
                 float y = UnityEngine.Random.Range(lowerElevationBound, upperElevationBound);
                 Vector3 instantiationSpot = vcs.GetRandomPointXZ(y);
                 // instantiate the vehicle at emptySpot
                 var clone = Instantiate(newDrone, instantiationSpot, Quaternion.Euler(0.0f, 0.0f, 0.0f));
-                clone.name = "UAV_BACKGROUND_" + i.ToString();
+                clone.name = "UAV_BACKGROUND_" + backgroundDrones.Count.ToString();
                 clone.tag = "Vehicle";
                 clone.layer = 10;
 
@@ -346,7 +347,7 @@ namespace Assets.Scripts.SimulatorCore
         /// </summary>
         private IEnumerator InstantiateCorridorOrLowAltDrones(SceneManagerBase sceneManager, float scale, Canvas _canvas, bool isCorridor)
         {
-            string drone_path = "Drones/";
+            string drone_path = vcs.IsRegionView ? "Sprites/DroneSprite" : "Drones/";
             string droneType = isCorridor ? "corridor" : "LowAltitude";
             float progress = 0.0f;
             int parkingCapacity = sceneManager.GetParkingCapacity();
@@ -384,14 +385,15 @@ namespace Assets.Scripts.SimulatorCore
                         if (pC.RemainingSpots > 0)
                         {
                             int vehicleTypeID = UnityEngine.Random.Range(0, typeNames.Count);
-                            var newDrone = Resources.Load<GameObject>(drone_path + typeNames[vehicleTypeID]);
+                            string path = vcs.IsRegionView ? drone_path : drone_path + typeNames[vehicleTypeID];
+                            var newDrone = Resources.Load<GameObject>(path);
                             var type = typeNames[vehicleTypeID];
                             var emptySpot = pC.GetEmptySpot();
                             var translatedSpot = pC.TranslateParkingSpot(emptySpot);
 
                             // instantiate the vehicle at emptySpot
                             var clone = Instantiate(newDrone, translatedSpot, Quaternion.Euler(0.0f, 0.0f, 0.0f));
-                            clone.name = "UAV_" + i.ToString();
+                            clone.name = "UAV_" + (isCorridor ? corridorDrones.Count.ToString() : lowAltitudeDrones.Count.ToString());
                             clone.tag = "Vehicle";
                             clone.layer = 10;
                             // Only for video
@@ -410,7 +412,11 @@ namespace Assets.Scripts.SimulatorCore
                             v.currentCommunicationPoint = sPS.gameObject;
                             OnDroneInstantiated?.Invoke(this, new DroneInstantiationArgs(clone));
                             // Update parking management info
-                            clone.transform.GetChild(0).gameObject.GetComponent<MeshRenderer>().enabled = false;
+                            if (!vcs.IsRegionView) clone.transform.GetChild(0).gameObject.GetComponent<MeshRenderer>().enabled = false;
+                            else
+                            {
+                                clone.transform.GetChild(0).gameObject.GetComponent<SpriteRenderer>().enabled = false;
+                            }
                             pC.ParkAt(emptySpot, clone);
 
                             var sc = clone.AddComponent<SphereCollider>();
@@ -445,7 +451,6 @@ namespace Assets.Scripts.SimulatorCore
         /// </summary>
         public void AddBackgroundDrone(SceneManagerBase sceneManager, float scale, float lowerElevationBound, float upperElevationBound)
         {
-            string drone_path = "Drones/";
             Material backgroundTrail = Resources.Load<Material>("Materials/TrailBackGroundDrones");
             // Populate vehiclesToInstantiate number of drones in existing parking structures
 
@@ -453,7 +458,9 @@ namespace Assets.Scripts.SimulatorCore
             // INTEGRATION TO-DO: Make this part to select parking structure randomly so that the drones are randomly populated
 
             int vehicleTypeID = UnityEngine.Random.Range(0, vehicleSpecs.Keys.Count);
-            var newDrone = Resources.Load<GameObject>(drone_path + vehicleSpecs.Keys.ToList()[vehicleTypeID]);
+            string drone_path = vcs.IsRegionView ? "Sprites/DroneSprite" : "Drones/" + vehicleSpecs.Keys.ToList()[vehicleTypeID];
+
+            var newDrone = Resources.Load<GameObject>(drone_path);
             var type = vehicleSpecs.Keys.ToList()[vehicleTypeID];
 
             float y = UnityEngine.Random.Range(lowerElevationBound, upperElevationBound);

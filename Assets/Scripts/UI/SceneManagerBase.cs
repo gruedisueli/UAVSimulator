@@ -1075,7 +1075,7 @@ namespace Assets.Scripts.UI
             }
             else if (pS is ParkingStructureCustom)
             {
-                var pfb = simpleGeom ? GameObject.CreatePrimitive(PrimitiveType.Cube) : EnvironManager.Instance.ParkingStructAssets[pS.Type].Prefab;
+                var pfb = simpleGeom ? EnvironManager.Instance.ParkingSpritePrefab : EnvironManager.Instance.ParkingStructAssets[pS.Type].Prefab;
                 sPS = InstantiateCustomParkingStruct(guid, pfb, pS as ParkingStructureCustom, register, selectable);
             }
             else
@@ -1147,7 +1147,7 @@ namespace Assets.Scripts.UI
             }
             else if (dP is DronePortCustom)
             {
-                var pfb = simpleGeom ? GameObject.CreatePrimitive(PrimitiveType.Cube) : EnvironManager.Instance.DronePortAssets[dP.Type].Prefab;
+                var pfb = simpleGeom ? EnvironManager.Instance.PortSpritePrefab : EnvironManager.Instance.DronePortAssets[dP.Type].Prefab;
                 sDP = InstantiateCustomDronePort(guid, pfb, dP as DronePortCustom, register, selectable);
             }
             else
