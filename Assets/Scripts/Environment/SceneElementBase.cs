@@ -17,6 +17,10 @@ namespace Assets.Scripts.Environment
     public abstract class SceneElementBase : MonoBehaviour
     {
         public abstract string Guid { get; protected set; }
+        public abstract bool Is2D { get; protected set; }
+        public abstract GameObject Sprite2d { get; protected set; }
+        public abstract Canvas SceneCanvas { get; protected set; }
+        public abstract bool IsSelectable { get; protected set; }
         public abstract void UpdateGameObject();
         public event SceneElementSelected OnSceneElementSelected;
         protected Material _selectedMaterial;
@@ -26,13 +30,9 @@ namespace Assets.Scripts.Environment
 
         private void Awake()
         {
-            gameObject.AddComponent<SelectableGameObject>();
-
-            var c = gameObject.GetComponent<Collider>();
-            if (c is BoxCollider)
+            if (IsSelectable)
             {
-                var bC = c as BoxCollider;
-                bC.size = new Vector3(2, 2, 2);//bigger seems to solve raycast issues
+                MakeSelectable();
             }
 
             if (_renderers == null)//some scene elements may define this before "Start" is called.
@@ -52,21 +52,11 @@ namespace Assets.Scripts.Environment
             {
                 _defaultMaterial = Instantiate(EnvironManager.Instance.DefaultSceneElementMat);
             }
-
-            _selectableObjs = GetComponentsInChildren<SelectableGameObject>(true);
-            if (_selectableObjs == null)
-            {
-                Debug.LogError("Selectable game object component not found in this scene element or its children");
-                return;
-            }
-            foreach (var o in _selectableObjs)
-            {
-                o.OnSelected += Selected;
-            }
         }
 
         private void OnDestroy()
         {
+            if (_selectableObjs == null || _selectableObjs.Length == 0) return;
             foreach (var o in _selectableObjs)
             {
                 o.OnSelected -= Selected;
@@ -92,6 +82,29 @@ namespace Assets.Scripts.Environment
             foreach(var r in _renderers)
             {
                 r.material = isSelected ? _selectedMaterial : _defaultMaterial;
+            }
+        }
+
+        protected void MakeSelectable()
+        {
+            gameObject.AddComponent<SelectableGameObject>();
+
+            var c = gameObject.GetComponent<Collider>();
+            if (c is BoxCollider)
+            {
+                var bC = c as BoxCollider;
+                bC.size = new Vector3(2, 2, 2);//bigger seems to solve raycast issues
+            }
+
+            _selectableObjs = GetComponentsInChildren<SelectableGameObject>(true);
+            if (_selectableObjs == null)
+            {
+                Debug.LogError("Selectable game object component not found in this scene element or its children");
+                return;
+            }
+            foreach (var o in _selectableObjs)
+            {
+                o.OnSelected += Selected;
             }
         }
     }

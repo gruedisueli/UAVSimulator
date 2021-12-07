@@ -40,6 +40,10 @@ namespace Assets.Scripts.UI.Tools
                 var sPt = _mainCamera.WorldToScreenPoint(_sceneElement.transform.position);
                 rT.position = new Vector3(sPt.x, sPt.y, 0);
             }
+            else
+            {
+                Destroy(gameObject);
+            }
         }
     }
 }

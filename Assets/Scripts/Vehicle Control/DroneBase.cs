@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 using Assets.Scripts.Vehicle_Control;
 using Assets.Scripts.UI.EventArgs;
 using Assets.Scripts.DataStructure;
@@ -76,6 +77,7 @@ public abstract class DroneBase : MonoBehaviour
     private SphereCollider sphereCollider;
     private GameObject noiseShpere;
     private Mesh originalMesh = null;
+    public GameObject Clone2d { get; set; } = null;
 
     // Start is called before the first frame update
     void Start()
@@ -95,7 +97,8 @@ public abstract class DroneBase : MonoBehaviour
         if (this is CorridorDrone || this is LowAltitudeDrone)
         {
             vcs.OnNoiseSphereToggle += NoiseSphereToggleHandler;
-            noiseShpere = this.gameObject.transform.GetChild(1).gameObject;
+            int i = vcs.IsRegionView ? 0 : 1;
+            noiseShpere = this.gameObject.transform.GetChild(i).gameObject;
         }
         vcs.OnSimplifiedMeshToggle += MeshSwapHandler;
     }
@@ -226,9 +229,10 @@ public abstract class DroneBase : MonoBehaviour
         OnDroneParking?.Invoke(gameObject, e);
         simulationAnalyzer.SendMessage("RemoveFlyingDrone", this.gameObject);
         if (!vcs.IsRegionView) gameObject.transform.GetChild(0).gameObject.GetComponent<MeshRenderer>().enabled = false;
-        else
+        else if (Clone2d != null)
         {
-            gameObject.transform.GetChild(0).gameObject.GetComponent<SpriteRenderer>().enabled = false;
+            var image = Clone2d.GetComponent<Image>();
+            if (image != null) image.enabled = false;
         }
         isParked = true;
     }
@@ -241,9 +245,10 @@ public abstract class DroneBase : MonoBehaviour
         if (isParked)
         {
             if (!vcs.IsRegionView) gameObject.transform.GetChild(0).gameObject.GetComponent<MeshRenderer>().enabled = true;
-            else
+            else if (Clone2d != null)
             {
-                gameObject.transform.GetChild(0).gameObject.GetComponent<SpriteRenderer>().enabled = true;
+                var image = Clone2d.GetComponent<Image>();
+                if (image != null) image.enabled = true;
             }
             OnDroneTakeOff?.Invoke(gameObject, e);
             simulationAnalyzer.SendMessage("AddFlyingDrone", this.gameObject);
@@ -336,9 +341,10 @@ public abstract class DroneBase : MonoBehaviour
             MeshRenderer mr = gameObject.transform.GetChild(0).gameObject.GetComponent<MeshRenderer>();
             mr.enabled = false;
         }
-        else
+        else if (Clone2d != null)
         {
-            gameObject.transform.GetChild(0).gameObject.GetComponent<SpriteRenderer>().enabled = false;
+            var image = Clone2d.GetComponent<Image>();
+            if (image != null) image.enabled = false;
         }
     }
 
@@ -352,9 +358,10 @@ public abstract class DroneBase : MonoBehaviour
             MeshRenderer mr = gameObject.transform.GetChild(0).gameObject.GetComponent<MeshRenderer>();
             mr.enabled = true;
         }
-        else
+        else if (Clone2d != null)
         {
-            gameObject.transform.GetChild(0).gameObject.GetComponent<SpriteRenderer>().enabled = true;
+            var image = Clone2d.GetComponent<Image>();
+            if (image != null) image.enabled = true;
         }
     }
     #endregion

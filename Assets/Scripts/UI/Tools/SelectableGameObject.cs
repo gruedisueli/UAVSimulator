@@ -22,6 +22,10 @@ namespace Assets.Scripts.UI.Tools
                 Debug.Log("Clicked selectable game object");
                 if ( OnSelected != null) OnSelected.Invoke(this, new SelectGameObjectArgs());
             }
+            else
+            {
+                Debug.Log("Game object behind UI");
+            }
         }
     }
 }

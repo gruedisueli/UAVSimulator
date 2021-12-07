@@ -8,7 +8,7 @@ using UnityEngine;
 
 namespace Assets.Scripts.UI.Tags
 {
-    public abstract class UIWorldTag : MonoBehaviour
+    public class UIWorldTag : MonoBehaviour
     {
         protected Camera _mainCamera;
         protected RectTransform _rectTransform;
@@ -28,8 +28,29 @@ namespace Assets.Scripts.UI.Tags
             {
                 if (_mainCamera != null && _rectTransform != null)
                 {
-                    var p = _mainCamera.WorldToScreenPoint(_worldPos);
-                    _rectTransform.anchoredPosition = new Vector2(p.x, p.y);
+                    if (_mainCamera.orthographic)
+                    {
+                        float halfHeight = _mainCamera.orthographicSize;
+                        float aspectRatio = (float)Screen.width / (float)Screen.height;
+                        float halfWidth = halfHeight * aspectRatio;
+                        float camX = _mainCamera.transform.position.x;
+                        float camZ = _mainCamera.transform.position.z;
+                        float[] screenBotLeft = new float[2] { 0.0f, 0.0f };
+                        float[] screenUpRight = new float[2] { 0.0f, 0.0f };
+                        screenBotLeft[0] = camX - halfWidth;
+                        screenBotLeft[1] = camZ - halfHeight;
+                        screenUpRight[0] = camX + halfWidth;
+                        screenUpRight[1] = camZ + halfHeight;
+
+                        float x = (_worldPos.x - screenBotLeft[0]) / (halfWidth * 2.0f) * (float)Screen.width;
+                        float y = (_worldPos.z - screenBotLeft[1]) / (halfHeight * 2.0f) * (float)Screen.height;
+                        _rectTransform.anchoredPosition = new Vector2(x, y);
+                    }
+                    else
+                    {
+                        var p = _mainCamera.WorldToScreenPoint(_worldPos);
+                        _rectTransform.anchoredPosition = new Vector2(p.x, p.y);
+                    }
                 }
             }
             CustomUpdate();

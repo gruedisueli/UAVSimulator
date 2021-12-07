@@ -78,7 +78,7 @@ namespace Assets.Scripts.Environment
             var id = t.CanonicalTileId;
             Debug.Log($"Starting airspace download for tile {id}");
             string prefix = "https://api.mapbox.com/v4/grudy.0odj258s/";
-            string suffix = ".mvt?access_token=pk.eyJ1IjoiZ3J1ZHkiLCJhIjoiY2tocXd2ZGFnMDQ1ZjJ6b3ludnhncHl0MyJ9.iZ16F7U0RSHytFNP7IEpmg";
+            string suffix = ".mvt?access_token=sk.eyJ1IjoiZ3J1ZHkiLCJhIjoiY2t2OG12bjRqMDNmZTJwdDJqNmc5eHZvNCJ9.oFQO2C4TCm2v8Qxxtrw86g";
 
             string url = prefix + id.Z.ToString() + "/" + id.X.ToString() + "/" + id.Y.ToString() + suffix;
             byte[] b = null;
@@ -564,7 +564,7 @@ namespace Assets.Scripts.Environment
                 }
             }
 
-            ParkingSpritePrefab = Resources.Load<GameObject>("Sprites/ParkingSprite");
+            ParkingSpritePrefab = Resources.Load<GameObject>("GUI/ParkingIcon");
         }
 
         /// <summary>
@@ -600,7 +600,7 @@ namespace Assets.Scripts.Environment
                 }
             }
 
-            PortSpritePrefab = Resources.Load<GameObject>("Sprites/PortSprite");
+            PortSpritePrefab = Resources.Load<GameObject>("GUI/PortIcon");
         }
 
         /// <summary>

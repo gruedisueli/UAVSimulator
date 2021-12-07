@@ -13,14 +13,20 @@ namespace Assets.Scripts.Environment
     public class SceneRestrictionZone : SceneElementBase
     {
         public override string Guid { get; protected set; }
+        public override bool Is2D { get; protected set; } = false;
+        public override GameObject Sprite2d { get; protected set; } = null;
+        public override Canvas SceneCanvas { get; protected set; } = null;
+        public override bool IsSelectable { get; protected set; } = false;
         public RestrictionZoneBase RestrictionZoneSpecs { get; private set; }
         public List<GameObject> SubElements { get; private set; } = new List<GameObject>();
 
-        public void Initialize(string guid, RestrictionZoneBase rZ)
+        public void Initialize(string guid, RestrictionZoneBase rZ, bool isSelectable)
         {
             Guid = guid;
             RestrictionZoneSpecs = rZ;
+            IsSelectable = isSelectable;
             _defaultMaterial = Instantiate(EnvironManager.Instance.RestrictionZoneMaterial);
+
 
             string type = "";
             if (rZ is RestrictionZoneRect)
@@ -53,7 +59,15 @@ namespace Assets.Scripts.Environment
             gameObject.tag = "RestrictionZone";
             gameObject.layer = rZ.Layer;
 
-            foreach(var c in SubElements)
+            if (IsSelectable)
+            {
+                foreach (var c in SubElements)
+                {
+                    c.AddComponent<SelectableGameObject>();
+                }
+                MakeSelectable();
+            }
+            foreach (var c in SubElements)
             {
                 c.transform.parent = transform;
                 var mR = c.GetComponent<MeshRenderer>();
@@ -61,7 +75,6 @@ namespace Assets.Scripts.Environment
                 c.name = gameObject.name;
                 c.tag = gameObject.tag;
                 c.layer = gameObject.layer;
-                c.AddComponent<SelectableGameObject>();
             }
         }
 

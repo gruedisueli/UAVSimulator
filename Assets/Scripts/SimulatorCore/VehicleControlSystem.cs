@@ -131,7 +131,7 @@ public class VehicleControlSystem : MonoBehaviour
     
 
     // Background drone related params
-    public int backgroundDroneCount = 100;
+    public int backgroundDroneCount = 0;
     public float lowerElevationBound = 100;
     public float upperElevationBound = 135;
     public float[][] mapBounds;
@@ -170,7 +170,7 @@ public class VehicleControlSystem : MonoBehaviour
         networkGenerated = false;
         translucentRed = new Color(Color.cyan.r, Color.cyan.g, Color.cyan.b, 0.50f);
 
-        MIN_DRONE_RANGE = 99999.0f;//@EUNU comment
+        MIN_DRONE_RANGE = 999999.0f;
         string current_runtime = "42o3601_71o0589"; // INTEGRATION TO-DO: Get current runtime name from UI side to find out which folder to refer to
                                                     // Current Placeholder = Lat_Long of Boston
 
@@ -182,9 +182,6 @@ public class VehicleControlSystem : MonoBehaviour
         lowAltitudeDrones = new List<GameObject>();
         routeLineObject = new Dictionary<Corridor, GameObject>();
         hiddenDrones = new List<GameObject>();
-
-
-        speedMultiplier = 2.0f;//@EUNU comment
 
         watch = 0.0f;
         IsRegionView = !(sceneManager is CityViewManager);
@@ -367,7 +364,7 @@ public class VehicleControlSystem : MonoBehaviour
     /// </summary>
     public void GenerateRandomCalls()
     {
-        int call_type = Mathf.FloorToInt(UnityEngine.Random.Range(0.0f, 3.0f));
+        int call_type = IsRegionView ? 0 : Mathf.FloorToInt(UnityEngine.Random.Range(0.0f, 3.0f));
         string call_type_string = call_type <= 0 ? "corridor" : "low-altitude";
 
         // strategicDeconfliction == "none"
@@ -384,6 +381,11 @@ public class VehicleControlSystem : MonoBehaviour
                 }
                 destinations_list.Add(parking);
                 Queue<GameObject> destinations = Route(parking, destinations_list);
+                if (destinations == null)
+                {
+                    Debug.Log("Could not find acceptable path");
+                    return;
+                }
                 GameObject vehicle = GetAvailableVehicleinParkingStrcuture(parking);
                 if (vehicle == null)
                 {
@@ -559,6 +561,7 @@ public class VehicleControlSystem : MonoBehaviour
 
     /// <summary>
     /// Generates a route from origin through specified destinations. May go through additional intermediate points as needed.//@EUNU correct?
+    /// Null on failure.
     /// </summary>
     public Queue<GameObject> Route (GameObject origin, List<GameObject> destinations)
     {
@@ -567,6 +570,7 @@ public class VehicleControlSystem : MonoBehaviour
         for ( int i = 0; i < destinations.Count - 1; i++ )
         {
             List<GameObject> shortestRoute = Dijkstra(destinations[i], destinations[i + 1], MIN_DRONE_RANGE);
+            if (shortestRoute == null) return null;
             shortestRoute.RemoveAt(0);
             foreach (GameObject gO in shortestRoute)
             {
@@ -581,6 +585,7 @@ public class VehicleControlSystem : MonoBehaviour
     /// <summary>
     /// Finds shortest path in corridor network from one point to another. @Eunu correct?
     /// Assumes a vehicle gets fully charged at each stop @Eunu are we calculating charge?
+    /// Null on failure.
     /// </summary>
     List<GameObject> Dijkstra(GameObject origin, GameObject destination, float vehicleRange)
     {
@@ -592,6 +597,7 @@ public class VehicleControlSystem : MonoBehaviour
         pathTo.Add(origin, new List<GameObject>());
         pathTo[origin].Add(origin);
 
+        bool foundAPath = false;
         queue.Enqueue(origin);
         do
         {
@@ -608,10 +614,11 @@ public class VehicleControlSystem : MonoBehaviour
                     pathTo[nextNode] = new List<GameObject>(pathTo[currentNode]);
                     pathTo[nextNode].Add(nextNode);
                     if (!nextNode.Equals(destination)) queue.Enqueue(nextNode);
+                    else foundAPath = true;
                 }
             }
         } while (queue.Count > 0);
-        return pathTo[destination];
+        return foundAPath ? pathTo[destination] : null;
     }
 
     /// <summary>

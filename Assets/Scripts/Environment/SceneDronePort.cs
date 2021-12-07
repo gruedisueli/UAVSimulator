@@ -6,6 +6,8 @@ using System.Threading.Tasks;
 
 using UnityEngine;
 
+using Assets.Scripts.UI.Tags;
+
 namespace Assets.Scripts.Environment
 {
     /// <summary>
@@ -14,12 +16,21 @@ namespace Assets.Scripts.Environment
     public class SceneDronePort : SceneElementBase
     {
         public override string Guid { get; protected set; }
+        public override bool Is2D { get; protected set; } = false;
+        public override GameObject Sprite2d { get; protected set; } = null;
+        public override Canvas SceneCanvas { get; protected set; } = null;
+        public override bool IsSelectable { get; protected set; } = false;
         public DronePortBase DronePortSpecs { get; private set; }
         public DronePortControl DronePortCtrl { get; private set; }
 
-        public void Initialize(DronePortBase dP, string guid)
+        public void Initialize(DronePortBase dP, string guid, bool is2D, Canvas canvas, bool isSelectable)
         {
             Guid = guid;
+            Is2D = is2D;
+            SceneCanvas = canvas;
+            if (is2D) Sprite2d = Instantiate(EnvironManager.Instance.PortSpritePrefab, SceneCanvas.transform);
+            IsSelectable = isSelectable;
+            if (IsSelectable) MakeSelectable();
             DronePortSpecs = dP;
             gameObject.name = "DronePort_" + dP.Type;
             gameObject.tag = "DronePort";
@@ -38,9 +49,15 @@ namespace Assets.Scripts.Environment
         /// </summary>
         public override void UpdateGameObject()
         {
+            if (Is2D)
+            {
+                var tag = Sprite2d.GetComponent<UIWorldTag>();
+                tag?.SetWorldPos(DronePortSpecs.Position);
+            }
             gameObject.transform.position = DronePortSpecs.Position;
             gameObject.transform.rotation = Quaternion.Euler(DronePortSpecs.Rotation.x, DronePortSpecs.Rotation.y, DronePortSpecs.Rotation.z);
             gameObject.transform.localScale = DronePortSpecs.Scale;
+            
         }
     }
 }
