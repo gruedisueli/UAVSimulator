@@ -19,7 +19,6 @@ namespace Assets.Scripts.Environment
         public override bool Is2D { get; protected set; } = false;
         public override GameObject Sprite2d { get; protected set; } = null;
         public override Canvas SceneCanvas { get; protected set; } = null;
-        public override bool IsSelectable { get; protected set; } = false;
         public DronePortBase DronePortSpecs { get; private set; }
         public DronePortControl DronePortCtrl { get; private set; }
 
@@ -29,8 +28,6 @@ namespace Assets.Scripts.Environment
             Is2D = is2D;
             SceneCanvas = canvas;
             if (is2D) Sprite2d = Instantiate(EnvironManager.Instance.PortSpritePrefab, SceneCanvas.transform);
-            IsSelectable = isSelectable;
-            if (IsSelectable) MakeSelectable();
             DronePortSpecs = dP;
             gameObject.name = "DronePort_" + dP.Type;
             gameObject.tag = "DronePort";
@@ -42,6 +39,7 @@ namespace Assets.Scripts.Environment
             control.dronePortInfo = dP;
             DronePortCtrl = control;
             UpdateGameObject();
+            if (isSelectable) MakeSelectable();
         }
 
         /// <summary>

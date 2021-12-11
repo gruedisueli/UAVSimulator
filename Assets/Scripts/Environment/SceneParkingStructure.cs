@@ -19,7 +19,6 @@ namespace Assets.Scripts.Environment
         public override bool Is2D { get; protected set; } = false;
         public override GameObject Sprite2d { get; protected set; } = null;
         public override Canvas SceneCanvas { get; protected set; } = null;
-        public override bool IsSelectable { get; protected set; } = false;
         public ParkingStructureBase ParkingStructureSpecs { get; private set; }
         public ParkingControl ParkingCtrl { get; private set; }
 
@@ -29,8 +28,6 @@ namespace Assets.Scripts.Environment
             Is2D = is2d;
             SceneCanvas = canvas;
             if (Is2D) Sprite2d = Instantiate(EnvironManager.Instance.ParkingSpritePrefab, SceneCanvas.transform);
-            IsSelectable = isSelectable;
-            if (IsSelectable) MakeSelectable();
             ParkingStructureSpecs = pS;
             gameObject.tag = "ParkingStructure";
             gameObject.name = "Parking_" + pS.Type;
@@ -43,6 +40,7 @@ namespace Assets.Scripts.Environment
 
 
             UpdateGameObject();
+            if (isSelectable) MakeSelectable();
         }
 
         public override void UpdateGameObject()

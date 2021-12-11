@@ -20,7 +20,6 @@ namespace Assets.Scripts.Environment
         public abstract bool Is2D { get; protected set; }
         public abstract GameObject Sprite2d { get; protected set; }
         public abstract Canvas SceneCanvas { get; protected set; }
-        public abstract bool IsSelectable { get; protected set; }
         public abstract void UpdateGameObject();
         public event SceneElementSelected OnSceneElementSelected;
         protected Material _selectedMaterial;
@@ -30,10 +29,10 @@ namespace Assets.Scripts.Environment
 
         private void Awake()
         {
-            if (IsSelectable)
-            {
-                MakeSelectable();
-            }
+            //if (IsSelectable)
+            //{
+            //    MakeSelectable();
+            //}
 
             if (_renderers == null)//some scene elements may define this before "Start" is called.
             {

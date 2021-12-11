@@ -14,7 +14,6 @@ namespace Assets.Scripts.Environment
     {
         public override string Guid { get; protected set; }
         public override bool Is2D { get; protected set; } = false;
-        public override bool IsSelectable { get; protected set; } = true;
         public override GameObject Sprite2d { get; protected set; } = null;
         public override Canvas SceneCanvas { get; protected set; } = null;
         public CityOptions CitySpecs { get; protected set; }
@@ -46,6 +45,7 @@ namespace Assets.Scripts.Environment
             }
 
             UpdateGameObject();
+            MakeSelectable();
         }
 
         public override void SetSelectedState(bool isSelected)

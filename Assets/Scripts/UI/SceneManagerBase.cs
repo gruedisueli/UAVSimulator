@@ -588,7 +588,9 @@ namespace Assets.Scripts.UI
 
             //update selected because we threw out old
             _selectedElement.SetActive(true);
-            _selectedElement.SetSelectedState(true);
+            _selectedElement.SetSelectedState(false);
+            _selectedElement = null;
+            
         }
 
         /// <summary>
@@ -1042,19 +1044,12 @@ namespace Assets.Scripts.UI
             {
                 var dP = kvp.Value;
                 var sdP = InstantiateDronePort(kvp.Key, dP, true, selectable, simpleGeom);
-                var rZ = new RestrictionZoneCyl(dP.Position, 0.0f, 200.0f, 100.0f);
-                rZ.Layer = 13;//landing zone
-                var srZ = InstantiateRestrictionZone(Guid.NewGuid().ToString(), rZ, true, sdP.gameObject.transform, false);
-
             }
 
             foreach (var kvp in env.ParkingStructures)
             {
                 var pS = kvp.Value;
                 var spS = InstantiateParkingStructure(kvp.Key, pS, true, selectable, simpleGeom);
-                var rZ = new RestrictionZoneCyl(pS.Position, 0.0f, 200.0f, 100.0f);
-                rZ.Layer = 13;//landing zone
-                var srZ = InstantiateRestrictionZone(Guid.NewGuid().ToString(), rZ, true, spS.gameObject.transform, false);
             }
 
             foreach (var kvp in env.RestrictionZones)
@@ -1084,6 +1079,10 @@ namespace Assets.Scripts.UI
                 return null;
             }
 
+            var rZ = new RestrictionZoneCyl(pS.Position, 0.0f, 200.0f, 100.0f);
+            rZ.Layer = 13;//landing zone
+            InstantiateRestrictionZone(Guid.NewGuid().ToString(), rZ, true, sPS.gameObject.transform, true);
+
             if (selectable) sPS.OnSceneElementSelected += SelectElement;
 
             return sPS;
@@ -1092,7 +1091,7 @@ namespace Assets.Scripts.UI
         /// <summary>
         /// Instantiates a rectangular parking structure in the project. Does not update environment.
         /// </summary>
-        protected SceneParkingStructure InstantiateRectParkingStruct(string guid, ParkingStructureRect pS, bool register, bool is2D, bool selectable)
+        private SceneParkingStructure InstantiateRectParkingStruct(string guid, ParkingStructureRect pS, bool register, bool is2D, bool selectable)
         {
             var clone = is2D ? Instantiate(new GameObject()) : GameObject.CreatePrimitive(PrimitiveType.Cube);
             var sPS = clone.AddComponent<SceneParkingStructure>();
@@ -1101,10 +1100,8 @@ namespace Assets.Scripts.UI
             if (register)
             {
                 ParkingStructures.Add(guid, sPS);
-                _vehicleControlSystem.InstantiateCorridorAndLowAltDrones();
+               _vehicleControlSystem.InstantiateCorridorAndLowAltDrones();
             }
-
-            //sPS.OnSceneElementSelected += SelectElement;
 
             return sPS;
         }
@@ -1112,16 +1109,16 @@ namespace Assets.Scripts.UI
         /// <summary>
         /// Instantiates a custom parking structure in the project. Does not update environment.
         /// </summary>
-        protected SceneParkingStructure InstantiateCustomParkingStruct(string guid, ParkingStructureCustom pS, bool register, bool selectable, bool is2D)
+        private SceneParkingStructure InstantiateCustomParkingStruct(string guid, ParkingStructureCustom pS, bool register, bool selectable, bool is2D)
         {
             var pfb = is2D ? new GameObject() : EnvironManager.Instance.ParkingStructAssets[pS.Type].Prefab;
             GameObject clone = Instantiate(pfb);
 
-            foreach (var c in clone.GetComponentsInChildren<Transform>(true))
-            {
-                if (selectable) c.gameObject.AddComponent<SelectableGameObject>();
-                c.gameObject.AddComponent<BoxCollider>();
-            }
+            //foreach (var c in clone.GetComponentsInChildren<Transform>(true))
+            //{
+            //    if (selectable) c.gameObject.AddComponent<SelectableGameObject>();
+            //    c.gameObject.AddComponent<BoxCollider>();
+            //}
             var sPS = clone.AddComponent<SceneParkingStructure>();
             clone.AddComponent<BoxCollider>();
             sPS.Initialize(pS, guid, is2D, _canvas, selectable);
@@ -1129,10 +1126,8 @@ namespace Assets.Scripts.UI
             if (register)
             {
                 ParkingStructures.Add(guid, sPS);
-                _vehicleControlSystem.InstantiateCorridorAndLowAltDrones();
+               _vehicleControlSystem.InstantiateCorridorAndLowAltDrones();
             }
-
-            //sPS.OnSceneElementSelected += SelectElement;
 
             return sPS;
         }
@@ -1156,8 +1151,12 @@ namespace Assets.Scripts.UI
                 Debug.LogError("Drone port type requested for instantiation not recognized");
                 return null;
             }
+            var rZ = new RestrictionZoneCyl(dP.Position, 0.0f, 200.0f, 100.0f);
+            rZ.Layer = 13;//landing zone
+            InstantiateRestrictionZone(Guid.NewGuid().ToString(), rZ, true, sDP.gameObject.transform, true);
 
             if (selectable) sDP.OnSceneElementSelected += SelectElement;
+
 
             return sDP;
         }
@@ -1165,15 +1164,15 @@ namespace Assets.Scripts.UI
         /// <summary>
         /// Instantiates a custom drone port in the project. Does not update environment.
         /// </summary>
-        protected SceneDronePort InstantiateCustomDronePort(string guid, DronePortCustom dP, bool register, bool selectable, bool is2D)
+        private SceneDronePort InstantiateCustomDronePort(string guid, DronePortCustom dP, bool register, bool selectable, bool is2D)
         {
             var pfb = is2D ? new GameObject() : EnvironManager.Instance.DronePortAssets[dP.Type].Prefab;
             GameObject clone = Instantiate(pfb);
-            foreach (var c in clone.GetComponentsInChildren<Transform>(true))
-            {
-                if (selectable) c.gameObject.AddComponent<SelectableGameObject>();
-                c.gameObject.AddComponent<BoxCollider>();
-            }
+            //foreach (var c in clone.GetComponentsInChildren<Transform>(true))
+            //{
+            //    if (selectable) c.gameObject.AddComponent<SelectableGameObject>();
+            //    c.gameObject.AddComponent<BoxCollider>();
+            //}
             var sDP = clone.AddComponent<SceneDronePort>();
             clone.AddComponent<BoxCollider>();
             sDP.Initialize(dP, guid, is2D, _canvas, selectable);
@@ -1183,15 +1182,13 @@ namespace Assets.Scripts.UI
                 DronePorts.Add(guid, sDP);
             }
 
-            //if (selectable) sDP.OnSceneElementSelected += SelectElement;
-
             return sDP;
         }
 
         /// <summary>
         /// Instantiates a generic rectangular drone port in project. Does not update environment.
         /// </summary>
-        protected SceneDronePort InstantiateRectDronePort(string guid, DronePortRect dP, bool register, bool is2D, bool selectable)
+        private SceneDronePort InstantiateRectDronePort(string guid, DronePortRect dP, bool register, bool is2D, bool selectable)
         {
             var clone = is2D ? Instantiate(new GameObject()) : GameObject.CreatePrimitive(PrimitiveType.Cube);
             var sDP = clone.AddComponent<SceneDronePort>();
@@ -1201,8 +1198,6 @@ namespace Assets.Scripts.UI
             {
                 DronePorts.Add(guid, sDP);
             }
-
-            //if (selectable) sDP.OnSceneElementSelected += SelectElement;
 
             return sDP;
         }
@@ -1228,30 +1223,13 @@ namespace Assets.Scripts.UI
         }
 
         /// <summary>
-        /// Instantiates a restriction zone with parent. Does not update enviornment.
+        /// Instantiates a restriction zone with parent. Does not update environment.
         /// </summary>
         protected SceneRestrictionZone InstantiateRestrictionZone(string guid, RestrictionZoneBase rZ, bool register, Transform parentTransform, bool selectable)
         {
-            var zoneParent = new GameObject();
-
-            var sRZ = zoneParent.AddComponent<SceneRestrictionZone>();
+            var sRZ = InstantiateRestrictionZone(guid, rZ, register, selectable);
             sRZ.gameObject.transform.parent = parentTransform;
-            sRZ.Initialize(guid, rZ, selectable);
-
-            if (register)
-            {
-                RestrictionZones.Add(guid, sRZ);
-            }
-
-            if (selectable)
-            {
-                sRZ.OnSceneElementSelected += SelectElement;
-                foreach (GameObject gO in sRZ.SubElements)
-                {
-                    gO.GetComponent<SelectableGameObject>().OnSelected += sRZ.Selected;
-                }
-            }
-
+            
             return sRZ;
         }
 
@@ -1559,6 +1537,5 @@ namespace Assets.Scripts.UI
         }
 
         #endregion
-
     }
 }
