@@ -79,7 +79,6 @@ public abstract class DroneBase : MonoBehaviour
     private Mesh originalMesh = null;
     public GameObject Clone2d { get; set; } = null;
 
-    // Start is called before the first frame update
     void Start()
     {
         DRONE_LAYERMASK = 1 << 10;
@@ -92,7 +91,6 @@ public abstract class DroneBase : MonoBehaviour
         sphereCollider = gameObject.GetComponent<SphereCollider>();
         isParked = true;
         if (!vcs.IsRegionView) originalMesh = gameObject.transform.GetChild(0).gameObject.GetComponent<MeshFilter>().mesh;
-
 
         if (this is CorridorDrone || this is LowAltitudeDrone)
         {
@@ -154,7 +152,7 @@ public abstract class DroneBase : MonoBehaviour
     /// </summary>
     protected virtual Queue<Vector3> GetWayPointsToNextDestination()
     {
-        foreach(Corridor c in vcs.sceneManager.network.outEdges[currentCommunicationPoint])
+        foreach(Corridor c in vcs.DroneNetwork.outEdges[currentCommunicationPoint])
         {
             if ( c.destination.Equals(destinationQueue.Peek()) ) return (new Queue<Vector3>(c.wayPoints));
         }
@@ -297,6 +295,14 @@ public abstract class DroneBase : MonoBehaviour
     protected float KMHtoMPS(float speed)
     {
         return (speed * 1000) / 3600;
+    }
+
+    private void OnDestroy()
+    {
+        if (this is CorridorDrone || this is LowAltitudeDrone)
+        {
+            vcs.OnNoiseSphereToggle -= NoiseSphereToggleHandler;
+        }
     }
 
     #region Public Methods

@@ -6727,6 +6727,7 @@ GameObject:
   - component: {fileID: 1769595579}
   - component: {fileID: 1769595578}
   - component: {fileID: 1769595580}
+  - component: {fileID: 1769595581}
   m_Layer: 0
   m_Name: SimulationCore
   m_TagString: Untagged
@@ -6773,13 +6774,9 @@ MonoBehaviour:
   trailVisualization: 0
   simplifiedMesh: {fileID: 0}
   sceneManager: {fileID: 0}
-  corridorDrones: []
-  lowAltitudeDrones: []
   backgroundDroneCount: 100
   lowerElevationBound: 100
   upperElevationBound: 135
-  parkingCollection: []
-  landingCollection: []
   networkLines: []
   networkGenerated: 0
   speedMultiplier: 1
@@ -6822,6 +6819,26 @@ MonoBehaviour:
   congestedCorridors: []
   congestedParkingStructures: []
   congestedDronePorts: []
+--- !u!114 &1769595581
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1769595577}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 727d15b35fbe7ce4d8f8d45642b6ba72, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  isCorridorDroneInstantiated: 0
+  isLowAltitudeDroneInstantiated: 0
+  isBackgroundDroneInstantiated: 0
+  corridorDroneInstantiationStarted: 0
+  lowAltitudeDroneInstantiationStarted: 0
+  _backgroundDrones: []
+  _corridorDrones: []
+  _lowAltitudeDrones: []
 --- !u!1001 &1821120959
 PrefabInstance:
   m_ObjectHideFlags: 0

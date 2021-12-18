@@ -20,13 +20,23 @@ public abstract class TrafficControl : MonoBehaviour
     }
     protected GameObject currentVehicle { get; set; }//vehicle that is currently executing takeoff/landing? @Eunu comment
     protected DroneBase vehicleState { get; set; }//@Eunu comment
-    private SimulationAnalyzer sa;
+    private SimulationAnalyzer _simulationAnalyzer;
+    protected DroneInstantiator _droneInstantiator;
 
-    // Start is called before the first frame update
-    void Start()
+    private void Awake()
     {
+        _droneInstantiator = FindObjectOfType<DroneInstantiator>(true);
+        if (_droneInstantiator == null)
+        {
+            Debug.Log("Could not locate drone instantiator component");
+
+        }
         queue = new Queue<GameObject>();
-        sa = GameObject.Find("SimulationCore").GetComponent<SimulationAnalyzer>();
+        _simulationAnalyzer = FindObjectOfType<SimulationAnalyzer>(true);
+        if (_simulationAnalyzer == null)
+        {
+            Debug.Log("Could not locate simulation analyzer component");
+        }
     }
 
     // Update is called once per frame
@@ -35,24 +45,24 @@ public abstract class TrafficControl : MonoBehaviour
         //if (!vcs.playing) return
         if (queueLength > 3)//this is congested
         {
-            if (this is ParkingControl && !sa.congestedParkingStructures.Contains(this.gameObject))
+            if (this is ParkingControl && !_simulationAnalyzer.congestedParkingStructures.Contains(this.gameObject))
             {
-                sa.congestedParkingStructures.Add(this.gameObject);
+                _simulationAnalyzer.congestedParkingStructures.Add(this.gameObject);
             }
-            else if (this is DronePortControl && !sa.congestedDronePorts.Contains(this.gameObject))
+            else if (this is DronePortControl && !_simulationAnalyzer.congestedDronePorts.Contains(this.gameObject))
             {
-                sa.congestedDronePorts.Add(this.gameObject);
+                _simulationAnalyzer.congestedDronePorts.Add(this.gameObject);
             }
         }
         else//not congested
         {
-            if (this is ParkingControl && sa.congestedParkingStructures.Contains(this.gameObject))
+            if (this is ParkingControl && _simulationAnalyzer.congestedParkingStructures.Contains(this.gameObject))
             {
-                sa.congestedParkingStructures.Remove(this.gameObject);
+                _simulationAnalyzer.congestedParkingStructures.Remove(this.gameObject);
             }
-            else if (this is DronePortControl && sa.congestedDronePorts.Contains(this.gameObject))
+            else if (this is DronePortControl && _simulationAnalyzer.congestedDronePorts.Contains(this.gameObject))
             {
-                sa.congestedDronePorts.Remove(this.gameObject);
+                _simulationAnalyzer.congestedDronePorts.Remove(this.gameObject);
             }
         }
 

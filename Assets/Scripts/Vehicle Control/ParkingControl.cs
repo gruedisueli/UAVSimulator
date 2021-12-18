@@ -176,4 +176,14 @@ public class ParkingControl : TrafficControl
 
         return guides;
     }
+
+    private void OnDestroy()
+    {
+        //destroy any vehicles inside this structure
+        foreach (var v in Parked.Values)
+        {
+            _droneInstantiator.UnregisterDrone(v);
+            v.Destroy();
+        }
+    }
 }

@@ -157,4 +157,12 @@ namespace Assets.Scripts
         E,
         G
     }
+
+    public enum DroneType
+    {
+        Corridor,
+        LowAltitude,
+        Background
+    }
+
 }

@@ -18,6 +18,8 @@ using Assets.Scripts;
 using Assets.Scripts.Serialization;
 using Assets.Scripts.UI.Tools;
 
+using DelaunatorSharp;
+
 
 
 /// <summary>
@@ -49,7 +51,7 @@ public class VehicleControlSystem : MonoBehaviour
     #endregion
 
     #region Vehicle Info
-    private Dictionary<GameObject, string> activeVehicles;//@EUNU comment. Does this include parked drones?
+    //private Dictionary<GameObject, string> activeVehicles;//@EUNU comment. Does this include parked drones?
     #endregion
 
 
@@ -65,9 +67,9 @@ public class VehicleControlSystem : MonoBehaviour
 
     // Visualization related params
     public bool playing;
+    public bool _networkVisible = false;
     public bool noiseVisualization;
     public bool privacyVisualization;
-    public bool routeVisualization;
     public bool landingCorridorVisualization;
     public bool demographicVisualization;
     public bool trailVisualization;
@@ -125,34 +127,18 @@ public class VehicleControlSystem : MonoBehaviour
     
 
     // private SceneManagerBase sceneManager;
-    public SceneManagerBase sceneManager;
-    public List<GameObject> corridorDrones;
-    public List<GameObject> lowAltitudeDrones;
-    
+    public SceneManagerBase sceneManager;    
 
     // Background drone related params
     public int backgroundDroneCount = 0;
     public float lowerElevationBound = 100;
     public float upperElevationBound = 135;
     public float[][] mapBounds;
-
     
-    public List<GameObject> parkingCollection;
-    public List<GameObject> landingCollection;
-    public Dictionary<GameObject, GameObject> parkingLandingMapping;
-
-
-    public List<GameObject> networkLines;
-    public bool networkGenerated;
-    private Dictionary<Corridor, GameObject> routeLineObject;
 
     public float speedMultiplier = 1.0f;//@EUNU comment
 
     public GameObject TypeAPrefab;
-
-    
-
-
 
     #endregion
 
@@ -161,13 +147,18 @@ public class VehicleControlSystem : MonoBehaviour
     private List<GameObject> hiddenDrones;//@EUNU comment
     public DroneInstantiator droneInstantiator;
 
+    /// <summary>
+    /// Network of paths drones can follow.
+    /// </summary>
+    public Assets.Scripts.DataStructure.Network DroneNetwork { get; protected set; } = null;
+    public List<GameObject> networkLines = new List<GameObject>();
+    private Dictionary<Corridor, GameObject> routeLineObject = new Dictionary<Corridor, GameObject>();
 
     void Awake()
     {
         root = SerializationSettings.ROOT + "\\runtime\\";
         droneCount = 200;
         playing = false;
-        networkGenerated = false;
         translucentRed = new Color(Color.cyan.r, Color.cyan.g, Color.cyan.b, 0.50f);
 
         MIN_DRONE_RANGE = 999999.0f;
@@ -176,11 +167,8 @@ public class VehicleControlSystem : MonoBehaviour
 
         
         simulationParam = ReadSimulationParams(current_runtime);
-        // TO-DO: Add clause that checks if we are doing simulation in RegionView
-        sceneManager = GameObject.Find("FOA").GetComponent<SceneManagerBase>();
-        corridorDrones = new List<GameObject>();
-        lowAltitudeDrones = new List<GameObject>();
-        routeLineObject = new Dictionary<Corridor, GameObject>();
+        sceneManager = FindObjectOfType<SceneManagerBase>();
+        if (sceneManager == null) Debug.Log("Could not find scene manager component in scene");
         hiddenDrones = new List<GameObject>();
 
         watch = 0.0f;
@@ -198,7 +186,7 @@ public class VehicleControlSystem : MonoBehaviour
 
 
         
-        droneInstantiator = gameObject.AddComponent<DroneInstantiator>();
+        droneInstantiator = gameObject.GetComponent<DroneInstantiator>();
         droneInstantiator.Init(this);
         droneInstantiator.ReadVehicleSpecs();
         
@@ -232,10 +220,10 @@ public class VehicleControlSystem : MonoBehaviour
             {
                 var sa = gameObject.GetComponent<SimulationAnalyzer>();
                 //make sure we don't have excess drones in simulation.
-                if (sa.flyingDrones.Count + droneInstantiator.backgroundDrones.Count >= droneCount && droneInstantiator.backgroundDrones.Count > 0)
+                if (sa.flyingDrones.Count + droneInstantiator._backgroundDrones.Count >= droneCount && droneInstantiator._backgroundDrones.Count > 0)
                 {
-                    var droneToRemove = droneInstantiator.backgroundDrones[0];
-                    droneInstantiator.backgroundDrones.RemoveAt(0);
+                    var droneToRemove = droneInstantiator._backgroundDrones[0];
+                    droneInstantiator._backgroundDrones.RemoveAt(0);
                     droneToRemove.Destroy();
                 }
                 watch = 0.0f;
@@ -275,22 +263,6 @@ public class VehicleControlSystem : MonoBehaviour
         if ( playing )
         {
             if ( !droneInstantiator.isBackgroundDroneInstantiated ) StartCoroutine (droneInstantiator.InstantiateBackgroundDrones(sceneManager, backgroundDroneCount, scaleMultiplier, lowerElevationBound, upperElevationBound, _canvas));
-            if (sceneManager.network == null)
-            {
-                sceneManager.GenerateNetwork();
-            }
-            if (!networkGenerated)
-            {
-                if (sceneManager.network != null)
-                {
-                    VisualizeNetwork(sceneManager.network);
-                    networkGenerated = true;
-                }
-                else
-                {
-                    Debug.Log("Network is null");
-                }
-            }
         }
     }
 
@@ -603,7 +575,7 @@ public class VehicleControlSystem : MonoBehaviour
         {
             GameObject currentNode = queue.Dequeue();
             Vector3 currentPoint = currentNode.transform.position;
-            foreach (Corridor outEdge in sceneManager.network.outEdges[currentNode])
+            foreach (Corridor outEdge in DroneNetwork.outEdges[currentNode])
             {
                 GameObject nextNode = outEdge.destination;
                 Vector3 nextPoint = nextNode.transform.position;
@@ -708,40 +680,40 @@ public class VehicleControlSystem : MonoBehaviour
 
     }
 
-    /// <summary>
-    /// @Eunu remove?
-    /// </summary>
-    public bool Register(DroneBase v)
-    {
-        return true;
-        /*
-        if (!activeVehicles.ContainsKey(v.id))
-        {
-            activeVehicles.Add(v.id, v);
-            return true;
-        }
-        else
-        {
-            return false;
-        }*/
-    }
+    ///// <summary>
+    ///// @Eunu remove?
+    ///// </summary>
+    //public bool Register(DroneBase v)
+    //{
+    //    return true;
+    //    /*
+    //    if (!activeVehicles.ContainsKey(v.id))
+    //    {
+    //        activeVehicles.Add(v.id, v);
+    //        return true;
+    //    }
+    //    else
+    //    {
+    //        return false;
+    //    }*/
+    //}
 
-    /// <summary>
-    /// @Eunu comment
-    /// </summary>
-    public bool UpdateVehicleStatus(DroneBase v)
-    {
-        if (activeVehicles.ContainsKey(v.gameObject))
-        {
-            //Debug.Log(v.id + " " + v.status);
-            activeVehicles[v.gameObject] = v.state;
-            return true;
-        }
-        else
-        {
-            return false;
-        }
-    }
+    ///// <summary>
+    ///// @Eunu comment
+    ///// </summary>
+    //public bool UpdateVehicleStatus(DroneBase v)
+    //{
+    //    if (activeVehicles.ContainsKey(v.gameObject))
+    //    {
+    //        //Debug.Log(v.id + " " + v.status);
+    //        activeVehicles[v.gameObject] = v.state;
+    //        return true;
+    //    }
+    //    else
+    //    {
+    //        return false;
+    //    }
+    //}
 
     /// <summary>
     /// Allows user to specify number of drones in simulation at runtime.
@@ -750,21 +722,21 @@ public class VehicleControlSystem : MonoBehaviour
     {
         droneCount = count;
         SimulationAnalyzer sa = gameObject.GetComponent<SimulationAnalyzer>();
-        if ( count < droneInstantiator.backgroundDrones.Count + sa.flyingDrones.Count)//if too many drones are in simulation, we need to remove some.
+        if ( count < droneInstantiator._backgroundDrones.Count + sa.flyingDrones.Count)//if too many drones are in simulation, we need to remove some.
         {
-            int dronesToRemove = droneInstantiator.backgroundDrones.Count + sa.flyingDrones.Count - count;
-            if (droneInstantiator.backgroundDrones.Count > 0)
+            int dronesToRemove = droneInstantiator._backgroundDrones.Count + sa.flyingDrones.Count - count;
+            if (droneInstantiator._backgroundDrones.Count > 0)
             {
-                List<GameObject> backgroundDronesCopy = new List<GameObject>(droneInstantiator.backgroundDrones);
-                for (int i = 0; i < droneInstantiator.backgroundDrones.Count + sa.flyingDrones.Count - count; i++)
+                List<GameObject> backgroundDronesCopy = new List<GameObject>(droneInstantiator._backgroundDrones);
+                for (int i = 0; i < droneInstantiator._backgroundDrones.Count + sa.flyingDrones.Count - count; i++)
                 {
-                    var droneToDestroy = droneInstantiator.backgroundDrones[i];
+                    var droneToDestroy = droneInstantiator._backgroundDrones[i];
                     backgroundDronesCopy.Remove(droneToDestroy); 
                     droneToDestroy.Destroy();
                     dronesToRemove--;
                     if (backgroundDronesCopy.Count == 0) break;
                 }
-                droneInstantiator.backgroundDrones = backgroundDronesCopy;
+                droneInstantiator._backgroundDrones = backgroundDronesCopy;
                 if ( dronesToRemove > 0 )
                 {
                     List<GameObject> flyingDronesCopy = new List<GameObject>(sa.flyingDrones);
@@ -780,13 +752,13 @@ public class VehicleControlSystem : MonoBehaviour
                 }
             }
         }
-        else if ( count == droneInstantiator.backgroundDrones.Count + sa.flyingDrones.Count )//no reason to change anything.
+        else if ( count == droneInstantiator._backgroundDrones.Count + sa.flyingDrones.Count )//no reason to change anything.
         {
             return;
         }
         else//we should add some
         {
-            int dronesToAdd = count - (droneInstantiator.backgroundDrones.Count + sa.flyingDrones.Count);
+            int dronesToAdd = count - (droneInstantiator._backgroundDrones.Count + sa.flyingDrones.Count);
             if ( hiddenDrones.Count > 0 )
             {
                 List<GameObject> hiddenDronesCopy = new List<GameObject>(hiddenDrones);
@@ -837,56 +809,6 @@ public class VehicleControlSystem : MonoBehaviour
     }
 
     /// <summary>
-    /// Allows user to toggle route visualization at runtime.
-    /// </summary>
-    public void ToggleRouteVisualization(bool toggle)
-    {
-        routeVisualization = toggle;
-        if (routeVisualization)
-        {
-            if(networkGenerated)
-            {
-                foreach (GameObject gO in networkLines)
-                {
-                    LineRenderer lr = gO.GetComponent<LineRenderer>();
-                    lr.enabled = true;
-                }
-            }
-        }
-        else
-        {
-            if (networkGenerated)
-            {
-                foreach (GameObject gO in networkLines)
-                {
-                    LineRenderer lr = gO.GetComponent<LineRenderer>();
-                    lr.enabled = false;
-                }
-            }
-
-        }
-
-    }
-
-    /// <summary>
-    /// Function to be called when congestion level changes in a corridor.
-    /// </summary>
-    private void CongestionLevelChangeHandler(Corridor c, int congestionLevel)
-    {
-        GameObject line = routeLineObject[c];
-        LineRenderer lr = line.GetComponent<LineRenderer>();
-        if (congestionLevel == 1) lr.material = Resources.Load<Material>("Materials/Route_Low_Congestion");
-        else if (congestionLevel == 2) lr.material = Resources.Load<Material>("Materials/Route_Medium_Congestion");
-        else if (congestionLevel == 3) lr.material = Resources.Load<Material>("Materials/Route_High_Congestion");
-        else lr.material = Resources.Load<Material>("Materials/Route");
-
-        SimulationAnalyzer sa = gameObject.GetComponent<SimulationAnalyzer>();
-        if (congestionLevel > 0 && !sa.congestedCorridors.Contains(c)) sa.congestedCorridors.Add(c);
-        else if (congestionLevel == 0 && sa.congestedCorridors.Contains(c)) sa.congestedCorridors.Remove(c);
-
-    }
-
-    /// <summary>
     /// Allows user to toggle landing corridor visualization at runtime.
     /// </summary>
     public void ToggleLandingCorridorVisualization(bool toggle)
@@ -919,13 +841,279 @@ public class VehicleControlSystem : MonoBehaviour
     }
 
     /// <summary>
-    /// @Eunu comment.
+    /// Rebuilds network without resetting drones.
     /// </summary>
-    public void VisualizeNetwork ( Assets.Scripts.DataStructure.Network network )
+    public void RebuildNetwork()
     {
-        networkLines = new List<GameObject>();
-        float width = IsRegionView ? UISettings.REGIONVIEW_NETWORK_WIDTH : UISettings.CITYVIEW_NETWORK_WIDTH;
-        foreach(Corridor c in network.corridors)
+        GenerateNetwork();
+        VisualizeNetwork();
+    }
+
+    /// <summary>
+    /// Resets the drones, etc after any kind of update
+    /// </summary>
+    public void ResetSimulation()
+    {
+        droneInstantiator.ResetDrones();
+        RebuildNetwork();
+        droneInstantiator.InstantiateDrones(sceneManager, scaleMultiplier, _canvas);
+        if (playing)
+        {
+            playing = false;
+            PlayPause();
+        }
+    }
+
+    /// <summary>
+    /// Generates data structure for network
+    /// </summary>
+    private void GenerateNetwork()
+    {
+
+        const float UTM_ELEVATION = 152.4f;
+        const float UTM_SEPARATION = 25.0f;
+
+
+        List<GameObject> points = new List<GameObject>();
+        foreach (SceneDronePort sdp in sceneManager.DronePorts.Values) points.Add(sdp.gameObject);
+        foreach (SceneParkingStructure sps in sceneManager.ParkingStructures.Values)
+        {
+            if (!sps.ParkingStructureSpecs.Type.Contains("LowAltitude")) points.Add(sps.gameObject);
+        }
+
+        if (points.Count < 3) return;
+
+        IPoint[] vertices = GetVertices(points);
+        Delaunator delaunay = new Delaunator(vertices);
+        DroneNetwork = new Assets.Scripts.DataStructure.Network();
+        DroneNetwork.vertices = points;
+        for (int i = 0; i < delaunay.Triangles.Length; i++)
+        {
+            if (i > delaunay.Halfedges[i])
+            {
+                GameObject from = points[delaunay.Triangles[i]];
+                GameObject to = points[delaunay.Triangles[nextHalfEdge(i)]];
+                Corridor corridor_from_to = new Corridor(from, to, UTM_ELEVATION);
+                Vector3 fromFlat = new Vector3(from.transform.position.x, 0, from.transform.position.z);
+                Vector3 toFlat = new Vector3(to.transform.position.x, 0, to.transform.position.z);
+                Vector3 fromPosition = fromFlat + Vector3.Normalize(toFlat - fromFlat) * 50;
+                Vector3 toPosition = toFlat + Vector3.Normalize(fromFlat - toFlat) * 50;
+                Vector3 corridor_from_to_start = new Vector3(fromPosition.x, UTM_ELEVATION, fromPosition.z);
+                Vector3 corridor_from_to_end = new Vector3(toPosition.x, UTM_ELEVATION, toPosition.z);
+
+
+
+                corridor_from_to_start.y = UTM_ELEVATION;
+                corridor_from_to_end.y = UTM_ELEVATION;
+
+                Corridor corridor_to_from = new Corridor(to, from, UTM_ELEVATION + UTM_SEPARATION);
+                Vector3 corridor_to_from_start = new Vector3(toPosition.x, UTM_ELEVATION + UTM_SEPARATION, toPosition.z);
+                Vector3 corridor_to_from_end = new Vector3(fromPosition.x, UTM_ELEVATION + UTM_SEPARATION, fromPosition.z);
+
+                var wayPoints = FindPath(corridor_from_to_start, corridor_from_to_end, 5, 1 << 9 | 1 << 8);
+                wayPoints.Insert(0, corridor_from_to_start);
+                corridor_from_to.wayPoints = new Queue<Vector3>(wayPoints);
+
+                wayPoints = FindPath(corridor_to_from_start, corridor_to_from_end, 5, 1 << 9 | 1 << 8);
+                wayPoints.Insert(0, corridor_to_from_start);
+                corridor_to_from.wayPoints = new Queue<Vector3>(wayPoints);
+
+                DroneNetwork.corridors.Add(corridor_from_to);
+                DroneNetwork.corridors.Add(corridor_to_from);
+                if (!DroneNetwork.inEdges.ContainsKey(from)) DroneNetwork.inEdges.Add(from, new List<Corridor>());
+                if (!DroneNetwork.outEdges.ContainsKey(from)) DroneNetwork.outEdges.Add(from, new List<Corridor>());
+                if (!DroneNetwork.inEdges.ContainsKey(to)) DroneNetwork.inEdges.Add(to, new List<Corridor>());
+                if (!DroneNetwork.outEdges.ContainsKey(to)) DroneNetwork.outEdges.Add(to, new List<Corridor>());
+
+                DroneNetwork.outEdges[from].Add(corridor_from_to);
+                DroneNetwork.inEdges[from].Add(corridor_to_from);
+                DroneNetwork.outEdges[to].Add(corridor_to_from);
+                DroneNetwork.inEdges[to].Add(corridor_from_to);
+            }
+        }
+
+    }
+    public int nextHalfEdge(int e)
+    {
+        return (e % 3 == 2) ? e - 2 : e + 1;
+    }
+    public IPoint[] GetVertices(List<GameObject> points)
+    {
+        List<IPoint> pts = new List<IPoint>();
+        foreach (GameObject gO in points)
+        {
+            Vector3 position = gO.transform.position;
+            pts.Add(new Point((double)position.x, (double)position.z));
+        }
+        return pts.ToArray();
+    }
+
+    RaycastHit GetClosestHit(Vector3 current, RaycastHit[] hit)
+    {
+        float minDist = Mathf.Infinity;
+        RaycastHit minHit = hit[0];
+        foreach (RaycastHit h in hit)
+        {
+            if (Vector3.Distance(current, h.point) < minDist)
+            {
+                minHit = h;
+                minDist = Vector3.Distance(current, h.point);
+            }
+        }
+        return minHit;
+    }
+
+    Vector3 RotateAround(Vector3 point, Vector3 pivot, float angle)
+    {
+        Vector3 newPoint = point - pivot;
+        newPoint = Quaternion.Euler(0, angle, 0) * newPoint;
+        newPoint = newPoint + pivot;
+        return newPoint;
+    }
+
+    public List<Vector3> FindPath(Vector3 origin, Vector3 destination, int angleIncrement, int layerMask)
+    {
+        // For pathfinding, omit drone colliders
+
+        int head = 0, tail = 0;
+        List<Vector3> visited = new List<Vector3>();
+        List<int> from = new List<int>();
+        List<float> distance = new List<float>();
+        visited.Add(origin);
+        from.Add(-1);
+        distance.Add(0.0f);
+        tail++;
+        int iter = 0;
+        int maxIter = 1000;
+
+        while (iter <= maxIter && head < visited.Count && Physics.Raycast(visited[head], destination - visited[head], Vector3.Distance(visited[head], destination), layerMask) && head <= tail)
+        {
+            RaycastHit currentHitObject = GetClosestHit(visited[head], Physics.RaycastAll(visited[head], destination - visited[head], Vector3.Distance(visited[head], destination), layerMask));
+            Vector3 lastHit = currentHitObject.point;
+            for (int i = angleIncrement; i <= 85; i += angleIncrement)
+            {
+                Vector3 currentVector = destination - visited[head];
+                RaycastHit[] hit = Physics.RaycastAll(visited[head], Quaternion.Euler(0, i, 0) * (destination - visited[head]), Vector3.Distance(visited[head], destination), layerMask);
+                if (hit.Length == 0 || !hit[0].transform.Equals(currentHitObject.transform)) // If the ray does not hit anything or does not hit the first hitted object anymore
+                {
+                    Vector3 newWaypoint = RotateAround(lastHit, visited[head], (float)angleIncrement);
+                    visited.Add(newWaypoint);
+                    from.Add(head);
+                    distance.Add(distance[head] + Vector3.Distance(visited[head], newWaypoint));
+                    tail++;
+                    break;
+                }
+                else
+                {
+                    lastHit = hit[0].point;
+                }
+            }
+
+            // Do the same thing in the opposite direction
+            lastHit = currentHitObject.point;
+            for (int i = angleIncrement; i <= 85; i += angleIncrement)
+            {
+                Vector3 currentVector = destination - visited[head];
+                RaycastHit[] hit = Physics.RaycastAll(visited[head], Quaternion.Euler(0, -i, 0) * (destination - visited[head]), Vector3.Distance(visited[head], destination), layerMask);
+                if (hit.Length == 0 || !hit[0].transform.Equals(currentHitObject.transform)) // If the ray does not hit anything or does not hit the first hitted object anymore
+                {
+                    Vector3 newWaypoint = RotateAround(lastHit, visited[head], -(float)angleIncrement);
+                    visited.Add(newWaypoint);
+                    from.Add(head);
+                    distance.Add(distance[head] + Vector3.Distance(visited[head], newWaypoint));
+                    tail++;
+                    break;
+                }
+                else
+                {
+                    lastHit = hit[0].point;
+                }
+            }
+
+            head++;
+            iter++;
+        }
+        if (iter == maxIter)
+        {
+            Debug.LogError("Error finding route");
+        }
+
+        // Do the same thing in the opposite direction
+        List<Vector3> path = new List<Vector3>();
+        if (head < tail) // found a path so backtrack
+        {
+            if (head > 0) path = Backtrack(visited, from, distance, head);
+            path.Add(destination);
+        }
+        else // cannot find a path - just fly straight
+        {
+            //path.Add(origin);
+            path.Add(destination);
+        }
+
+        if (path.Count == 0) path.Add(destination);
+        return path;
+    }
+
+    List<Vector3> Backtrack(List<Vector3> visited, List<int> from, List<float> distance, int head)
+    {
+        List<Vector3> result = new List<Vector3>();
+        int pointer = head;
+        do
+        {
+            result.Add(visited[pointer]);
+            pointer = from[pointer];
+        } while (pointer >= 0 && from[pointer] != -1);
+        //if (pointer != -1) result.Add(visited[pointer]);
+        result.Reverse();
+        return result;
+    }
+
+    /// <summary>
+    /// Allows user to toggle route visualization at runtime.
+    /// </summary>
+    public void ToggleRouteVisualization(bool toggle)
+    {
+        _networkVisible = toggle;
+        if (_networkVisible)
+        {
+            foreach (GameObject gO in networkLines)
+            {
+                LineRenderer lr = gO.GetComponent<LineRenderer>();
+                lr.enabled = true;
+            }
+        }
+        else
+        {
+            foreach (GameObject gO in networkLines)
+            {
+                LineRenderer lr = gO.GetComponent<LineRenderer>();
+                lr.enabled = false;
+            }
+        }
+
+    }
+
+    /// <summary>
+    /// Builds visuals for network
+    /// </summary>
+    private void VisualizeNetwork()
+    {
+        if (networkLines.Count > 0)
+        {
+            for (int i = 0; i < networkLines.Count; i++)
+            {
+                networkLines[i].Destroy();
+            }
+            foreach (var c in routeLineObject.Keys)
+            {
+                c.OnCongestionLevelChange -= CongestionLevelChangeHandler;
+            }
+        }
+        networkLines.Clear();
+        routeLineObject.Clear();
+        float width = sceneManager is RegionViewManager ? UISettings.REGIONVIEW_NETWORK_WIDTH : UISettings.CITYVIEW_NETWORK_WIDTH;
+        foreach (Corridor c in DroneNetwork.corridors)
         {
             GameObject line = new GameObject();
             line.name = "Corridor_" + c.origin.name + "_" + c.destination.name;
@@ -934,7 +1122,7 @@ public class VehicleControlSystem : MonoBehaviour
             List<Vector3> wayPointsList = new List<Vector3>(c.wayPoints.ToArray());
             //wayPointsList.Insert(0, c.origin.transform.position);
             Vector3[] wayPointArray = new Vector3[wayPointsList.Count];
-            for(int i = 0; i < wayPointsList.Count; i++)
+            for (int i = 0; i < wayPointsList.Count; i++)
             {
                 wayPointArray[i] = new Vector3(wayPointsList[i].x, c.elevation, wayPointsList[i].z);
             }
@@ -946,8 +1134,52 @@ public class VehicleControlSystem : MonoBehaviour
             routeLineObject.Add(c, line);
             c.OnCongestionLevelChange += CongestionLevelChangeHandler;
         }
+
+        ToggleRouteVisualization(_networkVisible);
     }
 
+    /// <summary>
+    /// Function to be called when congestion level changes in a corridor.
+    /// </summary>
+    private void CongestionLevelChangeHandler(Corridor c, int congestionLevel)
+    {
+        GameObject line = routeLineObject[c];
+        LineRenderer lr = line.GetComponent<LineRenderer>();
+        if (congestionLevel == 1) lr.material = Resources.Load<Material>("Materials/Route_Low_Congestion");
+        else if (congestionLevel == 2) lr.material = Resources.Load<Material>("Materials/Route_Medium_Congestion");
+        else if (congestionLevel == 3) lr.material = Resources.Load<Material>("Materials/Route_High_Congestion");
+        else lr.material = Resources.Load<Material>("Materials/Route");
+
+        SimulationAnalyzer sa = GetComponent<SimulationAnalyzer>();
+        if (congestionLevel > 0 && !sa.congestedCorridors.Contains(c)) sa.congestedCorridors.Add(c);
+        else if (congestionLevel == 0 && sa.congestedCorridors.Contains(c)) sa.congestedCorridors.Remove(c);
+
+    }
+
+
+
+    /// <summary>
+    /// Gets number of parking spots in current scene.
+    /// </summary>
+    public int GetParkingCapacity()
+    {
+        int parking_capacity = 0;
+        foreach (var kvp in sceneManager.ParkingStructures)
+        {
+            parking_capacity += kvp.Value.ParkingStructureSpecs.ParkingSpots.Count;
+        }
+        return parking_capacity;
+    }
+
+    public int GetParkingCapacity(string type)
+    {
+        int parking_capacity = 0;
+        foreach (var kvp in sceneManager.ParkingStructures)
+        {
+            if (kvp.Value.ParkingStructureSpecs.Type.Contains(type)) parking_capacity += kvp.Value.ParkingStructureSpecs.ParkingSpots.Count;
+        }
+        return parking_capacity;
+    }
     #endregion
 }
 

@@ -24,8 +24,8 @@ namespace Assets.Scripts.SimulatorCore
     {
 
         private VehicleControlSystem vcs;
-        private Dictionary<string, VehicleSpec> vehicleSpecs;//list of specs for different types of drones. @Eunu, correct?
-        private Dictionary<string, string> vehicleTypes;//list of possible types of vehicles. @Eunu, Correct? Do these become the keys for vehicle specs? What are the key value pairs in this dictionary?
+        private Dictionary<string, VehicleSpec> _vehicleSpecs = new Dictionary<string, VehicleSpec>();
+        private Dictionary<string, string> _vehicleTypes = new Dictionary<string, string>();
         private string asset_root = SerializationSettings.ROOT + "\\";
         
         public bool isCorridorDroneInstantiated;
@@ -35,22 +35,39 @@ namespace Assets.Scripts.SimulatorCore
         public bool corridorDroneInstantiationStarted;
         public bool lowAltitudeDroneInstantiationStarted;
 
-        public List<GameObject> backgroundDrones;
-        public List<GameObject> corridorDrones;
-        public List<GameObject> lowAltitudeDrones;
+        public Dictionary<GameObject, DroneType> _droneTypeLookup = new Dictionary<GameObject, DroneType>();
+        public List<GameObject> _backgroundDrones = new List<GameObject>();
+        public List<GameObject> _corridorDrones = new List<GameObject>();
+        public List<GameObject> _lowAltitudeDrones = new List<GameObject>();
 
         public event EventHandler<DroneInstantiationArgs> OnDroneInstantiated;
        
 
         public void Init(VehicleControlSystem vcs)
         {
-            vehicleSpecs = new Dictionary<string, VehicleSpec>();
-            vehicleTypes = new Dictionary<string, string>();
-            backgroundDrones = new List<GameObject>();
-            corridorDrones = new List<GameObject>();
-            lowAltitudeDrones = new List<GameObject>();
             this.vcs = vcs;
             ReadVehicleSpecs();
+        }
+
+        /// <summary>
+        /// Clears out the simulation of drones.
+        /// </summary>
+        public void ResetDrones()
+        {
+            _droneTypeLookup.Clear();
+            foreach(var g in _backgroundDrones)
+            {
+                g.Destroy();
+            }
+            foreach(var g in _corridorDrones)
+            {
+                g.Destroy();
+            }
+            foreach(var g in _lowAltitudeDrones)
+            {
+                g.Destroy();
+            }
+            isBackgroundDroneInstantiated = false;
         }
 
         /// <summary>
@@ -67,7 +84,7 @@ namespace Assets.Scripts.SimulatorCore
         /// </summary>
         public void ReadVehicleSpecs()
         {
-            if (vehicleTypes.Keys.Count > 0) return;
+            if (_vehicleTypes.Keys.Count > 0) return;
             string path = asset_root + "Resources\\Drones\\";
             var files = Directory.GetFiles(path, "*.JSON");
             foreach (var filename in files)
@@ -75,8 +92,8 @@ namespace Assets.Scripts.SimulatorCore
                 string json = File.ReadAllText(filename, System.Text.Encoding.UTF8);
                 VehicleSpec vs = JsonUtility.FromJson<VehicleSpec>(json);
                 string name = Path.GetFileNameWithoutExtension(filename);
-                vehicleTypes.Add(vs.type, name);
-                vehicleSpecs.Add(name, vs);
+                _vehicleTypes.Add(vs.type, name);
+                _vehicleSpecs.Add(name, vs);
                 //if (vs.range < MIN_DRONE_RANGE) MIN_DRONE_RANGE = vs.range;
                 vs.range = Mathf.Infinity;
             }
@@ -101,16 +118,16 @@ namespace Assets.Scripts.SimulatorCore
             {
                 // INTEGRATION TO-DO: Make this part to select parking structure randomly so that the drones are randomly populated
 
-                int vehicleTypeID = UnityEngine.Random.Range(0, vehicleSpecs.Keys.Count);
-                string path = vcs.IsRegionView ? drone_path : drone_path + vehicleSpecs.Keys.ToList()[vehicleTypeID];
+                int vehicleTypeID = UnityEngine.Random.Range(0, _vehicleSpecs.Keys.Count);
+                string path = vcs.IsRegionView ? drone_path : drone_path + _vehicleSpecs.Keys.ToList()[vehicleTypeID];
                 var newDrone = Resources.Load<GameObject>(path);
-                var type = vehicleSpecs.Keys.ToList()[vehicleTypeID];
+                var type = _vehicleSpecs.Keys.ToList()[vehicleTypeID];
 
                 float y = UnityEngine.Random.Range(lowerElevationBound, upperElevationBound);
                 Vector3 instantiationSpot = vcs.GetRandomPointXZ(y);
                 // instantiate the vehicle at emptySpot
                 var clone = InstantiateDrone(newDrone, instantiationSpot, out _);
-                clone.name = "UAV_BACKGROUND_" + backgroundDrones.Count.ToString();
+                clone.name = "UAV_BACKGROUND_" + _backgroundDrones.Count.ToString();
                 clone.tag = "Vehicle";
                 clone.layer = 10;
 
@@ -127,13 +144,14 @@ namespace Assets.Scripts.SimulatorCore
 
                 // Fill in vehivle spec
                 BackgroundDrone v = clone.AddComponent<BackgroundDrone>();
-                v.Initialize(vehicleSpecs[type].type, vehicleSpecs[type].capacity, vehicleSpecs[type].range, vehicleSpecs[type].maxSpeed, vehicleSpecs[type].yawSpeed, vehicleSpecs[type].takeoffSpeed, vehicleSpecs[type].landingSpeed, vehicleSpecs[type].emission, vehicleSpecs[type].noise, "background");
+                v.Initialize(_vehicleSpecs[type].type, _vehicleSpecs[type].capacity, _vehicleSpecs[type].range, _vehicleSpecs[type].maxSpeed, _vehicleSpecs[type].yawSpeed, _vehicleSpecs[type].takeoffSpeed, _vehicleSpecs[type].landingSpeed, _vehicleSpecs[type].emission, _vehicleSpecs[type].noise, "background");
                 //v.currentPoint = v.gameObject.transform.posit;
                 v.isBackgroundDrone = true;
                 Vector3 firstDestination = vcs.GetRandomPointXZ(y);
-                v.wayPointsQueue = new Queue<Vector3>(sceneManager.FindPath(instantiationSpot, firstDestination, 5, 1 << 8 | 1 << 9 | 1 << 13));
+                v.wayPointsQueue = new Queue<Vector3>(vcs.FindPath(instantiationSpot, firstDestination, 5, 1 << 8 | 1 << 9 | 1 << 13));
                 v.targetPosition = v.wayPointsQueue.Dequeue();
-                backgroundDrones.Add(clone);
+                _droneTypeLookup.Add(clone, DroneType.Background);
+                _backgroundDrones.Add(clone);
 
                 // Update parking management info
 
@@ -153,9 +171,9 @@ namespace Assets.Scripts.SimulatorCore
             string drone_path = vcs.IsRegionView ? "GUI/DroneIcon2" : "Drones/";
             string droneType = isCorridor ? "corridor" : "LowAltitude";
             float progress = 0.0f;
-            int parkingCapacity = sceneManager.GetParkingCapacity();
-            int typeSpecificCapacity = sceneManager.GetParkingCapacity(droneType);
-            int currentDroneCt = isCorridor ? corridorDrones.Count : lowAltitudeDrones.Count;
+            int parkingCapacity = vcs.GetParkingCapacity();
+            int typeSpecificCapacity = vcs.GetParkingCapacity(droneType);
+            int currentDroneCt = isCorridor ? _corridorDrones.Count : _lowAltitudeDrones.Count;
             int vehiclesToInstantiate = UnityEngine.Random.Range(parkingCapacity - typeSpecificCapacity - 10 - currentDroneCt, parkingCapacity - typeSpecificCapacity - currentDroneCt);
 
             if (vehiclesToInstantiate < 0) yield break;
@@ -171,9 +189,9 @@ namespace Assets.Scripts.SimulatorCore
 
 
 
-            foreach (string type in vehicleTypes.Keys)
+            foreach (string type in _vehicleTypes.Keys)
             {
-                if (type.Equals(droneType)) typeNames.Add(vehicleTypes[type]);
+                if (type.Equals(droneType)) typeNames.Add(_vehicleTypes[type]);
             }
 
             for (int i = 0; i < vehiclesToInstantiate; i++)
@@ -197,7 +215,7 @@ namespace Assets.Scripts.SimulatorCore
                             // instantiate the vehicle at emptySpot
                             GameObject clone = InstantiateDrone(newDrone, translatedSpot, out var clone2d);
 
-                            clone.name = "UAV_" + (isCorridor ? corridorDrones.Count.ToString() : lowAltitudeDrones.Count.ToString());
+                            clone.name = "UAV_" + (isCorridor ? _corridorDrones.Count.ToString() : _lowAltitudeDrones.Count.ToString());
                             clone.tag = "Vehicle";
                             clone.layer = 10;
                             // Only for video
@@ -213,7 +231,7 @@ namespace Assets.Scripts.SimulatorCore
                             // Fill in vehicle spec
                             DroneBase v = isCorridor ? (DroneBase)clone.AddComponent<CorridorDrone>() : (DroneBase)clone.AddComponent<LowAltitudeDrone>();
                             v.Clone2d = clone2d;
-                            v.Initialize(vehicleSpecs[type].type, vehicleSpecs[type].capacity, vehicleSpecs[type].range, vehicleSpecs[type].maxSpeed, vehicleSpecs[type].yawSpeed, vehicleSpecs[type].takeoffSpeed, vehicleSpecs[type].landingSpeed, vehicleSpecs[type].emission, vehicleSpecs[type].noise, "idle");
+                            v.Initialize(_vehicleSpecs[type].type, _vehicleSpecs[type].capacity, _vehicleSpecs[type].range, _vehicleSpecs[type].maxSpeed, _vehicleSpecs[type].yawSpeed, _vehicleSpecs[type].takeoffSpeed, _vehicleSpecs[type].landingSpeed, _vehicleSpecs[type].emission, _vehicleSpecs[type].noise, "idle");
                             v.currentCommunicationPoint = sPS.gameObject;
                             OnDroneInstantiated?.Invoke(this, new DroneInstantiationArgs(clone));
                             // Update parking management info
@@ -236,8 +254,16 @@ namespace Assets.Scripts.SimulatorCore
                             MeshRenderer mr = sphere.GetComponent<MeshRenderer>();
                             mr.material = Resources.Load<Material>("Materials/NoiseSphere");
                             mr.enabled = false;
-                            if (isCorridor) corridorDrones.Add(clone);
-                            else lowAltitudeDrones.Add(clone);
+                            if (isCorridor)
+                            {
+                                _droneTypeLookup.Add(clone, DroneType.Corridor);
+                                _corridorDrones.Add(clone);
+                            }
+                            else
+                            {
+                                _droneTypeLookup.Add(clone, DroneType.LowAltitude);
+                                _lowAltitudeDrones.Add(clone);
+                            }
                             break;
                         }
                     }
@@ -263,17 +289,17 @@ namespace Assets.Scripts.SimulatorCore
 
             // INTEGRATION TO-DO: Make this part to select parking structure randomly so that the drones are randomly populated
 
-            int vehicleTypeID = UnityEngine.Random.Range(0, vehicleSpecs.Keys.Count);
-            string drone_path = vcs.IsRegionView ? "GUI/DroneIcon2" : "Drones/" + vehicleSpecs.Keys.ToList()[vehicleTypeID];
+            int vehicleTypeID = UnityEngine.Random.Range(0, _vehicleSpecs.Keys.Count);
+            string drone_path = vcs.IsRegionView ? "GUI/DroneIcon2" : "Drones/" + _vehicleSpecs.Keys.ToList()[vehicleTypeID];
 
             var newDrone = Resources.Load<GameObject>(drone_path);
-            var type = vehicleSpecs.Keys.ToList()[vehicleTypeID];
+            var type = _vehicleSpecs.Keys.ToList()[vehicleTypeID];
 
             float y = UnityEngine.Random.Range(lowerElevationBound, upperElevationBound);
             Vector3 instantiationSpot = vcs.GetRandomPointXZ(y);
             // instantiate the vehicle at emptySpot
             GameObject clone = InstantiateDrone(newDrone, instantiationSpot, out _);
-            clone.name = "UAV_BACKGROUND_" + backgroundDrones.Count.ToString();
+            clone.name = "UAV_BACKGROUND_" + _backgroundDrones.Count.ToString();
             clone.tag = "Vehicle";
             clone.layer = 10;
 
@@ -290,14 +316,41 @@ namespace Assets.Scripts.SimulatorCore
 
             // Fill in vehivle spec
             BackgroundDrone v = clone.AddComponent<BackgroundDrone>();
-            v.Initialize(vehicleSpecs[type].type, vehicleSpecs[type].capacity, vehicleSpecs[type].range, vehicleSpecs[type].maxSpeed, vehicleSpecs[type].yawSpeed, vehicleSpecs[type].takeoffSpeed, vehicleSpecs[type].landingSpeed, vehicleSpecs[type].emission, vehicleSpecs[type].noise, "background");
+            v.Initialize(_vehicleSpecs[type].type, _vehicleSpecs[type].capacity, _vehicleSpecs[type].range, _vehicleSpecs[type].maxSpeed, _vehicleSpecs[type].yawSpeed, _vehicleSpecs[type].takeoffSpeed, _vehicleSpecs[type].landingSpeed, _vehicleSpecs[type].emission, _vehicleSpecs[type].noise, "background");
             //v.currentPoint = v.gameObject.transform.posit;
             v.isBackgroundDrone = true;
             Vector3 firstDestination = vcs.GetRandomPointXZ(y);
-            v.wayPointsQueue = new Queue<Vector3>(sceneManager.FindPath(instantiationSpot, firstDestination, 5, 1 << 8 | 1 << 9 | 1 << 13));
+            v.wayPointsQueue = new Queue<Vector3>(vcs.FindPath(instantiationSpot, firstDestination, 5, 1 << 8 | 1 << 9 | 1 << 13));
             v.targetPosition = v.wayPointsQueue.Dequeue();
+            _droneTypeLookup.Add(clone, DroneType.Background);
+            _backgroundDrones.Add(clone);
+        }
 
-            backgroundDrones.Add(clone);
+        /// <summary>
+        /// Unregisters drone from simulation.
+        /// </summary>
+        public void UnregisterDrone(GameObject drone)
+        {
+            if (!_droneTypeLookup.ContainsKey(drone)) return;
+            var t = _droneTypeLookup[drone];
+            switch(t)
+            {
+                case DroneType.Background:
+                    {
+                        _backgroundDrones.Remove(drone);
+                        break;
+                    }
+                case DroneType.Corridor:
+                    {
+                        _corridorDrones.Remove(drone);
+                        break;
+                    }
+                case DroneType.LowAltitude:
+                    {
+                        _lowAltitudeDrones.Remove(drone);
+                        break;
+                    }
+            }
         }
 
         /// <summary>

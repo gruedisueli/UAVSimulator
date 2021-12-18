@@ -39,7 +39,7 @@ public class CorridorDrone : DroneBase
     /// </summary>
     protected override Queue<Vector3> GetWayPointsToNextDestination()
     {
-        foreach (Corridor c in vcs.sceneManager.network.outEdges[currentCommunicationPoint])
+        foreach (Corridor c in vcs.DroneNetwork.outEdges[currentCommunicationPoint])
         {
             if (c.destination.Equals(destinationQueue.Peek()))
             {

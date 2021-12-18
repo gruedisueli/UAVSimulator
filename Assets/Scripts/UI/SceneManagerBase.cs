@@ -22,15 +22,14 @@ using Assets.Scripts.UI.EventArgs;
 using Assets.Scripts.DataStructure;
 using Assets.Scripts.SimulatorCore;
 
-using DelaunatorSharp;
-
 namespace Assets.Scripts.UI
 {
     /// <summary>
     /// Base class for managers of a scene in the game. Contains functions that should not vary from sceme to scene, whether or not they are needed in each scene.
+    /// The scene managers act as a message relay system for UI
+    /// May or may not handle the game objects themselves.
     /// Anything that can be generalized should go here.
     /// Acts as a listener for many types of events in the scene.
-    /// Receives and sends messages to UI.
     /// </summary>
     public abstract class SceneManagerBase : MonoBehaviour
     {
@@ -69,9 +68,6 @@ namespace Assets.Scripts.UI
         public Dictionary<string, SceneParkingStructure> ParkingStructures { get; protected set; }
         public Dictionary<string, SceneRestrictionZone> RestrictionZones { get; protected set; }
 
-        public List<GameObject> DestinationCollections { get; protected set; }
-        public Assets.Scripts.DataStructure.Network network { get; protected set; } = null;
-
 
         #endregion
 
@@ -79,7 +75,6 @@ namespace Assets.Scripts.UI
         {
             DronePorts = new Dictionary<string, SceneDronePort>();
             ParkingStructures = new Dictionary<string, SceneParkingStructure>();
-            DestinationCollections = new List<GameObject>();
             RestrictionZones = new Dictionary<string, SceneRestrictionZone>();
             
 
@@ -166,7 +161,7 @@ namespace Assets.Scripts.UI
 
             InstantiateObjects();
 
-            GenerateNetwork();
+            _vehicleControlSystem.RebuildNetwork();
         }
 
         private void OnDestroy()
@@ -859,6 +854,7 @@ namespace Assets.Scripts.UI
             string guid = Guid.NewGuid().ToString();
             EnvironManager.Instance.AddDronePort(guid, dP);
             InstantiateDronePort(guid, dP, true, true, false);
+            _vehicleControlSystem.ResetSimulation();
         }
 
         /// <summary>
@@ -897,6 +893,7 @@ namespace Assets.Scripts.UI
             string guid = Guid.NewGuid().ToString();
             EnvironManager.Instance.AddParkingStructure(guid, pS);
             InstantiateParkingStructure(guid, pS, true, true, false);
+            _vehicleControlSystem.ResetSimulation();
         }
 
         /// <summary>
@@ -930,6 +927,7 @@ namespace Assets.Scripts.UI
             string guid = Guid.NewGuid().ToString();
             EnvironManager.Instance.AddRestrictionZone(guid, rZ);
             InstantiateRestrictionZone(guid, rZ, true, true);
+            _vehicleControlSystem.ResetSimulation();
         }
 
         /// <summary>
@@ -968,6 +966,7 @@ namespace Assets.Scripts.UI
             {
                 Debug.LogError("Drone port for removal not found in scene dictionary");
             }
+            _vehicleControlSystem.ResetSimulation();
         }
 
         /// <summary>
@@ -986,6 +985,7 @@ namespace Assets.Scripts.UI
             {
                 Debug.LogError("Parking structure for removal not found in scene dictionary");
             }
+            _vehicleControlSystem.ResetSimulation();
         }
 
         /// <summary>
@@ -1004,6 +1004,7 @@ namespace Assets.Scripts.UI
             {
                 Debug.LogError("Restriction zone for removal not found in scene dictionary");
             }
+            _vehicleControlSystem.ResetSimulation();
         }
 
         /// <summary>
@@ -1253,235 +1254,6 @@ namespace Assets.Scripts.UI
             }
 
             return sCity;
-        }
-
-        #endregion
-
-        #region SIMULATION FUNCTIONS
-
-        public void GenerateNetwork()
-        {
-
-            const float UTM_ELEVATION = 152.4f;
-            const float UTM_SEPARATION = 25.0f;
-
-
-            List<GameObject> points = new List<GameObject>();
-            foreach (SceneDronePort sdp in DronePorts.Values) points.Add(sdp.gameObject);
-            foreach (SceneParkingStructure sps in ParkingStructures.Values)
-            {
-                if ( !sps.ParkingStructureSpecs.Type.Contains("LowAltitude") ) points.Add(sps.gameObject);
-            }
-
-            if (points.Count < 3) return;
-
-            IPoint[] vertices = GetVertices(points);
-            Delaunator delaunay = new Delaunator(vertices);
-            network = new Assets.Scripts.DataStructure.Network();
-            network.vertices = points;
-            for (int i = 0; i < delaunay.Triangles.Length; i++)
-            {
-                if (i > delaunay.Halfedges[i])
-                {
-                    GameObject from = points[delaunay.Triangles[i]];
-                    GameObject to = points[delaunay.Triangles[nextHalfEdge(i)]];
-                    Corridor corridor_from_to = new Corridor(from, to, UTM_ELEVATION);
-                    Vector3 fromFlat = new Vector3(from.transform.position.x, 0, from.transform.position.z);
-                    Vector3 toFlat = new Vector3(to.transform.position.x, 0, to.transform.position.z);
-                    Vector3 fromPosition = fromFlat + Vector3.Normalize(toFlat - fromFlat) * 50;
-                    Vector3 toPosition = toFlat + Vector3.Normalize(fromFlat - toFlat) * 50;
-                    Vector3 corridor_from_to_start = new Vector3(fromPosition.x, UTM_ELEVATION, fromPosition.z);
-                    Vector3 corridor_from_to_end = new Vector3(toPosition.x, UTM_ELEVATION, toPosition.z);
-
-
-
-                    corridor_from_to_start.y = UTM_ELEVATION;
-                    corridor_from_to_end.y = UTM_ELEVATION;
-
-                    Corridor corridor_to_from = new Corridor(to, from, UTM_ELEVATION + UTM_SEPARATION);
-                    Vector3 corridor_to_from_start = new Vector3(toPosition.x, UTM_ELEVATION + UTM_SEPARATION, toPosition.z);
-                    Vector3 corridor_to_from_end = new Vector3(fromPosition.x, UTM_ELEVATION + UTM_SEPARATION, fromPosition.z);
-
-                    var wayPoints = FindPath(corridor_from_to_start, corridor_from_to_end, 5, 1 << 9 | 1 << 8);
-                    wayPoints.Insert(0, corridor_from_to_start);
-                    corridor_from_to.wayPoints = new Queue<Vector3>(wayPoints);
-
-                    wayPoints = FindPath(corridor_to_from_start, corridor_to_from_end, 5, 1 << 9 | 1 << 8);
-                    wayPoints.Insert(0, corridor_to_from_start);
-                    corridor_to_from.wayPoints = new Queue<Vector3>(wayPoints);
-
-                    network.corridors.Add(corridor_from_to);
-                    network.corridors.Add(corridor_to_from);
-                    if (!network.inEdges.ContainsKey(from)) network.inEdges.Add(from, new List<Corridor>());
-                    if (!network.outEdges.ContainsKey(from)) network.outEdges.Add(from, new List<Corridor>());
-                    if (!network.inEdges.ContainsKey(to)) network.inEdges.Add(to, new List<Corridor>());
-                    if (!network.outEdges.ContainsKey(to)) network.outEdges.Add(to, new List<Corridor>());
-
-                    network.outEdges[from].Add(corridor_from_to);
-                    network.inEdges[from].Add(corridor_to_from);
-                    network.outEdges[to].Add(corridor_to_from);
-                    network.inEdges[to].Add(corridor_from_to);
-                }
-            }
-
-        }
-
-        public int nextHalfEdge(int e)
-        {
-            return (e % 3 == 2) ? e - 2 : e + 1;
-        }
-        public IPoint[] GetVertices(List<GameObject> points)
-        {
-            List<IPoint> pts = new List<IPoint>();
-            foreach (GameObject gO in points)
-            {
-                Vector3 position = gO.transform.position;
-                pts.Add(new Point((double)position.x, (double)position.z));
-            }
-            return pts.ToArray();
-        }
-
-        RaycastHit GetClosestHit(Vector3 current, RaycastHit[] hit)
-        {
-            float minDist = Mathf.Infinity;
-            RaycastHit minHit = hit[0];
-            foreach (RaycastHit h in hit)
-            {
-                if (Vector3.Distance(current, h.point) < minDist)
-                {
-                    minHit = h;
-                    minDist = Vector3.Distance(current, h.point);
-                }
-            }
-            return minHit;
-        }
-
-        Vector3 RotateAround(Vector3 point, Vector3 pivot, float angle)
-        {
-            Vector3 newPoint = point - pivot;
-            newPoint = Quaternion.Euler(0, angle, 0) * newPoint;
-            newPoint = newPoint + pivot;
-            return newPoint;
-        }
-        public List<Vector3> FindPath(Vector3 origin, Vector3 destination, int angleIncrement, int layerMask )
-        {
-            // For pathfinding, omit drone colliders
-
-            int head = 0, tail = 0;
-            List<Vector3> visited = new List<Vector3>();
-            List<int> from = new List<int>();
-            List<float> distance = new List<float>();
-            visited.Add(origin);
-            from.Add(-1);
-            distance.Add(0.0f);
-            tail++;
-            int iter = 0;
-            int maxIter = 1000;
-
-            while (iter <= maxIter && head < visited.Count && Physics.Raycast(visited[head], destination - visited[head], Vector3.Distance(visited[head], destination), layerMask) && head <= tail)
-            {
-                RaycastHit currentHitObject = GetClosestHit(visited[head], Physics.RaycastAll(visited[head], destination - visited[head], Vector3.Distance(visited[head], destination), layerMask));
-                Vector3 lastHit = currentHitObject.point;
-                for (int i = angleIncrement; i <= 85; i += angleIncrement)
-                {
-                    Vector3 currentVector = destination - visited[head];
-                    RaycastHit[] hit = Physics.RaycastAll(visited[head], Quaternion.Euler(0, i, 0) * (destination - visited[head]), Vector3.Distance(visited[head], destination), layerMask);
-                    if (hit.Length == 0 || !hit[0].transform.Equals(currentHitObject.transform)) // If the ray does not hit anything or does not hit the first hitted object anymore
-                    {
-                        Vector3 newWaypoint = RotateAround(lastHit, visited[head], (float)angleIncrement);
-                        visited.Add(newWaypoint);
-                        from.Add(head);
-                        distance.Add(distance[head] + Vector3.Distance(visited[head], newWaypoint));
-                        tail++;
-                        break;
-                    }
-                    else
-                    {
-                        lastHit = hit[0].point;
-                    }
-                }
-
-                // Do the same thing in the opposite direction
-                lastHit = currentHitObject.point;
-                for (int i = angleIncrement; i <= 85; i += angleIncrement)
-                {
-                    Vector3 currentVector = destination - visited[head];
-                    RaycastHit[] hit = Physics.RaycastAll(visited[head], Quaternion.Euler(0, -i, 0) * (destination - visited[head]), Vector3.Distance(visited[head], destination), layerMask);
-                    if (hit.Length == 0 || !hit[0].transform.Equals(currentHitObject.transform)) // If the ray does not hit anything or does not hit the first hitted object anymore
-                    {
-                        Vector3 newWaypoint = RotateAround(lastHit, visited[head], -(float)angleIncrement);
-                        visited.Add(newWaypoint);
-                        from.Add(head);
-                        distance.Add(distance[head] + Vector3.Distance(visited[head], newWaypoint));
-                        tail++;
-                        break;
-                    }
-                    else
-                    {
-                        lastHit = hit[0].point;
-                    }
-                }
-
-                head++;
-                iter++;
-            }
-            if (iter == maxIter)
-            {
-                Debug.LogError("Error finding route");
-            }
-
-            // Do the same thing in the opposite direction
-            List<Vector3> path = new List<Vector3>();
-            if (head < tail) // found a path so backtrack
-            {
-                if (head > 0) path = Backtrack(visited, from, distance, head);
-                path.Add(destination);
-            }
-            else // cannot find a path - just fly straight
-            {
-                //path.Add(origin);
-                path.Add(destination);
-            }
-
-            if (path.Count == 0) path.Add(destination);
-            return path;
-        }
-
-        List<Vector3> Backtrack(List<Vector3> visited, List<int> from, List<float> distance, int head)
-        {
-            List<Vector3> result = new List<Vector3>();
-            int pointer = head;
-            do
-            {
-                result.Add(visited[pointer]);
-                pointer = from[pointer];
-            } while (pointer >= 0 && from[pointer] != -1);
-            //if (pointer != -1) result.Add(visited[pointer]);
-            result.Reverse();
-            return result;
-        }
-
-        /// <summary>
-        /// Gets number of parking spots in current scene.
-        /// </summary>
-        public int GetParkingCapacity()
-        {
-            int parking_capacity = 0;
-            foreach (var kvp in ParkingStructures)
-            {
-                parking_capacity += kvp.Value.ParkingStructureSpecs.ParkingSpots.Count;
-            }
-            return parking_capacity;
-        }
-
-        public int GetParkingCapacity(string type)
-        {
-            int parking_capacity = 0;
-            foreach (var kvp in ParkingStructures)
-            {
-                if(kvp.Value.ParkingStructureSpecs.Type.Contains(type)) parking_capacity += kvp.Value.ParkingStructureSpecs.ParkingSpots.Count;
-            }
-            return parking_capacity;
         }
 
         #endregion
