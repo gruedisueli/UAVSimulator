@@ -25,9 +25,9 @@ namespace Assets.Scripts.UI
             StartCoroutine(LoadAsyncOperation(UISettings.FINDLOCATION_SCENEPATH));
         }
 
-        public void LoadSaved()
+        public void LoadSaved(string name)
         {
-            EnvironManager.Instance.LoadSaved();
+            EnvironManager.Instance.LoadSaved(name);
             StartCoroutine(LoadAsyncOperation(UISettings.REGIONVIEW_SCENEPATH));
         }
 

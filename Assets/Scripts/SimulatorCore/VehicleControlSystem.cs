@@ -150,7 +150,7 @@ public class VehicleControlSystem : MonoBehaviour
     /// <summary>
     /// Network of paths drones can follow.
     /// </summary>
-    public Assets.Scripts.DataStructure.Network DroneNetwork { get; protected set; } = null;
+    public Assets.Scripts.DataStructure.Network DroneNetwork { get; protected set; } = new Assets.Scripts.DataStructure.Network();
     public List<GameObject> networkLines = new List<GameObject>();
     private Dictionary<Corridor, GameObject> routeLineObject = new Dictionary<Corridor, GameObject>();
 
@@ -167,7 +167,7 @@ public class VehicleControlSystem : MonoBehaviour
 
         
         simulationParam = ReadSimulationParams(current_runtime);
-        sceneManager = FindObjectOfType<SceneManagerBase>();
+        sceneManager = FindObjectOfType<SceneManagerBase>(true);
         if (sceneManager == null) Debug.Log("Could not find scene manager component in scene");
         hiddenDrones = new List<GameObject>();
 

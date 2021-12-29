@@ -50,6 +50,7 @@ namespace Assets.Scripts.Environment
         }
 
         public Environ Environ { get; private set; } = new Environ();
+        public string OpenedFile { get; private set; } = "";
         public string ActiveCity { get; private set; } = "";
         public Dictionary<string, DronePortAssetPack> DronePortAssets { get; private set; } = new Dictionary<string, DronePortAssetPack>();
         public Dictionary<string, ParkingStructureAssetPack> ParkingStructAssets { get; private set; } = new Dictionary<string, ParkingStructureAssetPack>();
@@ -475,24 +476,97 @@ namespace Assets.Scripts.Environment
             ReadIconPrefabs();
             ReadMapboxSettings();
             ReadProgressBarPrefabs();
+            if (!Directory.Exists(SerializationSettings.SAVE_PATH))
+            {
+                Directory.CreateDirectory(SerializationSettings.SAVE_PATH);
+            }
+        }
+
+        /// <summary>
+        /// Returns list of all saved files in directory. Does not include path or suffix in names
+        /// </summary>
+        public string[] GetAllSaveFiles()
+        {
+            var names = Directory.GetFiles(SerializationSettings.SAVE_PATH, "*.json");
+            if (names != null)
+            {
+                for(int i = 0; i < names.Length; i++)
+                {
+                    var fragments = names[i].Split('/');
+                    if (fragments != null)
+                    {
+                        var lastFrag = fragments[fragments.Length - 1];
+                        names[i] = lastFrag.Substring(0, lastFrag.Length - 5);//remove suffix
+                    }
+                }
+            }
+            return names;
+        }
+
+        /// <summary>
+        /// Returns true if file exists.
+        /// </summary>
+        public bool DoesFileExist(string name)
+        {
+            return File.Exists(SerializationSettings.SAVE_PATH + name + ".json");
+        }
+
+        /// <summary>
+        /// Checks filename for validity.
+        /// </summary>
+        public bool IsFilenameValid(string name)
+        {
+            return name != "" && name.All(char.IsLetterOrDigit);
         }
 
         /// <summary>
         /// Save current environment
         /// </summary>
-        public void SaveFile()
+        public void SaveFile(string name)
         {
-            SerializeJsonFile(Environ, SerializationSettings.SAVE_PATH);
-            Debug.Log("File written to " + SerializationSettings.SAVE_PATH);
+            string path = SerializationSettings.SAVE_PATH + name + ".json";
+            SerializeJsonFile(Environ, path);
+            Debug.Log("File written to " + path);
         }
 
         /// <summary>
         /// Load an environment into the controller.
         /// </summary>
-        public void LoadSaved()
+        public void LoadSaved(string name)
         {
-            Environ = DeserializeJsonFile<Environ>(SerializationSettings.SAVE_PATH);
-            Debug.Log("File read from " + SerializationSettings.SAVE_PATH);
+            string path = SerializationSettings.SAVE_PATH + name + ".json";
+            Environ = DeserializeJsonFile<Environ>(path);
+            OpenedFile = name;
+            Debug.Log("File read from " + path);
+        }
+
+        /// <summary>
+        /// Renames a file. True on success
+        /// </summary>
+        public bool RenameFile(string oldName, string newName)
+        {
+            if (IsFilenameValid(oldName) && IsFilenameValid(newName) && DoesFileExist(oldName) && !DoesFileExist(newName))
+            {
+                string oldPath = SerializationSettings.SAVE_PATH + oldName + ".json";
+                string newPath = SerializationSettings.SAVE_PATH + newName + ".json";
+                File.Move(oldPath, newPath);
+                return true;
+            }
+            return false;
+        }
+        
+        /// <summary>
+        /// Deletes a file. True on success
+        /// </summary>
+        public bool DeleteFile(string name)
+        {
+            if (IsFilenameValid(name) && DoesFileExist(name))
+            {
+                string path = SerializationSettings.SAVE_PATH + name + ".json";
+                File.Delete(path);
+                return true;
+            }
+            return false;
         }
 
         /// <summary>

@@ -26,7 +26,7 @@ namespace Assets.Scripts.SimulatorCore
         private VehicleControlSystem vcs;
         private Dictionary<string, VehicleSpec> _vehicleSpecs = new Dictionary<string, VehicleSpec>();
         private Dictionary<string, string> _vehicleTypes = new Dictionary<string, string>();
-        private string asset_root = SerializationSettings.ROOT + "\\";
+        private string asset_root = SerializationSettings.ROOT + "\\";// "";//instantiate at runtime
         
         public bool isCorridorDroneInstantiated;
         public bool isLowAltitudeDroneInstantiated;
@@ -41,7 +41,11 @@ namespace Assets.Scripts.SimulatorCore
         public List<GameObject> _lowAltitudeDrones = new List<GameObject>();
 
         public event EventHandler<DroneInstantiationArgs> OnDroneInstantiated;
-       
+
+        //private void Awake()
+        //{
+        //    asset_root = SerializationSettings.ROOT + "\\";
+        //}
 
         public void Init(VehicleControlSystem vcs)
         {

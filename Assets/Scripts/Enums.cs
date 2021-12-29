@@ -165,4 +165,11 @@ namespace Assets.Scripts
         Background
     }
 
+    public enum SaveMode
+    {
+        JustSave,
+        AndMain,
+        AndQuit
+    }
+
 }

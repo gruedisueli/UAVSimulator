@@ -34,7 +34,7 @@ namespace Assets.Scripts.UI
 
         private void Start()
         {
-            _map = FindObjectOfType<AbstractMap>();
+            _map = FindObjectOfType<AbstractMap>(true);
             if (_map == null)
             {
                 Debug.LogError("Abstract map not found");
@@ -42,7 +42,7 @@ namespace Assets.Scripts.UI
             }
             _map.SetZoom(EnvironSettings.FINDLOCATION_ZOOM_LEVEL);
 
-            _addRegionTool = FindObjectOfType<AddRegionTool>();
+            _addRegionTool = FindObjectOfType<AddRegionTool>(true);
             if (_addRegionTool == null)
             {
                 Debug.LogError("Add region tool not found");
