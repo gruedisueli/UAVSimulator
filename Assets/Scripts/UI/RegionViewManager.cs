@@ -181,16 +181,6 @@ namespace Assets.Scripts.UI
                                     sC.CitySpecs.Name = (args.Update as ModifyStringPropertyArg).Value;
                                     break;
                                 }
-                            case ElementPropertyType.Population:
-                                {
-                                    sC.CitySpecs.Population = (args.Update as ModifyIntPropertyArg).Value;
-                                    break;
-                                }
-                            case ElementPropertyType.Jobs:
-                                {
-                                    sC.CitySpecs.Jobs = (args.Update as ModifyIntPropertyArg).Value;
-                                    break;
-                                }
                             case ElementPropertyType.EastExt:
                                 {
                                     sC.CitySpecs.EastExt = (args.Update as ModifyIntPropertyArg).Value;

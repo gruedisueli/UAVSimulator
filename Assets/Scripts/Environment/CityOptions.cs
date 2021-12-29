@@ -116,34 +116,6 @@ namespace Assets.Scripts.Environment
             }
         }
 
-        [JsonProperty]
-        private int _population = 0;
-        public int Population
-        {
-            get
-            {
-                return _population;
-            }
-            set
-            {
-                _population = value;
-            }
-        }
-
-        [JsonProperty]
-        private int _jobs = 0;
-        public int Jobs
-        {
-            get
-            {
-                return _jobs;
-            }
-            set
-            {
-                _jobs = value;
-            }
-        }
-
         public CityOptions()
         {
 
@@ -158,8 +130,6 @@ namespace Assets.Scripts.Environment
             WestExt = cityOptions.WestExt;
             NorthExt = cityOptions.NorthExt;
             SouthExt = cityOptions.SouthExt;
-            Population = cityOptions.Population;
-            Jobs = cityOptions.Jobs;
         }
     }
 }

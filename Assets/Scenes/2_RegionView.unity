@@ -2004,7 +2004,7 @@ PrefabInstance:
     - target: {fileID: 1877224052915756291, guid: fbd7d39aa8ab73542b829ccad29691d5,
         type: 3}
       propertyPath: m_SizeDelta.x
-      value: 50
+      value: 100
       objectReference: {fileID: 0}
     - target: {fileID: 1877224052915756291, guid: fbd7d39aa8ab73542b829ccad29691d5,
         type: 3}
@@ -2074,9 +2074,9 @@ PrefabInstance:
     - target: {fileID: 1877224054536011728, guid: fbd7d39aa8ab73542b829ccad29691d5,
         type: 3}
       propertyPath: m_Text
-      value: 'Get
+      value: 'Download
 
-        A.S.'
+        Airpsace'
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: fbd7d39aa8ab73542b829ccad29691d5, type: 3}

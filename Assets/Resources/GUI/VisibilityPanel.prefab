@@ -1243,6 +1243,16 @@ PrefabInstance:
       propertyPath: m_Name
       value: BasicToggle_Privacy
       objectReference: {fileID: 0}
+    - target: {fileID: 6270022580550851390, guid: 122e1bad3f2434f479161da96f590c51,
+        type: 3}
+      propertyPath: m_IsOn
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6270022580550851390, guid: 122e1bad3f2434f479161da96f590c51,
+        type: 3}
+      propertyPath: m_Interactable
+      value: 0
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 122e1bad3f2434f479161da96f590c51, type: 3}
 --- !u!224 &4296388231758410192 stripped
@@ -1372,6 +1382,16 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: BasicToggle_Demographics
+      objectReference: {fileID: 0}
+    - target: {fileID: 6270022580550851390, guid: 122e1bad3f2434f479161da96f590c51,
+        type: 3}
+      propertyPath: m_IsOn
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6270022580550851390, guid: 122e1bad3f2434f479161da96f590c51,
+        type: 3}
+      propertyPath: m_Interactable
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 122e1bad3f2434f479161da96f590c51, type: 3}

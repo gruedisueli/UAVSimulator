@@ -36,8 +36,6 @@ namespace Assets.Scripts.UI.Tools
             var specs = sCity.CitySpecs;
 
             _infoPanel.SetTextElement(ElementPropertyType.Name, specs.Name);
-            _infoPanel.SetTextElement(ElementPropertyType.Population, specs.Population.ToString());
-            _infoPanel.SetTextElement(ElementPropertyType.Jobs, specs.Jobs.ToString());
             _infoPanel.SetTextElement(ElementPropertyType.EastExt, specs.EastExt.ToString());
             _infoPanel.SetTextElement(ElementPropertyType.WestExt, specs.WestExt.ToString());
             _infoPanel.SetTextElement(ElementPropertyType.NorthExt, specs.NorthExt.ToString());
@@ -75,16 +73,6 @@ namespace Assets.Scripts.UI.Tools
                     case ElementPropertyType.Name:
                         {
                             _infoPanel.SetTextElement(ElementPropertyType.Name, (args.Update as ModifyStringPropertyArg).Value);
-                            break;
-                        }
-                    case ElementPropertyType.Population:
-                        {
-                            _infoPanel.SetTextElement(ElementPropertyType.Population, (args.Update as ModifyIntPropertyArg).Value.ToString());
-                            break;
-                        }
-                    case ElementPropertyType.Jobs:
-                        {
-                            _infoPanel.SetTextElement(ElementPropertyType.Jobs, (args.Update as ModifyIntPropertyArg).Value.ToString());
                             break;
                         }
                     case ElementPropertyType.EastExt:
