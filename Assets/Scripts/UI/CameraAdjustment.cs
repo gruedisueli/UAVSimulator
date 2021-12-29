@@ -59,6 +59,7 @@ namespace Assets.Scripts.UI
          */
         void LateUpdate()
         {
+            bool changed = false;
             //set to top view if certain macro pressed:
             if (Input.GetKeyUp(KeyCode.T) && (Input.GetKeyUp(KeyCode.LeftControl) || Input.GetKeyUp(KeyCode.RightControl)))//set view to top
             {
@@ -66,6 +67,7 @@ namespace Assets.Scripts.UI
                 //currentRotation = transform.rotation;
                 _rotation = _desiredRotation;
                 _camera.transform.rotation = _rotation;
+                changed = true;
             }
 
             // If middle mouse ORBIT
@@ -84,6 +86,7 @@ namespace Assets.Scripts.UI
 
                 _rotation = Quaternion.Lerp(_currentRotation, _desiredRotation, Time.deltaTime * _zoomDampening);
                 _camera.transform.rotation = _rotation;
+                changed = true;
             }
             // otherwise if middle mouse is selected, we pan by way of transforming the target in screenspace
             else if (_allowPan && Input.GetMouseButton(1))
@@ -93,21 +96,29 @@ namespace Assets.Scripts.UI
                 var tY = _camera.transform.up * -Input.GetAxis("Mouse Y") * _panSpeed;
                 _camera.transform.Translate(tX);
                 _camera.transform.Translate(tY, Space.World);
+                changed = true;
             }
             //zoom
             if (_allowZoom)
             {
-                if (_isPerspective)
+                var wheel = Input.GetAxis("Mouse ScrollWheel");
+                if (_isPerspective && wheel != 0)
                 {
                     // calculate position based on the new currentDistance 
-                    var transZoom = Vector3.forward * Input.GetAxis("Mouse ScrollWheel") * _zoomRate;
+                    var transZoom = Vector3.forward * wheel * _zoomRate;
                     _camera.transform.Translate(transZoom);
+                    changed = true;
                 }
-                else
+                else if (wheel != 0)
                 {
-                    float s = _camera.orthographicSize + Input.GetAxis("Mouse ScrollWheel") * _zoomRate * -1.0f;
+                    float s = _camera.orthographicSize + wheel * _zoomRate * -1.0f;
                     _camera.orthographicSize = s > _minOrthoZoom ? s : _minOrthoZoom;
+                    changed = true;
                 }
+            }
+            if (changed)
+            {
+                EnvironManager.Instance.LastCamXZS = new float[] { _camera.transform.position.x, _camera.transform.position.z, _camera.orthographicSize };
             }
         }
 

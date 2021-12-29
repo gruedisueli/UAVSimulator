@@ -44,6 +44,13 @@ namespace Assets.Scripts.UI
             _abstractMap.SetExtentOptions(range);
             _abstractMap.Initialize(EnvironManager.Instance.Environ.CenterLatLong, EnvironSettings.REGION_ZOOM_LEVEL);
             _largeScaleMap.Initialize(EnvironManager.Instance.Environ.CenterLatLong, EnvironSettings.AIRSPACE_ZOOM_LEVEL);
+
+            if (EnvironManager.Instance.LastCamXZS != null)
+            {
+                var p = EnvironManager.Instance.LastCamXZS;
+                _mainCamera.transform.position = new Vector3(p[0], _mainCamera.transform.position.y, p[1]);
+                _mainCamera.orthographicSize = p[2];
+            }
         }
 
         protected override void OnDestroyDerived()

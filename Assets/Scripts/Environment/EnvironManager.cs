@@ -52,6 +52,10 @@ namespace Assets.Scripts.Environment
         public Environ Environ { get; private set; } = new Environ();
         public string OpenedFile { get; private set; } = "";
         public string ActiveCity { get; private set; } = "";
+        /// <summary>
+        /// Last position of the camera, X, Z, and S, where "S" is Camera component "Size" parameter
+        /// </summary>
+        public float[] LastCamXZS { get; set; } = null;
         public Dictionary<string, DronePortAssetPack> DronePortAssets { get; private set; } = new Dictionary<string, DronePortAssetPack>();
         public Dictionary<string, ParkingStructureAssetPack> ParkingStructAssets { get; private set; } = new Dictionary<string, ParkingStructureAssetPack>();
         public Dictionary<string, RestrictionZoneAssetPack> RestrictionZoneAssets { get; private set; } = new Dictionary<string, RestrictionZoneAssetPack>();
