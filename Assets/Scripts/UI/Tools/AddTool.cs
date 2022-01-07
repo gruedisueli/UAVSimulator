@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using Mapbox.Unity.MeshGeneration.Data;
 
 using Assets.Scripts.UI.EventArgs;
+using Assets.Scripts.UI;
 
 using UnityEngine;
 
@@ -69,29 +70,12 @@ namespace Assets.Scripts.UI.Tools
             }
             if (Input.GetMouseButtonUp(0))
             {
-                bool hit = Physics.Raycast(Camera.main.ScreenPointToRay(Input.mousePosition), out RaycastHit hitInfo);
-                if (hit)
+                if (GUIUtils.TryToSelect(out var hitInfo))
                 {
-                    var gO = hitInfo.transform.gameObject;
-                    var uT = gO.GetComponentInParent<UnityTile>();
-                    if (uT != null) //check that we've hit a terrain tile and not something else like a button.
-                    {
-                        _hitInfo = hitInfo;
-                        _position = hitInfo.point;
-
-                        ElementAddedEvent.Invoke(GatherInformation());
-                    }
-                    else
-                    {
-                        hit = false;
-                    }
+                    _hitInfo = hitInfo;
+                    _position = hitInfo.point;
+                    ElementAddedEvent.Invoke(GatherInformation());
                 }
-
-                if (!hit)
-                {
-                    Debug.Log("No hit");
-                }
-
             }
         }
     }
