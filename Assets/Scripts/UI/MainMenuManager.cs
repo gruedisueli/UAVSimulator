@@ -36,6 +36,11 @@ namespace Assets.Scripts.UI
 
         }
 
+        public void Quit()
+        {
+            Application.Quit();
+        }
+
         IEnumerator LoadAsyncOperation(int scenePath)
         {
             var pG = Instantiate(EnvironManager.Instance.ProgressBarPrefab, _canvas.gameObject.transform);
