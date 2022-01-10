@@ -153,6 +153,7 @@ namespace Assets.Scripts.UI
                                 //see: https://answers.unity.com/questions/348974/edit-camera-culling-mask.html
                                 var u = args.Update as ModifyBoolPropertyArg;
                                 LayerVisibility("RestrictionZone", u.Value);
+                                LayerVisibility("LandingZone", u.Value);
                                 break;
                             }
                     }

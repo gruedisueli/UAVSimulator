@@ -15,6 +15,8 @@ namespace Assets.Scripts.Environment
     [JsonObject(MemberSerialization.OptIn)]
     public class RestrictionZoneRect : RestrictionZoneBase
     {
+        private static readonly float DEFAULT_EDGE_LENGTH = 100;
+
         [JsonProperty]
         private string _type = "Rect";
         public override string Type
@@ -37,7 +39,7 @@ namespace Assets.Scripts.Environment
         }
 
         [JsonProperty]
-        private float _height = 1;
+        private float _height = DEFAULT_EDGE_LENGTH;
         public float Height
         {
             get
@@ -46,13 +48,15 @@ namespace Assets.Scripts.Environment
             }
             set
             {
+                float diff = value - _height;
                 _height = value;
                 _scale = new SerVect3f(Scale.x, _height, Scale.z);
+                _position = new SerVect3f(Position.x, Position.y + diff, Position.z);
             }
         }
 
         [JsonProperty]
-        private SerVect3f _scale = new SerVect3f(1, 0, 1);
+        private SerVect3f _scale = new SerVect3f(DEFAULT_EDGE_LENGTH, DEFAULT_EDGE_LENGTH, DEFAULT_EDGE_LENGTH);
         public Vector3 Scale
         {
             get
@@ -68,10 +72,6 @@ namespace Assets.Scripts.Environment
             get
             {
                 return _position.ToVector3();
-            }
-            set
-            {
-                _position = new SerVect3f(value);
             }
         }
 
@@ -99,7 +99,7 @@ namespace Assets.Scripts.Environment
 
         public RestrictionZoneRect(Vector3 pos)
         {
-            Position = pos;
+            _position = new SerVect3f(pos.x, pos.y + _height / 2, pos.z);
         }
 
         public RestrictionZoneRect(RestrictionZoneRect rZ)
@@ -152,11 +152,11 @@ namespace Assets.Scripts.Environment
                             SetZScale((args as ModifyFloatPropertyArg).Value);
                             break;
                         }
-                    case ElementPropertyType.Position:
-                        {
-                            Position = (args as ModifyVector3PropertyArg).Value;
-                            break;
-                        }
+                    //case ElementPropertyType.Position:
+                    //    {
+                    //        Position = (args as ModifyVector3PropertyArg).Value;
+                    //        break;
+                    //    }
                     case ElementPropertyType.Rotation:
                         {
                             Rotation = (args as ModifyVector3PropertyArg).Value;

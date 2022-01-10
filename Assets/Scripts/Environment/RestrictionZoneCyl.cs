@@ -16,6 +16,9 @@ namespace Assets.Scripts.Environment
     [JsonObject(MemberSerialization.OptIn)]
     public class RestrictionZoneCyl : RestrictionZoneBase
     {
+        private static readonly float DEFAULT_HEIGHT = 1000;
+        private static readonly float DEFAULT_RADIUS = 250;
+
         [JsonProperty]
         private string _type = "Cyl";
         public override string Type
@@ -38,7 +41,7 @@ namespace Assets.Scripts.Environment
         }
 
         [JsonProperty]
-        private float _height = 1;
+        private float _height = DEFAULT_HEIGHT;
         public float Height
         {
             get
@@ -54,7 +57,7 @@ namespace Assets.Scripts.Environment
         }
 
         [JsonProperty]
-        private float _radius = 1;
+        private float _radius = DEFAULT_RADIUS;
         public float Radius
         {
             get
@@ -93,7 +96,7 @@ namespace Assets.Scripts.Environment
         }
 
         [JsonProperty]
-        private float _top = 0;
+        private float _top = DEFAULT_HEIGHT;
         public float Top
         {
             get
@@ -141,7 +144,7 @@ namespace Assets.Scripts.Environment
         }
 
         [JsonProperty]
-        private SerVect3f _scale = new SerVect3f(1, 1, 1);
+        private SerVect3f _scale = new SerVect3f(DEFAULT_RADIUS, DEFAULT_HEIGHT, DEFAULT_RADIUS);
         public Vector3 Scale
         {
             get
@@ -171,6 +174,8 @@ namespace Assets.Scripts.Environment
         public RestrictionZoneCyl(Vector3 pos)
         {
             _position = new SerVect3f(pos);
+            Top = pos.y + _height;
+            Bottom = pos.y;
         }
 
         public RestrictionZoneCyl(RestrictionZoneCyl rZ)

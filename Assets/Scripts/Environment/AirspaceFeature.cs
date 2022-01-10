@@ -489,6 +489,7 @@ namespace Assets.Scripts.Environment
             mR.sharedMaterial = UnityEngine.Object.Instantiate(EnvironManager.Instance.RestrictionZoneMaterial);
             mF.mesh = airspaceMesh;
             gO.transform.position = disp;
+            gO.layer = 8;
 
             Zone = gO;
 

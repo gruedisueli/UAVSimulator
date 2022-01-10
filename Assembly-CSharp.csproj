@@ -54,6 +54,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="Assets\Scripts\MapboxCustom\FOA_MapboxSettings.cs" />
+    <Compile Include="Assets\Scripts\UI\Tools\OpenURL.cs" />
     <Compile Include="Assets\Mapbox\Unity\Utilities\AndroidSettings.cs" />
     <Compile Include="Assets\Mapbox\Unity\Location\Logging\LocationLogReader.cs" />
     <Compile Include="Assets\Mapbox\Unity\MeshGeneration\Factories\TerrainDataFetcher.cs" />
@@ -325,6 +326,7 @@
     <Compile Include="Assets\Mapbox\Unity\MeshGeneration\Data\KdTreeCollection.cs" />
     <Compile Include="Assets\Scripts\UI\LoadingSceneManager.cs" />
     <Compile Include="Assets\Scripts\UI\Fields\EditableField.cs" />
+    <Compile Include="Assets\Scripts\UI\GUIUtils.cs" />
     <Compile Include="Assets\Mapbox\Unity\MeshGeneration\LayerVisualizers\LocationPrefabsLayerVisualizer.cs" />
     <Compile Include="Assets\Mapbox\Core\cheap-ruler-cs\CheapRuler.cs" />
     <Compile Include="Assets\Mapbox\Unity\MeshGeneration\Modifiers\MeshGenerationBase.cs" />
@@ -556,8 +558,6 @@
     <Compile Include="Assets\Mapbox\Core\mapbox-sdk-cs\Map\ClassicRasterTile.cs" />
     <Compile Include="Assets\Scripts\UI\Tools\RestrictionInfoPanel.cs" />
     <Compile Include="Assets\Mapbox\Unity\MeshGeneration\Modifiers\ModifierStack.cs" />
-    <Compile Include="Assets\Scripts\UI\Tools\OpenURL.cs" />
-    <Compile Include="Assets\Scripts\UI\GUIUtils.cs" />
   </ItemGroup>
   <ItemGroup>
      <None Include="Assets\Mapbox\Core\Plugins\Mapbox\vector-tile-cs\net46\Mapbox.VectorTile.Geometry.dll" />

@@ -372,11 +372,16 @@ namespace Assets.Scripts.UI
         {
             if (_selectedElement == null) //only change selection if we don't have something selected
             {
-                // if sE is not the restriction zone for a parking structure or a drone port sE gets selected
-                // Otherwise, sE's parent, which is a parking structure or a drone port gets selected
-                if (sE.gameObject.layer != 13) _selectedElement = sE;
-                else _selectedElement = sE.gameObject.transform.parent.gameObject.GetComponent<SceneElementBase>();
+                //get highest level Scene element, in case this object is nested
+                var highest = sE;
+                while (true)
+                {
+                    var tmp = highest.transform.parent?.gameObject.GetComponentInParent<SceneElementBase>();
+                    if (tmp == null) break;
+                    highest = tmp;
+                }
 
+                _selectedElement = highest;
                 _selectedElement.SetSelectedState(true);
 
                 //instantiate and turn on info panel
@@ -407,39 +412,32 @@ namespace Assets.Scripts.UI
         /// <summary>
         /// Final setup of info panel. True on success, false if not.
         /// </summary>
-        private bool InitInfoPanel(GameObject prefab)
+        private bool InitInfoPanel(GameObject clone)
         {
-            if (prefab == null)
+            if (clone == null)
             {
-                Debug.LogError("No info panel prefab provided");
+                Debug.LogError("No info panel clone provided");
                 return false;
             }
-            prefab.transform.SetParent(_mainCanvas.transform, false);//IMPORTANT: second argument is "false" to allow for canvas rescaling on different screens.
-            _currentInfoPanel = prefab.GetComponent<ElementInfoPanel>();
+            clone.transform.SetParent(_mainCanvas.transform, false);//IMPORTANT: second argument is "false" to allow for canvas rescaling on different screens.
+            _currentInfoPanel = clone.GetComponent<ElementInfoPanel>();
             if (_currentInfoPanel == null)
             {
-                Debug.LogError("Could not find info panel on prefab");
+                Debug.LogError("Could not find info panel on clone");
                 return false;
             }
             _currentInfoPanel.Initialize(_selectedElement);
 
             //subscribe to events.
-            //start modify
             _currentInfoPanel.StartModifyTool.OnStartModify += StartModifying;
-            //cancel modify
             _currentInfoPanel.ModifyPanel._closeTool.OnClose += CancelCommit;
-            //commit modify
             _currentInfoPanel.ModifyPanel.CommitTool.OnCommit += CommitUpdates;
-            //modification events from tools
             foreach(var t in _currentInfoPanel.ModifyTools)
             {
                 t.OnElementModified += ElementModify;
             }
-            //removal tool
-            _currentInfoPanel.RemoveTool.OnSelectedElementRemoved += RemoveSelectedElement;    
-            //deselect tool
+            _currentInfoPanel.RemoveTool.OnSelectedElementRemoved += RemoveSelectedElement;
             _currentInfoPanel.DeselectTool.OnDeselect += DeselectElement;
-            //scene change
             if (_currentInfoPanel is CityInfoPanel)
             {
                 var cP = _currentInfoPanel as CityInfoPanel;
@@ -453,6 +451,14 @@ namespace Assets.Scripts.UI
         /// </summary>
         protected virtual void DeselectElement(object sender, DeselectArgs args)
         {
+            Deselect();
+        }
+
+        /// <summary>
+        /// Does actual deselecting
+        /// </summary>
+        private void Deselect()
+        {
             if (_selectedElement != null)
             {
                 _selectedElement.SetSelectedState(false);
@@ -462,6 +468,7 @@ namespace Assets.Scripts.UI
             if (_currentInfoPanel != null)
             {
                 _currentInfoPanel.gameObject.Destroy();
+                _currentInfoPanel = null;
             }
         }
 
@@ -537,6 +544,7 @@ namespace Assets.Scripts.UI
         /// </summary>
         protected void EndModification(bool commit)
         {
+                var old = _selectedElement;
             if (commit) ///throw out old version of selected element and replace in both game and environment
             {
                 string guidOld = _selectedElement.Guid;
@@ -576,6 +584,7 @@ namespace Assets.Scripts.UI
                     _selectedElement = InstantiateCity(guidOld, wc.CitySpecs, true);
                 }
             }
+            _currentInfoPanel.ChangeSelectedObject(_selectedElement.gameObject);
 
             //regardless, we want to delete this working copy, if there is one.
             _workingCopy?.gameObject.Destroy();
@@ -583,9 +592,7 @@ namespace Assets.Scripts.UI
 
             //update selected because we threw out old
             _selectedElement.SetActive(true);
-            _selectedElement.SetSelectedState(false);
-            _selectedElement = null;
-            
+            _selectedElement.SetSelectedState(true);
         }
 
         /// <summary>
@@ -1139,13 +1146,13 @@ namespace Assets.Scripts.UI
         protected SceneDronePort InstantiateDronePort(string guid, DronePortBase dP, bool register, bool selectable, bool is2D)
         {
             SceneDronePort sDP = null;
-            if (dP is DronePortRect)
+            if (dP is DronePortRect dpr)
             {
-                sDP = InstantiateRectDronePort(guid, dP as DronePortRect, register, is2D, selectable);
+                sDP = InstantiateRectDronePort(guid, dpr, register, is2D, selectable);
             }
-            else if (dP is DronePortCustom)
+            else if (dP is DronePortCustom dpc)
             {
-                sDP = InstantiateCustomDronePort(guid, dP as DronePortCustom, register, selectable, is2D);
+                sDP = InstantiateCustomDronePort(guid, dpc, register, selectable, is2D);
             }
             else
             {

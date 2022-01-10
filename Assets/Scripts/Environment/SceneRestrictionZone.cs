@@ -31,7 +31,7 @@ namespace Assets.Scripts.Environment
             {
                 type = "Rect";
                 var rRect = rZ as RestrictionZoneRect;
-                transform.position = rRect.Position;
+                transform.position = new Vector3(rRect.Position.x, 0, rRect.Position.z);
                 InstantiateRect(rRect);
 
             }
@@ -39,14 +39,14 @@ namespace Assets.Scripts.Environment
             {
                 type = "Cyl";
                 var rCyl = rZ as RestrictionZoneCyl;
-                transform.position = rCyl.Position;
+                transform.position = new Vector3(rCyl.Position.x, 0, rCyl.Position.z);
                 InstantiateCyl(rCyl);
             }
             else if (rZ is RestrictionZoneCylStack)
             {
                 type = "CylStacked";
                 var tmp = rZ as RestrictionZoneCylStack;
-                transform.position = tmp.Position;
+                transform.position = new Vector3(tmp.Position.x, 0, tmp.Position.z);
                 foreach(var t  in tmp.Elements)
                 {
                     InstantiateCyl(t);
@@ -137,8 +137,7 @@ namespace Assets.Scripts.Environment
         {
             var cube = GameObject.CreatePrimitive(PrimitiveType.Cube);
             cube.transform.parent = transform;
-            cube.transform.position = rZ.Position;
-            cube.transform.localScale = rZ.Scale;
+            UpdateSingleRect(cube, rZ);
             SubElements.Add(cube);
         }
 
@@ -149,8 +148,7 @@ namespace Assets.Scripts.Environment
         {
             var cyl = GameObject.CreatePrimitive(PrimitiveType.Cylinder);
             cyl.transform.parent = transform;
-            cyl.transform.position = rZ.Position;
-            cyl.transform.localScale = rZ.Scale;
+            UpdateSingleCyl(cyl, rZ);
             SubElements.Add(cyl);
         }
 
@@ -159,9 +157,9 @@ namespace Assets.Scripts.Environment
         /// </summary>
         private void UpdateSingleRect(GameObject gO, RestrictionZoneRect rZ)
         {
-            gO.transform.localScale = new Vector3(rZ.Scale.x, rZ.Height, rZ.Scale.z);
-            gO.transform.position = new Vector3(rZ.Position.x, rZ.Height / 2, rZ.Position.z);
-            gO.transform.rotation = Quaternion.Euler(rZ.Rotation.x, rZ.Rotation.y, rZ.Rotation.z);
+            gO.transform.localScale = new Vector3(rZ.Scale.x, rZ.Scale.y, rZ.Scale.z);
+            gO.transform.localPosition = new Vector3(0, rZ.Position.y, 0);
+            gO.transform.localRotation = Quaternion.Euler(rZ.Rotation.x, rZ.Rotation.y, rZ.Rotation.z);
         }
 
         /// <summary>
@@ -169,9 +167,9 @@ namespace Assets.Scripts.Environment
         /// </summary>
         private void UpdateSingleCyl(GameObject gO, RestrictionZoneCyl rZ)
         {
-            gO.transform.localScale = new Vector3(rZ.Scale.x, rZ.Height, rZ.Scale.z);
-            gO.transform.position = new Vector3(rZ.Position.x, rZ.Height / 2, rZ.Position.z);
-            gO.transform.rotation = Quaternion.Euler(rZ.Rotation.x, rZ.Rotation.y, rZ.Rotation.z);
+            gO.transform.localScale = new Vector3(rZ.Scale.x, rZ.Scale.y, rZ.Scale.z);
+            gO.transform.localPosition = new Vector3(0, rZ.Position.y, 0);
+            gO.transform.localRotation = Quaternion.Euler(rZ.Rotation.x, rZ.Rotation.y, rZ.Rotation.z);
         }
     }
 }

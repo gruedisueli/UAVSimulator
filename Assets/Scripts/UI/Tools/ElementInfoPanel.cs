@@ -54,6 +54,13 @@ namespace Assets.Scripts.UI.Tools
             }
         }
 
+        /// <summary>
+        /// Changes object this panel is hovering over.
+        /// </summary>
+        public void ChangeSelectedObject(GameObject newObject)
+        {
+            _elementFollower?.Initialize(newObject);
+        }
 
         protected virtual void StartModify(object sender, System.EventArgs args)
         {

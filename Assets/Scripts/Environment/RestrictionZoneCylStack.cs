@@ -86,6 +86,7 @@ namespace Assets.Scripts.Environment
         {
             _type = rZ.Type;
             _description = rZ.Description;
+            _position = rZ._position;
             _elements = new RestrictionZoneCyl[rZ.Elements.Length];
             for (int i = 0; i < rZ.Elements.Length; i++)
             {
@@ -123,10 +124,10 @@ namespace Assets.Scripts.Environment
         /// </summary>
         private void ConfigureDefaultStack()
         {
-            var cyl0 = new RestrictionZoneCyl(Position, 0, 579.12f, 2500);
-            var cyl1 = new RestrictionZoneCyl(Position, 579.12f, 1097.28f, 4000);
-            var cyl2 = new RestrictionZoneCyl(Position, 1097.28f, 3048, 7200);
-            _elements = new RestrictionZoneCyl[] { cyl0, cyl1, cyl2 };
+            var cyl0 = new RestrictionZoneCyl(new Vector3(0,0,0), 0, 579.12f, 2500);
+            var cyl1 = new RestrictionZoneCyl(new Vector3(0, 0, 0), 579.12f, 1097.28f, 4000);
+            var cyl2 = new RestrictionZoneCyl(new Vector3(0, 0, 0), 1097.28f, 3048, 7200);
+            _elements = new[] { cyl0, cyl1, cyl2 };
         }
     }
 }
