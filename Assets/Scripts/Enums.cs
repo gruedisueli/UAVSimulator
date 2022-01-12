@@ -172,4 +172,16 @@ namespace Assets.Scripts
         AndQuit
     }
 
+    public enum RestrictionPanelType
+    {
+        Rect = 0,
+        Cyl = 1,
+        CylStacked = 2
+    }
+
+    public enum ParkingPanelType
+    {
+        Rect = 0,
+        Custom = 1
+    }
 }

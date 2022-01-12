@@ -56,7 +56,9 @@ namespace Assets.Scripts.UI.Tools
         /// </summary>
         public virtual void RegisterModification()
         {
-            OnElementModified.Invoke(GatherInformation());
+            var info = GatherInformation();
+            if (info == null) return;
+            OnElementModified?.Invoke(info);
         }
 
         protected abstract void Init();

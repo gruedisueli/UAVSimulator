@@ -14,6 +14,8 @@ namespace Assets.Scripts.UI.Tools
     /// </summary>
     public class SliderTool : ModifyTool
     {
+        public float _min = 0;
+        public float _max = 360;
         protected Slider _slider;
         protected Text _text;
         protected float _value = 0;
@@ -38,6 +40,8 @@ namespace Assets.Scripts.UI.Tools
 
             _text.text = _isVisibilityModifier ? _visibilityType.ToString() : _propertyType.ToString() + ": " + _slider.value.ToString("F2");
 
+            _slider.minValue = _min;
+            _slider.maxValue = _max;
             _slider.onValueChanged.AddListener(ValueChanged);
         }
 
@@ -67,10 +71,25 @@ namespace Assets.Scripts.UI.Tools
             switch (_propertyType)
             {
                 case ElementPropertyType.Rotation:
-                    {
-                        return new ModifyElementArgs(new ModifyVector3PropertyArg(_propertyType, new Vector3(0, _value, 0)));
-                    }
-
+                {
+                    return new ModifyElementArgs(new ModifyVector3PropertyArg(_propertyType, new Vector3(0, _value, 0)));
+                }
+                case ElementPropertyType.Bottom:
+                {
+                    return new ModifyElementArgs(new ModifyFloatPropertyArg(ElementPropertyType.Bottom, _value));
+                }
+                case ElementPropertyType.Top:
+                {
+                    return new ModifyElementArgs(new ModifyFloatPropertyArg(ElementPropertyType.Top, _value));
+                }
+                case ElementPropertyType.Height:
+                {
+                    return new ModifyElementArgs(new ModifyFloatPropertyArg(ElementPropertyType.Height, _value));
+                }
+                case ElementPropertyType.Radius:
+                {
+                    return new ModifyElementArgs(new ModifyFloatPropertyArg(ElementPropertyType.Radius, _value));
+                }
             }
             
             switch (_visibilityType)

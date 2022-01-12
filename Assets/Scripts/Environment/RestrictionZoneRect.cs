@@ -51,7 +51,7 @@ namespace Assets.Scripts.Environment
                 float diff = value - _height;
                 _height = value;
                 _scale = new SerVect3f(Scale.x, _height, Scale.z);
-                _position = new SerVect3f(Position.x, Position.y + diff, Position.z);
+                _position = new SerVect3f(Position.x, Position.y + diff/2, Position.z);
             }
         }
 

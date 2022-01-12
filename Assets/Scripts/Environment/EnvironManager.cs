@@ -64,8 +64,11 @@ namespace Assets.Scripts.Environment
         public Material RestrictionZoneMaterial { get; private set; } = null;
         public GameObject CityInfoPanelPrefab { get; private set; } = null;
         public GameObject DronePortInfoPanelPrefab { get; private set; } = null;
-        public GameObject ParkingInfoPanelPrefab { get; private set; } = null;
-        public GameObject RestrictionInfoPanelPrefab { get; private set; } = null;
+        public GameObject ParkingRectInfoPanelPrefab { get; private set; } = null;
+        public GameObject ParkingCustomInfoPanelPrefab { get; private set; } = null;
+        public GameObject RestrictionInfoPanelRectPrefab { get; private set; } = null;
+        public GameObject RestrictionInfoPanelCylPrefab { get; private set; } = null;
+        public GameObject RestrictionInfoPanelCylStackedPrefab { get; private set; } = null;
         public GameObject AddButtonPrefab { get; private set; } = null;
         public GameObject DroneIconPrefab { get; private set; } = null;
         public FOA_MapboxSettings MapboxSettings { get; private set; } = null;
@@ -672,10 +675,16 @@ namespace Assets.Scripts.Environment
                 {
                     DronePortAssets[type].PreviewImage = sprite;
                 }
-                else
-                {
-                    DronePortAssets.Add(type, new DronePortAssetPack(null, null, sprite, DronePortCategory.Rect));
-                }
+
+                #region disabled rectangular drone ports here:
+
+                //else
+                //{
+                //    DronePortAssets.Add(type, new DronePortAssetPack(null, null, sprite, DronePortCategory.Rect));
+                //}
+
+
+                #endregion
             }
 
             PortSpritePrefab = Resources.Load<GameObject>("GUI/PortIcon");
@@ -744,8 +753,11 @@ namespace Assets.Scripts.Environment
             string rPath = "GUI/";
             CityInfoPanelPrefab = AssetUtils.ReadPrefab(rPath, "CityInfoPanel");
             DronePortInfoPanelPrefab = AssetUtils.ReadPrefab(rPath, "DronePortInfoPanel");
-            ParkingInfoPanelPrefab = AssetUtils.ReadPrefab(rPath, "ParkingInfoPanel");
-            RestrictionInfoPanelPrefab = AssetUtils.ReadPrefab(rPath, "RestrictionInfoPanel");
+            ParkingRectInfoPanelPrefab = AssetUtils.ReadPrefab(rPath, "ParkingRectInfoPanel");
+            ParkingCustomInfoPanelPrefab = AssetUtils.ReadPrefab(rPath, "ParkingCustomInfoPanel");
+            RestrictionInfoPanelRectPrefab = AssetUtils.ReadPrefab(rPath, "RestrictionInfoPanelRect");
+            RestrictionInfoPanelCylPrefab = AssetUtils.ReadPrefab(rPath, "RestrictionInfoPanelCyl");
+            RestrictionInfoPanelCylStackedPrefab = AssetUtils.ReadPrefab(rPath, "RestrictionInfoPanelCylStacked");
         }
 
         /// <summary>

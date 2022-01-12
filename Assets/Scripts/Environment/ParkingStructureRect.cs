@@ -65,6 +65,7 @@ namespace Assets.Scripts.Environment
             set
             {
                 _rotation = new SerVect3f(value);
+                ApplyParkingGrid();
             }
         }
 
@@ -79,6 +80,7 @@ namespace Assets.Scripts.Environment
             set
             {
                 _scale = new SerVect3f(value);
+                ApplyParkingGrid();
             }
         }
 

@@ -13,6 +13,8 @@ namespace Assets.Scripts.UI.Tools
 {
     public class RestrictionInfoPanel : ElementInfoPanel
     {
+        public RestrictionPanelType _type;
+        private RestrictionZoneBase _zoneSpecs;
         public override void Initialize(SceneElementBase sceneElement)
         {
             base.Initialize(sceneElement);
@@ -31,44 +33,56 @@ namespace Assets.Scripts.UI.Tools
             _infoPanel.SetTextElement(ElementPropertyType.Type, t);
             _infoPanel.SetTextElement(ElementPropertyType.Description, specs.Description);
 
-            //not done building out this panel.
-
-            //if (specs is RestrictionZoneRect)
-            //{
-            //    var s = specs as RestrictionZoneRect;
-            //    SetTextElement(ElementPropertyType.Rotation, s.Rotation.y.ToString("F2"));
-            //}
-            //else if (specs is RestrictionZoneCyl)
-            //{
-            //    var s = specs as RestrictionZoneCyl;
-            //    SetTextElement(ElementPropertyType.)
-            //}
-            //else if (specs is RestrictionZoneCylStack)
-            //{
-
-            //}
-
-                //different types of restriction zones mean params may be different from one to next.
+            UpdateFields(specs);
         }
 
         protected override void ModifyTextValues(IModifyElementArgs args)
         {
-            try
-            {
-                //switch (args.Update.Type)
-                //{
-                //    case ElementPropertyType.Rotation:
-                //        {
-                //            SetTextElement(ElementPropertyType.Rotation, (args.Update as ModifyFloatPropertyArg).Value.ToString("F2"));
-                //            break;
-                //        }
-                //}
 
-            }
-            catch
+        }
+
+        protected override void StartModify(object sender, System.EventArgs args)
+        {
+            UpdateFields(_zoneSpecs);
+            base.StartModify(sender, args);
+        }
+
+        /// <summary>
+        /// Refreshes fields on this panel
+        /// </summary>
+        public void UpdateFields(RestrictionZoneBase specs)
+        {
+            _zoneSpecs = specs;
+            switch (_type)
             {
-                Debug.LogError("Casting error in restriction zone modify update");
-                return;
+                case RestrictionPanelType.Rect:
+                {
+                    if (!(specs is RestrictionZoneRect rZ)) break;
+                    _infoPanel.SetTextElement(ElementPropertyType.Rotation, rZ.Rotation.y);
+                    _infoPanel.SetTextElement(ElementPropertyType.Height, rZ.Height);
+                    _infoPanel.SetTextElement(ElementPropertyType.XScale, rZ.Scale.x);
+                    _infoPanel.SetTextElement(ElementPropertyType.ZScale, rZ.Scale.z);
+                    SetModifyToolValue(ElementPropertyType.Rotation, rZ.Rotation.y);
+                    SetModifyToolValue(ElementPropertyType.Height, rZ.Height);
+                    SetModifyToolValue(ElementPropertyType.XScale, rZ.Scale.x);
+                    SetModifyToolValue(ElementPropertyType.ZScale, rZ.Scale.z);
+                    break;
+                }
+                case RestrictionPanelType.Cyl:
+                {
+                    if (!(specs is RestrictionZoneCyl rZ)) break;
+                    _infoPanel.SetTextElement(ElementPropertyType.Top, rZ.Top);
+                    _infoPanel.SetTextElement(ElementPropertyType.Bottom, rZ.Bottom);
+                    _infoPanel.SetTextElement(ElementPropertyType.Radius, rZ.Radius);
+                    SetModifyToolValue(ElementPropertyType.Top, rZ.Top);
+                    SetModifyToolValue(ElementPropertyType.Bottom, rZ.Bottom);
+                    SetModifyToolValue(ElementPropertyType.Radius, rZ.Radius);
+                    break;
+                    }
+                case RestrictionPanelType.CylStacked:
+                {
+                    break;
+                }
             }
         }
     }

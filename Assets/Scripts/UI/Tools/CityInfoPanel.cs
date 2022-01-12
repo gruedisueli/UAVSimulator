@@ -19,6 +19,7 @@ namespace Assets.Scripts.UI.Tools
     public class CityInfoPanel : ElementInfoPanel
     {
         public SceneChangeTool GoToCity { get; private set; }
+        private CityOptions _cityOptions;
 
         public override void Initialize(SceneElementBase sceneElement)
         {
@@ -33,18 +34,13 @@ namespace Assets.Scripts.UI.Tools
                 return;
             }
 
-            var specs = sCity.CitySpecs;
-
-            _infoPanel.SetTextElement(ElementPropertyType.Name, specs.Name);
-            _infoPanel.SetTextElement(ElementPropertyType.EastExt, specs.EastExt.ToString());
-            _infoPanel.SetTextElement(ElementPropertyType.WestExt, specs.WestExt.ToString());
-            _infoPanel.SetTextElement(ElementPropertyType.NorthExt, specs.NorthExt.ToString());
-            _infoPanel.SetTextElement(ElementPropertyType.SouthExt, specs.SouthExt.ToString());
-
+            _cityOptions = sCity.CitySpecs;
+            UpdateFields(_cityOptions);
         }
 
         protected override void StartModify(object sender, System.EventArgs args)
         {
+            UpdateFields(_cityOptions);
             base.StartModify(sender, args);
 
             GoToCity.SetInteractable(false);
@@ -64,45 +60,24 @@ namespace Assets.Scripts.UI.Tools
             GoToCity.SetInteractable(true);
         }
 
+        public void UpdateFields(CityOptions specs)
+        {
+            _cityOptions = specs;
+            _infoPanel.SetTextElement(ElementPropertyType.Name, specs.Name);
+            _infoPanel.SetTextElement(ElementPropertyType.EastExt, specs.EastExt.ToString());
+            _infoPanel.SetTextElement(ElementPropertyType.WestExt, specs.WestExt.ToString());
+            _infoPanel.SetTextElement(ElementPropertyType.NorthExt, specs.NorthExt.ToString());
+            _infoPanel.SetTextElement(ElementPropertyType.SouthExt, specs.SouthExt.ToString());
+            SetModifyToolValue(ElementPropertyType.Name, specs.Name);
+            SetModifyToolValue(ElementPropertyType.EastExt, specs.EastExt);
+            SetModifyToolValue(ElementPropertyType.WestExt, specs.WestExt);
+            SetModifyToolValue(ElementPropertyType.NorthExt, specs.NorthExt);
+            SetModifyToolValue(ElementPropertyType.SouthExt, specs.SouthExt);
+        }
+
         protected override void ModifyTextValues(IModifyElementArgs args)
         {
-            try
-            {
-                switch (args.Update.ElementPropertyType)
-                {
-                    case ElementPropertyType.Name:
-                        {
-                            _infoPanel.SetTextElement(ElementPropertyType.Name, (args.Update as ModifyStringPropertyArg).Value);
-                            break;
-                        }
-                    case ElementPropertyType.EastExt:
-                        {
-                            _infoPanel.SetTextElement(ElementPropertyType.EastExt, (args.Update as ModifyIntPropertyArg).Value.ToString());
-                            break;
-                        }
-                    case ElementPropertyType.WestExt:
-                        {
-                            _infoPanel.SetTextElement(ElementPropertyType.WestExt, (args.Update as ModifyIntPropertyArg).Value.ToString());
-                            break;
-                        }
-                    case ElementPropertyType.NorthExt:
-                        {
-                            _infoPanel.SetTextElement(ElementPropertyType.NorthExt, (args.Update as ModifyIntPropertyArg).Value.ToString());
-                            break;
-                        }
-                    case ElementPropertyType.SouthExt:
-                        {
-                            _infoPanel.SetTextElement(ElementPropertyType.SouthExt, (args.Update as ModifyIntPropertyArg).Value.ToString());
-                            break;
-                        }
-                }
-
-            }
-            catch
-            {
-                Debug.LogError("Casting error in city modify panel update");
-                return;
-            }
+            
         }
     }
 }

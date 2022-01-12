@@ -13,6 +13,9 @@ namespace Assets.Scripts.UI.Tools
 {
     public class ParkingInfoPanel : ElementInfoPanel
     {
+        public ParkingPanelType _type;
+        private ParkingStructureBase _parkingSpecs;
+
         public override void Initialize(SceneElementBase sceneElement)
         {
             base.Initialize(sceneElement);
@@ -31,35 +34,47 @@ namespace Assets.Scripts.UI.Tools
 
             _infoPanel.SetTextElement(ElementPropertyType.Type, t);
             _infoPanel.SetTextElement(ElementPropertyType.Description, specs.Description);
-            _infoPanel.SetTextElement(ElementPropertyType.Rotation, specs.Rotation.y.ToString("F2"));
 
-            SliderTool sT = GetComponentInChildren<SliderTool>(true);
-            if (sT == null)
-            {
-                Debug.LogError("Slider Tool not found in children of parking input panel");
-                return;
-            }
-            sT.SetValue(specs.Rotation.y);
+            UpdateFields(specs);
         }
 
         protected override void ModifyTextValues(IModifyElementArgs args)
         {
-            try
-            {
-                switch (args.Update.ElementPropertyType)
-                {
-                    case ElementPropertyType.Rotation:
-                        {
-                            _infoPanel.SetTextElement(ElementPropertyType.Rotation, (args.Update as ModifyVector3PropertyArg).Value.y.ToString("F2"));
-                            break;
-                        }
-                }
 
-            }
-            catch
+        }
+
+        protected override void StartModify(object sender, System.EventArgs args)
+        {
+            UpdateFields(_parkingSpecs);
+            base.StartModify(sender, args);
+        }
+
+        /// <summary>
+        /// Refreshes fields on this panel
+        /// </summary>
+        public void UpdateFields(ParkingStructureBase specs)
+        {
+            _parkingSpecs = specs;
+            switch (_type)
             {
-                Debug.LogError("Casting error in parking structure modify update");
-                return;
+                case ParkingPanelType.Rect:
+                {
+                    if (!(specs is ParkingStructureRect pS)) break;
+                    _infoPanel.SetTextElement(ElementPropertyType.Rotation, pS.Rotation.y);
+                    _infoPanel.SetTextElement(ElementPropertyType.XScale, pS.Scale.x);
+                    _infoPanel.SetTextElement(ElementPropertyType.ZScale, pS.Scale.z);
+                    SetModifyToolValue(ElementPropertyType.Rotation, pS.Rotation.y);
+                    SetModifyToolValue(ElementPropertyType.XScale, pS.Scale.x);
+                    SetModifyToolValue(ElementPropertyType.ZScale, pS.Scale.z);
+                    break;
+                }
+                case ParkingPanelType.Custom:
+                {
+                    if (!(specs is ParkingStructureCustom pS)) break;
+                    _infoPanel.SetTextElement(ElementPropertyType.Rotation, pS.Rotation.y);
+                    SetModifyToolValue(ElementPropertyType.Rotation, pS.Rotation.y);
+                    break;
+                }
             }
         }
     }

@@ -12,6 +12,7 @@ namespace Assets.Scripts.UI.Tools
     public class TextElement : MonoBehaviour
     {
         public Text _text;
+        public String _nameOverride = "";
         public ElementPropertyType _propertyType;
 
         /// <summary>
@@ -19,7 +20,8 @@ namespace Assets.Scripts.UI.Tools
         /// </summary>
         public void SetTextAsValue(string value)
         {
-            _text.text = _propertyType.ToString() + ": " + value;
+            var prefix = _nameOverride == "" ? _propertyType.ToString() : _nameOverride;
+            _text.text = prefix + ": " + value;
         }
 
         public void SetActive(bool isActive)

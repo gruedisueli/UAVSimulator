@@ -394,13 +394,31 @@ namespace Assets.Scripts.UI
                 {
                     clone = Instantiate(EnvironManager.Instance.DronePortInfoPanelPrefab);
                 }
-                else if (_selectedElement is SceneParkingStructure)
+                else if (_selectedElement is SceneParkingStructure pS)
                 {
-                    clone = Instantiate(EnvironManager.Instance.ParkingInfoPanelPrefab);
+                    if (pS.ParkingStructureSpecs is ParkingStructureRect)
+                    {
+                        clone = Instantiate(EnvironManager.Instance.ParkingRectInfoPanelPrefab);
+                    }
+                    else if (pS.ParkingStructureSpecs is ParkingStructureCustom)
+                    {
+                        clone = Instantiate(EnvironManager.Instance.ParkingCustomInfoPanelPrefab);
+                    }
                 }
-                else if (_selectedElement is SceneRestrictionZone)
+                else if (_selectedElement is SceneRestrictionZone rZ)
                 {
-                    clone = Instantiate(EnvironManager.Instance.RestrictionInfoPanelPrefab);
+                    if (rZ.RestrictionZoneSpecs is RestrictionZoneRect)
+                    {
+                        clone = Instantiate(EnvironManager.Instance.RestrictionInfoPanelRectPrefab);
+                    }
+                    else if (rZ.RestrictionZoneSpecs is RestrictionZoneCyl)
+                    {
+                        clone = Instantiate(EnvironManager.Instance.RestrictionInfoPanelCylPrefab);
+                    }
+                    else if (rZ.RestrictionZoneSpecs is RestrictionZoneCylStack)
+                    {
+                        clone = Instantiate(EnvironManager.Instance.RestrictionInfoPanelCylStackedPrefab);
+                    }
                 }
                 bool success = InitInfoPanel(clone);
                 return success;
@@ -555,6 +573,8 @@ namespace Assets.Scripts.UI
                     RemoveDronePort(guidOld);
                     EnvironManager.Instance.AddDronePort(guidNew, wC.DronePortSpecs);
                     _selectedElement = InstantiateDronePort(guidNew, wC.DronePortSpecs, true, true, false);
+                    if (_currentInfoPanel is DronePortInfoPanel p)p.UpdateFields(wC.DronePortSpecs);
+                    _vehicleControlSystem.ResetSimulation();
                 }
                 else if (_workingCopy is SceneParkingStructure)
                 {
@@ -562,6 +582,8 @@ namespace Assets.Scripts.UI
                     RemoveParkingStructure(guidOld);
                     EnvironManager.Instance.AddParkingStructure(guidNew, wC.ParkingStructureSpecs);
                     _selectedElement = InstantiateParkingStructure(guidNew, wC.ParkingStructureSpecs, true, true, false);
+                    if (_currentInfoPanel is ParkingInfoPanel p)p.UpdateFields(wC.ParkingStructureSpecs);
+                    _vehicleControlSystem.ResetSimulation();
                 }
                 else if (_workingCopy is SceneRestrictionZone)
                 {
@@ -569,6 +591,8 @@ namespace Assets.Scripts.UI
                     RemoveRestrictionZone(guidOld);
                     EnvironManager.Instance.AddRestrictionZone(guidNew, wC.RestrictionZoneSpecs);
                     _selectedElement = InstantiateRestrictionZone(guidNew, wC.RestrictionZoneSpecs, true, true);
+                    if (_currentInfoPanel is RestrictionInfoPanel p) p.UpdateFields(wC.RestrictionZoneSpecs);
+                    _vehicleControlSystem.ResetSimulation();
                 }
                 else if (_workingCopy is SceneCity)
                 {
@@ -582,6 +606,7 @@ namespace Assets.Scripts.UI
                     }
                     EnvironManager.Instance.GetCities()[guidOld].CityStats = wc.CitySpecs;
                     _selectedElement = InstantiateCity(guidOld, wc.CitySpecs, true);
+                    if (_currentInfoPanel is CityInfoPanel p) p.UpdateFields(wc.CitySpecs);
                 }
             }
             _currentInfoPanel.ChangeSelectedObject(_selectedElement.gameObject);
@@ -757,6 +782,16 @@ namespace Assets.Scripts.UI
                             pS.LandingQueueDirection = (args.Update as ModifyVector3PropertyArg).Value;
                             break;
                         }
+                    case ElementPropertyType.XScale:
+                    {
+                        pS.Scale = new Vector3((args.Update as ModifyFloatPropertyArg).Value, pS.Scale.y, pS.Scale.z); 
+                        break;
+                    }
+                    case ElementPropertyType.ZScale:
+                    {
+                        pS.Scale = new Vector3(pS.Scale.x, pS.Scale.y, (args.Update as ModifyFloatPropertyArg).Value);
+                        break;
+                    }
                 }
             }
             catch

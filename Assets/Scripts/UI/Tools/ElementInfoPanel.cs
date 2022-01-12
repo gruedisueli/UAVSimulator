@@ -177,6 +177,62 @@ namespace Assets.Scripts.UI.Tools
             _elementFollower?.Initialize(sceneElement.gameObject);
         }
 
+        /// <summary>
+        /// Sets the value of a modify tool on this panel.
+        /// </summary>
+        public void SetModifyToolValue(ElementPropertyType pT, int value)
+        {
+            foreach (var m in ModifyTools)
+            {
+                if (m._propertyType != pT) continue;
+                if (m is SliderTool sT)
+                {
+                    sT.SetValue(value);
+                }
+                else if (m is ModifyFieldTool fT)
+                {
+                    fT.SetCurrentValue(value.ToString());
+                }
+                break;
+            }
+        }
+
+        /// <summary>
+        /// Sets the value of a modify tool on this panel.
+        /// </summary>
+        public void SetModifyToolValue(ElementPropertyType pT, float value)
+        {
+            foreach (var m in ModifyTools)
+            {
+                if (m._propertyType != pT) continue;
+                if (m is SliderTool sT)
+                {
+                    sT.SetValue(value);
+                }
+                else if (m is ModifyFieldTool fT)
+                {
+                    fT.SetCurrentValue(value.ToString("F2"));
+                }
+                break;
+            }
+        }
+
+        /// <summary>
+        /// Sets the value of a modify tool on this panel.
+        /// </summary>
+        public void SetModifyToolValue(ElementPropertyType pT, String value)
+        {
+            foreach (var m in ModifyTools)
+            {
+                if (m._propertyType != pT) continue;
+                else if (m is ModifyFieldTool fT)
+                {
+                    fT.SetCurrentValue(value);
+                }
+                break;
+            }
+        }
+
         protected abstract void ModifyTextValues(IModifyElementArgs args);
     }
 }

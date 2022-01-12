@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -14,20 +15,31 @@ namespace Assets.Scripts.UI.Tools
     public class ModifyFieldTool : ModifyTool
     {
         public InputFieldType _fieldType;
+        public Text _currentValueText;
 
         protected InputField _inputField;
 
+        /// <summary>
+        /// Sets value of "current value" text
+        /// </summary>
+        public void SetCurrentValue(String value)
+        {
+            _currentValueText.text = value;
+        }
+
         protected override void Init()
         {
-            _inputField = GetComponent<InputField>();
+            _inputField = GetComponentInChildren<InputField>();
             if (_inputField == null)
             {
-                Debug.LogError("Input field not found on field tool");
+                Debug.LogError("Input field not found on field tool children");
             }
         }
 
         protected override IModifyElementArgs GatherInformation()
         {
+            if (_inputField.text == "") return null;
+            _currentValueText.text = _inputField.text;
             if (_propertyType == ElementPropertyType.Unset)
             {
                 Debug.LogError("Modify field tool property is unset");
