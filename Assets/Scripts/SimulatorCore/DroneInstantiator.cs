@@ -26,8 +26,7 @@ namespace Assets.Scripts.SimulatorCore
         private VehicleControlSystem vcs;
         private Dictionary<string, VehicleSpec> _vehicleSpecs = new Dictionary<string, VehicleSpec>();
         private Dictionary<string, string> _vehicleTypes = new Dictionary<string, string>();
-        private string asset_root = SerializationSettings.ROOT + "\\";// "";//instantiate at runtime
-        
+
         public bool isCorridorDroneInstantiated;
         public bool isLowAltitudeDroneInstantiated;
         public bool isBackgroundDroneInstantiated;
@@ -41,11 +40,6 @@ namespace Assets.Scripts.SimulatorCore
         public List<GameObject> _lowAltitudeDrones = new List<GameObject>();
 
         public event EventHandler<DroneInstantiationArgs> OnDroneInstantiated;
-
-        //private void Awake()
-        //{
-        //    asset_root = SerializationSettings.ROOT + "\\";
-        //}
 
         public void Init(VehicleControlSystem vcs)
         {
@@ -89,17 +83,20 @@ namespace Assets.Scripts.SimulatorCore
         public void ReadVehicleSpecs()
         {
             if (_vehicleTypes.Keys.Count > 0) return;
-            string path = asset_root + "Resources\\Drones\\";
-            var files = Directory.GetFiles(path, "*.JSON");
-            foreach (var filename in files)
+            string rPath = "Drones/";
+            var textAssets = Resources.LoadAll<TextAsset>(rPath);
+            if (textAssets == null)
             {
-                string json = File.ReadAllText(filename, System.Text.Encoding.UTF8);
-                VehicleSpec vs = JsonUtility.FromJson<VehicleSpec>(json);
-                string name = Path.GetFileNameWithoutExtension(filename);
-                _vehicleTypes.Add(vs.type, name);
-                _vehicleSpecs.Add(name, vs);
+                Debug.LogError("Could not locate drone text assets");
+                return;
+            }
+            foreach (var j in textAssets)
+            {
+                VehicleSpec vS = JsonUtility.FromJson<VehicleSpec>(j.text);
+                _vehicleTypes.Add(vS.type, j.name);
+                _vehicleSpecs.Add(j.name, vS);
                 //if (vs.range < MIN_DRONE_RANGE) MIN_DRONE_RANGE = vs.range;
-                vs.range = Mathf.Infinity;
+                vS.range = Mathf.Infinity;
             }
         }
 

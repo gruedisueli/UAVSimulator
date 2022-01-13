@@ -79,11 +79,15 @@ public abstract class DroneBase : MonoBehaviour
     private Mesh originalMesh = null;
     public GameObject Clone2d { get; set; } = null;
 
+    void Awake()
+    {
+        vcs = GameObject.Find("SimulationCore").GetComponent<VehicleControlSystem>();
+    }
+
     void Start()
     {
         DRONE_LAYERMASK = 1 << 10;
         toPark = false;
-        vcs = GameObject.Find("SimulationCore").GetComponent<VehicleControlSystem>();
         simulationAnalyzer = GameObject.Find("SimulationCore").GetComponent<SimulationAnalyzer>();
         arrival_threshold = 0.5f;
         destinationQueue = new Queue<GameObject>();

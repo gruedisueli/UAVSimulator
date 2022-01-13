@@ -542,6 +542,7 @@ namespace Assets.Scripts.Environment
         public void LoadSaved(string name)
         {
             string path = SerializationSettings.SAVE_PATH + name + ".json";
+            if (!File.Exists(path)) return;
             Environ = DeserializeJsonFile<Environ>(path);
             OpenedFile = name;
             Debug.Log("File read from " + path);
@@ -600,48 +601,48 @@ namespace Assets.Scripts.Environment
         {
             ParkingStructAssets = new Dictionary<string, ParkingStructureAssetPack>();
 
-            string sPath = SerializationSettings.ROOT + "\\Resources\\ParkingStructures";
             string rPath = "ParkingStructures/";
-
-            //get DAT and prefab resources
-            var files = Directory.GetFiles(sPath, "*.DAT");
-            foreach (string filename in files)
+            var textAssets = Resources.LoadAll<TextAsset>(rPath);
+            if (textAssets == null)
             {
-                // Read lines and parse DAT files
-                StreamReader this_file = new StreamReader(filename);
-                string type = System.IO.Path.GetFileNameWithoutExtension(filename);
+                Debug.LogError("Could not locate parking structure text assets");
+                return;
+            }
+            //get DAT and prefab resources
+            foreach (var t in textAssets)
+            {
+                var lines = t.text.Split("\r\n".ToCharArray());
+                // Read lines and parse CSV files
                 List<Vector3> spots = new List<Vector3>();
-                string line;
-                while ((line = this_file.ReadLine()) != null)
+                foreach(var line in lines)
                 {
-                    line = line.Replace("(", "").Replace(")", "");
-                    var splitted = line.Split(',');
+                    var cleaned = line.Replace("(", "").Replace(")", "");//legacy from .DAT file...consider exporting .CSV files from source instead of .DAT...we changed extension of .DAT assets to .CSV
+                    var splitted = cleaned.Split(',');
+                    if (splitted.Length != 3) continue;
                     Vector3 point = new Vector3(float.Parse(splitted[0]), float.Parse(splitted[1]), float.Parse(splitted[2]));
                     spots.Add(point);
                 }
 
-                var pfb = AssetUtils.ReadPrefab(rPath, type);
+                var pfb = AssetUtils.ReadPrefab(rPath, t.name);
 
                 var pS = new ParkingStructureCustom();
                 pS.ParkingSpots = spots;
-                pS.Type = type;
-                ParkingStructAssets.Add(type, new ParkingStructureAssetPack(pfb, pS, null, ParkingStructCategory.Custom));
+                pS.Type = t.name;
+                ParkingStructAssets.Add(t.name, new ParkingStructureAssetPack(pfb, pS, null, ParkingStructCategory.Custom));
             }
 
-            //get PNG resources (some types don't have DAT or prefabs)
-            files = Directory.GetFiles(sPath, "*.PNG");
-            foreach(string filename in files)
+            //get PNG resources (some types don't have CSV or prefabs)
+            var textures = Resources.LoadAll<Sprite>(rPath);
+            foreach (var t in textures)
             {
-                string type = System.IO.Path.GetFileNameWithoutExtension(filename);
-                var sprite = ReadSprite(filename);
-
+                var type = t.name;
                 if (ParkingStructAssets.ContainsKey(type))
                 {
-                    ParkingStructAssets[type].PreviewImage = sprite;
+                    ParkingStructAssets[type].PreviewImage = t;
                 }
                 else
                 {
-                    ParkingStructAssets.Add(type, new ParkingStructureAssetPack(null, null, sprite, ParkingStructCategory.Rect));
+                    ParkingStructAssets.Add(type, new ParkingStructureAssetPack(null, null, t, ParkingStructCategory.Rect));
                 }
             }
 
@@ -654,26 +655,28 @@ namespace Assets.Scripts.Environment
         private void ReadDronePorts()
         {
             DronePortAssets = new Dictionary<string, DronePortAssetPack>();
-            string sPath = SerializationSettings.ROOT + "\\Resources\\DronePorts";
             string rPath = "DronePorts/";
-            var files = Directory.GetFiles(sPath, "*.JSON");
-            foreach (var filename in files)
+            var textAssets = Resources.LoadAll<TextAsset>(rPath);
+            if (textAssets == null)
             {
-                DronePortCustom dp = DeserializeJsonFile<DronePortCustom>(filename);
+                Debug.LogError("Could not locate drone port text assets");
+                return;
+            }
+            foreach (var j in textAssets)
+            {
+                DronePortCustom dp = DeserializeJsonString<DronePortCustom>(j.text);
                 var pfb = AssetUtils.ReadPrefab(rPath, dp.Type);
                 DronePortAssets.Add(dp.Type, new DronePortAssetPack(pfb, dp, null, DronePortCategory.Custom));
             }
-
+            
             //get PNG resources (some types don't have DAT or prefabs)
-            files = Directory.GetFiles(sPath, "*.PNG");
-            foreach (string filename in files)
+            var textures = Resources.LoadAll<Sprite>(rPath);
+            foreach (var t in textures)
             {
-                string type = System.IO.Path.GetFileNameWithoutExtension(filename);
-                var sprite = ReadSprite(filename);
-
+                var type = t.name;
                 if (DronePortAssets.ContainsKey(type))
                 {
-                    DronePortAssets[type].PreviewImage = sprite;
+                    DronePortAssets[type].PreviewImage = t;
                 }
 
                 #region disabled rectangular drone ports here:
@@ -696,17 +699,14 @@ namespace Assets.Scripts.Environment
         private void ReadRestrictionZones()
         {
             RestrictionZoneAssets = new Dictionary<string, RestrictionZoneAssetPack>();
-            string sPath = SerializationSettings.ROOT + "\\Resources\\RestrictionZones";
             string rPath = "RestrictionZones/";
-            var files = Directory.GetFiles(sPath, "*.PNG");
-            foreach(var filename in files)
+            var textures = Resources.LoadAll<Sprite>(rPath);
+            foreach (var t in textures)
             {
-                string type = System.IO.Path.GetFileNameWithoutExtension(filename);
-                var sprite = ReadSprite(filename);
-
+                var type = t.name;
                 if (RestrictionZoneAssets.ContainsKey(type))
                 {
-                    RestrictionZoneAssets[type].PreviewImage = sprite;
+                    RestrictionZoneAssets[type].PreviewImage = t;
                 }
                 else
                 {
@@ -723,7 +723,7 @@ namespace Assets.Scripts.Environment
                     {
                         c = RestrictionZoneCategory.Cylindrical;
                     }
-                    RestrictionZoneAssets.Add(type, new RestrictionZoneAssetPack(null, null, sprite, c));
+                    RestrictionZoneAssets.Add(type, new RestrictionZoneAssetPack(null, null, t, c));
                 }
             }
         }
@@ -733,16 +733,14 @@ namespace Assets.Scripts.Environment
         /// </summary>
         private void ReadMapboxSettings()
         {
-            string sPath = SerializationSettings.ROOT + "\\Resources\\Mapbox";
-            var files = Directory.GetFiles(sPath, "*.TXT");
-            if (files.Length != 1)
+            string rPath = "Mapbox/MapboxConfiguration";
+            var settings = Resources.Load<TextAsset>(rPath);
+            if (settings == null)
             {
-                Debug.LogError("Could not locate Mapbox Settings file");
+                Debug.LogError("Could not load Mapbox settings file");
                 return;
             }
-            var filename = files[0];
-
-            MapboxSettings = DeserializeJsonFile<FOA_MapboxSettings>(filename);
+            MapboxSettings = DeserializeJsonString<FOA_MapboxSettings>(settings.text);
         }
 
         /// <summary>
@@ -787,6 +785,10 @@ namespace Assets.Scripts.Environment
             AddButtonPrefab = AssetUtils.ReadPrefab(rPath, "Button_Add");
         }
 
+
+        /// <summary>
+        /// Creates object of specified type from json. Returns null on failure.
+        /// </summary>
         private T DeserializeJsonFile<T>(string path)
         {
             JsonSerializer serializer = new JsonSerializer();
@@ -798,6 +800,15 @@ namespace Assets.Scripts.Environment
                     return serializer.Deserialize<T>(reader);
                 }
             }
+        }
+
+        /// <summary>
+        /// Creates object of specified type from json string. https://stackoverflow.com/questions/13839865/how-to-parse-my-json-string-in-c4-0using-newtonsoft-json-package
+        /// </summary>
+        private T DeserializeJsonString<T>(string json) where T : class, new()
+        {
+            var jO = Newtonsoft.Json.Linq.JObject.Parse(json);
+            return JsonConvert.DeserializeObject<T>(jO.ToString());
         }
 
         private void SerializeJsonFile(object obj, string path)

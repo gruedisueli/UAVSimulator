@@ -122,10 +122,6 @@ public class VehicleControlSystem : MonoBehaviour
 
     public bool IsRegionView { get; set; } = false;
 
-    // INTEGRATION TO-DO: Replace root with the path that it receives;
-    private string root; 
-    
-
     // private SceneManagerBase sceneManager;
     public SceneManagerBase sceneManager;    
 
@@ -156,17 +152,12 @@ public class VehicleControlSystem : MonoBehaviour
 
     void Awake()
     {
-        root = SerializationSettings.ROOT + "\\runtime\\";
         droneCount = 200;
         playing = false;
         translucentRed = new Color(Color.cyan.r, Color.cyan.g, Color.cyan.b, 0.50f);
 
         MIN_DRONE_RANGE = 999999.0f;
-        string current_runtime = "42o3601_71o0589"; // INTEGRATION TO-DO: Get current runtime name from UI side to find out which folder to refer to
-                                                    // Current Placeholder = Lat_Long of Boston
-
-        
-        simulationParam = ReadSimulationParams(current_runtime);
+        simulationParam = ReadSimulationParams();
         sceneManager = FindObjectOfType<SceneManagerBase>(true);
         if (sceneManager == null) Debug.Log("Could not find scene manager component in scene");
         hiddenDrones = new List<GameObject>();
@@ -497,11 +488,16 @@ public class VehicleControlSystem : MonoBehaviour
     /// <summary>
     /// Parses simulation params from options file.
     /// </summary>
-    private SimulationParam ReadSimulationParams(string runtime_name)
+    private SimulationParam ReadSimulationParams()
     {
-        string path = root + runtime_name + "\\" + "simulation.json";
-        string json = File.ReadAllText(path, System.Text.Encoding.UTF8);
-        SimulationParam sp = JsonUtility.FromJson<SimulationParam>(json);
+        string rPath = "Simulation/simulation";
+        var t = Resources.Load<TextAsset>(rPath);
+        if (t == null)
+        {
+            Debug.LogError("Could not locate simulation params");
+            return null;
+        }
+        SimulationParam sp = JsonUtility.FromJson<SimulationParam>(t.text);
 
         return sp;
     }
