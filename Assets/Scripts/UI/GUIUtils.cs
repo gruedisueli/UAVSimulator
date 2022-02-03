@@ -16,12 +16,15 @@ namespace Assets.Scripts.UI
         /// </summary>
         public static bool TryToSelect(out RaycastHit hitInfo)
         {
+            Debug.Log("Firing");
             if (Physics.Raycast(Camera.main.ScreenPointToRay(Input.mousePosition), out hitInfo))
             {
+                Debug.Log("raycast");
                 var gO = hitInfo.transform.gameObject;
                 var uT = gO.GetComponentInParent<UnityTile>();
                 if (uT != null) //check that we've hit a terrain tile and not something else like a button.
                 {
+                    Debug.Log("Hit");
                     return true;
                 }
             }
