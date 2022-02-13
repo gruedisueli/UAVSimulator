@@ -106,7 +106,6 @@ namespace Mapbox.Unity.Telemetry
 			{
 				PlayerPrefs.SetString(Constants.Path.TELEMETRY_TURNSTILE_LAST_TICKS_EDITOR_KEY, DateTime.Now.Ticks.ToString());
 			}
-            postRequest.Dispose();
 		}
 
 		static string GetUserAgent()
