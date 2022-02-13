@@ -47,17 +47,11 @@ namespace Assets.Scripts.UI
             
         }
 
-        private void LateUpdate()
+        private void Update()
         {
-            if (Input.GetMouseButtonUp(0) /*&& GUIUtils.TryToSelect(out var hitInfo)*/)
+            if (Input.GetMouseButtonUp(0) && GUIUtils.TryToSelect(out var hitInfo))
             {
-                Debug.Log("clicked mouse");
-                if(GUIUtils.TryToSelect(out var hitInfo))
-                {
-                    PlaceMarker(hitInfo);
-                    Debug.Log("Placed marker");
-                }
-                
+                PlaceMarker(hitInfo);
             }
         }
 
@@ -83,13 +77,11 @@ namespace Assets.Scripts.UI
             Vector3 center = gO.transform.position;
             if (frags != null && frags.Length == 3)
             {
-                Debug.Log(frags.ToString());
                 foreach(var t in _selectedTiles)
                 {
                     var mR = t.GetComponent<MeshRenderer>();
                     if (mR != null)
                     {
-                        Debug.Log("Found mesh renderer");
                         mR.material.DisableKeyword("_EMISSION");
                     }
                 }
