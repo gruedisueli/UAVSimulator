@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using UnityEngine.EventSystems;
 
 using Mapbox.Examples;
 using Mapbox.Unity.Map;
@@ -30,7 +31,9 @@ namespace Assets.Scripts.UI
 
         private List<GameObject> _selectedTiles = new List<GameObject>();
         private Color _emissionColor = new Color(0.5f, 0.5f, 0.5f);
-
+        private float _tileSize;
+        private float _regionTileSize;
+        private GameObject _placedRegion = null;
         private void Start()
         {
             _map = FindObjectOfType<AbstractMap>(true);
@@ -40,6 +43,8 @@ namespace Assets.Scripts.UI
                 return;
             }
             _map.SetZoom(EnvironSettings.FINDLOCATION_ZOOM_LEVEL);
+            _tileSize = _map.Options.scalingOptions.unityTileSize;
+            _regionTileSize = _tileSize / (float)Math.Pow(2, EnvironSettings.REGION_ZOOM_LEVEL - EnvironSettings.FINDLOCATION_ZOOM_LEVEL);
         }
 
         private void OnDestroy()
@@ -49,7 +54,7 @@ namespace Assets.Scripts.UI
 
         private void Update()
         {
-            if (Input.GetMouseButtonUp(0) && GUIUtils.TryToSelect(out var hitInfo))
+            if (Input.GetMouseButtonUp(0) && !EventSystem.current.IsPointerOverGameObject() && GUIUtils.TryToSelect(out var hitInfo))
             {
                 PlaceMarker(hitInfo);
             }
@@ -70,62 +75,84 @@ namespace Assets.Scripts.UI
 
         public void PlaceMarker(RaycastHit hitInfo)
         {
-            var gO = hitInfo.transform.gameObject;
-            string name = gO.name;
-            string d = "/";
-            var frags = name.Split(new string[] { d }, StringSplitOptions.None);
-            Vector3 center = gO.transform.position;
-            if (frags != null && frags.Length == 3)
+            if (_placedRegion != null)
             {
-                foreach(var t in _selectedTiles)
-                {
-                    var mR = t.GetComponent<MeshRenderer>();
-                    if (mR != null)
-                    {
-                        mR.material.DisableKeyword("_EMISSION");
-                    }
-                }
-                _selectedTiles = new List<GameObject>();
-                string zLevel = frags[0];
-                int rI = EnvironSettings.FINDLOCATION_SELECTION_INFLATION;
-                bool haveX = int.TryParse(frags[1], out int xTile);
-                bool haveY = int.TryParse(frags[2], out int yTile);
-                List<string> toHighlight = new List<string>() { name };
-                if (haveX && haveY)
-                {
-                    for (int x = xTile - rI; x <= xTile + rI; x++)
-                    {
-                        for (int y = yTile - rI; y <= yTile + rI; y++)
-                        {
-                            if (x == xTile && y == yTile)//already have this tile
-                            {
-                                continue;
-                            }
-
-                            toHighlight.Add(zLevel + d + x.ToString() + d + y.ToString());
-                        }
-                    }
-                }
-                    
-                foreach(var n in toHighlight)
-                {
-                    var foundTile = GameObject.Find(n);
-                    if (foundTile == null)
-                    {
-                        Debug.LogError("Could not find specified tile");
-                        continue;
-                    }
-                    var mR = foundTile.GetComponent<MeshRenderer>();
-                    if (mR != null)
-                    {
-                        mR.material.EnableKeyword("_EMISSION");
-                        mR.material.SetColor("_EmissionColor", _emissionColor);
-                    }
-
-                    _selectedTiles.Add(foundTile);
-                }
+                _placedRegion.Destroy();
             }
-            EnvironManager.Instance.Environ.CenterLatLong = _map.WorldToGeoPosition(center);
+            //highlight region extents in the find location view.
+            //get center of a tile used at region scale.
+            //requires converting from find location scale to region scale tiles.
+            var gO = hitInfo.transform.gameObject;
+            var mainPt = new Vector3(hitInfo.point.x, 0, hitInfo.point.z);
+            var gOXMin = gO.transform.position.x - (_tileSize / 2);
+            var gOZMin = gO.transform.position.z - (_tileSize / 2);
+            var subX = (float)Math.Floor((mainPt.x - gOXMin) / _regionTileSize);
+            var subZ = (float)Math.Floor((mainPt.z - gOZMin) / _regionTileSize);
+            var trueCenter = new Vector3(gOXMin + subX * _regionTileSize + _regionTileSize / 2, 0, gOZMin + subZ * _regionTileSize + _regionTileSize / 2);
+            var infDist = EnvironSettings.REGION_TILE_EXTENTS * _regionTileSize + _regionTileSize / 2;
+            _placedRegion = Instantiate(AssetUtils.ReadPrefab("GUI/", "RegionBox"));
+            _placedRegion.transform.parent = _canvas.transform;
+            _placedRegion.transform.SetAsFirstSibling();
+            var rB = _placedRegion.GetComponent<RegionBox>();
+            rB.SetWorldExtents(trueCenter, infDist);
+
+            EnvironManager.Instance.Environ.CenterLatLong = _map.WorldToGeoPosition(trueCenter);
+
+
+            //string name = gO.name;
+            //string d = "/";
+            //var frags = name.Split(new string[] { d }, StringSplitOptions.None);
+            //Vector3 center = gO.transform.position;
+            //if (frags != null && frags.Length == 3)
+            //{
+            //    foreach(var t in _selectedTiles)
+            //    {
+            //        var mR = t.GetComponent<MeshRenderer>();
+            //        if (mR != null)
+            //        {
+            //            mR.material.SetFloat("_FirstOutlineWidth", 0.0f);
+            //        }
+            //    }
+            //    _selectedTiles = new List<GameObject>();
+            //    string zLevel = frags[0];
+            //    int rI = EnvironSettings.FINDLOCATION_SELECTION_INFLATION;
+            //    bool haveX = int.TryParse(frags[1], out int xTile);
+            //    bool haveY = int.TryParse(frags[2], out int yTile);
+            //    List<string> toHighlight = new List<string>() { name };
+            //    if (haveX && haveY)
+            //    {
+            //        for (int x = xTile - rI; x <= xTile + rI; x++)
+            //        {
+            //            for (int y = yTile - rI; y <= yTile + rI; y++)
+            //            {
+            //                if (x == xTile && y == yTile)//already have this tile
+            //                {
+            //                    continue;
+            //                }
+
+            //                toHighlight.Add(zLevel + d + x.ToString() + d + y.ToString());
+            //            }
+            //        }
+            //    }
+                    
+            //    foreach(var n in toHighlight)
+            //    {
+            //        var foundTile = GameObject.Find(n);
+            //        if (foundTile == null)
+            //        {
+            //            Debug.LogError("Could not find specified tile");
+            //            continue;
+            //        }
+            //        var mR = foundTile.GetComponent<MeshRenderer>();
+            //        if (mR != null)
+            //        {
+            //            mR.material.SetFloat("_FirstOutlineWidth", 10.0f);
+            //        }
+
+            //        _selectedTiles.Add(foundTile);
+            //    }
+            //}
+            //EnvironManager.Instance.Environ.CenterLatLong = _map.WorldToGeoPosition(center);
         }
 
         IEnumerator LoadAsyncOperation(int scenePath)
