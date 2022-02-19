@@ -24,8 +24,48 @@ namespace Assets.Scripts.UI
     public class RegionViewManager : SceneManagerBase
     {
 
+        private Coroutine _reloadRoutine;
+        private WaitForSeconds _wait;
+        private CameraAdjustment _cameraAdj;
+
         private GameObject _cityMarkerPrefab;
-        //private List<UnityTile> _tiles = new List<UnityTile>();
+
+        private float _minCamSize = 1000.0f;
+        private float _maxCamSize = 256000.0f;
+        private float _biggestZoom = 15;
+        //private float _smallestZoom = 7;
+        private float _currentZoom;
+        private bool _atBuildingZoomLevel = false;//activated whenever we get to a zoom level that we could possibly display buildings at without enormous processing cost.
+        private bool _allowBuildings = false;//true if user toggle for buildings is in "on" position. Only if true can we show buildings.
+        private bool _temporarySuppressBuildings = false;//set true of just holding off buildings for a second while changing view.
+        private VectorSubLayerProperties _buildingsLayer = null;
+
+        //zoom levels:
+        //500
+        //1000
+        //2000
+        //4000
+        //8000
+        //16000
+        //32000
+        //64000
+        //128000
+        //256000
+
+        private float GetZoomLevel(float viewSize)
+        {
+            float z = _currentZoom;
+            if (/*viewSize > _minCamSize &&*/ viewSize < _maxCamSize)
+            {
+                float m = viewSize / _minCamSize;//how many times bigger than min?
+                z = _biggestZoom - (float)Math.Log(m, 2); //how many powers of two higher?
+
+                //z = _biggestZoom - (viewSize / _maxCamSize) * (_biggestZoom - _smallestZoom);
+            }
+
+            return z;
+        }
+
         protected override void Init()
         {
             string rPath = "GUI/";
@@ -36,27 +76,127 @@ namespace Assets.Scripts.UI
                 return;
             }
 
-            RangeTileProviderOptions range = new RangeTileProviderOptions();
-            range.east = EnvironSettings.REGION_TILE_EXTENTS;
-            range.west = EnvironSettings.REGION_TILE_EXTENTS;
-            range.north = EnvironSettings.REGION_TILE_EXTENTS;
-            range.south = EnvironSettings.REGION_TILE_EXTENTS;
-            _abstractMap.SetExtentOptions(range);
+            //RangeTileProviderOptions range = new RangeTileProviderOptions();
+            //range.east = EnvironSettings.REGION_TILE_EXTENTS;
+            //range.west = EnvironSettings.REGION_TILE_EXTENTS;
+            //range.north = EnvironSettings.REGION_TILE_EXTENTS;
+            //range.south = EnvironSettings.REGION_TILE_EXTENTS;
+            //_abstractMap.SetExtentOptions(range);
             _abstractMap.Initialize(EnvironManager.Instance.Environ.CenterLatLong, EnvironSettings.REGION_ZOOM_LEVEL);
             _largeScaleMap.Initialize(EnvironManager.Instance.Environ.CenterLatLong, EnvironSettings.AIRSPACE_ZOOM_LEVEL);
 
-            if (EnvironManager.Instance.LastCamXZS != null)
+            //if (EnvironManager.Instance.LastCamXZS != null)
+            //{
+            //    var p = EnvironManager.Instance.LastCamXZS;
+            //    _mainCamera.transform.position = new Vector3(p[0], _mainCamera.transform.position.y, p[1]);
+            //    _mainCamera.orthographicSize = p[2];
+            //}
+
+            _cameraAdj = FindObjectOfType<CameraAdjustment>(true);
+            if (_cameraAdj == null)
             {
-                var p = EnvironManager.Instance.LastCamXZS;
-                _mainCamera.transform.position = new Vector3(p[0], _mainCamera.transform.position.y, p[1]);
-                _mainCamera.orthographicSize = p[2];
+                Debug.LogError("Camera Adjustment component not found");
+                return;
             }
+
+            _currentZoom = _abstractMap.AbsoluteZoom;
+            _cameraAdj.OnZoom += OnZoomAction;
+            _cameraAdj.OnStartViewChange += OnStartViewChangeAction;
+            _cameraAdj.OnEndViewChange += OnEndViewChangeAction;
+
+            _buildingsLayer = _abstractMap.VectorData.FindFeatureSubLayerWithName("Buildings");
+            if (_buildingsLayer == null)
+            {
+                Debug.LogError("Failed to find buildings feature layer");
+                return;
+            }
+
+            #region from Mapbox ReloadMap.cs
+
+            _wait = new WaitForSeconds(0.3f);
+
+            #endregion
         }
 
         protected override void OnDestroyDerived()
         {
             //_abstractMap.OnTileFinished -= PullAirspaceOffMapbox;
         }
+
+        private void OnZoomAction(object o, System.EventArgs args)
+        {
+            if (!(o is CameraAdjustment cA)) return;
+            var z = GetZoomLevel(cA._camera.transform.position.y);
+            Reload(z);
+        }
+
+        private void OnStartViewChangeAction(object o, System.EventArgs args)
+        {
+            if (_allowBuildings)
+            {
+                _temporarySuppressBuildings = true;
+                SetAllowBuildings(false);
+            }
+        }
+
+        private void OnEndViewChangeAction(object o, System.EventArgs args)
+        {
+            if (_temporarySuppressBuildings)
+            {
+                _temporarySuppressBuildings = false;
+                SetAllowBuildings(true);
+            }
+        }
+
+        private void SetAllowBuildings(bool toggle)
+        {
+            _allowBuildings = toggle;
+            if (_atBuildingZoomLevel && !_allowBuildings)
+            {
+                _buildingsLayer.SetActive(false);
+            }
+            else if (_atBuildingZoomLevel && _allowBuildings)
+            {
+                _buildingsLayer.SetActive(true);
+            }
+        }
+
+
+        #region copied from Mapbox: ReloadMap.cs
+
+        public void Reload(float zoom)
+        {
+            if (_reloadRoutine != null)
+            {
+                StopCoroutine(_reloadRoutine);
+                _reloadRoutine = null;
+            }
+            _reloadRoutine = StartCoroutine(ReloadAfterDelay(zoom));
+        }
+
+        IEnumerator ReloadAfterDelay(float zoom)
+        {
+            yield return _wait;
+            //_camera.transform.position = _cameraStartPos;
+            if (zoom >= _biggestZoom && !_atBuildingZoomLevel)
+            {
+                if (_allowBuildings)
+                {
+                    _buildingsLayer.SetActive(true);
+                }
+                _atBuildingZoomLevel = true;
+            }
+            else if (zoom < _biggestZoom && _atBuildingZoomLevel)
+            {
+                _buildingsLayer.SetActive(false);
+                _atBuildingZoomLevel = false;
+            }
+            _abstractMap.UpdateMap(_abstractMap.CenterLatitudeLongitude, zoom);
+            _reloadRoutine = null;
+            _currentZoom = zoom;
+        }
+
+        #endregion
 
         #region ADD/REMOVE ELEMENTS
 
@@ -100,6 +240,12 @@ namespace Assets.Scripts.UI
                 {
                     switch (args.Update.VisibilityType)
                     {
+                        case VisibilityType.Buildings:
+                            {
+                                var u = args.Update as ModifyBoolPropertyArg;
+                                SetAllowBuildings(u.Value);
+                                break;
+                            }
                         case VisibilityType.DroneCount:
                             {
                                 var u = args.Update as ModifyIntPropertyArg;

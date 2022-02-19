@@ -126,7 +126,8 @@ namespace Assets.Scripts
         Demographics = 7,
         NoiseSpheres = 8,
         VehicleMeshSimple = 9,
-        RestrictionZones = 10
+        RestrictionZones = 10,
+        Buildings = 11
     }
 
     public enum InputFieldType

@@ -167,8 +167,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: aa6c68abdec275542adccdd32f6c59e4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _regionSelectorPrefab: {fileID: 5483188848856056530, guid: 008c5a71ecd2ccc45a164100b0fc5e92,
-    type: 3}
   _canvas: {fileID: 541402231}
 --- !u!1 &367550003
 GameObject:
@@ -641,12 +639,12 @@ MonoBehaviour:
   _initializeOnStart: 1
   _imagery:
     _layerProperty:
-      sourceType: 5
+      sourceType: 6
       sourceOptions:
         isActive: 1
         layerSource:
           Name: Streets
-          Id: mapbox://styles/mapbox/satellite-streets-v10
+          Id: mapbox://styles/grudy/ckn0rvz4v1eme17mp42vz9v8q
           Modified: 
           UserName: 
       rasterOptions:
@@ -1544,17 +1542,19 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6683556536dbea1489286de83cbf436b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _camera: {fileID: 0}
   _xSpeed: 200
   _ySpeed: 200
   _yMinLimit: -80
   _yMaxLimit: 80
-  _zoomRate: 200
-  _panSpeed: 10
+  _zoomRate: 10
+  _panSpeed: 20
   _zoomDampening: 5
   _allowZoom: 1
   _allowTilt: 0
   _allowPan: 1
   _minOrthoZoom: 6000
+  _farClipMultPersp: 2
 --- !u!20 &1787361574
 Camera:
   m_ObjectHideFlags: 0

@@ -18,22 +18,20 @@ using Assets.Scripts.UI.Tools;
 using Assets.Scripts.UI.Tags;
 using Assets.Scripts.Environment;
 using Assets.Scripts.UI.EventArgs;
+using UnityEngine.UI;
 
 namespace Assets.Scripts.UI
 {
     public class FindLocationManager : MonoBehaviour
     {
-        public GameObject _regionSelectorPrefab;
         public Canvas _canvas;
-        private GameObject _selectionRect;
 
         private AbstractMap _map;
 
-        private List<GameObject> _selectedTiles = new List<GameObject>();
-        private Color _emissionColor = new Color(0.5f, 0.5f, 0.5f);
         private float _tileSize;
         private float _regionTileSize;
         private GameObject _placedRegion = null;
+
         private void Start()
         {
             _map = FindObjectOfType<AbstractMap>(true);
@@ -45,6 +43,8 @@ namespace Assets.Scripts.UI
             _map.SetZoom(EnvironSettings.FINDLOCATION_ZOOM_LEVEL);
             _tileSize = _map.Options.scalingOptions.unityTileSize;
             _regionTileSize = _tileSize / (float)Math.Pow(2, EnvironSettings.REGION_ZOOM_LEVEL - EnvironSettings.FINDLOCATION_ZOOM_LEVEL);
+
+
         }
 
         private void OnDestroy()
@@ -167,5 +167,6 @@ namespace Assets.Scripts.UI
                 yield return new WaitForEndOfFrame();
             }
         }
+
     }
 }

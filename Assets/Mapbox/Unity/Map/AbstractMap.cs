@@ -349,15 +349,15 @@ namespace Mapbox.Unity.Map
 			UpdateMap(Conversions.StringToLatLon(_options.locationOptions.latitudeLongitude), zoom);
 		}
 
-		/// <summary>
-		/// Updates the map.
-		/// Use this method to update the location of the map.
-		/// Update method should be used when panning, zooming or changing location of the map.
-		/// This method avoid startup delays that might occur on re-initializing the map.
-		/// </summary>
-		/// <param name="latLon">LatitudeLongitude.</param>
-		/// <param name="zoom">Zoom level.</param>
-		public virtual void UpdateMap(Vector2d latLon, float zoom)
+        /// <summary>
+        /// Updates the map.
+        /// Use this method to update the location of the map.
+        /// Update method should be used when panning, zooming or changing location of the map.
+        /// This method avoid startup delays that might occur on re-initializing the map.
+        /// </summary>
+        /// <param name="latLon">LatitudeLongitude.</param>
+        /// <param name="zoom">Zoom level.</param>
+        public virtual void UpdateMap(Vector2d latLon, float zoom)
 		{
 			if (Application.isEditor && !Application.isPlaying && !IsEditorPreviewEnabled)
 			{
@@ -391,12 +391,23 @@ namespace Mapbox.Unity.Map
 			Options.scalingOptions.scalingStrategy.SetUpScaling(this);
 			Options.placementOptions.placementStrategy.SetUpPlacement(this);
 
-			//Scale the map accordingly.
-			if (Math.Abs(differenceInZoom) > Constants.EpsilonFloatingPoint || isAtInitialZoom)
-			{
-				_mapScaleFactor = Vector3.one * Mathf.Pow(2, differenceInZoom);
-				Root.localScale = _mapScaleFactor;
-			}
+
+
+
+
+			//DISABLED FOR OUR PROJECT 2/13/2022
+
+			////Scale the map accordingly.
+			//if (Math.Abs(differenceInZoom) > Constants.EpsilonFloatingPoint || isAtInitialZoom)
+			//{
+			//	_mapScaleFactor = Vector3.one * Mathf.Pow(2, differenceInZoom);
+			//	Root.localScale = _mapScaleFactor;
+			//}
+
+
+
+
+
 
 			//Update Tile extent.
 			if (TileProvider != null)
