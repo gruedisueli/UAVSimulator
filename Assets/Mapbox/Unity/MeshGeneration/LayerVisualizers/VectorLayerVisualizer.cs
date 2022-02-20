@@ -534,6 +534,16 @@ namespace Mapbox.Unity.MeshGeneration.Interfaces
 						yield break;
 					}
 
+					//COPIED 2/20/2022 FROM MAPBOX REPO
+					//commit b53619befc5480073f56158ef5d333c22e75b0dc 
+					//on branch "AddRecycleCheck"
+					//commit description: "Add recycled check to mesh generation to prevent mesh leaks on fast disposing / reusing situations"
+					if (tile.IsRecycled)
+                    {
+                        yield break;
+                    }
+					//END COPY
+
 					ProcessFeature(i, tile, tempLayerProperties, layer.Extent);
 
 					if (IsCoroutineBucketFull && !(Application.isEditor && !Application.isPlaying))
