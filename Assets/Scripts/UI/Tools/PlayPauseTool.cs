@@ -16,7 +16,7 @@ namespace Assets.Scripts.UI.Tools
 
         public void PlayPause()
         {
-            OnPlayPause.Invoke(this, new PlayPauseArgs());
+            OnPlayPause?.Invoke(this, new PlayPauseArgs());
         }
     }
 }

@@ -219,7 +219,7 @@ namespace Assets.Scripts.UI
 
         protected override void InstantiateObjects()
         {
-            InstantiateSimulationObjects(true, false);
+            InstantiateSimulationObjects();
         }
 
         #endregion

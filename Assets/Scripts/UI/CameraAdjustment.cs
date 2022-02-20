@@ -22,8 +22,8 @@ namespace Assets.Scripts.UI
     public class CameraAdjustment : MonoBehaviour
     {
         public EventHandler<System.EventArgs> OnZoom;
-        public EventHandler<System.EventArgs> OnStartViewChange;
-        public EventHandler<System.EventArgs> OnEndViewChange;
+        public EventHandler<System.EventArgs> OnStartPan;
+        public EventHandler<System.EventArgs> OnEndPan;
         public Camera _camera;
 
         public float _xSpeed = 200.0f;
@@ -37,7 +37,8 @@ namespace Assets.Scripts.UI
         public bool _allowTilt = false;
         public bool _allowPan = true;
         public float _minOrthoZoom = 6000.0f;
-        public float _farClipMultPersp = 2.0f;
+        public float _farClipMultPersp = 2.5f;
+        public float _fogRangeFactor = 2.5f;
 
         private float _xDeg = 0.0f;
         private float _yDeg = 0.0f;
@@ -59,6 +60,8 @@ namespace Assets.Scripts.UI
 
             _xDeg = Vector3.Angle(Vector3.right, _camera.transform.right);
             _yDeg = Vector3.Angle(Vector3.up, _camera.transform.up);
+
+            if (_isPerspective) SetFog();
         }
 
         /*
@@ -67,13 +70,13 @@ namespace Assets.Scripts.UI
         void LateUpdate()
         {
             bool changed = false;
-            if ((_allowTilt && Input.GetMouseButtonDown(2)) || (_allowPan && Input.GetMouseButtonDown(1)))
+            if (_allowPan && Input.GetMouseButtonDown(1))
             {
-                OnStartViewChange?.Invoke(this, new System.EventArgs());
+                OnStartPan?.Invoke(this, new System.EventArgs());
             }
-            else if ((_allowTilt && Input.GetMouseButtonUp(2)) || (_allowPan && Input.GetMouseButtonUp(1)))
+            else if (_allowPan && Input.GetMouseButtonUp(1))
             {
-                OnEndViewChange?.Invoke(this, new System.EventArgs());
+                OnEndPan?.Invoke(this, new System.EventArgs());
             }
 
             //set to top view if certain macro pressed:
@@ -130,6 +133,7 @@ namespace Assets.Scripts.UI
                     var transZoom = Vector3.forward * forwardDist;
                     _camera.transform.Translate(transZoom);
                     _camera.farClipPlane = _camera.transform.position.y * _farClipMultPersp;
+                    SetFog();
                     changed = true;
                     OnZoom?.Invoke(this, new System.EventArgs());
                 }
@@ -154,6 +158,14 @@ namespace Assets.Scripts.UI
             {
                 EnvironManager.Instance.LastCamXZS = new float[] { _camera.transform.position.x, _camera.transform.position.z, _camera.orthographicSize };
             }
+        }
+        /// <summary>
+        /// Adjusts fog factor on camera
+        /// </summary>
+        private void SetFog()
+        {
+            RenderSettings.fogEndDistance = _camera.farClipPlane;
+            RenderSettings.fogStartDistance = _camera.farClipPlane - _camera.farClipPlane / _fogRangeFactor;
         }
 
         private static float ClampAngle(float angle, float min, float max)

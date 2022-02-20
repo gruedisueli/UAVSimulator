@@ -17,7 +17,6 @@ namespace Assets.Scripts.Environment
     public abstract class SceneElementBase : MonoBehaviour
     {
         public abstract string Guid { get; protected set; }
-        public abstract bool Is2D { get; protected set; }
         public abstract GameObject Sprite2d { get; protected set; }
         public abstract Canvas SceneCanvas { get; protected set; }
         public abstract void UpdateGameObject();
@@ -55,6 +54,7 @@ namespace Assets.Scripts.Environment
 
         private void OnDestroy()
         {
+            Sprite2d.Destroy();
             if (_selectableObjs == null || _selectableObjs.Length == 0) return;
             foreach (var o in _selectableObjs)
             {
@@ -67,7 +67,7 @@ namespace Assets.Scripts.Environment
             if (!EventSystem.current.IsPointerOverGameObject())//prevent selection of objects behind GUI
             {
                 Debug.Log("Clicked scene element " + Guid);
-                OnSceneElementSelected.Invoke(this);
+                OnSceneElementSelected?.Invoke(this);
             }
         }
 

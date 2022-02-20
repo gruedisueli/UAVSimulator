@@ -40,6 +40,9 @@ namespace Assets.Scripts.UI
         private bool _temporarySuppressBuildings = false;//set true of just holding off buildings for a second while changing view.
         private VectorSubLayerProperties _buildingsLayer = null;
 
+        private DroneInfoPanel _droneInfoPanel;
+        private List<DroneIcon> _droneIcons = new List<DroneIcon>();
+
         //zoom levels:
         //500
         //1000
@@ -83,7 +86,15 @@ namespace Assets.Scripts.UI
             //range.south = EnvironSettings.REGION_TILE_EXTENTS;
             //_abstractMap.SetExtentOptions(range);
             _abstractMap.Initialize(EnvironManager.Instance.Environ.CenterLatLong, EnvironSettings.REGION_ZOOM_LEVEL);
-            _largeScaleMap.Initialize(EnvironManager.Instance.Environ.CenterLatLong, EnvironSettings.AIRSPACE_ZOOM_LEVEL);
+            //_largeScaleMap.Initialize(EnvironManager.Instance.Environ.CenterLatLong, EnvironSettings.AIRSPACE_ZOOM_LEVEL);
+
+            _droneInfoPanel = FindObjectOfType<DroneInfoPanel>(true);
+            if (_droneInfoPanel == null)
+            {
+                Debug.LogError("Drone Info Panel not found");
+                return;
+            }
+            _droneInfoPanel.SetActive(false);
 
             //if (EnvironManager.Instance.LastCamXZS != null)
             //{
@@ -99,10 +110,11 @@ namespace Assets.Scripts.UI
                 return;
             }
 
-            _currentZoom = _abstractMap.AbsoluteZoom;
+            _currentZoom = GetZoomLevel(_cameraAdj._camera.transform.position.y);
+            Reload(_currentZoom);
             _cameraAdj.OnZoom += OnZoomAction;
-            _cameraAdj.OnStartViewChange += OnStartViewChangeAction;
-            _cameraAdj.OnEndViewChange += OnEndViewChangeAction;
+            _cameraAdj.OnStartPan += OnStartPanAction;
+            _cameraAdj.OnEndPan += OnEndPanAction;
 
             _buildingsLayer = _abstractMap.VectorData.FindFeatureSubLayerWithName("Buildings");
             if (_buildingsLayer == null)
@@ -116,11 +128,22 @@ namespace Assets.Scripts.UI
             _wait = new WaitForSeconds(0.3f);
 
             #endregion
+
+            _vehicleControlSystem.droneInstantiator.OnDroneInstantiated += OnDroneInstantiated;
         }
 
         protected override void OnDestroyDerived()
         {
             //_abstractMap.OnTileFinished -= PullAirspaceOffMapbox;
+            foreach (var i in _droneIcons)
+            {
+                if (i != null)
+                {
+                    i.OnSelected -= DroneSelected;
+                }
+            }
+
+            _vehicleControlSystem.droneInstantiator.OnDroneInstantiated -= OnDroneInstantiated;
         }
 
         private void OnZoomAction(object o, System.EventArgs args)
@@ -130,22 +153,23 @@ namespace Assets.Scripts.UI
             Reload(z);
         }
 
-        private void OnStartViewChangeAction(object o, System.EventArgs args)
+        private void OnStartPanAction(object o, System.EventArgs args)
         {
-            if (_allowBuildings)
-            {
-                _temporarySuppressBuildings = true;
-                SetAllowBuildings(false);
-            }
+            //if (_allowBuildings)
+            //{
+            //    _temporarySuppressBuildings = true;
+            //    SetAllowBuildings(false);
+            //}
         }
 
-        private void OnEndViewChangeAction(object o, System.EventArgs args)
+        private void OnEndPanAction(object o, System.EventArgs args)
         {
-            if (_temporarySuppressBuildings)
-            {
-                _temporarySuppressBuildings = false;
-                SetAllowBuildings(true);
-            }
+            //if (_temporarySuppressBuildings)
+            //{
+            //    _temporarySuppressBuildings = false;
+            //    SetAllowBuildings(true);
+            //}
+            Reload(_currentZoom);
         }
 
         private void SetAllowBuildings(bool toggle)
@@ -202,9 +226,25 @@ namespace Assets.Scripts.UI
 
         protected override void AddElement(IAddElementArgs args)
         {
-            if (args is AddCityArgs)
+            //if (args is AddCityArgs)
+            //{
+            //    AddNewCity(args as AddCityArgs);
+            //}
+            if (args is AddDronePortArgs)
             {
-                AddNewCity(args as AddCityArgs);
+                AddNewDronePort(args as AddDronePortArgs);
+            }
+            else if (args is AddParkingStructArgs)
+            {
+                AddNewParkingStruct(args as AddParkingStructArgs);
+            }
+            else if (args is AddRestrictionZoneArgs)
+            {
+                AddNewRestrictZone(args as AddRestrictionZoneArgs);
+            }
+            else
+            {
+                Debug.LogError("Added elements arguments of unrecognized type");
             }
         }
 
@@ -215,16 +255,16 @@ namespace Assets.Scripts.UI
         protected override void InstantiateObjects()
         {
 
-            foreach (var kvp in EnvironManager.Instance.GetCities())
-            {
-                var c = kvp.Value;
-                if (c != null)
-                {
-                    InstantiateCity(kvp.Key, c.CityStats, true);
-                }
-            }
+            //foreach (var kvp in EnvironManager.Instance.GetCities())
+            //{
+            //    var c = kvp.Value;
+            //    if (c != null)
+            //    {
+            //        InstantiateCity(kvp.Key, c.CityStats, true);
+            //    }
+            //}
 
-            InstantiateSimulationObjects(false, true);
+            InstantiateSimulationObjects();
         }
 
         #endregion
@@ -305,6 +345,7 @@ namespace Assets.Scripts.UI
                                 //see: https://answers.unity.com/questions/348974/edit-camera-culling-mask.html
                                 var u = args.Update as ModifyBoolPropertyArg;
                                 LayerVisibility("RestrictionZone", u.Value);
+                                LayerVisibility("LandingZone", u.Value);
                                 break;
                             }
                     }
@@ -322,53 +363,115 @@ namespace Assets.Scripts.UI
                     Debug.LogError("Working copy is null");
                     return;
                 }
-                if (_workingCopy is SceneCity)
+                if (_workingCopy is SceneDronePort)
                 {
-                    var sC = _workingCopy as SceneCity;
-                    try
-                    {
-                        switch (args.Update.ElementPropertyType)
-                        {
-                            case ElementPropertyType.Name:
-                                {
-                                    sC.CitySpecs.Name = (args.Update as ModifyStringPropertyArg).Value;
-                                    break;
-                                }
-                            case ElementPropertyType.EastExt:
-                                {
-                                    sC.CitySpecs.EastExt = (args.Update as ModifyIntPropertyArg).Value;
-                                    break;
-                                }
-                            case ElementPropertyType.WestExt:
-                                {
-                                    sC.CitySpecs.WestExt = (args.Update as ModifyIntPropertyArg).Value;
-                                    break;
-                                }
-                            case ElementPropertyType.NorthExt:
-                                {
-                                    sC.CitySpecs.NorthExt = (args.Update as ModifyIntPropertyArg).Value;
-                                    break;
-                                }
-                            case ElementPropertyType.SouthExt:
-                                {
-                                    sC.CitySpecs.SouthExt = (args.Update as ModifyIntPropertyArg).Value;
-                                    break;
-                                }
-                        }
-
-                    }
-                    catch
-                    {
-                        Debug.LogError("Casting error in working city modification");
-                        return;
-                    }
+                    DronePortUpdate(args);
                 }
-                _workingCopy.UpdateGameObject();
+                else if (_workingCopy is SceneParkingStructure)
+                {
+                    ParkingStructureUpdate(args);
+                }
+                else if (_workingCopy is SceneRestrictionZone)
+                {
+                    RestrictionZoneUpdate(args);
+                }
+                //if (_workingCopy is SceneCity)
+                //{
+                //    var sC = _workingCopy as SceneCity;
+                //    try
+                //    {
+                //        switch (args.Update.ElementPropertyType)
+                //        {
+                //            case ElementPropertyType.Name:
+                //                {
+                //                    sC.CitySpecs.Name = (args.Update as ModifyStringPropertyArg).Value;
+                //                    break;
+                //                }
+                //            case ElementPropertyType.EastExt:
+                //                {
+                //                    sC.CitySpecs.EastExt = (args.Update as ModifyIntPropertyArg).Value;
+                //                    break;
+                //                }
+                //            case ElementPropertyType.WestExt:
+                //                {
+                //                    sC.CitySpecs.WestExt = (args.Update as ModifyIntPropertyArg).Value;
+                //                    break;
+                //                }
+                //            case ElementPropertyType.NorthExt:
+                //                {
+                //                    sC.CitySpecs.NorthExt = (args.Update as ModifyIntPropertyArg).Value;
+                //                    break;
+                //                }
+                //            case ElementPropertyType.SouthExt:
+                //                {
+                //                    sC.CitySpecs.SouthExt = (args.Update as ModifyIntPropertyArg).Value;
+                //                    break;
+                //                }
+                //        }
+
+                //    }
+                //    catch
+                //    {
+                //        Debug.LogError("Casting error in working city modification");
+                //        return;
+                //    }
+                //}
+
+                //_workingCopy.UpdateGameObject();
             }
 
         }
 
         #endregion
+
+
+        #region SIMULATION
+
+        /// <summary>
+        /// Called whenever a drone is added to scene.
+        /// </summary>
+        protected void OnDroneInstantiated(object sender, DroneInstantiationArgs args)
+        {
+            var gO = args.Drone;
+
+            var clone = Instantiate(EnvironManager.Instance.DroneIconPrefab);
+            clone.transform.SetParent(_mainCanvas.transform, false);
+            var icon = clone.GetComponentInChildren<DroneIcon>(true);
+            if (icon == null)
+            {
+                Debug.LogError("Could not find Drone Icon Component in Drone Info Panel prefab");
+                return;
+            }
+            var drone = gO.GetComponentInChildren<DroneBase>(true);
+            if (drone == null)
+            {
+                Debug.LogError("Could not find Vehicle Component in children of drone");
+                return;
+            }
+
+            icon.Initialize(drone);
+
+            icon.OnSelected += DroneSelected;
+
+            _droneIcons.Add(icon);
+        }
+
+        /// <summary>
+        /// Called when a drone icon is selected.
+        /// </summary>
+        protected void DroneSelected(object sender, System.EventArgs args)
+        {
+            SceneIconBase icon = sender as SceneIconBase;
+            if (icon == null)
+            {
+                Debug.LogError("Sender of drone selection message is not an icon");
+                return;
+            }
+            _droneInfoPanel.Initialize(icon.gameObject);
+        }
+
+        #endregion
+
     }
 
 }

@@ -13,7 +13,6 @@ namespace Assets.Scripts.Environment
     public class SceneCity : SceneElementBase
     {
         public override string Guid { get; protected set; }
-        public override bool Is2D { get; protected set; } = false;
         public override GameObject Sprite2d { get; protected set; } = null;
         public override Canvas SceneCanvas { get; protected set; } = null;
         public CityOptions CitySpecs { get; protected set; }

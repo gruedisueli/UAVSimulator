@@ -13,13 +13,12 @@ namespace Assets.Scripts.Environment
     public class SceneRestrictionZone : SceneElementBase
     {
         public override string Guid { get; protected set; }
-        public override bool Is2D { get; protected set; } = false;
         public override GameObject Sprite2d { get; protected set; } = null;
         public override Canvas SceneCanvas { get; protected set; } = null;
         public RestrictionZoneBase RestrictionZoneSpecs { get; private set; }
         public List<GameObject> SubElements { get; private set; } = new List<GameObject>();
 
-        public void Initialize(string guid, RestrictionZoneBase rZ, bool isSelectable)
+        public void Initialize(string guid, RestrictionZoneBase rZ)
         {
             Guid = guid;
             RestrictionZoneSpecs = rZ;
@@ -66,14 +65,13 @@ namespace Assets.Scripts.Environment
                 c.tag = gameObject.tag;
                 c.layer = gameObject.layer;
             }
-            if (isSelectable)
+
+            foreach (var c in SubElements)
             {
-                foreach (var c in SubElements)
-                {
-                    c.AddComponent<SelectableGameObject>();
-                }
-                MakeSelectable();
+                c.AddComponent<SelectableGameObject>();
             }
+            MakeSelectable();
+            
         }
 
         /// <summary>
