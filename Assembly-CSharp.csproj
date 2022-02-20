@@ -562,6 +562,7 @@
     <Compile Include="Assets\Mapbox\Unity\Location\LocationSmoothing\KalmanFilter.cs" />
     <Compile Include="Assets\Scripts\Environment\AssetPackBase.cs" />
     <Compile Include="Assets\Mapbox\Unity\SourceLayers\ISubLayerCustomStyle.cs" />
+    <Compile Include="Assets\Scripts\InstantiationUtils.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Assets\Mapbox\Core\Plugins\Mapbox\vector-tile-cs\net46\Mapbox.VectorTile.Geometry.dll" />

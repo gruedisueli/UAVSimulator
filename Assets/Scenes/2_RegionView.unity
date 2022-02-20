@@ -446,6 +446,7 @@ MonoBehaviour:
   _abstractMap: {fileID: 555018383}
   _largeScaleMap: {fileID: 1440930570}
   _canvas: {fileID: 1495986657}
+  _boundaryWidth: 1000
 --- !u!1 &101053450
 GameObject:
   m_ObjectHideFlags: 0
@@ -961,6 +962,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: dd9a2c34502c3c249bb58b48e2eb0812, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  TEMPORARY_IsRegionView: 1
   MIN_DRONE_RANGE: 0
   DRONE_SCALE: 1
   scaleMultiplier: 800
@@ -2602,7 +2604,7 @@ RectTransform:
   m_Children:
   - {fileID: 101053451}
   m_Father: {fileID: 1495986654}
-  m_RootOrder: 4
+  m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 1, y: 1}
   m_AnchorMax: {x: 1, y: 1}
@@ -6193,10 +6195,10 @@ RectTransform:
   m_LocalScale: {x: 0, y: 0, z: 0}
   m_Children:
   - {fileID: 1418346519}
+  - {fileID: 610691922}
   - {fileID: 4823326510095144696}
   - {fileID: 2042819400}
   - {fileID: 8441118901478735886}
-  - {fileID: 610691922}
   - {fileID: 232014416}
   m_Father: {fileID: 94958791}
   m_RootOrder: 0

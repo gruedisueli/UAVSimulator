@@ -27,6 +27,9 @@ using DelaunatorSharp;
 /// </summary>
 public class VehicleControlSystem : MonoBehaviour
 {
+    public bool TEMPORARY_IsRegionView = true;
+
+
 
     const float AGL_700_METERS = 213.36f;//AGL 700 in meters, not feet. "700" is a feet measurement.
     const float AGL_1200_METERS = 365.76f;//AGL 1200 in meters, not feet. "1200" is a feet measurement.
@@ -120,8 +123,6 @@ public class VehicleControlSystem : MonoBehaviour
     /// </summary>
     public Dictionary<string, BuildingNoise> BuildingNoiseElements { get; private set; } = new Dictionary<string, BuildingNoise>();
 
-    public bool IsRegionView { get; set; } = false;
-
     // private SceneManagerBase sceneManager;
     public SceneManagerBase sceneManager;    
 
@@ -163,20 +164,9 @@ public class VehicleControlSystem : MonoBehaviour
         hiddenDrones = new List<GameObject>();
 
         watch = 0.0f;
-        IsRegionView = !(sceneManager is CityViewManager);
 
+        mapBounds = UnitUtils.GetRegionExtents();
 
-        if (!IsRegionView)
-        {
-            var eM = EnvironManager.Instance;
-            var city = eM.GetCurrentCity();
-            mapBounds = UnitUtils.GetCityExtents(city.CityStats);
-        }
-        else mapBounds = UnitUtils.GetRegionExtents();
-
-
-
-        
         droneInstantiator = gameObject.GetComponent<DroneInstantiator>();
         droneInstantiator.Init(this);
         droneInstantiator.ReadVehicleSpecs();
@@ -195,7 +185,11 @@ public class VehicleControlSystem : MonoBehaviour
 
         #region Basic Initialization Stuff. //@EUNU comment why we don't do this in setup? Seems like something that only happens once?
 
-        if (!IsRegionView && !buildingNoiseAttachmentStarted) StartCoroutine(AttachBuildingNoiseComponent());
+        if (!TEMPORARY_IsRegionView && !buildingNoiseAttachmentStarted) StartCoroutine(AttachBuildingNoiseComponent());
+
+
+
+
         //if (isBuildingNoiseComponentAttached && !droneInstantiator.corridorDroneInstantiationStarted ) StartCoroutine(droneInstantiator.InstantiateCorridorDrones(sceneManager, DRONE_SCALE, _canvas));
         //else if (isBuildingNoiseComponentAttached && droneInstantiator.isCorridorDroneInstantiated && !droneInstantiator.lowAltitudeDroneInstantiationStarted ) StartCoroutine(droneInstantiator.InstantiateLowAltitudeDrones(sceneManager, DRONE_SCALE, _canvas));
 
@@ -203,7 +197,7 @@ public class VehicleControlSystem : MonoBehaviour
 
         #region Typical play actions
 
-        if (playing && droneInstantiator.isCorridorDroneInstantiated && droneInstantiator.isLowAltitudeDroneInstantiated && (IsRegionView || isBuildingNoiseComponentAttached))
+        if (playing && droneInstantiator.isCorridorDroneInstantiated && droneInstantiator.isLowAltitudeDroneInstantiated && (TEMPORARY_IsRegionView || isBuildingNoiseComponentAttached))
         {
             watch += Time.deltaTime;
             //periodic check-in
@@ -243,13 +237,7 @@ public class VehicleControlSystem : MonoBehaviour
     public void PlayPause()
     {
         playing = !playing;
-        if (!IsRegionView)
-        {
-            var eM = EnvironManager.Instance;
-            var city = eM.GetCurrentCity();
-            mapBounds = UnitUtils.GetCityExtents(city.CityStats);
-        }
-        else mapBounds = UnitUtils.GetRegionExtents();
+        mapBounds = UnitUtils.GetRegionExtents();
 
         if ( playing )
         {
@@ -327,7 +315,7 @@ public class VehicleControlSystem : MonoBehaviour
     /// </summary>
     public void GenerateRandomCalls()
     {
-        int call_type = IsRegionView ? 0 : Mathf.FloorToInt(UnityEngine.Random.Range(0.0f, 3.0f));
+        int call_type = Mathf.FloorToInt(UnityEngine.Random.Range(0.0f, 3.0f));
         string call_type_string = call_type <= 0 ? "corridor" : "low-altitude";
 
         // strategicDeconfliction == "none"
@@ -1111,23 +1099,17 @@ public class VehicleControlSystem : MonoBehaviour
         float width = sceneManager is RegionViewManager ? UISettings.REGIONVIEW_NETWORK_WIDTH : UISettings.CITYVIEW_NETWORK_WIDTH;
         foreach (Corridor c in DroneNetwork.corridors)
         {
-            GameObject line = new GameObject();
-            line.name = "Corridor_" + c.origin.name + "_" + c.destination.name;
-            LineRenderer lineRenderer = line.AddComponent<LineRenderer>();
-            lineRenderer.positionCount = c.wayPoints.Count;
+            string name = "Corridor_" + c.origin.name + "_" + c.destination.name;
+
             List<Vector3> wayPointsList = new List<Vector3>(c.wayPoints.ToArray());
-            //wayPointsList.Insert(0, c.origin.transform.position);
             Vector3[] wayPointArray = new Vector3[wayPointsList.Count];
             for (int i = 0; i < wayPointsList.Count; i++)
             {
                 wayPointArray[i] = new Vector3(wayPointsList[i].x, c.elevation, wayPointsList[i].z);
             }
-            lineRenderer.SetPositions(wayPointArray);
-            lineRenderer.material = Resources.Load<Material>("Materials/Route");
-            lineRenderer.SetWidth(width, width);
-            networkLines.Add(line);
-            lineRenderer.enabled = false;
-            routeLineObject.Add(c, line);
+            var lineRenderer = InstantiationUtils.MakePolyline(wayPointArray, Resources.Load<Material>("Materials/Route"), width, false, name);
+            networkLines.Add(lineRenderer.gameObject);
+            routeLineObject.Add(c, lineRenderer.gameObject);
             c.OnCongestionLevelChange += CongestionLevelChangeHandler;
         }
 

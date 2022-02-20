@@ -107,7 +107,7 @@ namespace Assets.Scripts.SimulatorCore
         {
             float progress = 0.0f;
             int vehiclesToInstantiate = backgroundDroneCount;
-            string drone_path = vcs.IsRegionView ? "GUI/DroneIcon2" : "Drones/";
+            string drone_path = vcs.TEMPORARY_IsRegionView ? "GUI/DroneIcon2" : "Drones/";
             Material backgroundTrail = Resources.Load<Material>("Materials/TrailBackGroundDrones");
             // Populate vehiclesToInstantiate number of drones in existing parking structures
 
@@ -120,7 +120,7 @@ namespace Assets.Scripts.SimulatorCore
                 // INTEGRATION TO-DO: Make this part to select parking structure randomly so that the drones are randomly populated
 
                 int vehicleTypeID = UnityEngine.Random.Range(0, _vehicleSpecs.Keys.Count);
-                string path = vcs.IsRegionView ? drone_path : drone_path + _vehicleSpecs.Keys.ToList()[vehicleTypeID];
+                string path = vcs.TEMPORARY_IsRegionView ? drone_path : drone_path + _vehicleSpecs.Keys.ToList()[vehicleTypeID];
                 var newDrone = Resources.Load<GameObject>(path);
                 var type = _vehicleSpecs.Keys.ToList()[vehicleTypeID];
 
@@ -169,7 +169,7 @@ namespace Assets.Scripts.SimulatorCore
         /// </summary>
         private IEnumerator InstantiateCorridorOrLowAltDrones(SceneManagerBase sceneManager, float scale, Canvas _canvas, bool isCorridor)
         {
-            string drone_path = vcs.IsRegionView ? "GUI/DroneIcon2" : "Drones/";
+            string drone_path = vcs.TEMPORARY_IsRegionView ? "GUI/DroneIcon2" : "Drones/";
             string droneType = isCorridor ? "corridor" : "LowAltitude";
             float progress = 0.0f;
             int parkingCapacity = vcs.GetParkingCapacity();
@@ -207,7 +207,7 @@ namespace Assets.Scripts.SimulatorCore
                         if (pC.RemainingSpots > 0)
                         {
                             int vehicleTypeID = UnityEngine.Random.Range(0, typeNames.Count);
-                            string path = vcs.IsRegionView ? drone_path : drone_path + typeNames[vehicleTypeID];
+                            string path = vcs.TEMPORARY_IsRegionView ? drone_path : drone_path + typeNames[vehicleTypeID];
                             var newDrone = Resources.Load<GameObject>(path);
                             var type = typeNames[vehicleTypeID];
                             var emptySpot = pC.GetEmptySpot();
@@ -236,7 +236,7 @@ namespace Assets.Scripts.SimulatorCore
                             v.currentCommunicationPoint = sPS.gameObject;
                             OnDroneInstantiated?.Invoke(this, new DroneInstantiationArgs(clone));
                             // Update parking management info
-                            if (!vcs.IsRegionView) clone.transform.GetChild(0).gameObject.GetComponent<MeshRenderer>().enabled = false;
+                            if (!vcs.TEMPORARY_IsRegionView) clone.transform.GetChild(0).gameObject.GetComponent<MeshRenderer>().enabled = false;
                             else
                             {
                                 var image = clone2d.GetComponent<Image>();
@@ -291,7 +291,7 @@ namespace Assets.Scripts.SimulatorCore
             // INTEGRATION TO-DO: Make this part to select parking structure randomly so that the drones are randomly populated
 
             int vehicleTypeID = UnityEngine.Random.Range(0, _vehicleSpecs.Keys.Count);
-            string drone_path = vcs.IsRegionView ? "GUI/DroneIcon2" : "Drones/" + _vehicleSpecs.Keys.ToList()[vehicleTypeID];
+            string drone_path = vcs.TEMPORARY_IsRegionView ? "GUI/DroneIcon2" : "Drones/" + _vehicleSpecs.Keys.ToList()[vehicleTypeID];
 
             var newDrone = Resources.Load<GameObject>(drone_path);
             var type = _vehicleSpecs.Keys.ToList()[vehicleTypeID];
@@ -361,7 +361,7 @@ namespace Assets.Scripts.SimulatorCore
         {
             GameObject clone;
             clone2d = null;
-            if (vcs.IsRegionView)
+            if (vcs.TEMPORARY_IsRegionView)
             {
                 clone = Instantiate(new GameObject(), spot, Quaternion.Euler(0.0f, 0.0f, 0.0f));
                 //element follower knows to destroy itself if drone is destroyed.

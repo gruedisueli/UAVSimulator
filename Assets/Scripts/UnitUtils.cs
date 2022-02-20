@@ -61,7 +61,7 @@ namespace Assets.Scripts
         }
 
         /// <summary>
-        /// Gets 2d extents of region view.
+        /// Gets 2d extents of region view. { {minX, maxX}, {minZ, maxZ} }
         /// </summary>
         /// <returns></returns>
         public static float[][] GetRegionExtents()

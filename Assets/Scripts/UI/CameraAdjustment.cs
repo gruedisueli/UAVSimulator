@@ -47,6 +47,11 @@ namespace Assets.Scripts.UI
         private Quaternion _rotation;
         private bool _isPerspective;
 
+        private float _minX = float.MinValue;
+        private float _maxX = float.MaxValue;
+        private float _minZ = float.MinValue;
+        private float _maxZ = float.MaxValue;
+
         void Start() { Init(); }
         void OnEnable() { Init(); }
 
@@ -62,6 +67,17 @@ namespace Assets.Scripts.UI
             _yDeg = Vector3.Angle(Vector3.up, _camera.transform.up);
 
             if (_isPerspective) SetFog();
+        }
+
+        /// <summary>
+        /// Sets max extents camera is allowed to travel.
+        /// </summary>
+        public void SetExtents(float minX, float maxX, float minZ, float maxZ)
+        {
+            _minX = minX;
+            _maxX = maxX;
+            _minZ = minZ;
+            _maxZ = maxZ;
         }
 
         /*
@@ -112,8 +128,23 @@ namespace Assets.Scripts.UI
                 //grab the rotation of the camera so we can move in a psuedo local XY space
                 var tX = Vector3.right * -Input.GetAxis("Mouse X") * (_camera.transform.position.y / _panSpeed);
                 var tY = _camera.transform.up * -Input.GetAxis("Mouse Y") * (_camera.transform.position.y / _panSpeed);
-                _camera.transform.Translate(tX);
-                _camera.transform.Translate(tY, Space.World);
+                var combined = tX + tY;
+                var newPos = _camera.transform.position + combined;
+                var x0 = newPos.x;
+                var y = newPos.y;
+                var z0 = newPos.z;
+                float x1, z1;
+                if (x0 > _maxX) x1 = _maxX;
+                else if (x0 < _minX) x1 = _minX;
+                else x1 = x0;
+
+                if (z0 > _maxZ) z1 = _maxZ;
+                else if (z0 < _minZ) z1 = _minZ;
+                else z1 = z0;
+
+                _camera.transform.position = new Vector3(x1, y, z1);
+                //_camera.transform.Translate(tX);
+                //_camera.transform.Translate(tY, Space.World);
                 changed = true;
             }
 

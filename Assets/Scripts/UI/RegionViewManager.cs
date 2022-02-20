@@ -23,12 +23,13 @@ namespace Assets.Scripts.UI
     /// </summary>
     public class RegionViewManager : SceneManagerBase
     {
-
+        public float _boundaryWidth = 100;
         private Coroutine _reloadRoutine;
         private WaitForSeconds _wait;
         private CameraAdjustment _cameraAdj;
 
         private GameObject _cityMarkerPrefab;
+        private LineRenderer _regionBoundaries;
 
         private float _minCamSize = 1000.0f;
         private float _maxCamSize = 256000.0f;
@@ -130,6 +131,28 @@ namespace Assets.Scripts.UI
             #endregion
 
             _vehicleControlSystem.droneInstantiator.OnDroneInstantiated += OnDroneInstantiated;
+
+            //build region boundary
+            var extents = UnitUtils.GetRegionExtents();
+            var points = new Vector3[]
+            {
+                new Vector3(extents[0][0], 500, extents[1][0]), //minX, minZ
+                new Vector3(extents[0][0], 500, extents[1][1]), //minX, maxZ
+                new Vector3(extents[0][1], 500, extents[1][1]), //maxX, maxZ
+                new Vector3(extents[0][1], 500, extents[1][0]), //maxX, minZ
+                new Vector3(extents[0][0], 500, extents[1][0]) //minX, minZ
+            };
+            var mat = Resources.Load<Material>("Materials/RegionBoundary");
+            if (mat == null)
+            {
+                Debug.LogError("Could not load region boundary material");
+                return;
+            }
+
+            _regionBoundaries = InstantiationUtils.MakePolyline(points, mat, _boundaryWidth, true);
+
+            _cameraAdj.SetExtents(extents[0][0], extents[0][1], extents[1][0], extents[1][1]);
+
         }
 
         protected override void OnDestroyDerived()
