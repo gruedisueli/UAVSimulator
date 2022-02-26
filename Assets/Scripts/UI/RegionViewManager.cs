@@ -192,7 +192,8 @@ namespace Assets.Scripts.UI
             //    _temporarySuppressBuildings = false;
             //    SetAllowBuildings(true);
             //}
-            Reload(_currentZoom);
+            var z = GetZoomLevel(_cameraAdj._camera.transform.position.y);
+            Reload(z);
         }
 
         private void SetAllowBuildings(bool toggle)

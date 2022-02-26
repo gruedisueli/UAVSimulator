@@ -125,8 +125,7 @@ namespace Assets.Scripts.UI
             // otherwise if middle mouse is selected, we pan by way of transforming the target in screenspace
             else if (_allowPan && Input.GetMouseButton(1))
             {
-                //grab the rotation of the camera so we can move in a psuedo local XY space
-                var tX = Vector3.right * -Input.GetAxis("Mouse X") * (_camera.transform.position.y / _panSpeed);
+                var tX = _camera.transform.right * -Input.GetAxis("Mouse X") * (_camera.transform.position.y / _panSpeed);
                 var tY = _camera.transform.up * -Input.GetAxis("Mouse Y") * (_camera.transform.position.y / _panSpeed);
                 var combined = tX + tY;
                 var newPos = _camera.transform.position + combined;

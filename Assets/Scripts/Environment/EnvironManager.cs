@@ -75,6 +75,7 @@ namespace Assets.Scripts.Environment
         public GameObject ProgressBarPrefab { get; private set; } = null;
         public GameObject ParkingSpritePrefab { get; private set; } = null;
         public GameObject PortSpritePrefab { get; private set; } = null;
+        public VehicleControlSystem VCS { get; set; } = null;
 
 
         /// <summary>

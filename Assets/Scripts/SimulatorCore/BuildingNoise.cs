@@ -1,13 +1,18 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
+using Assets.Scripts.Environment;
 using UnityEngine;
 using Assets.Scripts.SimulatorCore;
+using UnityEditor;
 
 /// <summary>
 /// Gets atached to every building in simulation that want to monitor sound on.
 /// </summary>
-public class BuildingNoise
+public class BuildingNoise : MonoBehaviour
 {
+    public EventHandler<EventArgs> OnDestroyed;
+
     // Start is called before the first frame update
     VehicleControlSystem vcs;
     Material lowNoiseMaterial;
@@ -17,16 +22,28 @@ public class BuildingNoise
     List<GameObject> affectingVehicles = new List<GameObject>();
     SimulationAnalyzer simulationAnalyzer;
     GameObject building;
+    public string ID { get; private set; }
 
-    public BuildingNoise(Material lowNoise, Material midNoise, Material highNoise, Material noNoise, VehicleControlSystem controlSys, SimulationAnalyzer analyzer, GameObject bldg)
+    private bool _registered = false;
+
+    private void Awake()
     {
-        lowNoiseMaterial = lowNoise;
-        midNoiseMaterial = midNoise;
-        highNoiseMaterial = highNoise;
-        noNoiseMaterial = noNoise;
-        vcs = controlSys;
-        simulationAnalyzer = analyzer;
-        building = bldg;
+        vcs = EnvironManager.Instance.VCS;
+        if (vcs == null)
+        {
+            Debug.LogError("Could not locate vehicle control system");
+            return;
+        }
+
+        lowNoiseMaterial = vcs._lowNoiseMaterial;
+        midNoiseMaterial = vcs._midNoiseMaterial;
+        highNoiseMaterial = vcs._highNoiseMaterial;
+        noNoiseMaterial = vcs._noNoiseMaterial;
+        simulationAnalyzer = vcs._simulationAnalyzer;
+        building = gameObject;
+        gameObject.layer = 9;
+        gameObject.tag = "Building";
+
     }
 
     /// <summary>
@@ -51,6 +68,7 @@ public class BuildingNoise
                 simulationAnalyzer.SendMessage("AddHighNoiseBuilding", building);
                 simulationAnalyzer.SendMessage("RemoveMediumNoiseBuilding", building);
             }
+
             affectingVehicles.Add(affectingVehicle);
             UpdateVisual();
         }
@@ -77,6 +95,7 @@ public class BuildingNoise
             {
                 simulationAnalyzer.SendMessage("RemoveLowNoiseBuilding", building);
             }
+
             affectingVehicles.Remove(affectingVehicle);
             UpdateVisual();
         }
@@ -108,4 +127,24 @@ public class BuildingNoise
             building.GetComponent<MeshRenderer>().material = noNoiseMaterial;
         }
     }
+
+    void OnEnable()
+    {
+        if (!_registered)
+        {
+            ID = GUID.Generate().ToString();
+            vcs.RegisterNoiseComponent(this);
+            _registered = true;
+        }
+    }
+
+    void OnDestroy()
+    {
+        if (_registered)
+        {
+            vcs.DeRegisterNoiseComponent(this);
+        }
+        OnDestroyed?.Invoke(this, new EventArgs());
+    }
+
 }

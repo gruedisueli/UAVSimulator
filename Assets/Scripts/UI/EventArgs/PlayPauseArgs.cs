@@ -11,11 +11,11 @@ namespace Assets.Scripts.UI.EventArgs
     /// </summary>
     public class PlayPauseArgs
     {
-        //empty for now, but maybe certain params would be sent at some point.
+        public bool IsPlaying { get; }
 
-        public PlayPauseArgs()
+        public PlayPauseArgs(bool isPlaying)
         {
-
+            IsPlaying = isPlaying;
         }
     }
 }

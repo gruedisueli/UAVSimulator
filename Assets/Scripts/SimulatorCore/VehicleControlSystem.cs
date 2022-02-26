@@ -28,7 +28,11 @@ using DelaunatorSharp;
 public class VehicleControlSystem : MonoBehaviour
 {
     public bool TEMPORARY_IsRegionView = true;
-
+    public Material _lowNoiseMaterial;
+    public Material _midNoiseMaterial;
+    public Material _highNoiseMaterial;
+    public Material _noNoiseMaterial;
+    public SimulationAnalyzer _simulationAnalyzer;
 
 
     const float AGL_700_METERS = 213.36f;//AGL 700 in meters, not feet. "700" is a feet measurement.
@@ -64,9 +68,6 @@ public class VehicleControlSystem : MonoBehaviour
     private float watch;
     private int droneCount;
     private int buildingCt = 0;
-
-    private bool buildingNoiseAttachmentStarted;
-    private bool isBuildingNoiseComponentAttached;
 
     // Visualization related params
     public bool playing;
@@ -119,7 +120,7 @@ public class VehicleControlSystem : MonoBehaviour
     }
 
     /// <summary>
-    /// List of all buildings and their noise objects. Not using Unity "components" because instantiation of them is slow at runtime.
+    /// List of all buildings and their noise objects.
     /// </summary>
     public Dictionary<string, BuildingNoise> BuildingNoiseElements { get; private set; } = new Dictionary<string, BuildingNoise>();
 
@@ -153,6 +154,7 @@ public class VehicleControlSystem : MonoBehaviour
 
     void Awake()
     {
+        EnvironManager.Instance.VCS = this;
         droneCount = 200;
         playing = false;
         translucentRed = new Color(Color.cyan.r, Color.cyan.g, Color.cyan.b, 0.50f);
@@ -185,7 +187,7 @@ public class VehicleControlSystem : MonoBehaviour
 
         #region Basic Initialization Stuff. //@EUNU comment why we don't do this in setup? Seems like something that only happens once?
 
-        if (!TEMPORARY_IsRegionView && !buildingNoiseAttachmentStarted) StartCoroutine(AttachBuildingNoiseComponent());
+        //if (!TEMPORARY_IsRegionView && !buildingNoiseAttachmentStarted) StartCoroutine(AttachBuildingNoiseComponent());
 
 
 
@@ -197,7 +199,7 @@ public class VehicleControlSystem : MonoBehaviour
 
         #region Typical play actions
 
-        if (playing && droneInstantiator.isCorridorDroneInstantiated && droneInstantiator.isLowAltitudeDroneInstantiated && (TEMPORARY_IsRegionView || isBuildingNoiseComponentAttached))
+        if (playing && droneInstantiator.isCorridorDroneInstantiated && droneInstantiator.isLowAltitudeDroneInstantiated /*&& (TEMPORARY_IsRegionView || isBuildingNoiseComponentAttached)*/)
         {
             watch += Time.deltaTime;
             //periodic check-in
@@ -212,7 +214,7 @@ public class VehicleControlSystem : MonoBehaviour
                     droneToRemove.Destroy();
                 }
                 watch = 0.0f;
-                GenerateRandomCalls();//@EUNU comment
+                GenerateRandomCalls();
             }
         }
 
@@ -246,69 +248,95 @@ public class VehicleControlSystem : MonoBehaviour
     }
 
     /// <summary>
-    /// Coroutine that iterates through all the objects in scene and attaches noise components to those things that should get it.
+    /// Registers a newly-placed noise component.
     /// </summary>
-    private IEnumerator AttachBuildingNoiseComponent()
+    public void RegisterNoiseComponent(BuildingNoise noise)
     {
-        buildingNoiseAttachmentStarted = true;
-        int totalChildren = 0;
-        int done = 0;
-        Transform citySimulatorMapTransform = GameObject.Find("CitySimulatorMap").transform;
-        string material_path = "Materials/";
-        var lowNoiseMaterial = Resources.Load<Material>(material_path + "LowNoise");
-        var midNoiseMaterial = Resources.Load<Material>(material_path + "MidNoise");
-        var highNoiseMaterial = Resources.Load<Material>(material_path + "HighNoise");
-        var noNoiseMaterial = Resources.Load<Material>(material_path + "Building");
-        var simulationAnalyzer = GetComponent<SimulationAnalyzer>();
-
-        var pG = Instantiate(EnvironManager.Instance.ProgressBarPrefab, _canvas.gameObject.transform);
-        var progressBar = pG.GetComponent<ProgressBar>();
-        progressBar.Init("Adding Noise Calculation Components");
-        foreach (Transform child in citySimulatorMapTransform)
-            totalChildren += child.childCount;
-
-        int childrenPerFrame = 100;//how many buildings to process per frame (yield return null finishes coroutine's work in frame)
-        int subprocessCt = 0;
-        foreach (Transform child in citySimulatorMapTransform)
+        if (!BuildingNoiseElements.ContainsKey(noise.ID))
         {
-            foreach (Transform grandchild in child)
-            {
-                //Debug.Log("The name of current object:" + grandchild.gameObject.name);
-                //if (grandchild.gameObject.name.Contains("Buildings"))
-                //{
-                var n = grandchild.gameObject.name;
-                if (!n.Contains("Building")) continue;
-                n = "Building_" + buildingCt.ToString();//give unique name
-                buildingCt++;
-                grandchild.gameObject.name = n;
-                var bN = new BuildingNoise(lowNoiseMaterial, midNoiseMaterial, highNoiseMaterial, noNoiseMaterial, this, simulationAnalyzer, grandchild.gameObject);
-                if (!BuildingNoiseElements.ContainsKey(n))
-                {
-                    BuildingNoiseElements.Add(n, bN);
-                }
-                else
-                {
-                    Debug.LogError("Building name already present in dictionary for building noise elements");
-                }
-                grandchild.gameObject.layer = 9;
-                grandchild.gameObject.tag = "Building";
-                    
-                //}
-                done++;
-                subprocessCt++;
-                if (subprocessCt == childrenPerFrame)
-                {
-                    subprocessCt = 0;
-                    progress = (float)done / (float)totalChildren;
-                    progressBar.SetCompletion(progress);
-                    yield return null;
-                }
-            }
+            BuildingNoiseElements.Add(noise.ID, noise);
         }
-
-        isBuildingNoiseComponentAttached = true;
-        pG.Destroy();
+        else
+        {
+            Debug.LogError("New building is already in building noise dictionary");
+        }
     }
+
+    /// <summary>
+    /// Deregisters a noise component.
+    /// </summary>
+    public void DeRegisterNoiseComponent(BuildingNoise noise)
+    {
+        if (BuildingNoiseElements.ContainsKey(noise.ID))
+        {
+            BuildingNoiseElements.Remove(noise.ID);
+        }
+        else
+        {
+            Debug.LogError("Deleted/disabled building is not in building noise dictionary");
+        }
+    }
+
+    ///// <summary>
+    ///// Coroutine that iterates through all the objects in scene and attaches noise components to those things that should get it.
+    ///// </summary>
+    //private IEnumerator AttachBuildingNoiseComponent()
+    //{
+    //    buildingNoiseAttachmentStarted = true;
+    //    int totalChildren = 0;
+    //    int done = 0;
+    //    Transform citySimulatorMapTransform = GameObject.Find("CitySimulatorMap").transform;
+
+    //    var simulationAnalyzer = GetComponent<SimulationAnalyzer>();
+
+    //    var pG = Instantiate(EnvironManager.Instance.ProgressBarPrefab, _canvas.gameObject.transform);
+    //    var progressBar = pG.GetComponent<ProgressBar>();
+    //    progressBar.Init("Adding Noise Calculation Components");
+    //    foreach (Transform child in citySimulatorMapTransform)
+    //        totalChildren += child.childCount;
+
+    //    int childrenPerFrame = 100;//how many buildings to process per frame (yield return null finishes coroutine's work in frame)
+    //    int subprocessCt = 0;
+    //    foreach (Transform child in citySimulatorMapTransform)
+    //    {
+    //        foreach (Transform grandchild in child)
+    //        {
+    //            //Debug.Log("The name of current object:" + grandchild.gameObject.name);
+    //            //if (grandchild.gameObject.name.Contains("Buildings"))
+    //            //{
+    //            var n = grandchild.gameObject.name;
+    //            if (!n.Contains("Building")) continue;
+    //            n = "Building_" + buildingCt.ToString();//give unique name
+    //            buildingCt++;
+    //            grandchild.gameObject.name = n;
+    //            var bN = new BuildingNoise(lowNoiseMaterial, midNoiseMaterial, highNoiseMaterial, noNoiseMaterial, this, simulationAnalyzer, grandchild.gameObject);
+    //            if (!BuildingNoiseElements.ContainsKey(n))
+    //            {
+    //                BuildingNoiseElements.Add(n, bN);
+    //            }
+    //            else
+    //            {
+    //                Debug.LogError("Building name already present in dictionary for building noise elements");
+    //            }
+    //            grandchild.gameObject.layer = 9;
+    //            grandchild.gameObject.tag = "Building";
+                    
+    //            //}
+    //            done++;
+    //            subprocessCt++;
+    //            if (subprocessCt == childrenPerFrame)
+    //            {
+    //                subprocessCt = 0;
+    //                progress = (float)done / (float)totalChildren;
+    //                progressBar.SetCompletion(progress);
+    //                yield return null;
+    //            }
+    //        }
+    //    }
+
+    //    isBuildingNoiseComponentAttached = true;
+    //    pG.Destroy();
+    //}
 
     /// <summary>
     /// Generates random calls for drone actions (only low-altitude and corridor drones, not background). //@EUNU is this corret?

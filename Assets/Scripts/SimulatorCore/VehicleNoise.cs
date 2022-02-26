@@ -54,9 +54,11 @@ public class VehicleNoise : MonoBehaviour
         
         foreach(var hitCollider in hitColliders)
         {
+            
             if (hitCollider.gameObject.tag == "Building")
             {
-                var n = hitCollider.gameObject.name;
+                var n = hitCollider.gameObject.GetComponent<BuildingNoise>()?.ID;
+                if (n == null) continue;
                 if (vcs.BuildingNoiseElements.ContainsKey(n))
                 {
                     vcs.BuildingNoiseElements[n].AddNoise(gameObject);
@@ -64,8 +66,18 @@ public class VehicleNoise : MonoBehaviour
                 else
                 {
                     Debug.LogError("Building not found in noise element dictionary");
+                    continue;
                 }
-                if (!affected_buildings.Contains(hitCollider)) affected_buildings.Add(hitCollider);
+
+                if (!affected_buildings.Contains(hitCollider))
+                {
+                    var noise = hitCollider.GetComponent<BuildingNoise>();
+                    if (noise != null)
+                    {
+                        noise.OnDestroyed += BuildingDestroyedAction;
+                    }
+                    affected_buildings.Add(hitCollider);
+                }
             }
         }
 
@@ -74,7 +86,8 @@ public class VehicleNoise : MonoBehaviour
         {
             if (!hitColliders_list.Contains(affected_building))
             {
-                var n = affected_building.gameObject.name;
+                var n = affected_building.gameObject.GetComponent<BuildingNoise>()?.ID;
+                if (n == null) continue;
                 if (vcs.BuildingNoiseElements.ContainsKey(n))
                 {
                     vcs.BuildingNoiseElements[n].DecreaseNoise(gameObject);
@@ -82,11 +95,39 @@ public class VehicleNoise : MonoBehaviour
                 else
                 {
                     Debug.LogError("Building not found in noise element dictionary");
+                    continue;
                 }
                 affected_building_copy.Remove(affected_building);
             }
         }
         affected_buildings = affected_building_copy;
+    }
+
+    /// <summary>
+    /// Called when a building gameobject in affected buildings list is destroyed
+    /// </summary>
+    private void BuildingDestroyedAction(object s, System.EventArgs args)
+    {
+        if (s is BuildingNoise noise)
+        {
+            var c = noise.GetComponent<Collider>();
+            if (c != null)
+            {
+                affected_buildings.Remove(c);
+            }
+        }
+    }
+
+    void OnDestroy()
+    {
+        foreach (var b in affected_buildings)
+        {
+            var n = b?.GetComponent<BuildingNoise>();
+            if (n != null)
+            {
+                n.OnDestroyed -= BuildingDestroyedAction;
+            }
+        }
     }
 
 }
