@@ -64,6 +64,7 @@ namespace Assets.Scripts.Environment
 
         public void Selected(object sender, SelectGameObjectArgs args)
         {
+            if (EnvironManager.Instance.VCS.playing) return;//prevent modification of scene elements when playing.
             if (!EventSystem.current.IsPointerOverGameObject())//prevent selection of objects behind GUI
             {
                 Debug.Log("Clicked scene element " + Guid);

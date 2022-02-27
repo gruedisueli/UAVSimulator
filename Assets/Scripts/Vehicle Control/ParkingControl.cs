@@ -24,6 +24,17 @@ public class ParkingControl : TrafficControl
     public Dictionary<GameObject, Vector3> Reserved { get; set; } = new Dictionary<GameObject, Vector3>();
 
     /// <summary>
+    /// Resets to simulation start conditions
+    /// </summary>
+    public void ResetSimulation()
+    {
+        Parked.Clear();
+        VehicleAt.Clear();
+        Reserved.Clear();
+        ResetTrafficControlSim();
+    }
+
+    /// <summary>
     /// Assigns a landing corridor (waypoints) to a specific drone registered to this parking structure.
     /// </summary>
     protected override void AssignLandingCorridor()

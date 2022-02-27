@@ -14,6 +14,14 @@ public class DronePortControl : TrafficControl
     public DronePortBase dronePortInfo;
 
     /// <summary>
+    /// Resets to simulation start conditions
+    /// </summary>
+    public void ResetSimulation()
+    {
+        ResetTrafficControlSim();
+    }
+
+    /// <summary>
     /// Assigns a landing corridor (waypoints) to a specific drone registered to the control tower.
     /// </summary>
     protected override void AssignLandingCorridor()

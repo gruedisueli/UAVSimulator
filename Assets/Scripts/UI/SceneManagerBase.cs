@@ -38,6 +38,7 @@ namespace Assets.Scripts.UI
         public AbstractMap _abstractMap;
         public AbstractMap _largeScaleMap;
         public Canvas _canvas;
+        public MainButtonPanel _buttonPanel;
 
         protected Camera _mainCamera;
 
@@ -256,9 +257,17 @@ namespace Assets.Scripts.UI
         /// </summary>
         protected void PlayPause(object sender, PlayPauseArgs args)
         {
+            foreach (var b in _buttonPanel._mainButtons)
+            {
+                var addTool = b.GetComponentInChildren(typeof(AddButtonPanel), true);
+                if (addTool != null)
+                {
+                    b.interactable = !args.IsPlaying;
+                }
+            }
             if (_vehicleControlSystem != null)
             {
-                _vehicleControlSystem.PlayPause();
+                _vehicleControlSystem.PlayPause(args.IsPlaying);
             }
         }
 

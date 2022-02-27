@@ -82,6 +82,7 @@ public class VehicleControlSystem : MonoBehaviour
     public delegate void OnSimplifiedMeshToggleDelegate(bool toggle, Mesh m);
     public event OnSimplifiedMeshToggleDelegate OnSimplifiedMeshToggle;
     public Mesh simplifiedMesh;
+    private List<GameObject> _aaoControls = new List<GameObject>();
     public bool simplifiedMeshToggle
     {
         get
@@ -236,14 +237,23 @@ public class VehicleControlSystem : MonoBehaviour
     /// <summary>
     /// Called (from scene manager) whenever we push the button that plays/pauses simulation. If currently playing, pauses simulation, else plays simulation.
     /// </summary>
-    public void PlayPause()
+    public void PlayPause(bool play)
     {
-        playing = !playing;
-        mapBounds = UnitUtils.GetRegionExtents();
+        playing = play;
+        //mapBounds = UnitUtils.GetRegionExtents();
 
         if ( playing )
         {
             if ( !droneInstantiator.isBackgroundDroneInstantiated ) StartCoroutine (droneInstantiator.InstantiateBackgroundDrones(sceneManager, backgroundDroneCount, scaleMultiplier, lowerElevationBound, upperElevationBound, _canvas));
+        }
+        else
+        {
+            foreach (var o in _aaoControls)
+            {
+                o.Destroy();
+            }
+            _aaoControls.Clear();
+            ResetSimulation();
         }
     }
 
@@ -405,6 +415,7 @@ public class VehicleControlSystem : MonoBehaviour
                     // Generate 
                     //Mesh m = p.CreateExtrusion(simulationParam.lowAltitudeBoundary);
                     var AAO = new GameObject("AAO_" + vehicle.name);
+                    _aaoControls.Add(AAO);
                     /*
                     AAO.AddComponent<MeshFilter>().mesh = m;
                     MeshRenderer mr = AAO.AddComponent<MeshRenderer>();
@@ -871,8 +882,9 @@ public class VehicleControlSystem : MonoBehaviour
         droneInstantiator.InstantiateDrones(sceneManager, scaleMultiplier, _canvas);
         if (playing)
         {
+            //this shouldn't logically happen, but just in case
             playing = false;
-            PlayPause();
+            PlayPause(false);
         }
     }
 

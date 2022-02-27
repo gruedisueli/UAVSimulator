@@ -39,6 +39,9 @@ namespace Assets.Scripts.SimulatorCore
         public List<GameObject> _corridorDrones = new List<GameObject>();
         public List<GameObject> _lowAltitudeDrones = new List<GameObject>();
 
+        private Coroutine _corridorLowAltDrnCoroutine, _backgroundDrnRoutine;
+        private List<GameObject> _progressBars = new List<GameObject>();
+
         public event EventHandler<DroneInstantiationArgs> OnDroneInstantiated;
 
         public void Init(VehicleControlSystem vcs)
@@ -52,6 +55,22 @@ namespace Assets.Scripts.SimulatorCore
         /// </summary>
         public void ResetDrones()
         {
+            if (_backgroundDrnRoutine != null)
+            {
+                StopCoroutine(_backgroundDrnRoutine);
+            }
+
+            if (_corridorLowAltDrnCoroutine != null)
+            {
+                StopCoroutine(_corridorLowAltDrnCoroutine);
+            }
+
+            for (int i = 0; i < _progressBars.Count; i++)
+            {
+                _progressBars[i].Destroy();
+            }
+            _progressBars.Clear();
+
             _droneTypeLookup.Clear();
             foreach(var g in _backgroundDrones)
             {
@@ -65,6 +84,16 @@ namespace Assets.Scripts.SimulatorCore
             {
                 g.Destroy();
             }
+
+            foreach (var pS in vcs.sceneManager.ParkingStructures.Values)
+            {
+                pS.ParkingCtrl.ResetSimulation();
+            }
+
+            foreach (var dP in vcs.sceneManager.DronePorts.Values)
+            {
+                dP.DronePortCtrl.ResetSimulation();
+            }
             isBackgroundDroneInstantiated = false;
         }
 
@@ -73,8 +102,8 @@ namespace Assets.Scripts.SimulatorCore
         /// </summary>
         public void InstantiateDrones(SceneManagerBase sceneManager, float scale, Canvas _canvas)
         {
-            StartCoroutine(InstantiateCorridorOrLowAltDrones(sceneManager, scale, _canvas, true));
-            StartCoroutine(InstantiateCorridorOrLowAltDrones(sceneManager, scale, _canvas, false));
+            _corridorLowAltDrnCoroutine = StartCoroutine(InstantiateCorridorOrLowAltDrones(sceneManager, scale, _canvas, true));
+            _backgroundDrnRoutine = StartCoroutine(InstantiateCorridorOrLowAltDrones(sceneManager, scale, _canvas, false));
         }
 
         /// <summary>
@@ -113,6 +142,7 @@ namespace Assets.Scripts.SimulatorCore
 
             var pG = Instantiate(EnvironManager.Instance.ProgressBarPrefab, _canvas.gameObject.transform);
             var progressBar = pG.GetComponent<ProgressBar>();
+            _progressBars.Add(pG);
             progressBar.Init("Initializing Simulation");
 
             for (int i = 0; i < vehiclesToInstantiate; i++)
@@ -160,6 +190,8 @@ namespace Assets.Scripts.SimulatorCore
                 progressBar.SetCompletion(progress);
                 yield return null;
             }
+
+            _progressBars.Remove(pG);
             pG.Destroy();
             isBackgroundDroneInstantiated = true;
         }
@@ -184,7 +216,7 @@ namespace Assets.Scripts.SimulatorCore
             var pG = Instantiate(EnvironManager.Instance.ProgressBarPrefab, _canvas.gameObject.transform);
             var progressBar = pG.GetComponent<ProgressBar>();
             progressBar.Init("Instantiating drones");
-
+            _progressBars.Add(pG);
             if (isCorridor) corridorDroneInstantiationStarted = true;
             else lowAltitudeDroneInstantiationStarted = true;
 
@@ -222,8 +254,7 @@ namespace Assets.Scripts.SimulatorCore
                             // Only for video
                             clone.transform.localScale = new Vector3(scale, scale, scale);
                             // ~Only for video
-                            var vN = clone.AddComponent<VehicleNoise>();
-                            vN.Init(vcs);
+                            
                             TrailRenderer tr = clone.AddComponent<TrailRenderer>();
                             tr.material = Resources.Load<Material>("Materials/TrailCorridorDrones");
                             tr.time = Mathf.Infinity;
@@ -231,6 +262,8 @@ namespace Assets.Scripts.SimulatorCore
 
                             // Fill in vehicle spec
                             DroneBase v = isCorridor ? (DroneBase)clone.AddComponent<CorridorDrone>() : (DroneBase)clone.AddComponent<LowAltitudeDrone>();
+                            var vN = clone.AddComponent<VehicleNoise>();
+                            vN.Init(vcs);
                             v.Clone2d = clone2d;
                             v.Initialize(_vehicleSpecs[type].type, _vehicleSpecs[type].capacity, _vehicleSpecs[type].range, _vehicleSpecs[type].maxSpeed, _vehicleSpecs[type].yawSpeed, _vehicleSpecs[type].takeoffSpeed, _vehicleSpecs[type].landingSpeed, _vehicleSpecs[type].emission, _vehicleSpecs[type].noise, "idle");
                             v.currentCommunicationPoint = sPS.gameObject;
@@ -274,6 +307,7 @@ namespace Assets.Scripts.SimulatorCore
                 yield return null;
             }
             //return vehicles;
+            _progressBars.Remove(pG);
             pG.Destroy();
             if (isCorridor) isCorridorDroneInstantiated = true;
             else isLowAltitudeDroneInstantiated = true;

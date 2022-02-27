@@ -86,6 +86,16 @@ public abstract class TrafficControl : MonoBehaviour
             }
         }
     }
+    /// <summary>
+    /// Resets to default conditions.
+    /// </summary>
+    protected void ResetTrafficControlSim()
+    {
+        busy = false;
+        queue.Clear();
+        currentVehicle = null;
+        vehicleState = null;
+    }
 
 
     /// <summary>

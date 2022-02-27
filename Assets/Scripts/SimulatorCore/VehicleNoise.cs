@@ -16,7 +16,7 @@ public class VehicleNoise : MonoBehaviour
     GameObject noiseShpere;
     VehicleControlSystem vcs;
     // Start is called before the first frame update
-    void Start()
+    void Awake()
     {
 
 
