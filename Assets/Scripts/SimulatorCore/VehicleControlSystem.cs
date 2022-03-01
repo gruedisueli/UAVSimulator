@@ -129,7 +129,7 @@ public class VehicleControlSystem : MonoBehaviour
     public SceneManagerBase sceneManager;    
 
     // Background drone related params
-    public int backgroundDroneCount = 0;
+    public int backgroundDroneCount = 250;
     public float lowerElevationBound = 100;
     public float upperElevationBound = 135;
     public float[][] mapBounds;
@@ -156,7 +156,7 @@ public class VehicleControlSystem : MonoBehaviour
     void Awake()
     {
         EnvironManager.Instance.VCS = this;
-        droneCount = 200;
+        //droneCount = 200;
         playing = false;
         translucentRed = new Color(Color.cyan.r, Color.cyan.g, Color.cyan.b, 0.50f);
 
@@ -179,6 +179,7 @@ public class VehicleControlSystem : MonoBehaviour
         simplifiedMesh = cube.GetComponent<MeshFilter>().mesh;
         cube.Destroy();
 
+        UpdateVehicleCount(backgroundDroneCount);
     }
 
     // Update is called once per frames
@@ -206,14 +207,14 @@ public class VehicleControlSystem : MonoBehaviour
             //periodic check-in
             if (watch > simulationParam.callGenerationInterval)
             {
-                var sa = gameObject.GetComponent<SimulationAnalyzer>();
-                //make sure we don't have excess drones in simulation.
-                if (sa.flyingDrones.Count + droneInstantiator._backgroundDrones.Count >= droneCount && droneInstantiator._backgroundDrones.Count > 0)
-                {
-                    var droneToRemove = droneInstantiator._backgroundDrones[0];
-                    droneInstantiator._backgroundDrones.RemoveAt(0);
-                    droneToRemove.Destroy();
-                }
+                //var sa = gameObject.GetComponent<SimulationAnalyzer>();
+                ////make sure we don't have excess drones in simulation.
+                //if (sa.flyingDrones.Count + droneInstantiator._backgroundDrones.Count >= droneCount && droneInstantiator._backgroundDrones.Count > 0)
+                //{
+                //    var droneToRemove = droneInstantiator._backgroundDrones[0];
+                //    droneInstantiator._backgroundDrones.RemoveAt(0);
+                //    droneToRemove.Destroy();
+                //}
                 watch = 0.0f;
                 GenerateRandomCalls();
             }
@@ -225,14 +226,14 @@ public class VehicleControlSystem : MonoBehaviour
 
     #region Methods
 
-    /// <summary>
-    /// Instantiates drones as needed.
-    /// </summary>
-    public void InstantiateCorridorAndLowAltDrones()
-    {
-        if (droneInstantiator != null) droneInstantiator.InstantiateDrones(sceneManager, scaleMultiplier, _canvas);
-        else Debug.LogError("Drone instantiator is null");
-    }
+    ///// <summary>
+    ///// Instantiates drones as needed.
+    ///// </summary>
+    //public void InstantiateCorridorAndLowAltDrones()
+    //{
+    //    if (droneInstantiator != null) droneInstantiator.InstantiateDrones(sceneManager, scaleMultiplier, _canvas);
+    //    else Debug.LogError("Drone instantiator is null");
+    //}
 
     /// <summary>
     /// Called (from scene manager) whenever we push the button that plays/pauses simulation. If currently playing, pauses simulation, else plays simulation.
@@ -244,7 +245,9 @@ public class VehicleControlSystem : MonoBehaviour
 
         if ( playing )
         {
-            if ( !droneInstantiator.isBackgroundDroneInstantiated ) StartCoroutine (droneInstantiator.InstantiateBackgroundDrones(sceneManager, backgroundDroneCount, scaleMultiplier, lowerElevationBound, upperElevationBound, _canvas));
+            droneInstantiator.ClearDrones();
+            droneInstantiator.InstantiateDrones(sceneManager, scaleMultiplier, _canvas);
+            droneInstantiator.InstantiateBackgroundDrones(sceneManager, backgroundDroneCount, scaleMultiplier, lowerElevationBound, upperElevationBound, _canvas);
         }
         else
         {
@@ -253,7 +256,7 @@ public class VehicleControlSystem : MonoBehaviour
                 o.Destroy();
             }
             _aaoControls.Clear();
-            ResetSimulation();
+            droneInstantiator.ClearDrones();
         }
     }
 
@@ -739,71 +742,76 @@ public class VehicleControlSystem : MonoBehaviour
     //}
 
     /// <summary>
-    /// Allows user to specify number of drones in simulation at runtime.
+    /// Allows user to specify number of background drones in simulation at runtime.
     /// </summary>
     public void UpdateVehicleCount(int count)
     {
-        droneCount = count;
-        SimulationAnalyzer sa = gameObject.GetComponent<SimulationAnalyzer>();
-        if ( count < droneInstantiator._backgroundDrones.Count + sa.flyingDrones.Count)//if too many drones are in simulation, we need to remove some.
+        backgroundDroneCount = count;
+        if (playing)
         {
-            int dronesToRemove = droneInstantiator._backgroundDrones.Count + sa.flyingDrones.Count - count;
-            if (droneInstantiator._backgroundDrones.Count > 0)
-            {
-                List<GameObject> backgroundDronesCopy = new List<GameObject>(droneInstantiator._backgroundDrones);
-                for (int i = 0; i < droneInstantiator._backgroundDrones.Count + sa.flyingDrones.Count - count; i++)
-                {
-                    var droneToDestroy = droneInstantiator._backgroundDrones[i];
-                    backgroundDronesCopy.Remove(droneToDestroy); 
-                    droneToDestroy.Destroy();
-                    dronesToRemove--;
-                    if (backgroundDronesCopy.Count == 0) break;
-                }
-                droneInstantiator._backgroundDrones = backgroundDronesCopy;
-                if ( dronesToRemove > 0 )
-                {
-                    List<GameObject> flyingDronesCopy = new List<GameObject>(sa.flyingDrones);
-                    for ( int i = 0; i < dronesToRemove; i++ )
-                    {
-                        var droneToHide = sa.flyingDrones[i];
-                        hiddenDrones.Add(droneToHide);
-                        droneToHide.GetComponent<DroneBase>().HideMesh();
-                        flyingDronesCopy.Remove(droneToHide);
-                        if (flyingDronesCopy.Count == 0) break;
-                    }
-                    sa.flyingDrones = flyingDronesCopy;
-                }
-            }
+            droneInstantiator.SetBackgroundDroneCt(count);
         }
-        else if ( count == droneInstantiator._backgroundDrones.Count + sa.flyingDrones.Count )//no reason to change anything.
-        {
-            return;
-        }
-        else//we should add some
-        {
-            int dronesToAdd = count - (droneInstantiator._backgroundDrones.Count + sa.flyingDrones.Count);
-            if ( hiddenDrones.Count > 0 )
-            {
-                List<GameObject> hiddenDronesCopy = new List<GameObject>(hiddenDrones);
-                for ( int i = 0; i < hiddenDrones.Count; i++ )
-                {
-                    var dronesToShow = hiddenDrones[i];
-                    var droneState = dronesToShow.GetComponent<DroneBase>();
-                    if (droneState.state != "idle")
-                    {
-                        sa.flyingDrones.Add(dronesToShow);
-                        dronesToAdd--;
-                        if (dronesToAdd == 0) break;
-                        droneState.ShowMesh();
-                        hiddenDronesCopy.Remove(dronesToShow);
-                    }
-                }
-            }
-            for ( int i = 0; i < dronesToAdd; i++)
-            {
-                droneInstantiator.AddBackgroundDrone(sceneManager, scaleMultiplier, lowerElevationBound, upperElevationBound);
-            }
-        }
+        //droneCount = count;
+        //SimulationAnalyzer sa = gameObject.GetComponent<SimulationAnalyzer>();
+        //if ( count < droneInstantiator._backgroundDrones.Count + sa.flyingDrones.Count)//if too many drones are in simulation, we need to remove some.
+        //{
+        //    int dronesToRemove = droneInstantiator._backgroundDrones.Count + sa.flyingDrones.Count - count;
+        //    if (droneInstantiator._backgroundDrones.Count > 0)
+        //    {
+        //        List<GameObject> backgroundDronesCopy = new List<GameObject>(droneInstantiator._backgroundDrones);
+        //        for (int i = 0; i < droneInstantiator._backgroundDrones.Count + sa.flyingDrones.Count - count; i++)
+        //        {
+        //            var droneToDestroy = droneInstantiator._backgroundDrones[i];
+        //            backgroundDronesCopy.Remove(droneToDestroy); 
+        //            droneToDestroy.Destroy();
+        //            dronesToRemove--;
+        //            if (backgroundDronesCopy.Count == 0) break;
+        //        }
+        //        droneInstantiator._backgroundDrones = backgroundDronesCopy;
+        //        if ( dronesToRemove > 0 )
+        //        {
+        //            List<GameObject> flyingDronesCopy = new List<GameObject>(sa.flyingDrones);
+        //            for ( int i = 0; i < dronesToRemove; i++ )
+        //            {
+        //                var droneToHide = sa.flyingDrones[i];
+        //                hiddenDrones.Add(droneToHide);
+        //                droneToHide.GetComponent<DroneBase>().HideMesh();
+        //                flyingDronesCopy.Remove(droneToHide);
+        //                if (flyingDronesCopy.Count == 0) break;
+        //            }
+        //            sa.flyingDrones = flyingDronesCopy;
+        //        }
+        //    }
+        //}
+        //else if ( count == droneInstantiator._backgroundDrones.Count + sa.flyingDrones.Count )//no reason to change anything.
+        //{
+        //    return;
+        //}
+        //else//we should add some
+        //{
+        //    int dronesToAdd = count - (droneInstantiator._backgroundDrones.Count + sa.flyingDrones.Count);
+        //    if ( hiddenDrones.Count > 0 )
+        //    {
+        //        List<GameObject> hiddenDronesCopy = new List<GameObject>(hiddenDrones);
+        //        for ( int i = 0; i < hiddenDrones.Count; i++ )
+        //        {
+        //            var dronesToShow = hiddenDrones[i];
+        //            var droneState = dronesToShow.GetComponent<DroneBase>();
+        //            if (droneState.state != "idle")
+        //            {
+        //                sa.flyingDrones.Add(dronesToShow);
+        //                dronesToAdd--;
+        //                if (dronesToAdd == 0) break;
+        //                droneState.ShowMesh();
+        //                hiddenDronesCopy.Remove(dronesToShow);
+        //            }
+        //        }
+        //    }
+        //    for ( int i = 0; i < dronesToAdd; i++)
+        //    {
+        //        droneInstantiator.AddBackgroundDrone(sceneManager, scaleMultiplier, lowerElevationBound, upperElevationBound);
+        //    }
+        //}
 
     }
 
@@ -872,21 +880,21 @@ public class VehicleControlSystem : MonoBehaviour
         VisualizeNetwork();
     }
 
-    /// <summary>
-    /// Resets the drones, etc after any kind of update
-    /// </summary>
-    public void ResetSimulation()
-    {
-        droneInstantiator.ResetDrones();
-        RebuildNetwork();
-        droneInstantiator.InstantiateDrones(sceneManager, scaleMultiplier, _canvas);
-        if (playing)
-        {
-            //this shouldn't logically happen, but just in case
-            playing = false;
-            PlayPause(false);
-        }
-    }
+    ///// <summary>
+    ///// Resets the drones, etc after any kind of update
+    ///// </summary>
+    //public void ResetSimulation()
+    //{
+    //    droneInstantiator.ResetDrones();
+    //    RebuildNetwork();
+    //    droneInstantiator.InstantiateDrones(sceneManager, scaleMultiplier, _canvas);
+    //    if (playing)
+    //    {
+    //        //this shouldn't logically happen, but just in case
+    //        playing = false;
+    //        PlayPause(false);
+    //    }
+    //}
 
     /// <summary>
     /// Generates data structure for network

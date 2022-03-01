@@ -78,6 +78,7 @@ public abstract class DroneBase : MonoBehaviour
     private GameObject noiseShpere;
     private Mesh originalMesh = null;
     public GameObject Clone2d { get; set; } = null;
+    public GameObject SelectionCircle { get; set; } = null;
 
     void Awake()
     {
@@ -307,6 +308,8 @@ public abstract class DroneBase : MonoBehaviour
         {
             vcs.OnNoiseSphereToggle -= NoiseSphereToggleHandler;
         }
+        Clone2d?.Destroy();
+        SelectionCircle?.Destroy();
     }
 
     #region Public Methods

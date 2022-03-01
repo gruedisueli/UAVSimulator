@@ -22,6 +22,7 @@ public abstract class TrafficControl : MonoBehaviour
     protected DroneBase vehicleState { get; set; }//@Eunu comment
     private SimulationAnalyzer _simulationAnalyzer;
     protected DroneInstantiator _droneInstantiator;
+    protected VehicleControlSystem _vcs;
 
     private void Awake()
     {
@@ -37,12 +38,18 @@ public abstract class TrafficControl : MonoBehaviour
         {
             Debug.Log("Could not locate simulation analyzer component");
         }
+
+        _vcs = FindObjectOfType<VehicleControlSystem>(true);
+        if (_vcs == null)
+        {
+            Debug.Log("Could not locate vehicle control system component");
+        }
     }
 
     // Update is called once per frame
     void Update()
     {
-        //if (!vcs.playing) return
+        if (!_vcs.playing) return;
         if (queueLength > 3)//this is congested
         {
             if (this is ParkingControl && !_simulationAnalyzer.congestedParkingStructures.Contains(this.gameObject))

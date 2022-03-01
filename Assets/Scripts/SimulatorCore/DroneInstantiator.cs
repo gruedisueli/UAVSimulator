@@ -39,7 +39,7 @@ namespace Assets.Scripts.SimulatorCore
         public List<GameObject> _corridorDrones = new List<GameObject>();
         public List<GameObject> _lowAltitudeDrones = new List<GameObject>();
 
-        private Coroutine _corridorLowAltDrnCoroutine, _backgroundDrnRoutine;
+        private Coroutine _corridorDrnCoroutine, _lowAltDrnRoutine, _backgroundDrnRoutine;
         private List<GameObject> _progressBars = new List<GameObject>();
 
         public event EventHandler<DroneInstantiationArgs> OnDroneInstantiated;
@@ -53,16 +53,21 @@ namespace Assets.Scripts.SimulatorCore
         /// <summary>
         /// Clears out the simulation of drones.
         /// </summary>
-        public void ResetDrones()
+        public void ClearDrones()
         {
+            if (_lowAltDrnRoutine != null)
+            {
+                StopCoroutine(_lowAltDrnRoutine);
+            }
+
+            if (_corridorDrnCoroutine != null)
+            {
+                StopCoroutine(_corridorDrnCoroutine);
+            }
+
             if (_backgroundDrnRoutine != null)
             {
                 StopCoroutine(_backgroundDrnRoutine);
-            }
-
-            if (_corridorLowAltDrnCoroutine != null)
-            {
-                StopCoroutine(_corridorLowAltDrnCoroutine);
             }
 
             for (int i = 0; i < _progressBars.Count; i++)
@@ -84,6 +89,9 @@ namespace Assets.Scripts.SimulatorCore
             {
                 g.Destroy();
             }
+            _backgroundDrones.Clear();
+            _corridorDrones.Clear();
+            _lowAltitudeDrones.Clear();
 
             foreach (var pS in vcs.sceneManager.ParkingStructures.Values)
             {
@@ -102,8 +110,8 @@ namespace Assets.Scripts.SimulatorCore
         /// </summary>
         public void InstantiateDrones(SceneManagerBase sceneManager, float scale, Canvas _canvas)
         {
-            _corridorLowAltDrnCoroutine = StartCoroutine(InstantiateCorridorOrLowAltDrones(sceneManager, scale, _canvas, true));
-            _backgroundDrnRoutine = StartCoroutine(InstantiateCorridorOrLowAltDrones(sceneManager, scale, _canvas, false));
+            _corridorDrnCoroutine = StartCoroutine(InstantiateCorridorOrLowAltDrones(sceneManager, scale, _canvas, true));
+            _lowAltDrnRoutine = StartCoroutine(InstantiateCorridorOrLowAltDrones(sceneManager, scale, _canvas, false));
         }
 
         /// <summary>
@@ -130,9 +138,17 @@ namespace Assets.Scripts.SimulatorCore
         }
 
         /// <summary>
+        /// Instantiates all new background drones.
+        /// </summary>
+        public void InstantiateBackgroundDrones(SceneManagerBase sceneManager, int backgroundDroneCount, float scale, float lowerElevationBound, float upperElevationBound, Canvas _canvas)
+        {
+            _backgroundDrnRoutine = StartCoroutine(InstantiateBackgroundDronesCoroutine(sceneManager, backgroundDroneCount, scale, lowerElevationBound, upperElevationBound, _canvas));
+        }
+
+        /// <summary>
         /// Coroutine for instantiation of background drones. @Eunu please comment on when we use this versus "AddBackgroundDrone()"
         /// </summary>
-        public IEnumerator InstantiateBackgroundDrones(SceneManagerBase sceneManager, int backgroundDroneCount, float scale, float lowerElevationBound, float upperElevationBound, Canvas _canvas)
+        private IEnumerator InstantiateBackgroundDronesCoroutine(SceneManagerBase sceneManager, int backgroundDroneCount, float scale, float lowerElevationBound, float upperElevationBound, Canvas _canvas)
         {
             float progress = 0.0f;
             int vehiclesToInstantiate = backgroundDroneCount;
@@ -157,7 +173,7 @@ namespace Assets.Scripts.SimulatorCore
                 float y = UnityEngine.Random.Range(lowerElevationBound, upperElevationBound);
                 Vector3 instantiationSpot = vcs.GetRandomPointXZ(y);
                 // instantiate the vehicle at emptySpot
-                var clone = InstantiateDrone(newDrone, instantiationSpot, out _);
+                var clone = InstantiateDrone(newDrone, instantiationSpot, out var clone2d);
                 clone.name = "UAV_BACKGROUND_" + _backgroundDrones.Count.ToString();
                 clone.tag = "Vehicle";
                 clone.layer = 10;
@@ -181,6 +197,7 @@ namespace Assets.Scripts.SimulatorCore
                 Vector3 firstDestination = vcs.GetRandomPointXZ(y);
                 v.wayPointsQueue = new Queue<Vector3>(vcs.FindPath(instantiationSpot, firstDestination, 5, 1 << 8 | 1 << 9 | 1 << 13));
                 v.targetPosition = v.wayPointsQueue.Dequeue();
+                v.Clone2d = clone2d;
                 _droneTypeLookup.Add(clone, DroneType.Background);
                 _backgroundDrones.Add(clone);
 
@@ -248,7 +265,7 @@ namespace Assets.Scripts.SimulatorCore
                             // instantiate the vehicle at emptySpot
                             GameObject clone = InstantiateDrone(newDrone, translatedSpot, out var clone2d);
 
-                            clone.name = "UAV_" + (isCorridor ? _corridorDrones.Count.ToString() : _lowAltitudeDrones.Count.ToString());
+                            clone.name = "UAV_" + (isCorridor ? "Corridor_" + _corridorDrones.Count : "Low Altitude_" + _lowAltitudeDrones.Count);
                             clone.tag = "Vehicle";
                             clone.layer = 10;
                             // Only for video
@@ -267,7 +284,19 @@ namespace Assets.Scripts.SimulatorCore
                             v.Clone2d = clone2d;
                             v.Initialize(_vehicleSpecs[type].type, _vehicleSpecs[type].capacity, _vehicleSpecs[type].range, _vehicleSpecs[type].maxSpeed, _vehicleSpecs[type].yawSpeed, _vehicleSpecs[type].takeoffSpeed, _vehicleSpecs[type].landingSpeed, _vehicleSpecs[type].emission, _vehicleSpecs[type].noise, "idle");
                             v.currentCommunicationPoint = sPS.gameObject;
-                            OnDroneInstantiated?.Invoke(this, new DroneInstantiationArgs(clone));
+
+                            var cloneI = Instantiate(EnvironManager.Instance.DroneIconPrefab);
+                            cloneI.transform.SetParent(_canvas.transform, false);
+                            var icon = cloneI.GetComponentInChildren<DroneIcon>(true);
+                            if (icon == null)
+                            {
+                                Debug.LogError("Could not find Drone Icon Component in Drone Info Panel prefab");
+                                continue;
+                            }
+                            icon.Initialize(v);
+                            v.SelectionCircle = cloneI;
+
+                            OnDroneInstantiated?.Invoke(this, new DroneInstantiationArgs(icon));
                             // Update parking management info
                             if (!vcs.TEMPORARY_IsRegionView) clone.transform.GetChild(0).gameObject.GetComponent<MeshRenderer>().enabled = false;
                             else
@@ -333,7 +362,7 @@ namespace Assets.Scripts.SimulatorCore
             float y = UnityEngine.Random.Range(lowerElevationBound, upperElevationBound);
             Vector3 instantiationSpot = vcs.GetRandomPointXZ(y);
             // instantiate the vehicle at emptySpot
-            GameObject clone = InstantiateDrone(newDrone, instantiationSpot, out _);
+            GameObject clone = InstantiateDrone(newDrone, instantiationSpot, out var clone2d);
             clone.name = "UAV_BACKGROUND_" + _backgroundDrones.Count.ToString();
             clone.tag = "Vehicle";
             clone.layer = 10;
@@ -357,8 +386,54 @@ namespace Assets.Scripts.SimulatorCore
             Vector3 firstDestination = vcs.GetRandomPointXZ(y);
             v.wayPointsQueue = new Queue<Vector3>(vcs.FindPath(instantiationSpot, firstDestination, 5, 1 << 8 | 1 << 9 | 1 << 13));
             v.targetPosition = v.wayPointsQueue.Dequeue();
+            v.Clone2d = clone2d;
             _droneTypeLookup.Add(clone, DroneType.Background);
             _backgroundDrones.Add(clone);
+        }
+
+        /// <summary>
+        /// Sets number of background drones in simulation.
+        /// </summary>
+        public void SetBackgroundDroneCt(int count)
+        {
+            SimulationAnalyzer sa = gameObject.GetComponent<SimulationAnalyzer>();
+            if (count < _backgroundDrones.Count + sa.flyingDrones.Count)//if too many drones are in simulation, we need to remove some.
+            {
+                int dronesToRemove = _backgroundDrones.Count - count;
+                int removed = 0;
+                if (_backgroundDrones.Count > 0)
+                {
+                    for (int i = 0; i < dronesToRemove && _backgroundDrones.Count > 0; i++)
+                    {
+                        var droneToDestroy = _backgroundDrones.Last();
+                        _backgroundDrones.Remove(droneToDestroy);
+
+                        if (_droneTypeLookup.ContainsKey(droneToDestroy))
+                        {
+                            _droneTypeLookup.Remove(droneToDestroy);
+                        }
+                        else
+                        {
+                            Debug.LogError("Drone to destroy not found in type lookup dictionary");
+                        }
+                        droneToDestroy.Destroy();
+                        removed++;
+                    }
+                }
+            }
+            else if (count == _backgroundDrones.Count)//no reason to change anything.
+            {
+                return;
+            }
+            else//we should add some
+            {
+                int dronesToAdd = count - _backgroundDrones.Count;
+                for (int i = 0; i < dronesToAdd; i++)
+                {
+                    AddBackgroundDrone(vcs.sceneManager, vcs.scaleMultiplier, vcs.lowerElevationBound, vcs.upperElevationBound);
+                }
+            }
+
         }
 
         /// <summary>
@@ -397,9 +472,12 @@ namespace Assets.Scripts.SimulatorCore
             clone2d = null;
             if (vcs.TEMPORARY_IsRegionView)
             {
-                clone = Instantiate(new GameObject(), spot, Quaternion.Euler(0.0f, 0.0f, 0.0f));
+                clone = new GameObject();
+                clone.transform.position = spot;
+                //clone = Instantiate(new GameObject(), spot, Quaternion.Euler(0.0f, 0.0f, 0.0f));
                 //element follower knows to destroy itself if drone is destroyed.
                 clone2d = Instantiate(prefab, vcs._canvas.transform);
+                clone2d.name = "Drone sprite";
                 var f = clone2d.GetComponent<ElementFollower>();
                 f?.Initialize(clone);
             }

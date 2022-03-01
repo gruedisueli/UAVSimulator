@@ -231,28 +231,28 @@ namespace Assets.Scripts.UI
         /// </summary>
         protected void OnDroneInstantiated(object sender, DroneInstantiationArgs args)
         {
-            var gO = args.Drone;
+            //var gO = args.Drone;
 
-            var clone = Instantiate(EnvironManager.Instance.DroneIconPrefab);
-            clone.transform.SetParent(_mainCanvas.transform, false);
-            var icon = clone.GetComponentInChildren<DroneIcon>(true);
-            if (icon == null)
-            {
-                Debug.LogError("Could not find Drone Icon Component in Drone Info Panel prefab");
-                return;
-            }
-            var drone = gO.GetComponentInChildren<DroneBase>(true);
-            if (drone == null)
-            {
-                Debug.LogError("Could not find Vehicle Component in children of drone");
-                return;
-            }
+            //var clone = Instantiate(EnvironManager.Instance.DroneIconPrefab);
+            //clone.transform.SetParent(_mainCanvas.transform, false);
+            //var icon = clone.GetComponentInChildren<DroneIcon>(true);
+            //if (icon == null)
+            //{
+            //    Debug.LogError("Could not find Drone Icon Component in Drone Info Panel prefab");
+            //    return;
+            //}
+            //var drone = gO.GetComponentInChildren<DroneBase>(true);
+            //if (drone == null)
+            //{
+            //    Debug.LogError("Could not find Vehicle Component in children of drone");
+            //    return;
+            //}
 
-            icon.Initialize(drone);
+            //icon.Initialize(drone);
 
-            icon.OnSelected += DroneSelected;
+            //icon.OnSelected += DroneSelected;
 
-            _droneIcons.Add(icon);
+            //_droneIcons.Add(icon);
         }
 
         /// <summary>

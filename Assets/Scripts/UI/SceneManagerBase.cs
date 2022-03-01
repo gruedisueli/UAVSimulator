@@ -60,6 +60,8 @@ namespace Assets.Scripts.UI
 
         protected float _airspaceYScale = 10;
 
+        protected List<DroneIcon> _droneIcons = new List<DroneIcon>();
+
         #endregion
 
         #region PROPERTIES
@@ -265,6 +267,7 @@ namespace Assets.Scripts.UI
                     b.interactable = !args.IsPlaying;
                 }
             }
+            _droneIcons.Clear();
             if (_vehicleControlSystem != null)
             {
                 _vehicleControlSystem.PlayPause(args.IsPlaying);
@@ -583,7 +586,7 @@ namespace Assets.Scripts.UI
                     EnvironManager.Instance.AddDronePort(guidNew, wC.DronePortSpecs);
                     _selectedElement = InstantiateDronePort(guidNew, wC.DronePortSpecs, true);
                     if (_currentInfoPanel is DronePortInfoPanel p)p.UpdateFields(wC.DronePortSpecs);
-                    _vehicleControlSystem.ResetSimulation();
+                    _vehicleControlSystem.RebuildNetwork();
                 }
                 else if (_workingCopy is SceneParkingStructure)
                 {
@@ -592,7 +595,7 @@ namespace Assets.Scripts.UI
                     EnvironManager.Instance.AddParkingStructure(guidNew, wC.ParkingStructureSpecs);
                     _selectedElement = InstantiateParkingStructure(guidNew, wC.ParkingStructureSpecs, true);
                     if (_currentInfoPanel is ParkingInfoPanel p)p.UpdateFields(wC.ParkingStructureSpecs);
-                    _vehicleControlSystem.ResetSimulation();
+                    _vehicleControlSystem.RebuildNetwork();
                 }
                 else if (_workingCopy is SceneRestrictionZone)
                 {
@@ -601,7 +604,7 @@ namespace Assets.Scripts.UI
                     EnvironManager.Instance.AddRestrictionZone(guidNew, wC.RestrictionZoneSpecs);
                     _selectedElement = InstantiateRestrictionZone(guidNew, wC.RestrictionZoneSpecs, true);
                     if (_currentInfoPanel is RestrictionInfoPanel p) p.UpdateFields(wC.RestrictionZoneSpecs);
-                    _vehicleControlSystem.ResetSimulation();
+                    _vehicleControlSystem.RebuildNetwork();
                 }
                 else if (_workingCopy is SceneCity)
                 {
@@ -905,7 +908,7 @@ namespace Assets.Scripts.UI
             string guid = Guid.NewGuid().ToString();
             EnvironManager.Instance.AddDronePort(guid, dP);
             InstantiateDronePort(guid, dP, true);
-            _vehicleControlSystem.ResetSimulation();
+            _vehicleControlSystem.RebuildNetwork();
         }
 
         /// <summary>
@@ -944,7 +947,7 @@ namespace Assets.Scripts.UI
             string guid = Guid.NewGuid().ToString();
             EnvironManager.Instance.AddParkingStructure(guid, pS);
             InstantiateParkingStructure(guid, pS, true);
-            _vehicleControlSystem.ResetSimulation();
+            _vehicleControlSystem.RebuildNetwork();
         }
 
         /// <summary>
@@ -978,7 +981,7 @@ namespace Assets.Scripts.UI
             string guid = Guid.NewGuid().ToString();
             EnvironManager.Instance.AddRestrictionZone(guid, rZ);
             InstantiateRestrictionZone(guid, rZ, true);
-            _vehicleControlSystem.ResetSimulation();
+            _vehicleControlSystem.RebuildNetwork();
         }
 
         /// <summary>
@@ -1017,7 +1020,7 @@ namespace Assets.Scripts.UI
             {
                 Debug.LogError("Drone port for removal not found in scene dictionary");
             }
-            _vehicleControlSystem.ResetSimulation();
+            _vehicleControlSystem.RebuildNetwork();
         }
 
         /// <summary>
@@ -1036,7 +1039,7 @@ namespace Assets.Scripts.UI
             {
                 Debug.LogError("Parking structure for removal not found in scene dictionary");
             }
-            _vehicleControlSystem.ResetSimulation();
+            _vehicleControlSystem.RebuildNetwork();
         }
 
         /// <summary>
@@ -1055,7 +1058,7 @@ namespace Assets.Scripts.UI
             {
                 Debug.LogError("Restriction zone for removal not found in scene dictionary");
             }
-            _vehicleControlSystem.ResetSimulation();
+            _vehicleControlSystem.RebuildNetwork();
         }
 
         /// <summary>
@@ -1152,7 +1155,7 @@ namespace Assets.Scripts.UI
             if (register)
             {
                 ParkingStructures.Add(guid, sPS);
-               _vehicleControlSystem.InstantiateCorridorAndLowAltDrones();
+               //_vehicleControlSystem.InstantiateCorridorAndLowAltDrones();
             }
 
             return sPS;
@@ -1178,7 +1181,7 @@ namespace Assets.Scripts.UI
             if (register)
             {
                 ParkingStructures.Add(guid, sPS);
-               _vehicleControlSystem.InstantiateCorridorAndLowAltDrones();
+               //_vehicleControlSystem.InstantiateCorridorAndLowAltDrones();
             }
 
             return sPS;

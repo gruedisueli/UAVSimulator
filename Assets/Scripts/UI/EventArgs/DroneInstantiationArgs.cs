@@ -3,17 +3,18 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Assets.Scripts.UI.Tools;
 using UnityEngine;
 
 namespace Assets.Scripts.UI.EventArgs
 {
     public class DroneInstantiationArgs : System.EventArgs
     {
-        public GameObject Drone { get; private set; }
+        public DroneIcon Icon { get; private set; }
 
-        public DroneInstantiationArgs(GameObject drone)
+        public DroneInstantiationArgs(DroneIcon icon)
         {
-            Drone = drone;
+            Icon = icon;
         }
     }
 }
