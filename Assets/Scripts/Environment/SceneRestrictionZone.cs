@@ -135,6 +135,15 @@ namespace Assets.Scripts.Environment
         {
             var cube = GameObject.CreatePrimitive(PrimitiveType.Cube);
             cube.transform.parent = transform;
+            var col = cube.GetComponent<Collider>();
+            if (col != null)
+            {
+                col.isTrigger = true;
+            }
+            else
+            {
+                Debug.LogError("Collider not attached to restriction zone object");
+            }
             UpdateSingleRect(cube, rZ);
             SubElements.Add(cube);
         }
@@ -146,6 +155,15 @@ namespace Assets.Scripts.Environment
         {
             var cyl = GameObject.CreatePrimitive(PrimitiveType.Cylinder);
             cyl.transform.parent = transform;
+            var col = cyl.GetComponent<Collider>();
+            if (col != null)
+            {
+                col.isTrigger = true;
+            }
+            else
+            {
+                Debug.LogError("Collider not attached to restriction zone object");
+            }
             UpdateSingleCyl(cyl, rZ);
             SubElements.Add(cyl);
         }

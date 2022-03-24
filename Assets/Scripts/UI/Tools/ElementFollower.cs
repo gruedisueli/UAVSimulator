@@ -37,7 +37,8 @@ namespace Assets.Scripts.UI.Tools
             if (_sceneElement != null && _mainCamera != null)
             {
                 var rT = gameObject.GetComponent<RectTransform>();
-                var sPt = _mainCamera.WorldToScreenPoint(_sceneElement.transform.position);
+                //var sPt = _mainCamera.WorldToScreenPoint(_sceneElement.transform.position);
+                var sPt = ViewportUtils.WorldPtCanvasPoint(_sceneElement.transform.position, _mainCamera);
                 rT.position = new Vector3(sPt.x, sPt.y, 0);
             }
             else

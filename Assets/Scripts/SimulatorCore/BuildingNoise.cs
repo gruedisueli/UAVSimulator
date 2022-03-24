@@ -132,7 +132,7 @@ public class BuildingNoise : MonoBehaviour
     {
         if (!_registered)
         {
-            ID = GUID.Generate().ToString();
+            ID = Guid.NewGuid().ToString();
             vcs.RegisterNoiseComponent(this);
             _registered = true;
         }

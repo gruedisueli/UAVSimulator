@@ -70,7 +70,7 @@ namespace Assets.Scripts.UI
         public Dictionary<string, SceneDronePort> DronePorts { get; protected set; }
         public Dictionary<string, SceneParkingStructure> ParkingStructures { get; protected set; }
         public Dictionary<string, SceneRestrictionZone> RestrictionZones { get; protected set; }
-
+        public float CurrentZoom { get; protected set; }
 
         #endregion
 

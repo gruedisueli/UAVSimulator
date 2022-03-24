@@ -25,6 +25,7 @@ namespace Assets.Scripts.UI
     public class FindLocationManager : MonoBehaviour
     {
         public Canvas _canvas;
+        public Button _createProjectButton;
 
         private AbstractMap _map;
 
@@ -91,12 +92,14 @@ namespace Assets.Scripts.UI
             var trueCenter = new Vector3(gOXMin + subX * _regionTileSize + _regionTileSize / 2, 0, gOZMin + subZ * _regionTileSize + _regionTileSize / 2);
             var infDist = EnvironSettings.REGION_TILE_EXTENTS * _regionTileSize + _regionTileSize / 2;
             _placedRegion = Instantiate(AssetUtils.ReadPrefab("GUI/", "RegionBox"));
-            _placedRegion.transform.parent = _canvas.transform;
+            _placedRegion.transform.SetParent(_canvas.transform);
             _placedRegion.transform.SetAsFirstSibling();
             var rB = _placedRegion.GetComponent<RegionBox>();
             rB.SetWorldExtents(trueCenter, infDist);
 
             EnvironManager.Instance.Environ.CenterLatLong = _map.WorldToGeoPosition(trueCenter);
+
+            _createProjectButton.interactable = true;
 
 
             //string name = gO.name;
@@ -134,7 +137,7 @@ namespace Assets.Scripts.UI
             //            }
             //        }
             //    }
-                    
+
             //    foreach(var n in toHighlight)
             //    {
             //        var foundTile = GameObject.Find(n);

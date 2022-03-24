@@ -31,7 +31,20 @@ namespace Assets.Scripts.UI.Tags
         {
             if (_mainCamera != null)
             {
-                return _mainCamera.WorldToScreenPoint(_worldPos);
+                //var p = ViewportUtils.WorldPtCanvasPoint(_worldPos, _mainCamera);
+                var p = _mainCamera.WorldToScreenPoint(_worldPos);
+                //if (Input.GetKey(KeyCode.L))
+                //{
+                //    Debug.Log($"world pos: {_worldPos.x}, {_worldPos.y}, {_worldPos.z}");
+                //    Debug.Log($"screen pos: {p.x}, {p.y}, {p.z}");
+                //    Debug.Log($"screen pos2: {p2.x}, {p2.y}, {p2.z}");
+                //    Debug.Log($"Camera size: {_mainCamera.pixelWidth} x {_mainCamera.pixelHeight}");
+                //    Debug.Log($"Camera scaled size: {_mainCamera.scaledPixelWidth} x {_mainCamera.scaledPixelHeight}");
+                //    var mP = Input.mousePosition;
+                //    Debug.Log($"Mouse Pos: {mP.x}, {mP.y}");
+
+                //}
+                return p;
             }
             else return new Vector3();
         }

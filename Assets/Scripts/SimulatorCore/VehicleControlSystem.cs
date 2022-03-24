@@ -152,6 +152,8 @@ public class VehicleControlSystem : MonoBehaviour
     public Assets.Scripts.DataStructure.Network DroneNetwork { get; protected set; } = new Assets.Scripts.DataStructure.Network();
     public List<GameObject> networkLines = new List<GameObject>();
     private Dictionary<Corridor, GameObject> routeLineObject = new Dictionary<Corridor, GameObject>();
+    private bool _networkUpdateFlag = false;
+    private int _framesSinceNetworkUpdateFlag = 0;
 
     void Awake()
     {
@@ -199,6 +201,7 @@ public class VehicleControlSystem : MonoBehaviour
 
         #endregion
 
+
         #region Typical play actions
 
         if (playing && droneInstantiator.isCorridorDroneInstantiated && droneInstantiator.isLowAltitudeDroneInstantiated /*&& (TEMPORARY_IsRegionView || isBuildingNoiseComponentAttached)*/)
@@ -221,6 +224,22 @@ public class VehicleControlSystem : MonoBehaviour
         }
 
         #endregion
+    }
+
+    void FixedUpdate()
+    {
+
+        //We have to use a flag because it seems that the colliders for restriction zones only become active after a game frame
+        if (_networkUpdateFlag && _framesSinceNetworkUpdateFlag < 2)
+        {
+            _framesSinceNetworkUpdateFlag++;
+        }
+        else if (_networkUpdateFlag)
+        {
+            GenerateNetwork();
+            VisualizeNetwork();
+            _networkUpdateFlag = false;
+        }
     }
 
 
@@ -257,6 +276,16 @@ public class VehicleControlSystem : MonoBehaviour
             }
             _aaoControls.Clear();
             droneInstantiator.ClearDrones();
+            foreach (var nL in networkLines)
+            {
+                var r = nL.GetComponent<LineRenderer>();
+                if (r == null)
+                {
+                    continue;
+                }
+
+                r.material = Resources.Load<Material>("Materials/Route");
+            }
         }
     }
 
@@ -876,8 +905,8 @@ public class VehicleControlSystem : MonoBehaviour
     /// </summary>
     public void RebuildNetwork()
     {
-        GenerateNetwork();
-        VisualizeNetwork();
+        _networkUpdateFlag = true;
+        _framesSinceNetworkUpdateFlag = 0;
     }
 
     ///// <summary>
@@ -1033,6 +1062,10 @@ public class VehicleControlSystem : MonoBehaviour
                     from.Add(head);
                     distance.Add(distance[head] + Vector3.Distance(visited[head], newWaypoint));
                     tail++;
+                    if (hit.Length > 0)
+                    {
+                        Debug.Log($"Routed around object {hit[0].transform.gameObject.name}");
+                    }
                     break;
                 }
                 else
@@ -1126,6 +1159,27 @@ public class VehicleControlSystem : MonoBehaviour
 
     }
 
+    public void UpdateNetworkLineWidths()
+    {
+        foreach (var nL in networkLines)
+        {
+            var r = nL.GetComponent<LineRenderer>();
+            if (r == null)
+            {
+                continue;
+            }
+
+            r.startWidth = CalcLineWidth();
+            r.endWidth = r.startWidth;
+        }
+    }
+
+    private float CalcLineWidth()
+    {
+        float slippyZoomRange = 22;
+        return UISettings.REGIONVIEW_NETWORK_WIDTH_FACTOR * ((slippyZoomRange - sceneManager.CurrentZoom) / slippyZoomRange);
+    }
+
     /// <summary>
     /// Builds visuals for network
     /// </summary>
@@ -1144,7 +1198,7 @@ public class VehicleControlSystem : MonoBehaviour
         }
         networkLines.Clear();
         routeLineObject.Clear();
-        float width = sceneManager is RegionViewManager ? UISettings.REGIONVIEW_NETWORK_WIDTH : UISettings.CITYVIEW_NETWORK_WIDTH;
+        float width = CalcLineWidth();
         foreach (Corridor c in DroneNetwork.corridors)
         {
             string name = "Corridor_" + c.origin.name + "_" + c.destination.name;

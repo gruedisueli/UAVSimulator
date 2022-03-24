@@ -70,6 +70,5 @@ namespace Assets.Scripts.UI.Tags
         {
             _worldPos = p;
         }
-
     }
 }

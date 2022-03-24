@@ -35,7 +35,6 @@ namespace Assets.Scripts.UI
         private float _maxCamSize = 256000.0f;
         private float _biggestZoom = 15;
         //private float _smallestZoom = 7;
-        private float _currentZoom;
         private bool _atBuildingZoomLevel = false;//activated whenever we get to a zoom level that we could possibly display buildings at without enormous processing cost.
         private bool _allowBuildings = false;//true if user toggle for buildings is in "on" position. Only if true can we show buildings.
         private bool _temporarySuppressBuildings = false;//set true of just holding off buildings for a second while changing view.
@@ -57,7 +56,7 @@ namespace Assets.Scripts.UI
 
         private float GetZoomLevel(float viewSize)
         {
-            float z = _currentZoom;
+            float z = CurrentZoom;
             if (/*viewSize > _minCamSize &&*/ viewSize < _maxCamSize)
             {
                 float m = viewSize / _minCamSize;//how many times bigger than min?
@@ -110,8 +109,8 @@ namespace Assets.Scripts.UI
                 return;
             }
 
-            _currentZoom = GetZoomLevel(_cameraAdj._camera.transform.position.y);
-            Reload(_currentZoom);
+            CurrentZoom = GetZoomLevel(_cameraAdj._camera.transform.position.y);
+            Reload(CurrentZoom);
             _cameraAdj.OnZoom += OnZoomAction;
             _cameraAdj.OnStartPan += OnStartPanAction;
             _cameraAdj.OnEndPan += OnEndPanAction;
@@ -219,6 +218,7 @@ namespace Assets.Scripts.UI
                 _reloadRoutine = null;
             }
             _reloadRoutine = StartCoroutine(ReloadAfterDelay(zoom));
+            _vehicleControlSystem.UpdateNetworkLineWidths();
         }
 
         IEnumerator ReloadAfterDelay(float zoom)
@@ -240,7 +240,7 @@ namespace Assets.Scripts.UI
             }
             _abstractMap.UpdateMap(_abstractMap.CenterLatitudeLongitude, zoom);
             _reloadRoutine = null;
-            _currentZoom = zoom;
+            CurrentZoom = zoom;
         }
 
         #endregion
