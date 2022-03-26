@@ -26,7 +26,7 @@ namespace Assets.Scripts.UI.Tools
         public Color _successColor;
         public Color _failColor;
 
-        private FileWindow _fileWindow;
+        //private FileWindow _fileWindow;
         private string _saveAsText = "Save As...";
         private string _overwriteText = "File exists, overwrite?";
         private SaveMode _saveMode = SaveMode.JustSave;
@@ -118,9 +118,9 @@ namespace Assets.Scripts.UI.Tools
             _saveMode = saveMode;
             _inputField.text = "";
             var prefab = Resources.Load<GameObject>("GUI/FileWindow");
-            _fileWindow = Instantiate(prefab, gameObject.transform).GetComponent<FileWindow>();
-            _fileWindow.OnFileSelect += SelectFile;
-            _fileWindow.Init();
+            //_fileWindow = Instantiate(prefab, gameObject.transform).GetComponent<FileWindow>();
+            //_fileWindow.OnFileSelect += SelectFile;
+            //_fileWindow.Init();
             SetMainDialog(true);
             gameObject.SetActive(true);
         }
@@ -128,8 +128,8 @@ namespace Assets.Scripts.UI.Tools
         public void Deactivate()
         {
             SetMainDialog(true);
-            _fileWindow.OnFileSelect -= SelectFile;
-            _fileWindow.gameObject.Destroy();
+            //_fileWindow.OnFileSelect -= SelectFile;
+            //_fileWindow.gameObject.Destroy();
             gameObject.SetActive(false);
         }
 
@@ -143,7 +143,7 @@ namespace Assets.Scripts.UI.Tools
             _inputField.gameObject.SetActive(isMain);
             _saveAsButton.SetActive(isMain);
             _cancelButton.SetActive(isMain);
-            _fileWindow.gameObject.SetActive(isMain);
+            //_fileWindow.gameObject.SetActive(isMain);
             _yesButton.SetActive(!isMain);
             _noButton.SetActive(!isMain);
         }

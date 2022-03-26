@@ -19,7 +19,7 @@ namespace Assets.Scripts.UI.Tools
         public Text _saveText;
         public Text _secondaryText;
         public GameObject _save;
-        public GameObject _saveAs;
+        //public GameObject _saveAs;
         public GameObject _cancel;
         public GameObject _dontSave;
         public Color _successColor;
@@ -121,7 +121,7 @@ namespace Assets.Scripts.UI.Tools
         {
             gameObject.SetActive(true);
             _save.SetActive(true);
-            _saveAs.SetActive(true);
+            //_saveAs.SetActive(true);
             _cancel.SetActive(true);
             _secondaryText.text = "";
         }
@@ -212,7 +212,7 @@ namespace Assets.Scripts.UI.Tools
             _secondaryText.text = "Succesfully saved file";
             _secondaryText.color = _successColor;
             _save.SetActive(false);
-            _saveAs.SetActive(false);
+            //_saveAs.SetActive(false);
             _cancel.SetActive(false);
             _dontSave.SetActive(false);
             yield return new WaitForSeconds(2);

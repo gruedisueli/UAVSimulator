@@ -55,6 +55,10 @@ namespace Assets.Scripts.UI
 
         private void Update()
         {
+            if (Input.GetMouseButtonDown(0))
+            {
+
+            }
             if (Input.GetMouseButtonUp(0) && !EventSystem.current.IsPointerOverGameObject() && GUIUtils.TryToSelect(out var hitInfo))
             {
                 PlaceMarker(hitInfo);

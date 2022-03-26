@@ -31,17 +31,17 @@ namespace Assets.Scripts.UI.Tools
 
         public void Load()
         {
-            //note: if we add feature to load from simulation scenes, must save simulation before loading
-            //currently we assume loading only happens from main menu/startup screen
-            if (EnvironManager.Instance.DoesFileExist(_secondaryText.text))
-            {
-                _mainMenuManager.LoadSaved(_secondaryText.text);
-                Deactivate();
-            }
-            else
-            {
-                _secondaryText.text = "File load error";
-            }
+            ////note: if we add feature to load from simulation scenes, must save simulation before loading
+            ////currently we assume loading only happens from main menu/startup screen
+            //if (EnvironManager.Instance.DoesFileExist(_secondaryText.text))
+            //{
+            //    _mainMenuManager.LoadSaved(_secondaryText.text);
+            //    Deactivate();
+            //}
+            //else
+            //{
+            //    _secondaryText.text = "File load error";
+            //}
         }
 
         public void Cancel()

@@ -532,21 +532,34 @@ namespace Assets.Scripts.Environment
         /// </summary>
         public void SaveFile(string name)
         {
-            string path = SerializationSettings.SAVE_PATH + name + ".json";
-            SerializeJsonFile(Environ, path);
-            Debug.Log("File written to " + path);
+            //string path = SerializationSettings.SAVE_PATH + name + ".json";
+            SerializeJsonFile(Environ, name);
+           // Debug.Log("File written to " + path);
         }
 
         /// <summary>
-        /// Load an environment into the controller.
+        /// Load an environment into the controller. True on success
         /// </summary>
-        public void LoadSaved(string name)
+        public bool LoadSaved(string json)
         {
-            string path = SerializationSettings.SAVE_PATH + name + ".json";
-            if (!File.Exists(path)) return;
-            Environ = DeserializeJsonFile<Environ>(path);
-            OpenedFile = name;
-            Debug.Log("File read from " + path);
+            if (json == "")
+            {
+                return false;
+            }
+            //string path = SerializationSettings.SAVE_PATH + name + ".json";
+            //if (!File.Exists(path)) return;
+            try
+            {
+                Environ = DeserializeJsonEnviron(json);
+                return true;
+            }
+            catch
+            {
+                Debug.LogError("Failed to parse JSON file");
+                return false;
+            }
+            //OpenedFile = name;
+            //Debug.Log("File read from " + path);
         }
 
         /// <summary>
@@ -591,8 +604,8 @@ namespace Assets.Scripts.Environment
         /// </summary>
         public void SetAccessToken(string token)
         {
-            MapboxSettings.AccessToken = token;
-            SerializeJsonFile(MapboxSettings, SerializationSettings.ROOT + "\\Resources\\Mapbox\\MapboxConfiguration.txt");
+            //MapboxSettings.AccessToken = token;
+            //SerializeJsonFile(MapboxSettings/*, SerializationSettings.ROOT + "\\Resources\\Mapbox\\MapboxConfiguration.txt"*/);
         }
 
         /// <summary>
@@ -790,17 +803,12 @@ namespace Assets.Scripts.Environment
         /// <summary>
         /// Creates object of specified type from json. Returns null on failure.
         /// </summary>
-        private T DeserializeJsonFile<T>(string path)
+        private Environ DeserializeJsonEnviron(string json)
         {
-            JsonSerializer serializer = new JsonSerializer();
-            serializer.TypeNameHandling = TypeNameHandling.All; //required for keeping track of derived classes.
-            using (StreamReader sR = new StreamReader(path))
-            {
-                using (JsonReader reader = new JsonTextReader(sR))
-                {
-                    return serializer.Deserialize<T>(reader);
-                }
-            }
+            var s = new JsonSerializerSettings();
+            s.Formatting = Formatting.Indented;
+            s.TypeNameHandling = TypeNameHandling.All;
+            return JsonConvert.DeserializeObject<Environ>(json, s);
         }
 
         /// <summary>
@@ -812,19 +820,29 @@ namespace Assets.Scripts.Environment
             return JsonConvert.DeserializeObject<T>(jO.ToString());
         }
 
-        private void SerializeJsonFile(object obj, string path)
+        private void SerializeJsonFile(object obj, string name)
         {
-            JsonSerializer serializer = new JsonSerializer();
-            serializer.Formatting = Formatting.Indented; //makes output file easier to read
-            serializer.TypeNameHandling = TypeNameHandling.All; //required for keeping track of derived classes.
+            var s = new JsonSerializerSettings();
+            s.Formatting = Formatting.Indented;//makes output file easier to read
+            s.TypeNameHandling = TypeNameHandling.All;//required for keeping track of derived classes.
+            var jsonStr = JsonConvert.SerializeObject(obj, s);
 
-            using (StreamWriter sW = new StreamWriter(path))
-            {
-                using (JsonWriter writer = new JsonTextWriter(sW))
-                {
-                    serializer.Serialize(writer, obj);
-                }
-            }
+
+            //JsonSerializer serializer = new JsonSerializer();
+
+            //serializer.Formatting = Formatting.Indented; //makes output file easier to read
+            //serializer.TypeNameHandling = TypeNameHandling.All; //required for keeping track of derived classes.
+
+            //using (StreamWriter sW = new StreamWriter(path))
+            //{
+            //    using (JsonWriter writer = new JsonTextWriter(sW))
+            //    {
+            //        serializer.Serialize(writer, obj);
+            //    }
+            //}
+
+            //https://pixeleuphoria.com/blog/index.php/2020/04/27/unity-webgl-download-content/
+            WebFileManager.BrowserTextDownload($"{name}.json", jsonStr);
         }
 
         /// <summary>

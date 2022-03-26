@@ -11,12 +11,16 @@ using UnityEngine.SceneManagement;
 
 using Assets.Scripts.Environment;
 using Assets.Scripts.Serialization;
+using Assets.Scripts.UI.Tools;
 
 namespace Assets.Scripts.UI
 {
     public class MainMenuManager : MonoBehaviour
     {
         public Canvas _canvas;
+        public ErrorDialog _errorDialog;
+
+        //note: for stuff around loading saved json file, see https://pixeleuphoria.com/blog/index.php/2020/04/29/unity-webgl-upload-content/
 
         public void CreateNew()
         {
@@ -25,10 +29,9 @@ namespace Assets.Scripts.UI
             StartCoroutine(LoadAsyncOperation(UISettings.FINDLOCATION_SCENEPATH));
         }
 
-        public void LoadSaved(string name)
+        public void LoadSaved()
         {
-            EnvironManager.Instance.LoadSaved(name);
-            StartCoroutine(LoadAsyncOperation(UISettings.REGIONVIEW_SCENEPATH));
+            WebFileManager.BrowserTextUpload(".json", "FOA", "LoadDocumentString");
         }
 
         public void About()
@@ -39,6 +42,18 @@ namespace Assets.Scripts.UI
         public void Quit()
         {
             Application.Quit();
+        }
+
+        public void LoadDocumentString(string str)
+        {
+            if (EnvironManager.Instance.LoadSaved(str))
+            {
+                StartCoroutine(LoadAsyncOperation(UISettings.REGIONVIEW_SCENEPATH));
+            }
+            else
+            {
+                _errorDialog.Activate();
+            }
         }
 
         IEnumerator LoadAsyncOperation(int scenePath)
