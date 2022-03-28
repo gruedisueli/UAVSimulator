@@ -15,6 +15,8 @@ namespace Assets.Scripts.UI.Tools
     {
         public EventHandler<PlayPauseArgs> OnPlayPause;
         public bool _isOn = false;
+        public Sprite _playImage;
+        public Sprite _stopImage;
         private Image _image;
 
         void Awake()
@@ -28,7 +30,7 @@ namespace Assets.Scripts.UI.Tools
         public void PlayPause()
         {
             _isOn = !_isOn;
-            _image.color = _isOn ? Color.blue : Color.white;
+            _image.sprite = _isOn ? _stopImage : _playImage;
             OnPlayPause?.Invoke(this, new PlayPauseArgs(_isOn));
         }
     }

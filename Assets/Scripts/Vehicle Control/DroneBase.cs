@@ -13,11 +13,8 @@ using Assets.Scripts.SimulatorCore;
 /// </summary>
 public abstract class DroneBase : MonoBehaviour
 {
-
-    // constants
-    //@Eunu how are these different?
-    public float arrival_threshold { get; set; }//distance within which drone should notify destination of arrival. @Eunu correct?
-    public float approaching_threshold { get; set; }//@Eunu comment
+    public float arrival_threshold { get; set; }//distance within which drone should notify destination of arrival
+    public float approaching_threshold { get; set; }
 
     // Vehicle specific information - can be modified in runtime       
     public string id { get; set; } = Guid.NewGuid().ToString().Substring(0, 10);
@@ -30,23 +27,23 @@ public abstract class DroneBase : MonoBehaviour
     public float range { get; set; }
 
 
-    public List<float> emission;//@Eunu comment. List = History tracker?
-    public List<float> noise;//@Eunu comment. List = History tracker?
+    public List<float> emission;
+    public List<float> noise;
 
     // Analysis/control related information
 
-    public Vector3 currentLocation { get; set; }//where the drone is right now. @Eunu, correct?
-    public Vector3 targetPosition { get; set; }//the next point the drone is going to. may be a destination or waypoint. it depends on situation. @Eunu, correct?
+    public Vector3 currentLocation { get; set; }//where the drone is right now.
+    public Vector3 targetPosition { get; set; }//the next point the drone is going to. may be a destination or waypoint. it depends on situation.
     public float currentSpeed { get; set; }
     public float elevation { get; set; }
-    public string origin { get; set; }//@Eunu comment.
+    public string origin { get; set; }
 
-    public GameObject currentCommunicationPoint { get; set; }//point that we are either taking off from or landing at. @Eunu correct?
-    public Queue<GameObject> destinationQueue { get; set; }//list of all points that a drone may go to during course of its trip. @Eunu correct?
-    public Queue<Vector3> wayPointsQueue { get; set; }//list of just the points at at takeoff or landing to get drone to the landing pad or into the air. @Eunu correct?
+    public GameObject currentCommunicationPoint { get; set; }//point that we are either taking off from or landing at.
+    public Queue<GameObject> destinationQueue { get; set; }//list of all points that a drone may go to during course of its trip.
+    public Queue<Vector3> wayPointsQueue { get; set; }//list of just the points at at takeoff or landing to get drone to the landing pad or into the air. 
 
-    public float separation { get; set; }//@Eunu comment
-    public Time elapsedTime { get; set; }//@Eunu comment
+    //public float separation { get; set; }
+    public Time elapsedTime { get; set; }
 
 
     // State machine variable
@@ -55,14 +52,14 @@ public abstract class DroneBase : MonoBehaviour
     public bool isParked { get; set; }
 
     
-    public int placeInQueue;//@Eunu comment. I am not sure if we use this?
-    private float landingElevation;//@Eunu comment.
-    public bool toPark;//@Eunu comment
-    public bool moveForward;//@Eunu comment
-    public bool isUTM;//@Eunu comment
+    //public int placeInQueue;
+    //private float landingElevation;
+    public bool toPark;
+    //public bool moveForward;
+    //public bool isUTM;
     public bool isBackgroundDrone;
-    public float waitTimer;//@Eunu comment
-    public float waitTime;//@Eunu comment
+    public float waitTimer;
+    public float waitTime;
 
     public event EventHandler<EventArgs> OnDroneTakeOff;
     public event EventHandler<EventArgs> OnDroneParking;
@@ -204,6 +201,7 @@ public abstract class DroneBase : MonoBehaviour
         }
         else if (state == "move")
         {
+            currentSpeed = 0;
             Pending();
             
         }
@@ -218,6 +216,7 @@ public abstract class DroneBase : MonoBehaviour
             }
             else
             {
+                currentSpeed = 0;
                 state = "wait";
                 waitTimer = 0.0f;
             }
@@ -229,6 +228,7 @@ public abstract class DroneBase : MonoBehaviour
     /// </summary>
     protected void ParkEvent()
     {
+        currentSpeed = 0;
         OnDroneParking?.Invoke(gameObject, e);
         simulationAnalyzer.SendMessage("RemoveFlyingDrone", this.gameObject);
         if (!vcs.TEMPORARY_IsRegionView) gameObject.transform.GetChild(0).gameObject.GetComponent<MeshRenderer>().enabled = false;
@@ -267,6 +267,7 @@ public abstract class DroneBase : MonoBehaviour
     /// </summary>
     protected virtual void Pending()
     {
+        currentSpeed = 0;
         state = "pending";
         currentCommunicationPoint.SendMessage("RegisterInQueue", this.gameObject);
     }

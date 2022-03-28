@@ -75,6 +75,17 @@ public class BuildingNoise : MonoBehaviour
     }
 
     /// <summary>
+    /// Toggles noise visuals
+    /// </summary>
+    public void ResetNoise()
+    {
+        for (int i = affectingVehicles.Count - 1; i >= 0; i--)
+        {
+            DecreaseNoise(affectingVehicles[i]);
+        }
+    }
+
+    /// <summary>
     /// Reduces reported noise level on building.
     /// </summary>
     public void DecreaseNoise(GameObject affectingVehicle)

@@ -270,6 +270,10 @@ public class VehicleControlSystem : MonoBehaviour
         }
         else
         {
+            foreach (var b in BuildingNoiseElements)
+            {
+                b.Value.ResetNoise();
+            }
             foreach (var o in _aaoControls)
             {
                 o.Destroy();

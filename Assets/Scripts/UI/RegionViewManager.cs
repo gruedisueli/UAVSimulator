@@ -307,6 +307,15 @@ namespace Assets.Scripts.UI
                             {
                                 var u = args.Update as ModifyBoolPropertyArg;
                                 SetAllowBuildings(u.Value);
+                                if (!u.Value && _noiseVisualToggle._isOn)//if turning off buildings, hide noise visual if on
+                                {
+                                    _vehicleControlSystem.ToggleNoiseVisualization(false);
+                                }
+                                else if (u.Value && _noiseVisualToggle._isOn) //if turning on buildings, turn on the visual if it's checked on
+                                {
+                                    _vehicleControlSystem.ToggleNoiseVisualization(true);
+                                }
+                                _noiseVisualToggle.SetInteractable(u.Value);
                                 break;
                             }
                         case VisibilityType.DroneCount:

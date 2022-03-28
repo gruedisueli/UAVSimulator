@@ -86,6 +86,7 @@ public class CorridorDrone : DroneBase
     protected override void Pending()
     {
         state = "pending";
+        currentSpeed = 0;
         currentCommunicationPoint.SendMessage("RegisterInQueue", this.gameObject);
         inCorridorSpeed = 0.0f;
     }
@@ -97,6 +98,7 @@ public class CorridorDrone : DroneBase
     {
         state = "land";
         inCorridorSpeed = 0.0f;
+        currentSpeed = landingSpeed;
         currentCorridor.RemoveDrone(this.gameObject);
     }
 

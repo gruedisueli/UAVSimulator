@@ -64,12 +64,12 @@ namespace Assets.Scripts.UI.Tools
                 var d = _drone;
                 i.SetTextElement(ElementPropertyType.Id, d.id);
                 i.SetTextElement(ElementPropertyType.Type, d.type);
-                i.SetTextElement(ElementPropertyType.Capacity, d.capacity);
+                //i.SetTextElement(ElementPropertyType.Capacity, d.capacity);
                 i.SetTextElement(ElementPropertyType.MaxSpeed, d.maxSpeed);
                 i.SetTextElement(ElementPropertyType.YawSpeed, d.yawSpeed);
                 i.SetTextElement(ElementPropertyType.TakeOffSpeed, d.takeOffSpeed);
                 i.SetTextElement(ElementPropertyType.LandingSpeed, d.landingSpeed);
-                i.SetTextElement(ElementPropertyType.Range, d.range);
+                //i.SetTextElement(ElementPropertyType.Range, d.range);
                 ////i.SetTextElement(ElementPropertyType.Emission, d.emission)
                 ////i.SetTextElement(ElementPropertyType.Noise, d.noise);
                 ////i.SetTextElement(ElementPropertyType.Position, d.currentLocation);
@@ -79,15 +79,15 @@ namespace Assets.Scripts.UI.Tools
                 //i.SetTextElement(ElementPropertyType.Origin, d.origin);
                 ////i.SetTextElement(ElementPropertyType.Description, d.destination);
                 ////i.SetTextElement(ElementPropertyType.DestinationList, d.destinationList);
-                i.SetTextElement(ElementPropertyType.Separation, d.separation);
+                //i.SetTextElement(ElementPropertyType.Separation, d.separation);
                 i.SetTextElement(ElementPropertyType.State, d.state);
-                i.SetTextElement(ElementPropertyType.PlaceInQueue, d.placeInQueue);
-                i.SetTextElement(ElementPropertyType.ToPark, d.toPark);
-                i.SetTextElement(ElementPropertyType.MoveForward, d.moveForward);
-                i.SetTextElement(ElementPropertyType.IsUTM, d.isUTM);
+                //i.SetTextElement(ElementPropertyType.PlaceInQueue, d.placeInQueue);
+                //i.SetTextElement(ElementPropertyType.ToPark, d.toPark);
+                //i.SetTextElement(ElementPropertyType.MoveForward, d.moveForward);
+                //i.SetTextElement(ElementPropertyType.IsUTM, d.isUTM);
                 //i.SetTextElement(ElementPropertyType.IsBackgroundDrone, d.isBackgroundDrone);
-                i.SetTextElement(ElementPropertyType.WaitTimer, d.waitTimer);
-                i.SetTextElement(ElementPropertyType.WaitTime, d.waitTime);
+                //i.SetTextElement(ElementPropertyType.WaitTimer, d.waitTimer);
+                //i.SetTextElement(ElementPropertyType.WaitTime, d.waitTime);
 
                 yield return null;
             }

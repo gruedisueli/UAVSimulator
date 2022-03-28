@@ -45,6 +45,7 @@ namespace Assets.Scripts.UI
         protected VehicleControlSystem _vehicleControlSystem;
 
         protected ModifyTool[] _modifyTools;//certain modify tools that are not for modifying scene elements but simulation, etc. Modify tools for scene elements get instantiated dynamically.
+        protected ToggleTool _noiseVisualToggle;
         protected AddTool[] _addTools;
         protected SceneChangeTool[] _sceneChangeTools;
         protected DeselectTool[] _deselectTools;
@@ -118,6 +119,21 @@ namespace Assets.Scripts.UI
 
             //gather UI elments
             _modifyTools = FindObjectsOfType<ModifyTool>(true);
+            if (_modifyTools != null && _modifyTools.Length > 0)
+            {
+                foreach (var m in _modifyTools)
+                {
+                    if (m is ToggleTool {_visibilityType: VisibilityType.Noise} t)
+                    {
+                        _noiseVisualToggle = t;
+                        break;
+                    }
+                }
+            }
+            if (_noiseVisualToggle == null)
+            {
+                Debug.LogError("Could not find noise visual toggle");
+            }
             _addTools = FindObjectsOfType<AddTool>(true);
             _sceneChangeTools = FindObjectsOfType<SceneChangeTool>(true);
             _deselectTools = FindObjectsOfType<DeselectTool>(true);

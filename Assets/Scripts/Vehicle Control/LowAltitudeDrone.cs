@@ -33,6 +33,7 @@ public class LowAltitudeDrone : DroneBase
     {
         if (state == "wait")
         {
+            currentSpeed = 0;
             state = "idle";
         }
         else if (state == "takeoff")
@@ -45,6 +46,7 @@ public class LowAltitudeDrone : DroneBase
         else if (state == "move")
         {
             state = "pending";
+            currentSpeed = 0;
             currentCommunicationPoint.SendMessage("RegisterInQueue", this.gameObject);
         }
         else if (state == "land")
@@ -59,6 +61,7 @@ public class LowAltitudeDrone : DroneBase
             }
             else
             {
+                currentSpeed = 0;
                 state = "wait";
                 waitTimer = 0.0f;
             }
