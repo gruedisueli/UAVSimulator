@@ -86,7 +86,7 @@ namespace Assets.Scripts.UI.Tools
                 //i.SetTextElement(ElementPropertyType.MoveForward, d.moveForward);
                 //i.SetTextElement(ElementPropertyType.IsUTM, d.isUTM);
                 //i.SetTextElement(ElementPropertyType.IsBackgroundDrone, d.isBackgroundDrone);
-                //i.SetTextElement(ElementPropertyType.WaitTimer, d.waitTimer);
+                i.SetTextElement(ElementPropertyType.WaitTimer, d.waitTimer);
                 //i.SetTextElement(ElementPropertyType.WaitTime, d.waitTime);
 
                 yield return null;

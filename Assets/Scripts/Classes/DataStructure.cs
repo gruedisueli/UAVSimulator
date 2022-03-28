@@ -16,11 +16,11 @@ namespace Assets.Scripts.DataStructure
         public float maxSpeed;
         public float landingSpeed;
         public float takeoffSpeed;
-        public float yawSpeed;//@Eunu comment
+        public float yawSpeed;
         public float range;
-        public float size;//@Eunu comment
-        public List<float> emission;//@Eunu comment
-        public List<float> noise;//@Eunu comment
+        public float size;
+        public List<float> emission;
+        public List<float> noise;
     }
 
     [Serializable]
@@ -28,46 +28,21 @@ namespace Assets.Scripts.DataStructure
     public class SimulationParam
     {
         public float maxSpeed;
-        public float verticalSeparation;//@Eunu comment
-        public float horizontalSeparation;//@Eunu comment
+        public float verticalSeparation;
+        public float horizontalSeparation;
         public float maxVehicleCount;
         public float takeoffSpeed;
         public float landingSpeed;
-        public float maxYawSpeed;//@Eunu comment
-        public float callGenerationInterval;//@Eunu comment
-        public float maxInFlightVehicles;//@Eunu comment. How is this different from max vehicle count? Or do we use this?
-        public float inCorridorSeparation;//@Eunu comment
-        public float lowAltitudeBoundary;//@Eunu comment
-        public string strategicDeconfliction;//@Eunu comment
-        public string tacticalDeconfliction;//@Eunu comment
+        public float maxYawSpeed;
+        public float callGenerationInterval;
+        public float maxInFlightVehicles;
+        public float inCorridorSeparation;
+        public float lowAltitudeBoundary;
+        public string strategicDeconfliction;
+        public string tacticalDeconfliction;
 
     }
     #endregion
-
-    #region Simulation Info
-    /// <summary>
-    /// @Eunu comment.
-    /// </summary>
-    [Serializable]
-    public class SimulationStat
-    {
-        public float throughput;//@Eunu comment
-        public float affectedArea;//@Eunu comment
-        public float emission;//@Eunu comment
-        public List<GameObject> vehicles;//@Eunu comment
-    }
-    #endregion
-
-
-    /// <summary>
-    /// @Eunu comment. What's difference from simulation stat?
-    /// </summary>
-    public class SimulationAnalysis
-    {
-        public List<GameObject> drones; //@Eunu comment
-        public double emission;//@Eunu comment
-        public double noise;//@Eunu comment
-    }
 
     /// <summary>
     /// A basic polygon

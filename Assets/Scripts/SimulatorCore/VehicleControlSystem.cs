@@ -35,9 +35,9 @@ public class VehicleControlSystem : MonoBehaviour
     public SimulationAnalyzer _simulationAnalyzer;
 
 
-    const float AGL_700_METERS = 213.36f;//AGL 700 in meters, not feet. "700" is a feet measurement.
-    const float AGL_1200_METERS = 365.76f;//AGL 1200 in meters, not feet. "1200" is a feet measurement.
-    public float MIN_DRONE_RANGE;//@EUNU comment
+    //const float AGL_700_METERS = 213.36f;//AGL 700 in meters, not feet. "700" is a feet measurement.
+    //const float AGL_1200_METERS = 365.76f;//AGL 1200 in meters, not feet. "1200" is a feet measurement.
+    public float MIN_DRONE_RANGE;
     /// <summary>
     /// Initial scale for simulation. (vestigial and probably can be removed)
     /// </summary>
@@ -52,22 +52,12 @@ public class VehicleControlSystem : MonoBehaviour
     #region UI Variables
 
     public SimulationParam simulationParam;
-    private Dictionary<string, float> statistics;//@EUNU remove/not used?
 
 
     #endregion
-
-    #region Vehicle Info
-    //private Dictionary<GameObject, string> activeVehicles;//@EUNU comment. Does this include parked drones?
-    #endregion
-
-
 
     #region Private Variables
-    private Color translucentRed;
     private float watch;
-    private int droneCount;
-    private int buildingCt = 0;
 
     // Visualization related params
     public bool playing;
@@ -137,13 +127,8 @@ public class VehicleControlSystem : MonoBehaviour
 
     public float speedMultiplier = 1.0f;//@EUNU comment
 
-    public GameObject TypeAPrefab;
-
     #endregion
 
-    private string current_runtime;//@EUNU comment. remove?
-    private float progress = 0.0f;
-    private List<GameObject> hiddenDrones;//@EUNU comment
     public DroneInstantiator droneInstantiator;
 
     /// <summary>
@@ -155,18 +140,19 @@ public class VehicleControlSystem : MonoBehaviour
     private bool _networkUpdateFlag = false;
     private int _framesSinceNetworkUpdateFlag = 0;
 
+    private const float UTM_ELEVATION = 152.4f;
+    private const float UTM_SEPARATION = 25.0f;
+
     void Awake()
     {
         EnvironManager.Instance.VCS = this;
         //droneCount = 200;
         playing = false;
-        translucentRed = new Color(Color.cyan.r, Color.cyan.g, Color.cyan.b, 0.50f);
 
         MIN_DRONE_RANGE = 999999.0f;
         simulationParam = ReadSimulationParams();
         sceneManager = FindObjectOfType<SceneManagerBase>(true);
         if (sceneManager == null) Debug.Log("Could not find scene manager component in scene");
-        hiddenDrones = new List<GameObject>();
 
         watch = 0.0f;
 
@@ -261,6 +247,7 @@ public class VehicleControlSystem : MonoBehaviour
     {
         playing = play;
         //mapBounds = UnitUtils.GetRegionExtents();
+        _simulationAnalyzer.PlayStop(play);
 
         if ( playing )
         {
@@ -935,8 +922,7 @@ public class VehicleControlSystem : MonoBehaviour
     private void GenerateNetwork()
     {
 
-        const float UTM_ELEVATION = 152.4f;
-        const float UTM_SEPARATION = 25.0f;
+
 
 
         List<GameObject> points = new List<GameObject>();

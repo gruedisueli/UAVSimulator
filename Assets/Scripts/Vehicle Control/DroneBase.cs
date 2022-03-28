@@ -26,7 +26,7 @@ public abstract class DroneBase : MonoBehaviour
     public float landingSpeed { get; set; }
     public float range { get; set; }
 
-
+    //unused
     public List<float> emission;
     public List<float> noise;
 
@@ -111,7 +111,7 @@ public abstract class DroneBase : MonoBehaviour
 
         if (this is CorridorDrone || this is LowAltitudeDrone)
         {
-            noiseShpere.transform.localScale = new Vector3(currentSpeed / 4.0f, currentSpeed / 4.0f, currentSpeed / 4.0f); //@Eunu comment on how we size the noise sphere
+            noiseShpere.transform.localScale = new Vector3(currentSpeed, currentSpeed, currentSpeed);
         }
 
         elevation = this.gameObject.transform.position.y;
@@ -230,7 +230,7 @@ public abstract class DroneBase : MonoBehaviour
     {
         currentSpeed = 0;
         OnDroneParking?.Invoke(gameObject, e);
-        simulationAnalyzer.SendMessage("RemoveFlyingDrone", this.gameObject);
+        simulationAnalyzer.SendMessage("RemoveFlyingDrone", this);
         if (!vcs.TEMPORARY_IsRegionView) gameObject.transform.GetChild(0).gameObject.GetComponent<MeshRenderer>().enabled = false;
         else if (Clone2d != null)
         {
@@ -254,7 +254,7 @@ public abstract class DroneBase : MonoBehaviour
                 if (image != null) image.enabled = true;
             }
             OnDroneTakeOff?.Invoke(gameObject, e);
-            simulationAnalyzer.SendMessage("AddFlyingDrone", this.gameObject);
+            simulationAnalyzer.SendMessage("AddFlyingDrone", this);
             isParked = false;
         }
         targetPosition = wayPointsQueue.Dequeue();
@@ -337,8 +337,8 @@ public abstract class DroneBase : MonoBehaviour
         this.capacity = capacity;
         this.maxSpeed = maxSpeed;
         this.yawSpeed = yawspeed;
-        this.takeOffSpeed = takeOffSpeed * 2;
-        this.landingSpeed = landingSpeed * 2;
+        this.takeOffSpeed = takeOffSpeed;
+        this.landingSpeed = landingSpeed;
         this.emission = emission;
         this.noise = noise;
         this.range = range;

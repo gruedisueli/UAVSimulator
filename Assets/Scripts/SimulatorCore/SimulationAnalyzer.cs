@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Assets.Scripts.DataStructure;
 using UnityEngine;
+using UnityEngine.PlayerLoop;
 
 namespace Assets.Scripts.SimulatorCore
 {
@@ -14,31 +15,68 @@ namespace Assets.Scripts.SimulatorCore
     public class SimulationAnalyzer : MonoBehaviour
     {
         //@Eunu please review my comments on all fields:
-        public float averageSpeed; //{ get; set; }//average speed of all drones. @Eunu, correct?
-        public float throughput; //{ get; set; }//@Eunu comment.
-        public float grossEnergyConsumption; //{ get; set; }//total energy consumption since start of simulation. @Eunu correct? Or is it just current energy consumption right now?
-        public float grossEmission; //{ get; set; }//total emissions since start of simulation. @Eunu correct? Or is it just current emissions right now?
+        public float averageSpeed; //{ get; set; }
+        public float throughput; //{ get; set; }
+        //public float grossEnergyConsumption; //{ get; set; }
+        //public float grossEmission; //{ get; set; }
         public List<GameObject> highNoiseBuildings;  //{ get; set; }//list of current buildings with "high noise"
         public List<GameObject> mediumNoiseBuildings; //{ get; set; }//list of current buildings with "medium noise"
         public List<GameObject> lowNoiseBuildings; //{ get; set; }//list of current buildings with "low noise"
-        public List<GameObject> flyingDrones; //{ get; set; }//list of drones in the air right now.
+        public List<DroneBase> flyingDrones; //{ get; set; }//list of drones in the air right now.
         public List<Corridor> congestedCorridors; //{ get; set; }//list of corridors currently labeled as congested.
         public List<GameObject> congestedParkingStructures; //{ get; set; }//list of parking structures currently labeled as congested.
         public List<GameObject> congestedDronePorts; //{ get; set; }//list of drone ports currently labeled as congested.
+
+        private float _avgSpeedUpdateInterval = 1;//seconds
+        private float _lastAvgSpeedUpdate = 0;
+        private bool _isPlaying = false;
 
         void Start()
         {
             averageSpeed = 0.0f;
             throughput = 0.0f;
-            grossEmission = 0.0f;
-            grossEnergyConsumption = 0.0f;
+            //grossEmission = 0.0f;
+            //grossEnergyConsumption = 0.0f;
             highNoiseBuildings = new List<GameObject>();
             mediumNoiseBuildings = new List<GameObject>();
             lowNoiseBuildings = new List<GameObject>();
-            flyingDrones = new List<GameObject>();
+            flyingDrones = new List<DroneBase>();
             congestedCorridors = new List<Corridor>();
             congestedParkingStructures = new List<GameObject>();
             congestedDronePorts = new List<GameObject>();
+        }
+
+        void Update()
+        {
+            if (_isPlaying && Time.unscaledTime - _lastAvgSpeedUpdate > _avgSpeedUpdateInterval)
+            {
+                float sum = 0;
+                foreach (var d in flyingDrones)
+                {
+                    sum += d.currentSpeed;
+                }
+
+                averageSpeed = sum / flyingDrones.Count;
+            }
+        }
+        /// <summary>
+        /// Performs reset actions when stopping, otherwise commences analysis
+        /// </summary>
+        public void PlayStop(bool isPlaying)
+        {
+            _isPlaying = isPlaying;
+            if (!isPlaying)
+            {
+                flyingDrones.Clear();
+                congestedCorridors.Clear();
+                congestedParkingStructures.Clear();
+                congestedDronePorts.Clear();
+                highNoiseBuildings.Clear();
+                mediumNoiseBuildings.Clear();
+                lowNoiseBuildings.Clear();
+                averageSpeed = 0;
+                throughput = 0;
+            }
         }
 
         #region Building Related Methods
@@ -91,19 +129,25 @@ namespace Assets.Scripts.SimulatorCore
         /// <summary>
         /// Add drone to flying drone list.
         /// </summary>
-        public void AddFlyingDrone(GameObject drone)
+        public void AddFlyingDrone(DroneBase drone)
         {
-            throughput += drone.GetComponent<DroneBase>().capacity;
-            flyingDrones.Add(drone);
+            if (!flyingDrones.Contains(drone))
+            {
+                throughput += drone.capacity;
+                flyingDrones.Add(drone);
+            }
         }
 
         /// <summary>
         /// Remove drone from flying drone list.
         /// </summary>
-        public void RemoveFlyingDrone(GameObject drone)
+        public void RemoveFlyingDrone(DroneBase drone)
         {
-            throughput -= drone.GetComponent<DroneBase>().capacity;
-            flyingDrones.Remove(drone);
+            if (flyingDrones.Contains(drone))
+            {
+                throughput -= drone.capacity;
+                flyingDrones.Remove(drone);
+            }
         }
 
 
@@ -111,56 +155,74 @@ namespace Assets.Scripts.SimulatorCore
 
         #region Corridor Related Methods
 
-        /// <summary>
-        /// Add corridor to list of congested corridors.
-        /// </summary>
-        public void AddCongestedCorridors ( Corridor corridor )
-        {
-            congestedCorridors.Add(corridor);
-        }
+        ///// <summary>
+        ///// Add corridor to list of congested corridors.
+        ///// </summary>
+        //public void AddCongestedCorridors ( Corridor corridor )
+        //{
+        //    if (!congestedCorridors.Contains(corridor))
+        //    {
+        //        congestedCorridors.Add(corridor);
+        //    }
+        //}
 
-        /// <summary>
-        /// Remove corridor from list of congested corridors.
-        /// </summary>
-        public void RemoveCongestedCorridors(Corridor corridor)
-        {
-            congestedCorridors.Remove(corridor);
-        }
+        ///// <summary>
+        ///// Remove corridor from list of congested corridors.
+        ///// </summary>
+        //public void RemoveCongestedCorridors(Corridor corridor)
+        //{
+        //    if (congestedCorridors.Contains(corridor))
+        //    {
+        //        congestedCorridors.Remove(corridor);
+        //    }
+        //}
         #endregion
 
         #region Asset Related Methods
 
-        /// <summary>
-        /// Add parking structure to list of congested structures.
-        /// </summary>
-        public void AddCongestedParkingStructure(GameObject parkingStructure)
-        {
-            congestedParkingStructures.Add(parkingStructure);
-        }
+        ///// <summary>
+        ///// Add parking structure to list of congested structures.
+        ///// </summary>
+        //public void AddCongestedParkingStructure(GameObject parkingStructure)
+        //{
+        //    if (!congestedParkingStructures.Contains(parkingStructure))
+        //    {
+        //        congestedParkingStructures.Add(parkingStructure);
+        //    }
+        //}
 
-        /// <summary>
-        /// Remove parking structure from list of congested structures.
-        /// </summary>
-        public void RemoveCongestedParkingStructure(GameObject parkingStructure)
-        {
-            congestedParkingStructures.Remove(parkingStructure);
-        }
+        ///// <summary>
+        ///// Remove parking structure from list of congested structures.
+        ///// </summary>
+        //public void RemoveCongestedParkingStructure(GameObject parkingStructure)
+        //{
+        //    if (congestedParkingStructures.Contains(parkingStructure))
+        //    {
+        //        congestedParkingStructures.Remove(parkingStructure);
+        //    }
+        //}
 
-        /// <summary>
-        /// Add drone port to list of congested structures.
-        /// </summary>
-        public void AddCongestedDronePort(GameObject dronePort)
-        {
-            congestedParkingStructures.Add(dronePort);
-        }
+        ///// <summary>
+        ///// Add drone port to list of congested structures.
+        ///// </summary>
+        //public void AddCongestedDronePort(GameObject dronePort)
+        //{
+        //    if (!congestedDronePorts.Contains(dronePort))
+        //    {
+        //        congestedDronePorts.Add(dronePort);
+        //    }
+        //}
 
-        /// <summary>
-        /// Remove drone port from list of congested structures.
-        /// </summary>
-        public void RemoveCongestedDronePort(GameObject dronePort)
-        {
-            congestedParkingStructures.Remove(dronePort);
-        }
+        ///// <summary>
+        ///// Remove drone port from list of congested structures.
+        ///// </summary>
+        //public void RemoveCongestedDronePort(GameObject dronePort)
+        //{
+        //    if (congestedDronePorts.Contains(dronePort))
+        //    {
+        //        congestedDronePorts.Remove(dronePort);
+        //    }
+        //}
 
         #endregion
 

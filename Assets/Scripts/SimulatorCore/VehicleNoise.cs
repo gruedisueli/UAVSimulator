@@ -49,7 +49,7 @@ public class VehicleNoise : MonoBehaviour
     /// </summary>
     void CheckNoise()
     {
-        Collider[] hitColliders = Physics.OverlapSphere(gameObject.transform.position, radius / 2);
+        Collider[] hitColliders = Physics.OverlapSphere(gameObject.transform.position, radius);
         List<Collider> hitColliders_list = new List<Collider>(hitColliders);
         
         foreach(var hitCollider in hitColliders)
@@ -86,7 +86,7 @@ public class VehicleNoise : MonoBehaviour
         {
             if (!hitColliders_list.Contains(affected_building))
             {
-                var n = affected_building.gameObject.GetComponent<BuildingNoise>()?.ID;
+                var n = affected_building?.gameObject.GetComponent<BuildingNoise>()?.ID;
                 if (n == null) continue;
                 if (vcs.BuildingNoiseElements.ContainsKey(n))
                 {

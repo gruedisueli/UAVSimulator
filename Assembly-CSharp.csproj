@@ -178,7 +178,6 @@
     <Compile Include="Assets\Mapbox\Examples\Scripts\FeatureUiMarker.cs" />
     <Compile Include="Assets\Mapbox\Examples\7_Globe\Scripts\DragRotate.cs" />
     <Compile Include="Assets\Scripts\Environment\EnvironSettings.cs" />
-    <Compile Include="Assets\Scripts\AvoidanceTest.cs" />
     <Compile Include="Assets\Mapbox\Core\mapbox-sdk-cs\Utils\Vector2d\RectD.cs" />
     <Compile Include="Assets\Mapbox\Unity\MeshGeneration\Modifiers\GameObjectModifiers\AddMonoBehavioursModifier.cs" />
     <Compile Include="Assets\Mapbox\Unity\Telemetry\TelemetryFactory.cs" />
@@ -430,7 +429,6 @@
     <Compile Include="Assets\Mapbox\Unity\LayerProperties\ElevationLayerProperties.cs" />
     <Compile Include="Assets\Scripts\UI\Tools\AddRestrictZoneTool.cs" />
     <Compile Include="Assets\Mapbox\Core\mapbox-sdk-cs\Tokens\MapboxToken.cs" />
-    <Compile Include="Assets\Scripts\Vehicle Control\Vehicle.cs" />
     <Compile Include="Assets\Mapbox\Unity\MeshGeneration\Data\UnityTile.cs" />
     <Compile Include="Assets\Scripts\UI\Tools\OpenURL.cs" />
     <Compile Include="Assets\Mapbox\Unity\MeshGeneration\Interfaces\LayerVisualizerBase.cs" />
@@ -547,7 +545,6 @@
     <Compile Include="Assets\Scripts\Vehicle Control\SignalSystem.cs" />
     <Compile Include="Assets\Mapbox\Unity\Map\Strategies\MapScalingAtUnityScaleStrategy.cs" />
     <Compile Include="Assets\Mapbox\Unity\MeshGeneration\Filters\FilterBase.cs" />
-    <Compile Include="Assets\Scripts\Vehicle Control\RestrictionZone.cs" />
     <Compile Include="Assets\Mapbox\Core\mapbox-sdk-cs\Map\RasterTile.cs" />
     <Compile Include="Assets\Mapbox\Examples\1_DataExplorer\HighlightBuildings.cs" />
     <Compile Include="Assets\Mapbox\Unity\Location\DeviceLocationProviderAndroidNative.cs" />
