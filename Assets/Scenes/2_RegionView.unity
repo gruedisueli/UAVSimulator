@@ -971,7 +971,7 @@ MonoBehaviour:
   _simulationAnalyzer: {fileID: 246965923}
   MIN_DRONE_RANGE: 0
   DRONE_SCALE: 1
-  scaleMultiplier: 800
+  scaleMultiplier: 1
   _canvas: {fileID: 1495986657}
   simulationParam:
     maxSpeed: 0

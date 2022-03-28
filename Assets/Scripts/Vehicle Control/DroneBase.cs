@@ -20,7 +20,7 @@ public abstract class DroneBase : MonoBehaviour
     public float approaching_threshold { get; set; }//@Eunu comment
 
     // Vehicle specific information - can be modified in runtime       
-    public int id { get; set; }
+    public string id { get; set; } = Guid.NewGuid().ToString().Substring(0, 10);
     public string type { get; set; }
     public int capacity { get; set; }
     public float maxSpeed { get; set; }
@@ -87,7 +87,7 @@ public abstract class DroneBase : MonoBehaviour
 
     void Start()
     {
-        DRONE_LAYERMASK = 1 << 10;
+        DRONE_LAYERMASK = LayerMask.GetMask("Vehicle");// 1 << 10;
         toPark = false;
         simulationAnalyzer = GameObject.Find("SimulationCore").GetComponent<SimulationAnalyzer>();
         arrival_threshold = 0.5f;

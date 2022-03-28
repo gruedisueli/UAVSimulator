@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
-    <LangVersion>latest</LangVersion>
+    <LangVersion>8.0</LangVersion>
   </PropertyGroup>
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
@@ -53,6 +53,9 @@
     <UnityVersion>2020.3.26f1</UnityVersion>
   </PropertyGroup>
   <ItemGroup>
+    <Analyzer Include="C:\Program Files\Microsoft Visual Studio\2022\Community\Common7\IDE\Extensions\Microsoft\Visual Studio Tools for Unity\Analyzers\Microsoft.Unity.Analyzers.dll" />
+  </ItemGroup>
+  <ItemGroup>
     <Compile Include="Assets\Mapbox\Core\mapbox-sdk-cs\Directions\Response\Annotation.cs" />
     <Compile Include="Assets\Scripts\Vehicle Control\CorridorDrone.cs" />
     <Compile Include="Assets\Mapbox\Core\mapbox-sdk-cs\Platform\HTTPRequestNonThreaded.cs" />
@@ -77,6 +80,7 @@
     <Compile Include="Assets\Mapbox\Unity\MeshGeneration\Filters\HeightFilter.cs" />
     <Compile Include="Assets\Mapbox\Unity\Location\ILocationProvider.cs" />
     <Compile Include="Assets\Mapbox\Unity\MeshGeneration\Modifiers\IReplacementCriteria.cs" />
+    <Compile Include="Assets\Scripts\UI\Tools\ErrorDialog.cs" />
     <Compile Include="Assets\Mapbox\Unity\MeshGeneration\Modifiers\GameObjectModifiers\PrefabModifier.cs" />
     <Compile Include="Assets\Scripts\UI\FindLocationManager.cs" />
     <Compile Include="Assets\Scripts\UI\Tools\SelectableGameObject.cs" />
@@ -315,8 +319,8 @@
     <Compile Include="Assets\Mapbox\Unity\SourceLayers\ISubLayerLightStyle.cs" />
     <Compile Include="Assets\Scripts\Environment\RestrictionZoneBase.cs" />
     <Compile Include="Assets\Scripts\Vehicle Control\TrafficControl.cs" />
-    <Compile Include="Assets\Mapbox\Unity\LayerProperties\VectorLayerProperties.cs" />
     <Compile Include="Assets\Mapbox\Unity\MeshGeneration\Modifiers\TextureSideWallModifier.cs" />
+    <Compile Include="Assets\Mapbox\Unity\LayerProperties\VectorLayerProperties.cs" />
     <Compile Include="Assets\Mapbox\Unity\SourceLayers\SubLayerFantasyStyle.cs" />
     <Compile Include="Assets\Mapbox\Unity\SourceLayers\MapboxDefaultStyles.cs" />
     <Compile Include="Assets\Mapbox\Unity\Utilities\StyleSearchAttribute.cs" />
@@ -329,6 +333,7 @@
     <Compile Include="Assets\Scripts\UI\Tools\CommitTool.cs" />
     <Compile Include="Assets\Mapbox\Unity\Location\UnityLocationWrappers\MapboxLocationServiceMock.cs" />
     <Compile Include="Assets\Scripts\UI\Tools\ButtonPanel.cs" />
+    <Compile Include="Assets\Scripts\WebFileManager.cs" />
     <Compile Include="Assets\Mapbox\Core\probe-extractor-cs\ProbeExtractor.cs" />
     <Compile Include="Assets\Mapbox\Unity\LayerProperties\PrefabItemOptions.cs" />
     <Compile Include="Assets\Mapbox\Unity\Telemetry\TelemetryFallback.cs" />
@@ -561,8 +566,6 @@
     <Compile Include="Assets\Mapbox\Unity\Location\LocationSmoothing\KalmanFilter.cs" />
     <Compile Include="Assets\Scripts\Environment\AssetPackBase.cs" />
     <Compile Include="Assets\Mapbox\Unity\SourceLayers\ISubLayerCustomStyle.cs" />
-    <Compile Include="Assets\Scripts\WebFileManager.cs" />
-    <Compile Include="Assets\Scripts\UI\Tools\ErrorDialog.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Assets\Mapbox\Core\Plugins\Mapbox\vector-tile-cs\net46\Mapbox.VectorTile.Geometry.dll" />
