@@ -387,7 +387,8 @@ public abstract class DroneBase : MonoBehaviour
     /// </summary>
     private void NoiseSphereToggleHandler(bool toggle)
     {
-        MeshRenderer mr = this.gameObject.transform.GetChild(1).gameObject.GetComponent<MeshRenderer>();
+        int i = vcs.TEMPORARY_IsRegionView ? 0 : 1;
+        MeshRenderer mr = this.gameObject.transform.GetChild(i).gameObject.GetComponent<MeshRenderer>();
         if ( toggle )
         {
             mr.enabled = true;
