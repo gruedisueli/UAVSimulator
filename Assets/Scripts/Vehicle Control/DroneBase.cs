@@ -168,7 +168,8 @@ public abstract class DroneBase : MonoBehaviour
     {
         // Move() can be different between:
         // (1) Corridor drones (w/ strategic deconfliction, w/o tactical deconfliction)
-        //     : Corridor drones only live in corridors so it only needs to check the separation to front
+        //     : Corridor drones only live in corridors so it only needs to check the
+        // to front
         //     : Restriction zone avoidance is already taken into account by strategic deconfliction
         // (2) Low-altitude drones (w/ or w/o strategic deconfliction, w/ tactical deconfliction)
         //     : Low-altitude drones fly freely in space so it needs to dynamically avoid other drones, buildings, etc.
@@ -176,7 +177,7 @@ public abstract class DroneBase : MonoBehaviour
         
         Quaternion wantedRotation = Quaternion.LookRotation(targetPosition - transform.position, transform.up);
         if (state == "move") transform.rotation = Quaternion.Lerp(transform.rotation, wantedRotation, Time.deltaTime * yawSpeed);
-        transform.position = Vector3.MoveTowards(transform.position, targetPosition, KMHtoMPS(currentSpeed) * Time.deltaTime * vcs.speedMultiplier);
+        transform.position = Vector3.MoveTowards(transform.position, targetPosition, currentSpeed * Time.deltaTime * vcs.speedMultiplier);
     }
 
     /// <summary>
@@ -288,19 +289,8 @@ public abstract class DroneBase : MonoBehaviour
         TakeOffEvent();
     }
     
-    /// <summary>
-    /// @Eunu comment
-    /// </summary>
     protected virtual void ReserveNearestParking()
     {
-    }
-
-    /// <summary>
-    /// @Eunu comment. Is this kilometers/hr to meters/sec? Shouldn't that be: speed(km/hr) * 1000(m/km) / 216,000 (s/hr) ?
-    /// </summary>
-    protected float KMHtoMPS(float speed)
-    {
-        return (speed * 1000) / 3600;
     }
 
     private void OnDestroy()

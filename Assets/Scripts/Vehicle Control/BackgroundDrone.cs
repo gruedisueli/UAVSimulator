@@ -25,7 +25,7 @@ public class BackgroundDrone : DroneBase
         {
             Quaternion wantedRotation = Quaternion.LookRotation(targetPosition - transform.position, transform.up);
             if (state == "move") transform.rotation = Quaternion.Lerp(transform.rotation, wantedRotation, Time.deltaTime * yawSpeed);
-            transform.position = Vector3.MoveTowards(transform.position, targetPosition, KMHtoMPS(currentSpeed) * Time.deltaTime);
+            transform.position = Vector3.MoveTowards(transform.position, targetPosition, currentSpeed * Time.deltaTime);
         }
     }
 }

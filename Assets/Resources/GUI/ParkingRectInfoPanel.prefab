@@ -231,6 +231,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_Navigation:
     m_Mode: 3
+    m_WrapAround: 0
     m_SelectOnUp: {fileID: 0}
     m_SelectOnDown: {fileID: 0}
     m_SelectOnLeft: {fileID: 0}
@@ -680,6 +681,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_Navigation:
     m_Mode: 3
+    m_WrapAround: 0
     m_SelectOnUp: {fileID: 0}
     m_SelectOnDown: {fileID: 0}
     m_SelectOnLeft: {fileID: 0}
@@ -827,6 +829,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _closeTool: {fileID: 7626481848231693059}
+  _type: 0
 --- !u!1 &6301056445834695634
 GameObject:
   m_ObjectHideFlags: 0
@@ -1130,6 +1133,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_Navigation:
     m_Mode: 3
+    m_WrapAround: 0
     m_SelectOnUp: {fileID: 0}
     m_SelectOnDown: {fileID: 0}
     m_SelectOnLeft: {fileID: 0}
@@ -2048,7 +2052,7 @@ PrefabInstance:
     - target: {fileID: 957947440648303148, guid: 9dd4af3bd9e0cbc4890162a6d96757ee,
         type: 3}
       propertyPath: m_Text
-      value: Width (m)...
+      value: W
       objectReference: {fileID: 0}
     - target: {fileID: 1466419365404404316, guid: 9dd4af3bd9e0cbc4890162a6d96757ee,
         type: 3}
@@ -2072,6 +2076,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2966743247853539428, guid: 9dd4af3bd9e0cbc4890162a6d96757ee,
         type: 3}
+      propertyPath: _unitType
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 2966743247853539428, guid: 9dd4af3bd9e0cbc4890162a6d96757ee,
+        type: 3}
       propertyPath: _fieldType
       value: 2
       objectReference: {fileID: 0}
@@ -2079,6 +2088,11 @@ PrefabInstance:
         type: 3}
       propertyPath: _propertyType
       value: 6
+      objectReference: {fileID: 0}
+    - target: {fileID: 2966743247853539428, guid: 9dd4af3bd9e0cbc4890162a6d96757ee,
+        type: 3}
+      propertyPath: _optPlcHlderTxtPref
+      value: Width
       objectReference: {fileID: 0}
     - target: {fileID: 5701136653670066961, guid: 9dd4af3bd9e0cbc4890162a6d96757ee,
         type: 3}
@@ -2613,7 +2627,7 @@ PrefabInstance:
     - target: {fileID: 957947440648303148, guid: 9dd4af3bd9e0cbc4890162a6d96757ee,
         type: 3}
       propertyPath: m_Text
-      value: Length (m)...
+      value: L
       objectReference: {fileID: 0}
     - target: {fileID: 1466419365404404316, guid: 9dd4af3bd9e0cbc4890162a6d96757ee,
         type: 3}
@@ -2637,6 +2651,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2966743247853539428, guid: 9dd4af3bd9e0cbc4890162a6d96757ee,
         type: 3}
+      propertyPath: _unitType
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 2966743247853539428, guid: 9dd4af3bd9e0cbc4890162a6d96757ee,
+        type: 3}
       propertyPath: _fieldType
       value: 2
       objectReference: {fileID: 0}
@@ -2644,6 +2663,11 @@ PrefabInstance:
         type: 3}
       propertyPath: _propertyType
       value: 7
+      objectReference: {fileID: 0}
+    - target: {fileID: 2966743247853539428, guid: 9dd4af3bd9e0cbc4890162a6d96757ee,
+        type: 3}
+      propertyPath: _optPlcHlderTxtPref
+      value: Length
       objectReference: {fileID: 0}
     - target: {fileID: 5701136653670066961, guid: 9dd4af3bd9e0cbc4890162a6d96757ee,
         type: 3}

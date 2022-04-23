@@ -55,17 +55,29 @@ namespace Assets.Scripts.UI.Tools
         public void UpdateFields(ParkingStructureBase specs)
         {
             _parkingSpecs = specs;
+            bool isMetric = EnvironManager.Instance.Environ.SimSettings.IsMetricUnits;
             switch (_type)
             {
                 case ParkingPanelType.Rect:
                 {
                     if (!(specs is ParkingStructureRect pS)) break;
+                    float sX, sZ;
+                    if (isMetric)
+                    {
+                        sX = pS.Scale.x;
+                        sZ = pS.Scale.z;
+                    }
+                    else
+                    {
+                        sX = UnitUtils.MetersToFeet(pS.Scale.x);
+                        sZ = UnitUtils.MetersToFeet(pS.Scale.z);
+                    }
                     _infoPanel.SetTextElement(ElementPropertyType.Rotation, pS.Rotation.y);
-                    _infoPanel.SetTextElement(ElementPropertyType.XScale, pS.Scale.x);
-                    _infoPanel.SetTextElement(ElementPropertyType.ZScale, pS.Scale.z);
+                    _infoPanel.SetTextElement(ElementPropertyType.XScale, sX);
+                    _infoPanel.SetTextElement(ElementPropertyType.ZScale, sZ);
                     SetModifyToolValue(ElementPropertyType.Rotation, pS.Rotation.y);
-                    SetModifyToolValue(ElementPropertyType.XScale, pS.Scale.x);
-                    SetModifyToolValue(ElementPropertyType.ZScale, pS.Scale.z);
+                    SetModifyToolValue(ElementPropertyType.XScale, sX);
+                    SetModifyToolValue(ElementPropertyType.ZScale, sZ);
                     break;
                 }
                 case ParkingPanelType.Custom:

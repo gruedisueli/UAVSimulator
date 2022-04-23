@@ -18,7 +18,7 @@ public class LowAltitudeDrone : DroneBase
             Quaternion wantedRotation = Quaternion.LookRotation(rotation, transform.up);
             transform.rotation = Quaternion.Lerp(transform.rotation, wantedRotation, Time.deltaTime * yawSpeed);
         }
-        transform.position = Vector3.MoveTowards(transform.position, targetPosition, KMHtoMPS(currentSpeed) * Time.deltaTime * vcs.speedMultiplier);
+        transform.position = Vector3.MoveTowards(transform.position, targetPosition, currentSpeed * Time.deltaTime * vcs.speedMultiplier);
 
         if ( Vector3.Distance(transform.position, targetPosition) < approaching_threshold && wayPointsQueue.Count == 0 )
         {

@@ -185,4 +185,11 @@ namespace Assets.Scripts
         Rect = 0,
         Custom = 1
     }
+
+    public enum UnitType
+    {
+        None = 0,
+        Speed = 1,
+        Distance = 2
+    }
 }

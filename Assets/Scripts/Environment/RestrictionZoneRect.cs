@@ -129,6 +129,7 @@ namespace Assets.Scripts.Environment
 
         public override void UpdateParams(ModifyPropertyArgBase args)
         {
+            bool isMetric = EnvironManager.Instance.Environ.SimSettings.IsMetricUnits;
             try
             {
                 switch (args.ElementPropertyType)
@@ -139,17 +140,28 @@ namespace Assets.Scripts.Environment
                     //    }
                     case ElementPropertyType.Height:
                         {
-                            Height = (args as ModifyFloatPropertyArg).Value;
+                            if (args is ModifyFloatPropertyArg fP)
+                            {
+                                Height = isMetric ? fP.Value : UnitUtils.FeetToMeters(fP.Value);
+                            }
                             break;
                         }
                     case ElementPropertyType.XScale:
                         {
-                            SetXScale((args as ModifyFloatPropertyArg).Value);
+                            if (args is ModifyFloatPropertyArg fP)
+                            {
+                                var sX = isMetric ? fP.Value : UnitUtils.FeetToMeters(fP.Value);
+                                SetXScale(sX);
+                            }
                             break;
                         }
                     case ElementPropertyType.ZScale:
                         {
-                            SetZScale((args as ModifyFloatPropertyArg).Value);
+                            if (args is ModifyFloatPropertyArg fP)
+                            {
+                                var sZ = isMetric ? fP.Value : UnitUtils.FeetToMeters(fP.Value);
+                                SetZScale(sZ);
+                            }
                             break;
                         }
                     //case ElementPropertyType.Position:

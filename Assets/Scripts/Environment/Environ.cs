@@ -21,6 +21,19 @@ namespace Assets.Scripts.Environment
     [JsonObject(MemberSerialization.OptIn)]
     public class Environ
     {
+        [JsonProperty] 
+        private SimulationSettings _simulationSettings = new SimulationSettings();
+        public SimulationSettings SimSettings
+        {
+            get
+            {
+                return _simulationSettings;
+            }
+            set
+            {
+                _simulationSettings = value;
+            }
+        }
 
         /// <summary>
         /// Center of simulation, and mapbox origin.

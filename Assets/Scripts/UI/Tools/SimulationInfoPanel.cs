@@ -4,6 +4,7 @@ using System.Collections;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Assets.Scripts.Environment;
 using Assets.Scripts.UI.EventArgs;
 using Assets.Scripts.SimulatorCore;
 
@@ -59,7 +60,9 @@ namespace Assets.Scripts.UI.Tools
         {
             var i = _infoPanel;
             var s = _analyzer;
-            i.SetTextElement(ElementPropertyType.AverageSpeed, s.averageSpeed);
+            bool isMetric = EnvironManager.Instance.Environ.SimSettings.IsMetricUnits;
+            var speed = isMetric ? UnitUtils.MetersPerSecondToKilometersPerHour(s.averageSpeed) : UnitUtils.MetersPerSecondToMilesPerHour(s.averageSpeed);
+            i.SetTextElement(ElementPropertyType.AverageSpeed, speed);
             i.SetTextElement(ElementPropertyType.Throughput, s.throughput);
             //i.SetTextElement(ElementPropertyType.GrossEnergyConsumption, s.grossEnergyConsumption);
             //i.SetTextElement(ElementPropertyType.GrossEmission, s.grossEmission);

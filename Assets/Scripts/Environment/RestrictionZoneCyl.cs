@@ -203,6 +203,7 @@ namespace Assets.Scripts.Environment
 
         public override void UpdateParams(ModifyPropertyArgBase args)
         {
+            bool isMetric = EnvironManager.Instance.Environ.SimSettings.IsMetricUnits;
             try
             {
                 switch (args.ElementPropertyType)
@@ -213,34 +214,46 @@ namespace Assets.Scripts.Environment
                     //    }
                     case ElementPropertyType.Height:
                         {
-                            Height = (args as ModifyFloatPropertyArg).Value;
+                            if (args is ModifyFloatPropertyArg fP)
+                            {
+                                Height = isMetric ? fP.Value : UnitUtils.FeetToMeters(fP.Value);
+                            }
                             break;
                         }
                     case ElementPropertyType.Radius:
                         {
-                            Radius = (args as ModifyFloatPropertyArg).Value;
+                            if (args is ModifyFloatPropertyArg fP)
+                            {
+                                Radius = isMetric ? fP.Value : UnitUtils.FeetToMeters(fP.Value);
+                            }
                             break;
                         }
                     case ElementPropertyType.Bottom:
                         {
-                            Bottom = (args as ModifyFloatPropertyArg).Value;
+                            if (args is ModifyFloatPropertyArg fP)
+                            {
+                                Bottom = isMetric ? fP.Value : UnitUtils.FeetToMeters(fP.Value);
+                            }
                             break;
                         }
                     case ElementPropertyType.Top:
                         {
-                            Top = (args as ModifyFloatPropertyArg).Value;
+                            if (args is ModifyFloatPropertyArg fP)
+                            {
+                                Top = isMetric ? fP.Value : UnitUtils.FeetToMeters(fP.Value);
+                            }
                             break;
                         }
-                    case ElementPropertyType.XZPosition:
-                        {
-                            SetXZPos((args as ModifyVector3PropertyArg).Value);
-                            break;
-                        }
-                    case ElementPropertyType.Rotation:
-                        {
-                            Rotation = (args as ModifyVector3PropertyArg).Value;
-                            break;
-                        }
+                    //case ElementPropertyType.XZPosition:
+                    //    {
+                    //        SetXZPos((args as ModifyVector3PropertyArg).Value);
+                    //        break;
+                    //    }
+                    //case ElementPropertyType.Rotation:
+                    //    {
+                    //        Rotation = (args as ModifyVector3PropertyArg).Value;
+                    //        break;
+                    //    }
                 }
             }
             catch

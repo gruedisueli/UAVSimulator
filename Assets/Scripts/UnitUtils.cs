@@ -121,5 +121,35 @@ namespace Assets.Scripts
         {
             return worldMinCoord + coord * cityTileSideLength;
         }
+
+        public static float MilesPerHourToMetersPerSecond(float milesPerHour)
+        {
+            return milesPerHour * EnvironSettings.FEET_PER_MILE / EnvironSettings.SECONDS_PER_HOUR / EnvironSettings.FEET_PER_METERS;
+        }
+
+        public static float MetersPerSecondToMilesPerHour(float metersPerSecond)
+        {
+            return metersPerSecond * EnvironSettings.FEET_PER_METERS / EnvironSettings.FEET_PER_MILE * EnvironSettings.SECONDS_PER_HOUR;
+        }
+
+        public static float MetersPerSecondToKilometersPerHour(float metersPerSecond)
+        {
+            return metersPerSecond * EnvironSettings.SECONDS_PER_HOUR / 1000.0f;
+        }
+
+        public static float KilometersPerHourToMetersPerSecond(float kilometersPerHour)
+        {
+            return kilometersPerHour / EnvironSettings.SECONDS_PER_HOUR * 1000.0f;
+        }
+
+        public static float FeetToMeters(float feet)
+        {
+            return feet / EnvironSettings.FEET_PER_METERS;
+        }
+
+        public static float MetersToFeet(float meters)
+        {
+            return meters * EnvironSettings.FEET_PER_METERS;
+        }
     }
 }

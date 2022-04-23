@@ -377,6 +377,7 @@
     <Compile Include="Assets\Scripts\UI\Tools\MainButtonPanel.cs" />
     <Compile Include="Assets\Mapbox\Unity\SourceLayers\VectorLayer.cs" />
     <Compile Include="Assets\Mapbox\Core\mapbox-sdk-cs\Map\TileResource.cs" />
+    <Compile Include="Assets\Scripts\Environment\SimulationSettings.cs" />
     <Compile Include="Assets\Scripts\Vehicle Control\DronePortControl.cs" />
     <Compile Include="Assets\Mapbox\Examples\2_AstronautGame\AstronautGame\Astronaut\AstronautMouseController.cs" />
     <Compile Include="Assets\Mapbox\Unity\SourceLayers\ISubLayerCustomStyleOptions.cs" />

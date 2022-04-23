@@ -171,6 +171,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_Navigation:
     m_Mode: 3
+    m_WrapAround: 0
     m_SelectOnUp: {fileID: 0}
     m_SelectOnDown: {fileID: 0}
     m_SelectOnLeft: {fileID: 0}
@@ -232,6 +233,7 @@ MonoBehaviour:
   m_CaretBlinkRate: 0.85
   m_CaretWidth: 1
   m_ReadOnly: 0
+  m_ShouldActivateOnSelect: 1
 --- !u!1 &5708857108020788733
 GameObject:
   m_ObjectHideFlags: 0
@@ -376,6 +378,7 @@ MonoBehaviour:
   _visibilityType: 0
   _fieldType: 0
   _currentValueText: {fileID: 2963794305213995809}
+  _placeholderText: {fileID: 957947440648303148}
 --- !u!114 &7442515194714698068
 MonoBehaviour:
   m_ObjectHideFlags: 0

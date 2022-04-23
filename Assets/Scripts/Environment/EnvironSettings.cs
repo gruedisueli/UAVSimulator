@@ -20,6 +20,10 @@ namespace Assets.Scripts.Environment
         public static readonly double SCALE_CONSTANT = 156543.03; //meters/pixel, see https://wiki.openstreetmap.org/wiki/Slippy_map_tilenames#Resolution_and_Scale
         public static readonly float RANGE_LIMIT = 4000.0f;
         public static readonly int REGION_TILE_EXTENTS = 7;//how many tiles n/s/e/w of center to build in region view.
-        //public static readonly int REGION_TILE_MAX = 225;
+        public static readonly float FEET_PER_METERS = 3.28084f;
+        public static readonly float FEET_PER_MILE = 5280.0f;
+        public static readonly float SECONDS_PER_HOUR = 3600.0f;
+
+        //static SimulationSettings
     }
 }

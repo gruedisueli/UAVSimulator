@@ -4,7 +4,7 @@ using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
-
+using Assets.Scripts.Environment;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -16,8 +16,30 @@ namespace Assets.Scripts.UI.Tools
     {
         public InputFieldType _fieldType;
         public Text _currentValueText;
+        public Text _placeholderText;
+        public UnitType _unitType = UnitType.None;
+        public string _optPlcHlderTxtPref = "";
 
         protected InputField _inputField;
+
+        protected override void Awake()
+        {
+            base.Awake();
+            if (_unitType != UnitType.None)
+            {
+                bool isMetric = EnvironManager.Instance.Environ.SimSettings.IsMetricUnits;
+                string u = "";
+                if (_unitType == UnitType.Distance)
+                {
+                    u = isMetric ? " (m)" : " (ft)";
+                }
+                else if (_unitType == UnitType.Speed)
+                {
+                    u = isMetric ? " (km/hr)" : " (mi/hr)";
+                }
+                _placeholderText.text = _optPlcHlderTxtPref + u;
+            }
+        }
 
         /// <summary>
         /// Sets value of "current value" text

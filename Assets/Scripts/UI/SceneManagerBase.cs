@@ -676,71 +676,71 @@ namespace Assets.Scripts.UI
                     //        //envDP.Type = (args.Update as UpdateStringPropertyArg)?.Value;
                     //        //special case: need to reinstantiate
                     //    }
-                    case ElementPropertyType.Position:
-                        {
-                            dP.Position = (args.Update as ModifyVector3PropertyArg).Value;
-                            break;
-                        }
+                    //case ElementPropertyType.Position:
+                    //    {
+                    //        dP.Position = (args.Update as ModifyVector3PropertyArg).Value;
+                    //        break;
+                    //    }
                     case ElementPropertyType.Rotation:
                         {
                             dP.Rotation = (args.Update as ModifyVector3PropertyArg).Value;
                             break;
                         }
-                    case ElementPropertyType.Scale:
-                        {
-                            dP.Scale = (args.Update as ModifyVector3PropertyArg).Value;
-                            break;
-                        }
-                    case ElementPropertyType.XScale:
-                        {
-                            dP.Scale = new Vector3((args.Update as ModifyFloatPropertyArg).Value, dP.Scale.y, dP.Scale.z);
-                            break;
-                        }
-                    case ElementPropertyType.ZScale:
-                        {
-                            dP.Scale = new Vector3(dP.Scale.x, dP.Scale.y, (args.Update as ModifyFloatPropertyArg).Value);
-                            break;
-                        }
-                    case ElementPropertyType.StandByPos:
-                        {
-                            dP.StandbyPosition = (args.Update as ModifyVector3PropertyArg).Value;
-                            break;
-                        }
-                    case ElementPropertyType.LandingQueueHead:
-                        {
-                            dP.LandingQueueHead = (args.Update as ModifyVector3PropertyArg).Value;
-                            break;
-                        }
-                    case ElementPropertyType.LandingQueueDirection:
-                        {
-                            dP.LandingQueueDirection = (args.Update as ModifyVector3PropertyArg).Value;
-                            break;
-                        }
-                    case ElementPropertyType.LandingPoint:
-                        {
-                            dP.LandingPoint = (args.Update as ModifyVector3PropertyArg).Value;
-                            break;
-                        }
-                    case ElementPropertyType.MaxVehicleSize:
-                        {
-                            dP.MaximumVehicleSize = (args.Update as ModifyFloatPropertyArg).Value;
-                            break;
-                        }
-                    case ElementPropertyType.IsMountable:
-                        {
-                            dP.IsMountable = (args.Update as ModifyBoolPropertyArg).Value;
-                            break;
-                        }
-                    case ElementPropertyType.IsOnTheGround:
-                        {
-                            dP.IsOnTheGround = (args.Update as ModifyBoolPropertyArg).Value;
-                            break;
-                        }
-                    case ElementPropertyType.IsScalable:
-                        {
-                            dP.IsScalable = (args.Update as ModifyBoolPropertyArg).Value;
-                            break;
-                        }
+                    //case ElementPropertyType.Scale:
+                    //    {
+                    //        dP.Scale = (args.Update as ModifyVector3PropertyArg).Value;
+                    //        break;
+                    //    }
+                    //case ElementPropertyType.XScale:
+                    //    {
+                    //        dP.Scale = new Vector3((args.Update as ModifyFloatPropertyArg).Value, dP.Scale.y, dP.Scale.z);
+                    //        break;
+                    //    }
+                    //case ElementPropertyType.ZScale:
+                    //    {
+                    //        dP.Scale = new Vector3(dP.Scale.x, dP.Scale.y, (args.Update as ModifyFloatPropertyArg).Value);
+                    //        break;
+                    //    }
+                    //case ElementPropertyType.StandByPos:
+                    //    {
+                    //        dP.StandbyPosition = (args.Update as ModifyVector3PropertyArg).Value;
+                    //        break;
+                    //    }
+                    //case ElementPropertyType.LandingQueueHead:
+                    //    {
+                    //        dP.LandingQueueHead = (args.Update as ModifyVector3PropertyArg).Value;
+                    //        break;
+                    //    }
+                    //case ElementPropertyType.LandingQueueDirection:
+                    //    {
+                    //        dP.LandingQueueDirection = (args.Update as ModifyVector3PropertyArg).Value;
+                    //        break;
+                    //    }
+                    //case ElementPropertyType.LandingPoint:
+                    //    {
+                    //        dP.LandingPoint = (args.Update as ModifyVector3PropertyArg).Value;
+                    //        break;
+                    //    }
+                    //case ElementPropertyType.MaxVehicleSize:
+                    //    {
+                    //        dP.MaximumVehicleSize = (args.Update as ModifyFloatPropertyArg).Value;
+                    //        break;
+                    //    }
+                    //case ElementPropertyType.IsMountable:
+                    //    {
+                    //        dP.IsMountable = (args.Update as ModifyBoolPropertyArg).Value;
+                    //        break;
+                    //    }
+                    //case ElementPropertyType.IsOnTheGround:
+                    //    {
+                    //        dP.IsOnTheGround = (args.Update as ModifyBoolPropertyArg).Value;
+                    //        break;
+                    //    }
+                    //case ElementPropertyType.IsScalable:
+                    //    {
+                    //        dP.IsScalable = (args.Update as ModifyBoolPropertyArg).Value;
+                    //        break;
+                    //    }
                 }
             }
             catch
@@ -780,44 +780,56 @@ namespace Assets.Scripts.UI
                     //        //envDP.Type = (args.Update as UpdateStringPropertyArg)?.Value;
                     //        //special case: need to reinstantiate
                     //    }
-                    case ElementPropertyType.Position:
-                        {
-                            pS.Position = (args.Update as ModifyVector3PropertyArg).Value;
-                            break;
-                        }
+                    //case ElementPropertyType.Position:
+                    //    {
+                    //        pS.Position = (args.Update as ModifyVector3PropertyArg).Value;
+                    //        break;
+                    //    }
                     case ElementPropertyType.Rotation:
                         {
                             pS.Rotation = (args.Update as ModifyVector3PropertyArg).Value;
                             break;
                         }
-                    case ElementPropertyType.Scale:
-                        {
-                            pS.Scale = (args.Update as ModifyVector3PropertyArg).Value;
-                            break;
-                        }
-                    case ElementPropertyType.StandByPos:
-                        {
-                            pS.StandbyPosition = (args.Update as ModifyVector3PropertyArg).Value;
-                            break;
-                        }
-                    case ElementPropertyType.LandingQueueHead:
-                        {
-                            pS.LandingQueueHead = (args.Update as ModifyVector3PropertyArg).Value;
-                            break;
-                        }
-                    case ElementPropertyType.LandingQueueDirection:
-                        {
-                            pS.LandingQueueDirection = (args.Update as ModifyVector3PropertyArg).Value;
-                            break;
-                        }
+                    //case ElementPropertyType.Scale:
+                    //    {
+                    //        pS.Scale = (args.Update as ModifyVector3PropertyArg).Value;
+                    //        break;
+                    //    }
+                    //case ElementPropertyType.StandByPos:
+                    //    {
+                    //        pS.StandbyPosition = (args.Update as ModifyVector3PropertyArg).Value;
+                    //        break;
+                    //    }
+                    //case ElementPropertyType.LandingQueueHead:
+                    //    {
+                    //        pS.LandingQueueHead = (args.Update as ModifyVector3PropertyArg).Value;
+                    //        break;
+                    //    }
+                    //case ElementPropertyType.LandingQueueDirection:
+                    //    {
+                    //        pS.LandingQueueDirection = (args.Update as ModifyVector3PropertyArg).Value;
+                    //        break;
+                    //    }
                     case ElementPropertyType.XScale:
                     {
-                        pS.Scale = new Vector3((args.Update as ModifyFloatPropertyArg).Value, pS.Scale.y, pS.Scale.z); 
+                        if (!(args.Update is ModifyFloatPropertyArg fP))
+                        {
+                            break;
+                        }
+                        bool isMetric = EnvironManager.Instance.Environ.SimSettings.IsMetricUnits;
+                        var sX = isMetric ? fP.Value : UnitUtils.FeetToMeters(fP.Value);
+                        pS.Scale = new Vector3(sX, pS.Scale.y, pS.Scale.z); 
                         break;
                     }
                     case ElementPropertyType.ZScale:
                     {
-                        pS.Scale = new Vector3(pS.Scale.x, pS.Scale.y, (args.Update as ModifyFloatPropertyArg).Value);
+                        if (!(args.Update is ModifyFloatPropertyArg fP))
+                        {
+                            break;
+                        }
+                        bool isMetric = EnvironManager.Instance.Environ.SimSettings.IsMetricUnits;
+                        var sZ = isMetric ? fP.Value : UnitUtils.FeetToMeters(fP.Value);
+                        pS.Scale = new Vector3(pS.Scale.x, pS.Scale.y, sZ);
                         break;
                     }
                 }

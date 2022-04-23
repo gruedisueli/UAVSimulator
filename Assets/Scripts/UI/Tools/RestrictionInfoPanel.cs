@@ -53,32 +53,59 @@ namespace Assets.Scripts.UI.Tools
         public void UpdateFields(RestrictionZoneBase specs)
         {
             _zoneSpecs = specs;
+            bool isMetric = EnvironManager.Instance.Environ.SimSettings.IsMetricUnits;
             switch (_type)
             {
                 case RestrictionPanelType.Rect:
                 {
                     if (!(specs is RestrictionZoneRect rZ)) break;
+                    float h, sX, sZ;
+                    if (isMetric)
+                    {
+                        h = rZ.Height;
+                        sX = rZ.Scale.x;
+                        sZ = rZ.Scale.z;
+                    }
+                    else
+                    {
+                        h = UnitUtils.MetersToFeet(rZ.Height);
+                        sX = UnitUtils.MetersToFeet(rZ.Scale.x);
+                        sZ = UnitUtils.MetersToFeet(rZ.Scale.z);
+                    }
                     _infoPanel.SetTextElement(ElementPropertyType.Rotation, rZ.Rotation.y);
-                    _infoPanel.SetTextElement(ElementPropertyType.Height, rZ.Height);
-                    _infoPanel.SetTextElement(ElementPropertyType.XScale, rZ.Scale.x);
-                    _infoPanel.SetTextElement(ElementPropertyType.ZScale, rZ.Scale.z);
+                    _infoPanel.SetTextElement(ElementPropertyType.Height, h);
+                    _infoPanel.SetTextElement(ElementPropertyType.XScale, sX);
+                    _infoPanel.SetTextElement(ElementPropertyType.ZScale, sZ);
                     SetModifyToolValue(ElementPropertyType.Rotation, rZ.Rotation.y);
-                    SetModifyToolValue(ElementPropertyType.Height, rZ.Height);
-                    SetModifyToolValue(ElementPropertyType.XScale, rZ.Scale.x);
-                    SetModifyToolValue(ElementPropertyType.ZScale, rZ.Scale.z);
+                    SetModifyToolValue(ElementPropertyType.Height, h);
+                    SetModifyToolValue(ElementPropertyType.XScale, sX);
+                    SetModifyToolValue(ElementPropertyType.ZScale, sZ);
                     break;
                 }
                 case RestrictionPanelType.Cyl:
                 {
                     if (!(specs is RestrictionZoneCyl rZ)) break;
-                    _infoPanel.SetTextElement(ElementPropertyType.Top, rZ.Top);
-                    _infoPanel.SetTextElement(ElementPropertyType.Bottom, rZ.Bottom);
-                    _infoPanel.SetTextElement(ElementPropertyType.Radius, rZ.Radius);
-                    SetModifyToolValue(ElementPropertyType.Top, rZ.Top);
-                    SetModifyToolValue(ElementPropertyType.Bottom, rZ.Bottom);
-                    SetModifyToolValue(ElementPropertyType.Radius, rZ.Radius);
-                    break;
+                    float t, b, r;
+                    if (isMetric)
+                    {
+                        t = rZ.Top;
+                        b = rZ.Bottom;
+                        r = rZ.Radius;
                     }
+                    else
+                    {
+                        t = UnitUtils.MetersToFeet(rZ.Top);
+                        b = UnitUtils.MetersToFeet(rZ.Bottom);
+                        r = UnitUtils.MetersToFeet(rZ.Radius);
+                    }
+                    _infoPanel.SetTextElement(ElementPropertyType.Top, t);
+                    _infoPanel.SetTextElement(ElementPropertyType.Bottom, b);
+                    _infoPanel.SetTextElement(ElementPropertyType.Radius, r);
+                    SetModifyToolValue(ElementPropertyType.Top, t);
+                    SetModifyToolValue(ElementPropertyType.Bottom, b);
+                    SetModifyToolValue(ElementPropertyType.Radius, r);
+                    break;
+                }
                 case RestrictionPanelType.CylStacked:
                 {
                     break;

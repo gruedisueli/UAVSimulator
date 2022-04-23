@@ -125,7 +125,7 @@ public class VehicleControlSystem : MonoBehaviour
     public float[][] mapBounds;
     
 
-    public float speedMultiplier = 1.0f;//@EUNU comment
+    public float speedMultiplier = 1.0f;
 
     #endregion
 

@@ -4,6 +4,7 @@ using System.Collections;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Assets.Scripts.Environment;
 using Assets.Scripts.UI.EventArgs;
 
 using UnityEngine;
@@ -55,6 +56,7 @@ namespace Assets.Scripts.UI.Tools
         /// </summary>
         protected IEnumerator UpdateInfoPanel()
         {
+            bool isMetric = EnvironManager.Instance.Environ.SimSettings.IsMetricUnits;
             while (_icon.IsSelected)
             {
                 yield return new WaitForSeconds(0.25f);//prevent excessive updating
@@ -62,20 +64,37 @@ namespace Assets.Scripts.UI.Tools
                 //get stuff from the drone to report
                 var i = _infoPanel;
                 var d = _drone;
+                float maxSpeed, takeOffSpeed, landingSpeed, currentSpeed, elevation;
+                if (isMetric)
+                {
+                    maxSpeed = UnitUtils.MetersPerSecondToKilometersPerHour(d.maxSpeed);
+                    takeOffSpeed = UnitUtils.MetersPerSecondToKilometersPerHour(d.takeOffSpeed);
+                    landingSpeed = UnitUtils.MetersPerSecondToKilometersPerHour(d.landingSpeed);
+                    currentSpeed = UnitUtils.MetersPerSecondToKilometersPerHour(d.currentSpeed);
+                    elevation = d.elevation;
+                }
+                else
+                {
+                    maxSpeed = UnitUtils.MetersPerSecondToMilesPerHour(d.maxSpeed);
+                    takeOffSpeed = UnitUtils.MetersPerSecondToMilesPerHour(d.takeOffSpeed);
+                    landingSpeed = UnitUtils.MetersPerSecondToMilesPerHour(d.landingSpeed);
+                    currentSpeed = UnitUtils.MetersPerSecondToMilesPerHour(d.currentSpeed);
+                    elevation = UnitUtils.MetersToFeet(d.elevation);
+                }
                 i.SetTextElement(ElementPropertyType.Id, d.id);
                 i.SetTextElement(ElementPropertyType.Type, d.type);
                 //i.SetTextElement(ElementPropertyType.Capacity, d.capacity);
-                i.SetTextElement(ElementPropertyType.MaxSpeed, d.maxSpeed);
-                i.SetTextElement(ElementPropertyType.YawSpeed, d.yawSpeed);
-                i.SetTextElement(ElementPropertyType.TakeOffSpeed, d.takeOffSpeed);
-                i.SetTextElement(ElementPropertyType.LandingSpeed, d.landingSpeed);
+                i.SetTextElement(ElementPropertyType.MaxSpeed, maxSpeed);
+                //i.SetTextElement(ElementPropertyType.YawSpeed, d.yawSpeed);
+                i.SetTextElement(ElementPropertyType.TakeOffSpeed, takeOffSpeed);
+                i.SetTextElement(ElementPropertyType.LandingSpeed, landingSpeed);
                 //i.SetTextElement(ElementPropertyType.Range, d.range);
                 ////i.SetTextElement(ElementPropertyType.Emission, d.emission)
                 ////i.SetTextElement(ElementPropertyType.Noise, d.noise);
                 ////i.SetTextElement(ElementPropertyType.Position, d.currentLocation);
                 ////i.SetTextElement(ElementPropertyType.TargetPosition, d.currentTargetPosition);
-                i.SetTextElement(ElementPropertyType.CurrentSpeed, d.currentSpeed);
-                i.SetTextElement(ElementPropertyType.Elevation, d.elevation);
+                i.SetTextElement(ElementPropertyType.CurrentSpeed, currentSpeed);
+                i.SetTextElement(ElementPropertyType.Elevation, elevation);
                 //i.SetTextElement(ElementPropertyType.Origin, d.origin);
                 ////i.SetTextElement(ElementPropertyType.Description, d.destination);
                 ////i.SetTextElement(ElementPropertyType.DestinationList, d.destinationList);

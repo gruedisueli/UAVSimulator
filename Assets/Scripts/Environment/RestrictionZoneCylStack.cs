@@ -101,22 +101,23 @@ namespace Assets.Scripts.Environment
 
         public override void UpdateParams(ModifyPropertyArgBase args)
         {
-            try
-            {
-                switch (args.ElementPropertyType)
-                {
-                    case ElementPropertyType.Position:
-                        {
-                            Position = (args as ModifyVector3PropertyArg).Value;
-                            break;
-                        }
-                }
-            }
-            catch
-            {
-                Debug.LogError("Casting error in restriction zone property update");
-                return;
-            }
+            //try
+            //{
+            //    switch (args.ElementPropertyType)
+            //    {
+            //        case ElementPropertyType.Position:
+            //            {
+            //                Position = (args as ModifyVector3PropertyArg).Value;
+            //                break;
+            //            }
+            //    }
+            //}
+            //catch
+            //{
+            //    Debug.LogError("Casting error in restriction zone property update");
+            //    return;
+            //}
+            Debug.LogError("Modification of cylindrical stacked restriction zones not yet implemented");
         }
 
         /// <summary>

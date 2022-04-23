@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-
+using Assets.Scripts.Environment;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -52,7 +52,39 @@ namespace Assets.Scripts.UI.Tools
         /// </summary>
         public void SetTextElement(ElementPropertyType pT, float value)
         {
-            SetTextElement(pT, value.ToString("F2"));
+            bool isMetric = EnvironManager.Instance.Environ.SimSettings.IsMetricUnits;
+            string t = value.ToString("F2");
+            switch (pT)
+            {
+                case ElementPropertyType.XScale:
+                case ElementPropertyType.ZScale:
+                case ElementPropertyType.Height:
+                case ElementPropertyType.Radius:
+                case ElementPropertyType.Bottom:
+                case ElementPropertyType.Top:
+                case ElementPropertyType.Elevation:
+                {
+                    t += isMetric ? " m" : " ft";
+                    break;
+                }
+                case ElementPropertyType.MaxSpeed:
+                case ElementPropertyType.TakeOffSpeed:
+                case ElementPropertyType.LandingSpeed:
+                case ElementPropertyType.CurrentSpeed:
+                case ElementPropertyType.AverageSpeed:
+                {
+                    t += isMetric ? " km/hr" : " mi/hr";
+                    break;
+                }
+                case ElementPropertyType.WaitTime:
+                case ElementPropertyType.WaitTimer:
+                {
+                    t += " s";
+                    break;
+                }
+            }
+
+            SetTextElement(pT, t);
         }
 
         /// <summary>
