@@ -29,7 +29,7 @@ public class DronePortControl : TrafficControl
         List<Vector3> landingGuide = dronePortInfo.GetLandingGuide("landing");
         List<Vector3> translatedLandingGuide = new List<Vector3>();
         foreach (Vector3 v in landingGuide) translatedLandingGuide.Add(dronePortInfo.TranslateLandingGuidePosition(v));
-        vehicleState.wayPointsQueue = toQueue(translatedLandingGuide);
+        vehicleState.WayPointsQueue = toQueue(translatedLandingGuide);
     }
 
     /// <summary>
@@ -40,7 +40,7 @@ public class DronePortControl : TrafficControl
         List<Vector3> landingGuide = dronePortInfo.GetLandingGuide("takeoff");
         List<Vector3> translatedLandingGuide = new List<Vector3>();
         foreach (Vector3 v in landingGuide) translatedLandingGuide.Add(dronePortInfo.TranslateLandingGuidePosition(v));
-        vehicleState.wayPointsQueue = toQueue(translatedLandingGuide);
+        vehicleState.WayPointsQueue = toQueue(translatedLandingGuide);
     }
     /*
     void Start()

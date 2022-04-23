@@ -51,7 +51,7 @@ public class VehicleControlSystem : MonoBehaviour
 
     #region UI Variables
 
-    public SimulationParam simulationParam;
+    //public SimulationParam simulationParam;
 
 
     #endregion
@@ -119,13 +119,13 @@ public class VehicleControlSystem : MonoBehaviour
     public SceneManagerBase sceneManager;    
 
     // Background drone related params
-    public int backgroundDroneCount = 250;
-    public float lowerElevationBound = 100;
-    public float upperElevationBound = 135;
+    //public int backgroundDroneCount = 250;
+    //public float lowerElevationBound = 100;
+    //public float upperElevationBound = 135;
     public float[][] mapBounds;
     
 
-    public float speedMultiplier = 1.0f;
+    //public float speedMultiplier = 1.0f;
 
     #endregion
 
@@ -140,8 +140,8 @@ public class VehicleControlSystem : MonoBehaviour
     private bool _networkUpdateFlag = false;
     private int _framesSinceNetworkUpdateFlag = 0;
 
-    private const float UTM_ELEVATION = 152.4f;
-    private const float UTM_SEPARATION = 25.0f;
+    //private const float UTM_ELEVATION = 152.4f;
+    //private const float UTM_SEPARATION = 25.0f;
 
     void Awake()
     {
@@ -150,7 +150,6 @@ public class VehicleControlSystem : MonoBehaviour
         playing = false;
 
         MIN_DRONE_RANGE = 999999.0f;
-        simulationParam = ReadSimulationParams();
         sceneManager = FindObjectOfType<SceneManagerBase>(true);
         if (sceneManager == null) Debug.Log("Could not find scene manager component in scene");
 
@@ -160,14 +159,13 @@ public class VehicleControlSystem : MonoBehaviour
 
         droneInstantiator = gameObject.GetComponent<DroneInstantiator>();
         droneInstantiator.Init(this);
-        droneInstantiator.ReadVehicleSpecs();
-        
+
 
         GameObject cube = GameObject.CreatePrimitive(PrimitiveType.Cube);
         simplifiedMesh = cube.GetComponent<MeshFilter>().mesh;
         cube.Destroy();
 
-        UpdateVehicleCount(backgroundDroneCount);
+        UpdateVehicleCount(EnvironManager.Instance.Environ.SimSettings.BackgroundDroneCount);
     }
 
     // Update is called once per frames
@@ -194,7 +192,7 @@ public class VehicleControlSystem : MonoBehaviour
         {
             watch += Time.deltaTime;
             //periodic check-in
-            if (watch > simulationParam.callGenerationInterval)
+            if (watch > EnvironManager.Instance.Environ.SimSettings.CallGenerationInterval_S)
             {
                 //var sa = gameObject.GetComponent<SimulationAnalyzer>();
                 ////make sure we don't have excess drones in simulation.
@@ -253,7 +251,8 @@ public class VehicleControlSystem : MonoBehaviour
         {
             droneInstantiator.ClearDrones();
             droneInstantiator.InstantiateDrones(sceneManager, scaleMultiplier, _canvas);
-            droneInstantiator.InstantiateBackgroundDrones(sceneManager, backgroundDroneCount, scaleMultiplier, lowerElevationBound, upperElevationBound, _canvas);
+            var simSettings = EnvironManager.Instance.Environ.SimSettings;
+            droneInstantiator.InstantiateBackgroundDrones(sceneManager, simSettings.BackgroundDroneCount, scaleMultiplier, simSettings.BackgoundDroneLowerElev_M, simSettings.BackgroundDroneUpperElev_M, _canvas);
         }
         else
         {
@@ -380,7 +379,7 @@ public class VehicleControlSystem : MonoBehaviour
         string call_type_string = call_type <= 0 ? "corridor" : "low-altitude";
 
         // strategicDeconfliction == "none"
-        if (simulationParam.strategicDeconfliction.Equals("none"))
+        if (EnvironManager.Instance.Environ.SimSettings.StrategicDeconfliction.Equals("none"))
         {
             if (call_type_string.Equals("corridor"))
             {
@@ -457,7 +456,7 @@ public class VehicleControlSystem : MonoBehaviour
                     aaoCon.AddVehicle(vehicle);
                     
 
-                    List<Vector3> generatedPoints = p.GeneratePointsinExtrusion(aaoCon.GetVehicleCount(), simulationParam.lowAltitudeBoundary);
+                    List<Vector3> generatedPoints = p.GeneratePointsinExtrusion(aaoCon.GetVehicleCount(), EnvironManager.Instance.Environ.SimSettings.LowAltitudeFlightElevation_M);
                     generatedPoints.Add(parking.GetComponent<ParkingControl>().parkingInfo.StandbyPosition + parking.transform.position);
                     LowAltitudeDrone vehicleInfo = vehicle.GetComponent<LowAltitudeDrone>();
                     vehicleInfo.SetOperationPoints(new Queue<Vector3>(generatedPoints));
@@ -482,7 +481,7 @@ public class VehicleControlSystem : MonoBehaviour
     private void CallVehicle(GameObject vehicle, ParkingControl parking, Queue<GameObject> destinations)
     {
         DroneBase vehicleInfo = vehicle.GetComponent<DroneBase>();
-        if(destinations != null) vehicleInfo.destinationQueue = destinations;
+        if(destinations != null) vehicleInfo.DestinationQueue = destinations;
         parking.CallVehecleInParkingStructure(vehicle);
     }
 
@@ -536,23 +535,6 @@ public class VehicleControlSystem : MonoBehaviour
     }
 
     /// <summary>
-    /// Parses simulation params from options file.
-    /// </summary>
-    private SimulationParam ReadSimulationParams()
-    {
-        string rPath = "Simulation/simulation";
-        var t = Resources.Load<TextAsset>(rPath);
-        if (t == null)
-        {
-            Debug.LogError("Could not locate simulation params");
-            return null;
-        }
-        SimulationParam sp = JsonUtility.FromJson<SimulationParam>(t.text);
-
-        return sp;
-    }
-
-    /// <summary>
     /// Finds an available vehicle in the parking structure.
     /// </summary>
     public GameObject GetAvailableVehicleinParkingStrcuture(GameObject parkingStructure)
@@ -564,7 +546,7 @@ public class VehicleControlSystem : MonoBehaviour
             {
                 GameObject vehicle_i = pC.VehicleAt.Keys.ElementAt<GameObject>(i);
                 DroneBase db = vehicle_i.GetComponent<DroneBase>();
-                if (db != null && db.state == "idle" && db.destinationQueue.Count == 0 && !pC.QueueContains(vehicle_i))
+                if (db != null && db.State == "idle" && db.DestinationQueue.Count == 0 && !pC.QueueContains(vehicle_i))
                 {
                     return vehicle_i;
                 }
@@ -766,7 +748,7 @@ public class VehicleControlSystem : MonoBehaviour
     /// </summary>
     public void UpdateVehicleCount(int count)
     {
-        backgroundDroneCount = count;
+        //backgroundDroneCount = count;
         if (playing)
         {
             droneInstantiator.SetBackgroundDroneCt(count);
@@ -938,28 +920,31 @@ public class VehicleControlSystem : MonoBehaviour
         Delaunator delaunay = new Delaunator(vertices);
         DroneNetwork = new Assets.Scripts.DataStructure.Network();
         DroneNetwork.vertices = points;
+        var utmElev = EnvironManager.Instance.Environ.SimSettings.CorridorFlightElevation_M;
+        var utmSep = EnvironManager.Instance.Environ.SimSettings.CorridorSeparationDistance_M;
+        var corrSpeed = EnvironManager.Instance.Environ.SimSettings.CorridorDroneSettings.MaxSpeed_MPS;
         for (int i = 0; i < delaunay.Triangles.Length; i++)
         {
             if (i > delaunay.Halfedges[i])
             {
                 GameObject from = points[delaunay.Triangles[i]];
                 GameObject to = points[delaunay.Triangles[nextHalfEdge(i)]];
-                Corridor corridor_from_to = new Corridor(from, to, UTM_ELEVATION);
+                Corridor corridor_from_to = new Corridor(from, to, utmElev, corrSpeed);
                 Vector3 fromFlat = new Vector3(from.transform.position.x, 0, from.transform.position.z);
                 Vector3 toFlat = new Vector3(to.transform.position.x, 0, to.transform.position.z);
                 Vector3 fromPosition = fromFlat + Vector3.Normalize(toFlat - fromFlat) * 50;
                 Vector3 toPosition = toFlat + Vector3.Normalize(fromFlat - toFlat) * 50;
-                Vector3 corridor_from_to_start = new Vector3(fromPosition.x, UTM_ELEVATION, fromPosition.z);
-                Vector3 corridor_from_to_end = new Vector3(toPosition.x, UTM_ELEVATION, toPosition.z);
+                Vector3 corridor_from_to_start = new Vector3(fromPosition.x, utmElev, fromPosition.z);
+                Vector3 corridor_from_to_end = new Vector3(toPosition.x, utmElev, toPosition.z);
 
 
 
-                corridor_from_to_start.y = UTM_ELEVATION;
-                corridor_from_to_end.y = UTM_ELEVATION;
+                corridor_from_to_start.y = utmElev;
+                corridor_from_to_end.y = utmElev;
 
-                Corridor corridor_to_from = new Corridor(to, from, UTM_ELEVATION + UTM_SEPARATION);
-                Vector3 corridor_to_from_start = new Vector3(toPosition.x, UTM_ELEVATION + UTM_SEPARATION, toPosition.z);
-                Vector3 corridor_to_from_end = new Vector3(fromPosition.x, UTM_ELEVATION + UTM_SEPARATION, fromPosition.z);
+                Corridor corridor_to_from = new Corridor(to, from, utmElev + utmSep, corrSpeed);
+                Vector3 corridor_to_from_start = new Vector3(toPosition.x, utmElev + utmSep, toPosition.z);
+                Vector3 corridor_to_from_end = new Vector3(fromPosition.x, utmElev + utmSep, fromPosition.z);
 
                 var wayPoints = FindPath(corridor_from_to_start, corridor_from_to_end, 5, 1 << 9 | 1 << 8);
                 wayPoints.Insert(0, corridor_from_to_start);

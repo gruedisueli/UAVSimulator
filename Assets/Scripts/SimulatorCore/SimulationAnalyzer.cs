@@ -53,7 +53,7 @@ namespace Assets.Scripts.SimulatorCore
                 float sum = 0;
                 foreach (var d in flyingDrones)
                 {
-                    sum += d.currentSpeed;
+                    sum += d.CurrentSpeed;
                 }
 
                 averageSpeed = sum / flyingDrones.Count;
@@ -133,7 +133,7 @@ namespace Assets.Scripts.SimulatorCore
         {
             if (!flyingDrones.Contains(drone))
             {
-                throughput += drone.capacity;
+                throughput += drone.Capacity;
                 flyingDrones.Add(drone);
             }
         }
@@ -145,7 +145,7 @@ namespace Assets.Scripts.SimulatorCore
         {
             if (flyingDrones.Contains(drone))
             {
-                throughput -= drone.capacity;
+                throughput -= drone.Capacity;
                 flyingDrones.Remove(drone);
             }
         }

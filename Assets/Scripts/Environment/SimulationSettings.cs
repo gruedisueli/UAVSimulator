@@ -4,7 +4,6 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
-using TMPro;
 
 namespace Assets.Scripts.Environment
 {
@@ -60,36 +59,14 @@ namespace Assets.Scripts.Environment
 
         #region CORRIDOR DRONE SETTINGS
 
-        [JsonProperty] private float _corridorMaxSpeed_MPS = 50.0f;
+        [JsonProperty] private DroneSettings _corridorDroneSettings = new DroneSettings("corridor", 30.0f, 50.0f, 10.0f, 10.0f, 0.0f, 5, 80.0f);
 
-        public float CorridorMaxSpeed_MPS
+        public DroneSettings CorridorDroneSettings
         {
-            get => _corridorMaxSpeed_MPS;
-            set => _corridorMaxSpeed_MPS = value;
+            get => _corridorDroneSettings;
+            set => _corridorDroneSettings = value;
         }
 
-        [JsonProperty] private float _corridorTakeOffSpeed_MPS = 10.0f;
-        public float CorridorTakeOffSpeed_MPS
-        {
-            get => _corridorTakeOffSpeed_MPS;
-            set => _corridorTakeOffSpeed_MPS = value;
-        }
-
-        [JsonProperty] private float _corridorLandingSpeed_MPS = 10.0f;
-
-        public float CorridorLandingSpeed_MPS
-        {
-            get => _corridorLandingSpeed_MPS;
-            set => _corridorLandingSpeed_MPS = value;
-        }
-
-        [JsonProperty] private float _corridorWaitTime_S = 0;
-
-        public float CorridorWaitTime_S
-        {
-            get => _corridorWaitTime_S;
-            set => _corridorWaitTime_S = value;
-        }
 
         [JsonProperty] private float _corridorFlightElevation_M = 152.4f;
 
@@ -107,56 +84,16 @@ namespace Assets.Scripts.Environment
             set => _corridorSeparationDistance_M = value;
         }
 
-        [JsonProperty] private int _corridorDroneCapacity = 5;
-
-        public int CorridorDroneCapacity
-        {
-            get => _corridorDroneCapacity;
-            set => _corridorDroneCapacity = value;
-        }
-
-        [JsonProperty] private float _corridorDroneSoundAtSource_Decibels = 80;
-
-        public float CorridorDroneSoundAtSource_Decibels
-        {
-            get => _corridorDroneSoundAtSource_Decibels;
-            set => _corridorDroneSoundAtSource_Decibels = value;
-        }
-
         #endregion
 
         #region LOW ALTITUDE DRONE SETTINGS
 
-        [JsonProperty] private float _lowAltitudeMaxSpeed_MPS = 40.0f;
+        [JsonProperty] private DroneSettings _lowAltitudeDroneSettings = new DroneSettings("LowAltitude", 50.0f, 40.0f, 25.0f, 25.0f, 0.0f, 0, 80.0f);
 
-        public float LowAltitudeMaxSpeed_MPS
+        public DroneSettings LowAltitudeDroneSettings
         {
-            get => _lowAltitudeMaxSpeed_MPS;
-            set => _lowAltitudeMaxSpeed_MPS = value;
-        }
-
-        [JsonProperty] private float _lowAltitudeTakeOffSpeed_MPS = 25.0f;
-
-        public float LowAltitudeTakeOffSpeed_MPS
-        {
-            get => _lowAltitudeTakeOffSpeed_MPS;
-            set => _lowAltitudeTakeOffSpeed_MPS = value;
-        }
-
-        [JsonProperty] private float _lowAltitudeLandingSpeed_MPS = 25.0f;
-
-        public float LowAltitudeLandingSpeed_MPS
-        {
-            get => _lowAltitudeLandingSpeed_MPS;
-            set => _lowAltitudeLandingSpeed_MPS = value;
-        }
-
-        [JsonProperty] private float _lowAltitudeWaitTime_S = 0;
-
-        public float LowAltitudeWaitTime_S
-        {
-            get => _lowAltitudeWaitTime_S;
-            set => _lowAltitudeWaitTime_S = value;
+            get => _lowAltitudeDroneSettings;
+            set => _lowAltitudeDroneSettings = value;
         }
 
         [JsonProperty] private float _lowAltitudeFlightElevation_M = 150;
@@ -167,25 +104,11 @@ namespace Assets.Scripts.Environment
             set => _lowAltitudeFlightElevation_M = value;
         }
 
-        [JsonProperty] private int _lowAltitudeDroneCapacity = 0;
-
-        public int LowAltitudeDroneCapacity
-        {
-            get => _lowAltitudeDroneCapacity;
-            set => _lowAltitudeDroneCapacity = value;
-        }
-
-        [JsonProperty] private float _lowAltitudeDroneSoundAtSource_Decibels = 70;
-
-        public float LowAltitudeDroneSoundAtSource_Decibels
-        {
-            get => _lowAltitudeDroneSoundAtSource_Decibels;
-            set => _lowAltitudeDroneSoundAtSource_Decibels = value;
-        }
-
         #endregion
 
         #region BACKGROUND DRONE SETTINGS
+        
+        //note that "background" drones are instantiations of one of the explicitly defined types above; other properties previously defined.
 
         [JsonProperty] private int _backgroundDroneCount = 250;
 

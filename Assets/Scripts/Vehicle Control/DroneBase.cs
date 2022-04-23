@@ -6,6 +6,7 @@ using UnityEngine.UI;
 using Assets.Scripts.Vehicle_Control;
 using Assets.Scripts.UI.EventArgs;
 using Assets.Scripts.DataStructure;
+using Assets.Scripts.Environment;
 using Assets.Scripts.SimulatorCore;
 
 /// <summary>
@@ -13,140 +14,137 @@ using Assets.Scripts.SimulatorCore;
 /// </summary>
 public abstract class DroneBase : MonoBehaviour
 {
-    public float arrival_threshold { get; set; }//distance within which drone should notify destination of arrival
-    public float approaching_threshold { get; set; }
+    public event EventHandler<EventArgs> OnDroneTakeOff;
+    public event EventHandler<EventArgs> OnDroneParking;
+    public EventArgs e;
+    public float ArrivalThreshold { get; private set; }//distance within which drone should notify destination of arrival
+    public float ApproachingThreshold { get; private set; }
+    public string Id { get; } = Guid.NewGuid().ToString().Substring(0, 10);
+    public string DroneType { get; private set; }
+    public int Capacity { get; private set; }
+    public float MaxSpeed { get; private set; }
+    public float YawSpeed { get; private set; }
+    public float TakeOffSpeed { get; private set; }
+    public float LandingSpeed { get; private set; }
+    public float SoundAtSourceDb { get; private set; }
+    //public float range { get; private set; }
 
-    // Vehicle specific information - can be modified in runtime       
-    public string id { get; set; } = Guid.NewGuid().ToString().Substring(0, 10);
-    public string type { get; set; }
-    public int capacity { get; set; }
-    public float maxSpeed { get; set; }
-    public float yawSpeed { get; set; }
-    public float takeOffSpeed { get; set; }
-    public float landingSpeed { get; set; }
-    public float range { get; set; }
-
-    //unused
-    public List<float> emission;
-    public List<float> noise;
+    //public List<float> emission;
+    //public List<float> noise;
 
     // Analysis/control related information
 
-    public Vector3 currentLocation { get; set; }//where the drone is right now.
-    public Vector3 targetPosition { get; set; }//the next point the drone is going to. may be a destination or waypoint. it depends on situation.
-    public float currentSpeed { get; set; }
-    public float elevation { get; set; }
-    public string origin { get; set; }
+    //public Vector3 currentLocation { get; set; }//where the drone is right now.
+    public Vector3 TargetPosition { get; set; }//the next point the drone is going to. may be a destination or waypoint. it depends on situation.
+    public float CurrentSpeed { get; protected set; }
+    public float Elevation { get; private set; }
+    //public string origin { get; set; }
 
-    public GameObject currentCommunicationPoint { get; set; }//point that we are either taking off from or landing at.
-    public Queue<GameObject> destinationQueue { get; set; }//list of all points that a drone may go to during course of its trip.
-    public Queue<Vector3> wayPointsQueue { get; set; }//list of just the points at at takeoff or landing to get drone to the landing pad or into the air. 
+    public GameObject CurrentCommunicationPoint { get; set; }//point that we are either taking off from or landing at.
+    public Queue<GameObject> DestinationQueue { get; set; }//list of all points that a drone may go to during course of its trip.
+    public Queue<Vector3> WayPointsQueue { get; set; }//list of just the points at at takeoff or landing to get drone to the landing pad or into the air. 
 
     //public float separation { get; set; }
-    public Time elapsedTime { get; set; }
+    //public Time elapsedTime { get; set; }
 
 
     // State machine variable
     // idle, takeoff, move, (land)pending, land, wait
-    public string state { get; set; }
-    public bool isParked { get; set; }
+    public string State { get; set; }
+    public bool IsParked { get; protected set; }
 
     
     //public int placeInQueue;
     //private float landingElevation;
-    public bool toPark;
+    public bool ToPark { get; set; }
     //public bool moveForward;
     //public bool isUTM;
-    public bool isBackgroundDrone;
-    public float waitTimer;
-    public float waitTime;
-
-    public event EventHandler<EventArgs> OnDroneTakeOff;
-    public event EventHandler<EventArgs> OnDroneParking;
-    public EventArgs e;
-
-    private SimulationAnalyzer simulationAnalyzer;
-
-
-    protected VehicleControlSystem vcs;
-    protected int DRONE_LAYERMASK;
-    private TrailRenderer tr;
-    private SphereCollider sphereCollider;
-    private GameObject noiseShpere;
-    private Mesh originalMesh = null;
+    public bool IsBackgroundDrone { get; private set; }
+    public float WaitTimer { get; protected set; }
+    public float WaitTime { get; private set; }
     public GameObject Clone2d { get; set; } = null;
     public GameObject SelectionCircle { get; set; } = null;
+    public VehicleNoise Noise { get; private set; } = null;
+
+    private SimulationAnalyzer _simulationAnalyzer;
+    protected VehicleControlSystem _vcs;
+    protected int _droneLayermask;
+    private TrailRenderer _trailRenderer;
+    //private SphereCollider sphereCollider;
+    private GameObject _noiseSphere;
+    private Mesh _originalMesh = null;
+
 
     void Awake()
     {
-        vcs = GameObject.Find("SimulationCore").GetComponent<VehicleControlSystem>();
+        _vcs = GameObject.Find("SimulationCore").GetComponent<VehicleControlSystem>();
     }
 
     void Start()
     {
-        DRONE_LAYERMASK = LayerMask.GetMask("Vehicle");// 1 << 10;
-        toPark = false;
-        simulationAnalyzer = GameObject.Find("SimulationCore").GetComponent<SimulationAnalyzer>();
-        arrival_threshold = 0.5f;
-        destinationQueue = new Queue<GameObject>();
-        tr = gameObject.GetComponent<TrailRenderer>();
-        sphereCollider = gameObject.GetComponent<SphereCollider>();
-        isParked = true;
-        if (!vcs.TEMPORARY_IsRegionView) originalMesh = gameObject.transform.GetChild(0).gameObject.GetComponent<MeshFilter>().mesh;
+        _droneLayermask = LayerMask.GetMask("Vehicle");// 1 << 10;
+        ToPark = false;
+        _simulationAnalyzer = GameObject.Find("SimulationCore").GetComponent<SimulationAnalyzer>();
+        ArrivalThreshold = 0.5f;
+        DestinationQueue = new Queue<GameObject>();
+        _trailRenderer = gameObject.GetComponent<TrailRenderer>();
+        //sphereCollider = gameObject.GetComponent<SphereCollider>();
+        IsParked = true;
+        if (!_vcs.TEMPORARY_IsRegionView) _originalMesh = gameObject.transform.GetChild(0).gameObject.GetComponent<MeshFilter>().mesh;
 
         if (this is CorridorDrone || this is LowAltitudeDrone)
         {
-            vcs.OnNoiseSphereToggle += NoiseSphereToggleHandler;
-            int i = vcs.TEMPORARY_IsRegionView ? 0 : 1;
-            noiseShpere = this.gameObject.transform.GetChild(i).gameObject;
+            _vcs.OnNoiseSphereToggle += NoiseSphereToggleHandler;
+            int i = _vcs.TEMPORARY_IsRegionView ? 0 : 1;
+            _noiseSphere = this.gameObject.transform.GetChild(i).gameObject;
         }
-        vcs.OnSimplifiedMeshToggle += MeshSwapHandler;
+        _vcs.OnSimplifiedMeshToggle += MeshSwapHandler;
     }
 
     // Update is called once per frame
     void Update()
     {
-        if (!vcs.playing) return;
+        if (!_vcs.playing) return;
         //sphereCollider.center = gameObject.transform.position;
 
-        if (this is CorridorDrone || this is LowAltitudeDrone)
+        if ((this is CorridorDrone || this is LowAltitudeDrone) && Noise != null)
         {
-            noiseShpere.transform.localScale = new Vector3(currentSpeed, currentSpeed, currentSpeed);
+            _noiseSphere.transform.localScale = new Vector3(Noise.Radius * 2, Noise.Radius * 2, Noise.Radius * 2);
         }
 
-        elevation = this.gameObject.transform.position.y;
+        Elevation = this.gameObject.transform.position.y;
 
-        if (state == "takeoff" || state == "move" || state == "land" )
+        if (State == "takeoff" || State == "move" || State == "land" )
         {
-            if (Vector3.Distance(gameObject.transform.position, targetPosition) < arrival_threshold)
+            if (Vector3.Distance(gameObject.transform.position, TargetPosition) < ArrivalThreshold)
             {
-                if (wayPointsQueue.Count == 0)
+                if (WayPointsQueue.Count == 0)
                 {
                     GetNextAction();
                 }
                 else
                 {
-                    targetPosition = wayPointsQueue.Dequeue();
+                    TargetPosition = WayPointsQueue.Dequeue();
                 }
                 return;
             }
             Move();
         }
-        else if ( state == "wait" )
+        else if ( State == "wait" )
         {
-            waitTimer += Time.deltaTime;            
-            if ( waitTimer > waitTime )
+            WaitTimer += Time.deltaTime;            
+            if ( WaitTimer > WaitTime )
             {
                 GetNextAction();
             }
         }
-        else if ( state == "background")
+        else if ( State == "background")
         { 
             Move();
         }
 
-        if (vcs.trailVisualization) tr.enabled = true;
-        else tr.enabled = false;
+        if (_vcs.trailVisualization) _trailRenderer.enabled = true;
+        else _trailRenderer.enabled = false;
     }
 
     /// <summary>
@@ -154,9 +152,9 @@ public abstract class DroneBase : MonoBehaviour
     /// </summary>
     protected virtual Queue<Vector3> GetWayPointsToNextDestination()
     {
-        foreach(Corridor c in vcs.DroneNetwork.outEdges[currentCommunicationPoint])
+        foreach(Corridor c in _vcs.DroneNetwork.outEdges[CurrentCommunicationPoint])
         {
-            if ( c.destination.Equals(destinationQueue.Peek()) ) return (new Queue<Vector3>(c.wayPoints));
+            if ( c.destination.Equals(DestinationQueue.Peek()) ) return (new Queue<Vector3>(c.wayPoints));
         }
         return new Queue<Vector3>();
     }
@@ -175,51 +173,48 @@ public abstract class DroneBase : MonoBehaviour
         //     : Low-altitude drones fly freely in space so it needs to dynamically avoid other drones, buildings, etc.
         //     : Needs dynamic tactical deconfliction
         
-        Quaternion wantedRotation = Quaternion.LookRotation(targetPosition - transform.position, transform.up);
-        if (state == "move") transform.rotation = Quaternion.Lerp(transform.rotation, wantedRotation, Time.deltaTime * yawSpeed);
-        transform.position = Vector3.MoveTowards(transform.position, targetPosition, currentSpeed * Time.deltaTime * vcs.speedMultiplier);
+        Quaternion wantedRotation = Quaternion.LookRotation(TargetPosition - transform.position, transform.up);
+        if (State == "move") transform.rotation = Quaternion.Lerp(transform.rotation, wantedRotation, Time.deltaTime * YawSpeed);
+        transform.position = Vector3.MoveTowards(transform.position, TargetPosition, CurrentSpeed * Time.deltaTime * EnvironManager.Instance.Environ.SimSettings.SimulationSpeedMultiplier);
     }
 
     /// <summary>
     /// GetNextAction() implements state machine
-    /// Below corresponds to the one for CorridorDrone @Eunu, if this is for the corridor drone, should we move it?.
-    /// For LowAltitudeDrone, land granting procedure gets slightly different @Eunu see question above.
-    /// (Refer to LowAltitudeDrone.cs - GetNextAction() ) @Eunu same question as above.
     /// </summary>
     protected virtual void GetNextAction()
     {
-        if (state == "wait")
+        if (State == "wait")
         {
-            state = "idle";
+            State = "idle";
         }
-        else if (state == "takeoff")
+        else if (State == "takeoff")
         {
-            wayPointsQueue = GetWayPointsToNextDestination();
-            currentSpeed = maxSpeed;
-            currentCommunicationPoint.SendMessage("FreeUp");
-            currentCommunicationPoint = destinationQueue.Dequeue();
-            state = "move";
+            WayPointsQueue = GetWayPointsToNextDestination();
+            CurrentSpeed = MaxSpeed;
+            CurrentCommunicationPoint.SendMessage("FreeUp");
+            CurrentCommunicationPoint = DestinationQueue.Dequeue();
+            State = "move";
         }
-        else if (state == "move")
+        else if (State == "move")
         {
-            currentSpeed = 0;
+            CurrentSpeed = 0;
             Pending();
             
         }
-        else if ( state == "land" )
+        else if ( State == "land" )
         {
-            if ( destinationQueue.Count == 0 )
+            if ( DestinationQueue.Count == 0 )
             {
-                state = "idle";
-                TrafficControl tc = currentCommunicationPoint.GetComponent<TrafficControl>();
+                State = "idle";
+                TrafficControl tc = CurrentCommunicationPoint.GetComponent<TrafficControl>();
                 tc.FreeUp();
                 ParkEvent();
             }
             else
             {
-                currentSpeed = 0;
-                state = "wait";
-                waitTimer = 0.0f;
+                CurrentSpeed = 0;
+                State = "wait";
+                WaitTimer = 0.0f;
             }
         }
     }
@@ -229,16 +224,17 @@ public abstract class DroneBase : MonoBehaviour
     /// </summary>
     protected void ParkEvent()
     {
-        currentSpeed = 0;
+        CurrentSpeed = 0;
         OnDroneParking?.Invoke(gameObject, e);
-        simulationAnalyzer.SendMessage("RemoveFlyingDrone", this);
-        if (!vcs.TEMPORARY_IsRegionView) gameObject.transform.GetChild(0).gameObject.GetComponent<MeshRenderer>().enabled = false;
+        _simulationAnalyzer.SendMessage("RemoveFlyingDrone", this);
+        if (!_vcs.TEMPORARY_IsRegionView) gameObject.transform.GetChild(0).gameObject.GetComponent<MeshRenderer>().enabled = false;
         else if (Clone2d != null)
         {
             var image = Clone2d.GetComponent<Image>();
             if (image != null) image.enabled = false;
         }
-        isParked = true;
+        IsParked = true;
+        Noise?.SetSoundLevel(0);
     }
 
     /// <summary>
@@ -246,21 +242,22 @@ public abstract class DroneBase : MonoBehaviour
     /// </summary>
     protected void TakeOffEvent()
     {
-        if (isParked)
+        if (IsParked)
         {
-            if (!vcs.TEMPORARY_IsRegionView) gameObject.transform.GetChild(0).gameObject.GetComponent<MeshRenderer>().enabled = true;
+            if (!_vcs.TEMPORARY_IsRegionView) gameObject.transform.GetChild(0).gameObject.GetComponent<MeshRenderer>().enabled = true;
             else if (Clone2d != null)
             {
                 var image = Clone2d.GetComponent<Image>();
                 if (image != null) image.enabled = true;
             }
             OnDroneTakeOff?.Invoke(gameObject, e);
-            simulationAnalyzer.SendMessage("AddFlyingDrone", this);
-            isParked = false;
+            _simulationAnalyzer.SendMessage("AddFlyingDrone", this);
+            IsParked = false;
         }
-        targetPosition = wayPointsQueue.Dequeue();
-        currentSpeed = takeOffSpeed;
-        state = "takeoff";
+        TargetPosition = WayPointsQueue.Dequeue();
+        CurrentSpeed = TakeOffSpeed;
+        State = "takeoff";
+        Noise?.SetSoundLevel(SoundAtSourceDb);
     }
 
     /// <summary>
@@ -268,9 +265,9 @@ public abstract class DroneBase : MonoBehaviour
     /// </summary>
     protected virtual void Pending()
     {
-        currentSpeed = 0;
-        state = "pending";
-        currentCommunicationPoint.SendMessage("RegisterInQueue", this.gameObject);
+        CurrentSpeed = 0;
+        State = "pending";
+        CurrentCommunicationPoint.SendMessage("RegisterInQueue", this.gameObject);
     }
 
     /// <summary>
@@ -278,7 +275,7 @@ public abstract class DroneBase : MonoBehaviour
     /// </summary>
     public virtual void LandGranted()
     {
-        state = "land";
+        State = "land";
     }
 
     /// <summary>
@@ -297,7 +294,7 @@ public abstract class DroneBase : MonoBehaviour
     {
         if (this is CorridorDrone || this is LowAltitudeDrone)
         {
-            vcs.OnNoiseSphereToggle -= NoiseSphereToggleHandler;
+            _vcs.OnNoiseSphereToggle -= NoiseSphereToggleHandler;
         }
         Clone2d?.Destroy();
         SelectionCircle?.Destroy();
@@ -306,33 +303,21 @@ public abstract class DroneBase : MonoBehaviour
     #region Public Methods
 
     /// <summary>
-    /// @Eunu comment. I guess we have some work to do here on making this more realistic?
-    /// </summary>
-    /// <returns></returns>
-    public float GetNoise()
-    {
-        // Returns dB at the noise source
-        // TO-DO : Find more realistic function that calculates noise based on speed
-        //return noise[4] * Mathf.Pow(speed, 4) + noise[3] * Mathf.Pow(speed, 3) + noise [2] * Mathf.Pow(speed, 2) + Mathf.Pow
-
-        return 80;
-    }
-
-    /// <summary>
     /// Initializes the properties of this object.
     /// </summary>
-    public void Initialize(string type, int capacity, float range, float maxSpeed, float yawspeed, float takeOffSpeed, float landingSpeed, List<float> emission, List<float> noise, string state)
+    public void Initialize(DroneSettings droneSettings, string state, bool isBackgroundDrone, VehicleNoise noise)
     {
-        this.type = type;
-        this.capacity = capacity;
-        this.maxSpeed = maxSpeed;
-        this.yawSpeed = yawspeed;
-        this.takeOffSpeed = takeOffSpeed;
-        this.landingSpeed = landingSpeed;
-        this.emission = emission;
-        this.noise = noise;
-        this.range = range;
-        this.state = state;
+        DroneType = droneSettings.DroneType;
+        Capacity = droneSettings.Capacity;
+        MaxSpeed = droneSettings.MaxSpeed_MPS;
+        YawSpeed = droneSettings.YawSpeed;
+        TakeOffSpeed = droneSettings.TakeOffSpeed_MPS;
+        LandingSpeed = droneSettings.LandingSpeed_MPS;
+        WaitTime = droneSettings.WaitTime_S;
+        SoundAtSourceDb = droneSettings.SoundAtSource_Decibels;
+        State = state;
+        IsBackgroundDrone = isBackgroundDrone;
+        Noise = noise;
     }
 
     /// <summary>
@@ -340,7 +325,7 @@ public abstract class DroneBase : MonoBehaviour
     /// </summary>
     public void HideMesh()
     {
-        if (!vcs.TEMPORARY_IsRegionView)
+        if (!_vcs.TEMPORARY_IsRegionView)
         {
             MeshRenderer mr = gameObject.transform.GetChild(0).gameObject.GetComponent<MeshRenderer>();
             mr.enabled = false;
@@ -357,7 +342,7 @@ public abstract class DroneBase : MonoBehaviour
     /// </summary>
     public void ShowMesh()
     {
-        if (!vcs.TEMPORARY_IsRegionView)
+        if (!_vcs.TEMPORARY_IsRegionView)
         {
             MeshRenderer mr = gameObject.transform.GetChild(0).gameObject.GetComponent<MeshRenderer>();
             mr.enabled = true;
@@ -378,7 +363,7 @@ public abstract class DroneBase : MonoBehaviour
     /// </summary>
     private void NoiseSphereToggleHandler(bool toggle)
     {
-        int i = vcs.TEMPORARY_IsRegionView ? 0 : 1;
+        int i = _vcs.TEMPORARY_IsRegionView ? 0 : 1;
         MeshRenderer mr = this.gameObject.transform.GetChild(i).gameObject.GetComponent<MeshRenderer>();
         if ( toggle )
         {
@@ -396,7 +381,7 @@ public abstract class DroneBase : MonoBehaviour
     /// </summary>
     private void MeshSwapHandler (bool toggle, Mesh m)
     {
-        if (vcs.TEMPORARY_IsRegionView) return;
+        if (_vcs.TEMPORARY_IsRegionView) return;
         MeshFilter mf = gameObject.transform.GetChild(0).gameObject.GetComponent<MeshFilter>();
         if(toggle)
         {
@@ -404,7 +389,7 @@ public abstract class DroneBase : MonoBehaviour
         }
         else
         {
-            mf.mesh = originalMesh;
+            mf.mesh = _originalMesh;
         }
     }
     #endregion

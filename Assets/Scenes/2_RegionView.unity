@@ -833,20 +833,6 @@ MonoBehaviour:
   DRONE_SCALE: 1
   scaleMultiplier: 1
   _canvas: {fileID: 1495986657}
-  simulationParam:
-    maxSpeed: 0
-    verticalSeparation: 0
-    horizontalSeparation: 0
-    maxVehicleCount: 0
-    takeoffSpeed: 0
-    landingSpeed: 0
-    maxYawSpeed: 0
-    callGenerationInterval: 0
-    maxInFlightVehicles: 0
-    inCorridorSeparation: 0
-    lowAltitudeBoundary: 0
-    strategicDeconfliction: 
-    tacticalDeconfliction: 
   playing: 0
   _networkVisible: 0
   noiseVisualization: 0
@@ -856,10 +842,6 @@ MonoBehaviour:
   trailVisualization: 0
   simplifiedMesh: {fileID: 0}
   sceneManager: {fileID: 0}
-  backgroundDroneCount: 0
-  lowerElevationBound: 100
-  upperElevationBound: 135
-  speedMultiplier: 1
   droneInstantiator: {fileID: 0}
   networkLines: []
 --- !u!4 &246965925

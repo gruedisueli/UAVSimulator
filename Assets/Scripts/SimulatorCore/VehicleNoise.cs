@@ -1,5 +1,8 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
+using Assets.Scripts.Environment;
 using UnityEngine;
 
 /// <summary>
@@ -7,37 +10,34 @@ using UnityEngine;
 /// </summary>
 public class VehicleNoise : MonoBehaviour
 {
-    //SphereCollider col;
-
-    DroneBase vehicleInfo;
     float noise;
-    float radius;
+    public float Radius { get; private set; }
     List<Collider> affected_buildings;
-    GameObject noiseShpere;
     VehicleControlSystem vcs;
     // Start is called before the first frame update
     void Awake()
     {
-
-
-        //noiseShpere = gameObject.transform.GetChild(1).gameObject;
-        vehicleInfo = gameObject.GetComponent<DroneBase>();
-        
-
-        radius = 0.0f;
         affected_buildings = new List<Collider>();
     }
 
     public void Init(VehicleControlSystem controlSys)
     {
         vcs = controlSys;
+        noise = 0;
+        Radius = GetNoiseRadius();
+    }
+
+    public void SetSoundLevel(float soundDb)
+    {
+        noise = soundDb;
+        Radius = GetNoiseRadius();
     }
 
     // Update is called once per frame
     void Update()
     {
-        noise = vehicleInfo.GetNoise();
-        radius = vehicleInfo.currentSpeed;
+        //noise = vehicleInfo.SoundAtSourceDb;
+        //radius = vehicleInfo.CurrentSpeed;
         //noiseShpere.transform.localScale = new Vector3(radius,radius,radius);
 
         //col.radius = radius;
@@ -49,7 +49,7 @@ public class VehicleNoise : MonoBehaviour
     /// </summary>
     void CheckNoise()
     {
-        Collider[] hitColliders = Physics.OverlapSphere(gameObject.transform.position, radius);
+        Collider[] hitColliders = Physics.OverlapSphere(gameObject.transform.position, Radius);
         List<Collider> hitColliders_list = new List<Collider>(hitColliders);
         
         foreach(var hitCollider in hitColliders)
@@ -81,12 +81,15 @@ public class VehicleNoise : MonoBehaviour
             }
         }
 
-        List<Collider> affected_building_copy = new List<Collider>(affected_buildings);
-        foreach(var affected_building in affected_buildings)
+        for (int i =  affected_buildings.Count - 1; i >= 0; i--)
         {
-            if (!hitColliders_list.Contains(affected_building))
+            if (affected_buildings[i] == null)
             {
-                var n = affected_building?.gameObject.GetComponent<BuildingNoise>()?.ID;
+                affected_buildings.RemoveAt(i);
+            }
+            else if (!hitColliders_list.Contains(affected_buildings[i]))
+            {
+                var n = affected_buildings[i].gameObject.GetComponent<BuildingNoise>()?.ID;
                 if (n == null) continue;
                 if (vcs.BuildingNoiseElements.ContainsKey(n))
                 {
@@ -97,10 +100,9 @@ public class VehicleNoise : MonoBehaviour
                     Debug.LogError("Building not found in noise element dictionary");
                     continue;
                 }
-                affected_building_copy.Remove(affected_building);
+                affected_buildings.RemoveAt(i);
             }
         }
-        affected_buildings = affected_building_copy;
     }
 
     /// <summary>
@@ -128,6 +130,25 @@ public class VehicleNoise : MonoBehaviour
                 n.OnDestroyed -= BuildingDestroyedAction;
             }
         }
+    }
+
+    /// <summary>
+    /// Noise radius is defined by distance from source at which sound level is equal to acceptable threshold, as defined by simulation settings
+    /// For formulas, source was https://www.omnicalculator.com/physics/distance-attenuation
+    /// </summary>
+    private float GetNoiseRadius()
+    {
+        //SPL₂ = SPL₁ - 20 * log (R₂ / R₁)
+        //where: SPL₁ = noise at source
+        //SPL₂ = acceptable threshold
+        //R₁ = 1 (dist at source)
+        //R₂ = unknown radius where we hit acceptable threshold
+        //rearrange formula for unknowns:
+        //SPL₂ = SPL₁ - 20 * log (R₂)
+        //SPL₂ - SPL₁ = -20 * log (R₂)
+        //(SPL₂ - SPL₁)/(-20) = log (R₂)
+        //10^((SPL₂ - SPL₁)/(-20)) = R₂
+        return (float) Math.Pow(10, ((double) EnvironManager.Instance.Environ.SimSettings.AcceptableNoiseThreshold_Decibels - (double) noise) / (-20));
     }
 
 }

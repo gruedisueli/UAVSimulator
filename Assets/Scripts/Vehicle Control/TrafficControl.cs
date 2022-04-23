@@ -81,12 +81,12 @@ public abstract class TrafficControl : MonoBehaviour
         }
         else if ( vehicleState != null )
         {
-            if (vehicleState.state == "pending")//if vehicle is waiting for landing to be granted, grant it.
+            if (vehicleState.State == "pending")//if vehicle is waiting for landing to be granted, grant it.
             {
                 AssignLandingCorridor();
                 GrantLanding();
             }
-            else if (vehicleState.state == "idle" )//if vehicle is sitting idle on pad, allow takeoff
+            else if (vehicleState.State == "idle" )//if vehicle is sitting idle on pad, allow takeoff
             {
                 AssignTakeOffCorridor();
                 GrantTakeOff();
@@ -110,8 +110,8 @@ public abstract class TrafficControl : MonoBehaviour
     /// </summary>
     protected virtual void AssignLandingCorridor()
     {
-        vehicleState.wayPointsQueue = new Queue<Vector3>();
-        vehicleState.wayPointsQueue.Enqueue(gameObject.transform.position);
+        vehicleState.WayPointsQueue = new Queue<Vector3>();
+        vehicleState.WayPointsQueue.Enqueue(gameObject.transform.position);
     }
 
     /// <summary>

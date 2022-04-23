@@ -6,9 +6,6 @@ using UnityEngine;
 
 namespace Assets.Scripts.Vehicle_Control
 {
-    /// <summary>
-    /// @Eunu comment
-    /// </summary>
     public class VehicleControlSignal
     {
         public string signal;//@Eunu comment

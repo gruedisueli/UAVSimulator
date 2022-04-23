@@ -43,7 +43,7 @@ public class ParkingControl : TrafficControl
         List<Vector3> landingGuide = GetParkingGuide(parkingSpot, "parking", parkingInfo.Type);
         List<Vector3> translatedParkingGuide = new List<Vector3>();
         foreach (Vector3 v in landingGuide) translatedParkingGuide.Add(TranslateParkingSpot(v));
-        vehicleState.wayPointsQueue = toQueue(translatedParkingGuide);
+        vehicleState.WayPointsQueue = toQueue(translatedParkingGuide);
         ParkAt(parkingSpot, currentVehicle);
     }
 
@@ -56,7 +56,7 @@ public class ParkingControl : TrafficControl
         List<Vector3> takeoffGuide = GetParkingGuide(parkingSpot, "unparking", parkingInfo.Type);
         List<Vector3> translatedParkingGuide = new List<Vector3>();
         foreach (Vector3 v in takeoffGuide) translatedParkingGuide.Add(TranslateParkingSpot(v));
-        vehicleState.wayPointsQueue = toQueue(translatedParkingGuide);
+        vehicleState.WayPointsQueue = toQueue(translatedParkingGuide);
         Unpark(currentVehicle);
     }
 

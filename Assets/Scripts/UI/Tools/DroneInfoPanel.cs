@@ -67,22 +67,22 @@ namespace Assets.Scripts.UI.Tools
                 float maxSpeed, takeOffSpeed, landingSpeed, currentSpeed, elevation;
                 if (isMetric)
                 {
-                    maxSpeed = UnitUtils.MetersPerSecondToKilometersPerHour(d.maxSpeed);
-                    takeOffSpeed = UnitUtils.MetersPerSecondToKilometersPerHour(d.takeOffSpeed);
-                    landingSpeed = UnitUtils.MetersPerSecondToKilometersPerHour(d.landingSpeed);
-                    currentSpeed = UnitUtils.MetersPerSecondToKilometersPerHour(d.currentSpeed);
-                    elevation = d.elevation;
+                    maxSpeed = UnitUtils.MetersPerSecondToKilometersPerHour(d.MaxSpeed);
+                    takeOffSpeed = UnitUtils.MetersPerSecondToKilometersPerHour(d.TakeOffSpeed);
+                    landingSpeed = UnitUtils.MetersPerSecondToKilometersPerHour(d.LandingSpeed);
+                    currentSpeed = UnitUtils.MetersPerSecondToKilometersPerHour(d.CurrentSpeed);
+                    elevation = d.Elevation;
                 }
                 else
                 {
-                    maxSpeed = UnitUtils.MetersPerSecondToMilesPerHour(d.maxSpeed);
-                    takeOffSpeed = UnitUtils.MetersPerSecondToMilesPerHour(d.takeOffSpeed);
-                    landingSpeed = UnitUtils.MetersPerSecondToMilesPerHour(d.landingSpeed);
-                    currentSpeed = UnitUtils.MetersPerSecondToMilesPerHour(d.currentSpeed);
-                    elevation = UnitUtils.MetersToFeet(d.elevation);
+                    maxSpeed = UnitUtils.MetersPerSecondToMilesPerHour(d.MaxSpeed);
+                    takeOffSpeed = UnitUtils.MetersPerSecondToMilesPerHour(d.TakeOffSpeed);
+                    landingSpeed = UnitUtils.MetersPerSecondToMilesPerHour(d.LandingSpeed);
+                    currentSpeed = UnitUtils.MetersPerSecondToMilesPerHour(d.CurrentSpeed);
+                    elevation = UnitUtils.MetersToFeet(d.Elevation);
                 }
-                i.SetTextElement(ElementPropertyType.Id, d.id);
-                i.SetTextElement(ElementPropertyType.Type, d.type);
+                i.SetTextElement(ElementPropertyType.Id, d.Id);
+                i.SetTextElement(ElementPropertyType.Type, d.DroneType);
                 //i.SetTextElement(ElementPropertyType.Capacity, d.capacity);
                 i.SetTextElement(ElementPropertyType.MaxSpeed, maxSpeed);
                 //i.SetTextElement(ElementPropertyType.YawSpeed, d.yawSpeed);
@@ -99,13 +99,13 @@ namespace Assets.Scripts.UI.Tools
                 ////i.SetTextElement(ElementPropertyType.Description, d.destination);
                 ////i.SetTextElement(ElementPropertyType.DestinationList, d.destinationList);
                 //i.SetTextElement(ElementPropertyType.Separation, d.separation);
-                i.SetTextElement(ElementPropertyType.State, d.state);
+                i.SetTextElement(ElementPropertyType.State, d.State);
                 //i.SetTextElement(ElementPropertyType.PlaceInQueue, d.placeInQueue);
                 //i.SetTextElement(ElementPropertyType.ToPark, d.toPark);
                 //i.SetTextElement(ElementPropertyType.MoveForward, d.moveForward);
                 //i.SetTextElement(ElementPropertyType.IsUTM, d.isUTM);
                 //i.SetTextElement(ElementPropertyType.IsBackgroundDrone, d.isBackgroundDrone);
-                i.SetTextElement(ElementPropertyType.WaitTimer, d.waitTimer);
+                i.SetTextElement(ElementPropertyType.WaitTimer, d.WaitTimer);
                 //i.SetTextElement(ElementPropertyType.WaitTime, d.waitTime);
 
                 yield return null;

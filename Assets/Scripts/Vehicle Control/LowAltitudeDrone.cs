@@ -1,26 +1,26 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using Assets.Scripts.Environment;
 using UnityEngine;
 
 /// <summary>
-/// A type of drone that goes through a series of destinations not in the corridors themselves, within the altitude range of other low-altitude drones and not within corridor altitudes. @Eunu, correct?
+/// A type of drone that goes through a series of destinations not in the corridors themselves
 /// </summary>
 public class LowAltitudeDrone : DroneBase
 {
-    // Start is called before the first frame update
-    private Queue<Vector3> operationPoints;//the list of points the drone will travel through. @Eunu correct?
+    private Queue<Vector3> operationPoints;
     protected override void Move()
     {
-        if (state == "move")
+        if (State == "move")
         {
-            Vector3 rotation = targetPosition - transform.position;
+            Vector3 rotation = TargetPosition - transform.position;
             rotation.y = 0.0f;
             Quaternion wantedRotation = Quaternion.LookRotation(rotation, transform.up);
-            transform.rotation = Quaternion.Lerp(transform.rotation, wantedRotation, Time.deltaTime * yawSpeed);
+            transform.rotation = Quaternion.Lerp(transform.rotation, wantedRotation, Time.deltaTime * YawSpeed);
         }
-        transform.position = Vector3.MoveTowards(transform.position, targetPosition, currentSpeed * Time.deltaTime * vcs.speedMultiplier);
+        transform.position = Vector3.MoveTowards(transform.position, TargetPosition, CurrentSpeed * Time.deltaTime * EnvironManager.Instance.Environ.SimSettings.SimulationSpeedMultiplier);
 
-        if ( Vector3.Distance(transform.position, targetPosition) < approaching_threshold && wayPointsQueue.Count == 0 )
+        if ( Vector3.Distance(transform.position, TargetPosition) < ApproachingThreshold && WayPointsQueue.Count == 0 )
         {
             GetNextAction();
         }
@@ -31,39 +31,39 @@ public class LowAltitudeDrone : DroneBase
     /// </summary>
     protected override void GetNextAction()
     {
-        if (state == "wait")
+        if (State == "wait")
         {
-            currentSpeed = 0;
-            state = "idle";
+            CurrentSpeed = 0;
+            State = "idle";
         }
-        else if (state == "takeoff")
+        else if (State == "takeoff")
         {
-            wayPointsQueue = operationPoints;
-            currentCommunicationPoint.SendMessage("FreeUp");
-            currentSpeed = maxSpeed;
-            state = "move";
+            WayPointsQueue = operationPoints;
+            CurrentCommunicationPoint.SendMessage("FreeUp");
+            CurrentSpeed = MaxSpeed;
+            State = "move";
         }
-        else if (state == "move")
+        else if (State == "move")
         {
-            state = "pending";
-            currentSpeed = 0;
-            currentCommunicationPoint.SendMessage("RegisterInQueue", this.gameObject);
+            State = "pending";
+            CurrentSpeed = 0;
+            CurrentCommunicationPoint.SendMessage("RegisterInQueue", this.gameObject);
         }
-        else if (state == "land")
+        else if (State == "land")
         {
-            if (destinationQueue.Count == 0)
+            if (DestinationQueue.Count == 0)
             {
-                state = "idle";
-                TrafficControl tc = currentCommunicationPoint.GetComponent<TrafficControl>();
+                State = "idle";
+                TrafficControl tc = CurrentCommunicationPoint.GetComponent<TrafficControl>();
                 tc.FreeUp();
                 ParkEvent();
-                isParked = true;
+                IsParked = true;
             }
             else
             {
-                currentSpeed = 0;
-                state = "wait";
-                waitTimer = 0.0f;
+                CurrentSpeed = 0;
+                State = "wait";
+                WaitTimer = 0.0f;
             }
         }
     }

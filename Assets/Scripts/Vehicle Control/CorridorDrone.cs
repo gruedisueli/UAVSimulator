@@ -2,17 +2,17 @@
 using System.Collections.Generic;
 using UnityEngine;
 using Assets.Scripts.DataStructure;
+using Assets.Scripts.Environment;
 
 /// <summary>
-/// A type of drone confined to travelling in corridors
+/// A type of drone confined to traveling in corridors
 /// </summary>
 public class CorridorDrone : DroneBase
 {
-    Corridor currentCorridor { get; set; }
-    
     public delegate void OnInCorridorSpeedChangeDelegate(float oldSpeed, float newSpeed);
     public event OnInCorridorSpeedChangeDelegate OnInCorridorSpeedChange;
 
+    private Corridor _currentCorridor;
     private float _inCorridorSpeed = 0.0f;
     public float inCorridorSpeed
     {
@@ -20,7 +20,7 @@ public class CorridorDrone : DroneBase
         {
             return _inCorridorSpeed;
         }
-        set
+        private set
         {
             if (_inCorridorSpeed == value) return;
             else
@@ -34,16 +34,13 @@ public class CorridorDrone : DroneBase
         }
     }
 
-    /// <summary>
-    /// @Eunu comment on how we get next point. Not sure I fully understand how network works.
-    /// </summary>
     protected override Queue<Vector3> GetWayPointsToNextDestination()
     {
-        foreach (Corridor c in vcs.DroneNetwork.outEdges[currentCommunicationPoint])
+        foreach (Corridor c in _vcs.DroneNetwork.outEdges[CurrentCommunicationPoint])
         {
-            if (c.destination.Equals(destinationQueue.Peek()))
+            if (c.destination.Equals(DestinationQueue.Peek()))
             {
-                currentCorridor = c;
+                _currentCorridor = c;
                 c.AddDrone(this.gameObject); //register drone to corridor.
                 return (new Queue<Vector3>(c.wayPoints));
             }
@@ -60,22 +57,22 @@ public class CorridorDrone : DroneBase
         // (1) Corridor drones (w/ strategic deconfliction, w/o tactical deconfliction)
         //     : Corridor drones only live in corridors so it only needs to check the separation to front
         //     : Restriction zone avoidance is already taken into account by strategic deconfliction
-        if (state == "move" && Physics.Raycast(gameObject.transform.position + Vector3.Normalize(targetPosition - gameObject.transform.position) * (vcs.DRONE_SCALE * 2), targetPosition - gameObject.transform.position, 25.00f, DRONE_LAYERMASK))
+        if (State == "move" && Physics.Raycast(gameObject.transform.position + Vector3.Normalize(TargetPosition - gameObject.transform.position) * (_vcs.DRONE_SCALE * 2), TargetPosition - gameObject.transform.position, 25.00f, _droneLayermask))
         {
             inCorridorSpeed = 0.0f;
             return;
         }
         else
         {
-            if (state == "move")
+            if (State == "move")
             {
-                Vector3 rotation = targetPosition - transform.position;
+                Vector3 rotation = TargetPosition - transform.position;
                 rotation.y = 0.0f;
                 Quaternion wantedRotation = Quaternion.LookRotation(rotation, transform.up);
-                transform.rotation = Quaternion.Lerp(transform.rotation, wantedRotation, Time.deltaTime * yawSpeed);
-                inCorridorSpeed = currentSpeed;
+                transform.rotation = Quaternion.Lerp(transform.rotation, wantedRotation, Time.deltaTime * YawSpeed);
+                inCorridorSpeed = CurrentSpeed;
             }
-            transform.position = Vector3.MoveTowards(transform.position, targetPosition, currentSpeed * Time.deltaTime * vcs.speedMultiplier);
+            transform.position = Vector3.MoveTowards(transform.position, TargetPosition, CurrentSpeed * Time.deltaTime * EnvironManager.Instance.Environ.SimSettings.SimulationSpeedMultiplier);
             
         }
     }
@@ -85,9 +82,9 @@ public class CorridorDrone : DroneBase
     /// </summary>
     protected override void Pending()
     {
-        state = "pending";
-        currentSpeed = 0;
-        currentCommunicationPoint.SendMessage("RegisterInQueue", this.gameObject);
+        State = "pending";
+        CurrentSpeed = 0;
+        CurrentCommunicationPoint.SendMessage("RegisterInQueue", this.gameObject);
         inCorridorSpeed = 0.0f;
     }
 
@@ -96,10 +93,10 @@ public class CorridorDrone : DroneBase
     /// </summary>
     public override void LandGranted()
     {
-        state = "land";
+        State = "land";
         inCorridorSpeed = 0.0f;
-        currentSpeed = landingSpeed;
-        currentCorridor.RemoveDrone(this.gameObject);
+        CurrentSpeed = LandingSpeed;
+        _currentCorridor.RemoveDrone(this.gameObject);
     }
 
 }

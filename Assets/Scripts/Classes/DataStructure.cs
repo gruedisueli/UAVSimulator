@@ -3,46 +3,47 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Assets.Scripts.Environment;
 using UnityEngine;
 
 namespace Assets.Scripts.DataStructure
 {
 
-    [Serializable]
-    class VehicleSpec
-    {
-        public string type;
-        public int capacity;
-        public float maxSpeed;
-        public float landingSpeed;
-        public float takeoffSpeed;
-        public float yawSpeed;
-        public float range;
-        public float size;
-        public List<float> emission;
-        public List<float> noise;
-    }
+    //[Serializable]
+    //class VehicleSpec
+    //{
+    //    public string type;
+    //    public int capacity;
+    //    public float maxSpeed;
+    //    public float landingSpeed;
+    //    public float takeoffSpeed;
+    //    public float yawSpeed;
+    //    public float range;
+    //    public float size;
+    //    public List<float> emission;
+    //    public List<float> noise;
+    //}
 
-    [Serializable]
-    #region Simulation Parameters
-    public class SimulationParam
-    {
-        public float maxSpeed;
-        public float verticalSeparation;
-        public float horizontalSeparation;
-        public float maxVehicleCount;
-        public float takeoffSpeed;
-        public float landingSpeed;
-        public float maxYawSpeed;
-        public float callGenerationInterval;
-        public float maxInFlightVehicles;
-        public float inCorridorSeparation;
-        public float lowAltitudeBoundary;
-        public string strategicDeconfliction;
-        public string tacticalDeconfliction;
+    //[Serializable]
+    //#region Simulation Parameters
+    //public class SimulationParam
+    //{
+    //    public float maxSpeed;
+    //    public float verticalSeparation;
+    //    public float horizontalSeparation;
+    //    public float maxVehicleCount;
+    //    public float takeoffSpeed;
+    //    public float landingSpeed;
+    //    public float maxYawSpeed;
+    //    public float callGenerationInterval;
+    //    public float maxInFlightVehicles;
+    //    public float inCorridorSeparation;
+    //    public float lowAltitudeBoundary;
+    //    public string strategicDeconfliction;
+    //    public string tacticalDeconfliction;
 
-    }
-    #endregion
+    //}
+    //#endregion
 
     /// <summary>
     /// A basic polygon
@@ -273,9 +274,6 @@ namespace Assets.Scripts.DataStructure
         }
     }
 
-    /// <summary>
-    /// @Eunu Comment.
-    /// </summary>
     public class Triangulator
     {
         private List<Vector2> m_points = new List<Vector2>();
@@ -422,12 +420,13 @@ namespace Assets.Scripts.DataStructure
         public GameObject origin;
         public GameObject destination;
         public float elevation;
-        public Queue<Vector3> wayPoints;//@Eunu comment. What do waypoints mean within a single corridor? Why is it a Queue?
+        public Queue<Vector3> wayPoints;
         public List<GameObject> dronesInCorridor;
-        public float speedSum;//@Eunu comment
-        public float maxSpeed;//max allowed speed in corridor? @Eunu comment?
+        public float speedSum;
+        public float maxSpeed;
 
         private int _congestionLevel;
+
         /// <summary>
         /// Get or set the congestion level for the corridor. On set to new value, invokes event.
         /// </summary>
@@ -470,7 +469,7 @@ namespace Assets.Scripts.DataStructure
         /// <summary>
         /// Builds corridor between two points at specified elevation.
         /// </summary>
-        public Corridor(GameObject org, GameObject dest, float elev)
+        public Corridor(GameObject org, GameObject dest, float elev, float maxSpd)
         {
             origin = org;
             destination = dest;
@@ -478,12 +477,9 @@ namespace Assets.Scripts.DataStructure
             dronesInCorridor = new List<GameObject>();
             speedSum = 0.0f;
             _congestionLevel = 0;
-            maxSpeed = 200.0f;
+            maxSpeed = maxSpd;
         }
 
-        /// <summary>
-        /// @Eunu comment. Are we actually adding a drone? 
-        /// </summary>
         public void AddDrone ( GameObject drone )
         {
             CorridorDrone cd = drone.GetComponent<CorridorDrone>();
@@ -491,9 +487,6 @@ namespace Assets.Scripts.DataStructure
             dronesInCorridor.Add(drone);
         }
 
-        /// <summary>
-        /// @Eunu comment. Are we actually removing a drone? 
-        /// </summary>
         public void RemoveDrone(GameObject drone)
         {
             CorridorDrone cd = drone.GetComponent<CorridorDrone>();
@@ -501,9 +494,6 @@ namespace Assets.Scripts.DataStructure
             dronesInCorridor.Remove(drone);
         }
 
-        /// <summary>
-        /// @Eunu comment.
-        /// </summary>
         private void SpeedChangeHandler(float oldSpeed, float newSpeed)
         {
             speedSum -= oldSpeed;
