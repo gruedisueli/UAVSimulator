@@ -27,6 +27,19 @@ public abstract class DroneBase : MonoBehaviour
     public float TakeOffSpeed { get; private set; }
     public float LandingSpeed { get; private set; }
     public float SoundAtSourceDb { get; private set; }
+    private float _currentNoiseDb = 0;
+
+    public float CurrentNoiseDb
+    {
+        get => _currentNoiseDb;
+    }
+    private float _noiseRadius = 0;
+
+    public float NoiseRadius
+    {
+        get => _noiseRadius;
+    }
+
     //public float range { get; private set; }
 
     //public List<float> emission;
@@ -64,7 +77,6 @@ public abstract class DroneBase : MonoBehaviour
     public float WaitTime { get; private set; }
     public GameObject Clone2d { get; set; } = null;
     public GameObject SelectionCircle { get; set; } = null;
-    public VehicleNoise Noise { get; private set; } = null;
 
     private SimulationAnalyzer _simulationAnalyzer;
     protected VehicleControlSystem _vcs;
@@ -78,6 +90,7 @@ public abstract class DroneBase : MonoBehaviour
     void Awake()
     {
         _vcs = GameObject.Find("SimulationCore").GetComponent<VehicleControlSystem>();
+        SetNoise(0);
     }
 
     void Start()
@@ -107,9 +120,9 @@ public abstract class DroneBase : MonoBehaviour
         if (!_vcs.playing) return;
         //sphereCollider.center = gameObject.transform.position;
 
-        if ((this is CorridorDrone || this is LowAltitudeDrone) && Noise != null)
+        if (this is CorridorDrone || this is LowAltitudeDrone)
         {
-            _noiseSphere.transform.localScale = new Vector3(Noise.Radius * 2, Noise.Radius * 2, Noise.Radius * 2);
+            _noiseSphere.transform.localScale = new Vector3(NoiseRadius * 2, NoiseRadius * 2, NoiseRadius * 2);
         }
 
         Elevation = this.gameObject.transform.position.y;
@@ -234,7 +247,7 @@ public abstract class DroneBase : MonoBehaviour
             if (image != null) image.enabled = false;
         }
         IsParked = true;
-        Noise?.SetSoundLevel(0);
+        SetNoise(0);
     }
 
     /// <summary>
@@ -257,7 +270,7 @@ public abstract class DroneBase : MonoBehaviour
         TargetPosition = WayPointsQueue.Dequeue();
         CurrentSpeed = TakeOffSpeed;
         State = "takeoff";
-        Noise?.SetSoundLevel(SoundAtSourceDb);
+        SetNoise(SoundAtSourceDb);
     }
 
     /// <summary>
@@ -305,7 +318,7 @@ public abstract class DroneBase : MonoBehaviour
     /// <summary>
     /// Initializes the properties of this object.
     /// </summary>
-    public void Initialize(DroneSettings droneSettings, string state, bool isBackgroundDrone, VehicleNoise noise)
+    public void Initialize(DroneSettings droneSettings, string state, bool isBackgroundDrone)
     {
         DroneType = droneSettings.DroneType;
         Capacity = droneSettings.Capacity;
@@ -317,7 +330,6 @@ public abstract class DroneBase : MonoBehaviour
         SoundAtSourceDb = droneSettings.SoundAtSource_Decibels;
         State = state;
         IsBackgroundDrone = isBackgroundDrone;
-        Noise = noise;
     }
 
     /// <summary>
@@ -391,6 +403,34 @@ public abstract class DroneBase : MonoBehaviour
         {
             mf.mesh = _originalMesh;
         }
+    }
+
+    /// <summary>
+    /// Noise radius is defined by distance from source at which sound level is equal to acceptable threshold, as defined by simulation settings
+    /// For formulas, source was https://www.omnicalculator.com/physics/distance-attenuation
+    /// </summary>
+    private void SetNoise(float noiseDb)
+    {
+        _currentNoiseDb = noiseDb;
+        //SPL₂ = SPL₁ - 20 * log (R₂ / R₁)
+        //where: SPL₁ = noise at R₁
+        //SPL₂ = acceptable threshold
+        //R₁ = dist at SPL₁
+        //R₂ = unknown radius where we hit acceptable threshold
+        //rearrange formula for unknowns:
+        //SPL₂ = SPL₁ - 20 * log (R₂ / R₁)
+        //SPL₂ - SPL₁ = -20 * log (R₂ / R₁)
+        //(SPL₂ - SPL₁)/(-20) = log (R₂ / R₁)
+        //10^((SPL₂ - SPL₁)/(-20)) = R₂ / R₁
+        //10^((SPL₂ - SPL₁)/(-20))*R₁ = R₂
+
+        //from https://www.chem.purdue.edu/chemsafety/Training/PPETrain/dblevels.htm
+        //we see that a helicopter at 100ft away is about 100db
+        //to find sound level at source: SPL₂ = SPL₁ - 20 * log (R₂ / R₁)
+        //SPL₂ = 100 - 20 * log (1 / 100)
+        //SPL₂ = 140dB
+
+        _noiseRadius = (float)Math.Pow(10, ((double)EnvironManager.Instance.Environ.SimSettings.AcceptableNoiseThreshold_Decibels - (double)noiseDb) / (-20));
     }
     #endregion
 }

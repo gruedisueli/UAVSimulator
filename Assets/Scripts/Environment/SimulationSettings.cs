@@ -59,7 +59,7 @@ namespace Assets.Scripts.Environment
 
         #region CORRIDOR DRONE SETTINGS
 
-        [JsonProperty] private DroneSettings _corridorDroneSettings = new DroneSettings("corridor", 30.0f, 50.0f, 10.0f, 10.0f, 0.0f, 5, 80.0f);
+        [JsonProperty] private DroneSettings _corridorDroneSettings = new DroneSettings("corridor", 30.0f, 50.0f, 10.0f, 10.0f, 0.0f, 5, 125.0f);
 
         public DroneSettings CorridorDroneSettings
         {
@@ -88,7 +88,7 @@ namespace Assets.Scripts.Environment
 
         #region LOW ALTITUDE DRONE SETTINGS
 
-        [JsonProperty] private DroneSettings _lowAltitudeDroneSettings = new DroneSettings("LowAltitude", 50.0f, 40.0f, 25.0f, 25.0f, 0.0f, 0, 80.0f);
+        [JsonProperty] private DroneSettings _lowAltitudeDroneSettings = new DroneSettings("LowAltitude", 50.0f, 40.0f, 25.0f, 25.0f, 0.0f, 0, 125.0f);
 
         public DroneSettings LowAltitudeDroneSettings
         {

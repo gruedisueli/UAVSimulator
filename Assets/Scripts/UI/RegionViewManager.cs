@@ -151,6 +151,7 @@ namespace Assets.Scripts.UI
 
             _cameraAdj.SetExtents(extents[0][0], extents[0][1], extents[1][0], extents[1][1]);
 
+            Shader.SetGlobalInt("_displayNoise", 0);
         }
 
         protected override void OnDestroyDerived()
@@ -307,15 +308,6 @@ namespace Assets.Scripts.UI
                             {
                                 var u = args.Update as ModifyBoolPropertyArg;
                                 SetAllowBuildings(u.Value);
-                                if (!u.Value && _noiseVisualToggle._isOn)//if turning off buildings, hide noise visual if on
-                                {
-                                    _vehicleControlSystem.ToggleNoiseVisualization(false);
-                                }
-                                else if (u.Value && _noiseVisualToggle._isOn) //if turning on buildings, turn on the visual if it's checked on
-                                {
-                                    _vehicleControlSystem.ToggleNoiseVisualization(true);
-                                }
-                                _noiseVisualToggle.SetInteractable(u.Value);
                                 break;
                             }
                         case VisibilityType.DroneCount:
@@ -344,8 +336,11 @@ namespace Assets.Scripts.UI
                             }
                         case VisibilityType.Noise:
                             {
-                                var u = args.Update as ModifyBoolPropertyArg;
-                                _vehicleControlSystem.ToggleNoiseVisualization(u.Value);
+                                if (args.Update is ModifyBoolPropertyArg b)
+                                {
+                                    int n = b.Value ? 1 : 0;
+                                    Shader.SetGlobalInt("_displayNoise", n);
+                                }
                                 break;
                             }
                         case VisibilityType.Privacy:

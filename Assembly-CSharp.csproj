@@ -224,7 +224,6 @@
     <Compile Include="Assets\Mapbox\Unity\DataContainers\MapOptions.cs" />
     <Compile Include="Assets\Scripts\Environment\DronePortBase.cs" />
     <Compile Include="Assets\Mapbox\Unity\SourceLayers\ILayer.cs" />
-    <Compile Include="Assets\Scripts\SimulatorCore\BuildingNoise.cs" />
     <Compile Include="Assets\Mapbox\Core\mapbox-sdk-cs\Utils\UnixTimestampUtils.cs" />
     <Compile Include="Assets\Mapbox\Unity\MeshGeneration\Modifiers\GameObjectModifiers\ColliderModifier.cs" />
     <Compile Include="Assets\Mapbox\Unity\DataContainers\UnityLayerOptions.cs" />
@@ -268,6 +267,7 @@
     <Compile Include="Assets\Mapbox\Core\mapbox-sdk-cs\Utils\GeoCoordinateBounds.cs" />
     <Compile Include="Assets\Mapbox\Unity\SourceLayers\ISubLayerSimpleStyle.cs" />
     <Compile Include="Assets\Scripts\Vehicle Control\VehicleControlSignal.cs" />
+    <Compile Include="Assets\Scripts\Environment\DroneSettings.cs" />
     <Compile Include="Assets\Mapbox\Core\mapbox-sdk-cs\Directions\Response\Intersection.cs" />
     <Compile Include="Assets\Mapbox\Unity\LayerProperties\VectorFilterOptions.cs" />
     <Compile Include="Assets\Mapbox\Unity\Location\Logging\LocationLogReader.cs" />
@@ -486,7 +486,6 @@
     <Compile Include="Assets\Scripts\Vehicle Control\BackgroundDrone.cs" />
     <Compile Include="Assets\Mapbox\Unity\Location\UnityLocationWrappers\IMapboxLocationService.cs" />
     <Compile Include="Assets\Mapbox\Unity\MeshGeneration\Factories\DirectionsFactory.cs" />
-    <Compile Include="Assets\Scripts\SimulatorCore\VehicleNoise.cs" />
     <Compile Include="Assets\Scripts\UI\EventArgs\PlayPauseArgs.cs" />
     <Compile Include="Assets\Scripts\UI\EventArgs\DeselectArgs.cs" />
     <Compile Include="Assets\Mapbox\Unity\DataContainers\ElevationRequiredOptions.cs" />
@@ -564,7 +563,6 @@
     <Compile Include="Assets\Mapbox\Unity\Location\LocationSmoothing\KalmanFilter.cs" />
     <Compile Include="Assets\Scripts\Environment\AssetPackBase.cs" />
     <Compile Include="Assets\Mapbox\Unity\SourceLayers\ISubLayerCustomStyle.cs" />
-    <Compile Include="Assets\Scripts\Environment\DroneSettings.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Assets\Mapbox\Core\Plugins\Mapbox\vector-tile-cs\net46\Mapbox.VectorTile.Geometry.dll" />
@@ -582,6 +580,7 @@
     <None Include="Assets\Mapbox\Core\Plugins\Mapbox\MapboxAccounts\net35\MapboxAccountsUnity.dll" />
     <None Include="Assets\Mapbox\Core\Plugins\Mapbox\vector-tile-cs\portable-net45+uap10\Mapbox.VectorTile.Geometry.dll" />
     <None Include="Assets\Mapbox\Shaders\MapboxStyles.shader" />
+    <None Include="Assets\Resources\Materials\BuildingNoiseShader.shader" />
     <None Include="Assets\Mapbox\Core\Plugins\ThirdParty\Mapbox.Json\Portable\Mapbox.Json.dll" />
     <None Include="Assets\Mapbox\Core\Plugins\ThirdParty\Mapbox.IO.Compression\net35\Mapbox.IO.Compression.dll" />
     <None Include="Assets\Mapbox\Core\Plugins\Mapbox\vector-tile-cs\net46\Mapbox.VectorTile.VectorTileReader.dll" />
@@ -592,6 +591,7 @@
     <None Include="Assets\Mapbox\Core\Plugins\Android\UniAndroidPermission\AndroidManifest-uniRP.xml" />
     <None Include="Assets\Mapbox\Core\Plugins\Mapbox\vector-tile-cs\portable-net45+uap10\Mapbox.VectorTile.ExtensionMethods.dll" />
     <None Include="Assets\Mapbox\Core\Plugins\Mapbox\vector-tile-cs\portable-net45+uap10\Mapbox.VectorTile.VectorTileReader.dll" />
+    <None Include="Assets\Resources\Materials\LanscapeNoiseShader.shader" />
     <None Include="Assets\Resources\Mapbox\MapboxConfiguration.txt" />
     <None Include="Assets\Mapbox\Core\Plugins\link.xml" />
     <None Include="Assets\Mapbox\Shaders\RasterWithTransparencyShader.shader" />

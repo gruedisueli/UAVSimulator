@@ -205,10 +205,8 @@ namespace Assets.Scripts.SimulatorCore
 
                             // Fill in vehicle spec
                             DroneBase v = isCorridor ? (DroneBase)clone.AddComponent<CorridorDrone>() : (DroneBase)clone.AddComponent<LowAltitudeDrone>();
-                            var vN = clone.AddComponent<VehicleNoise>();
-                            vN.Init(vcs);
                             v.Clone2d = clone2d;
-                            v.Initialize(droneSettings, "idle", false, vN);
+                            v.Initialize(droneSettings, "idle", false);
                             v.CurrentCommunicationPoint = sPS.gameObject;
 
                             var cloneI = Instantiate(EnvironManager.Instance.DroneIconPrefab);
@@ -297,7 +295,7 @@ namespace Assets.Scripts.SimulatorCore
 
             // Fill in vehivle spec
             BackgroundDrone v = clone.AddComponent<BackgroundDrone>();
-            v.Initialize(droneSettings, "background", true, null);
+            v.Initialize(droneSettings, "background", true);
             Vector3 firstDestination = vcs.GetRandomPointXZ(y);
             v.WayPointsQueue = new Queue<Vector3>(vcs.FindPath(instantiationSpot, firstDestination, 5, 1 << 8 | 1 << 9 | 1 << 13));
             v.TargetPosition = v.WayPointsQueue.Dequeue();

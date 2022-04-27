@@ -28,10 +28,6 @@ using DelaunatorSharp;
 public class VehicleControlSystem : MonoBehaviour
 {
     public bool TEMPORARY_IsRegionView = true;
-    public Material _lowNoiseMaterial;
-    public Material _midNoiseMaterial;
-    public Material _highNoiseMaterial;
-    public Material _noNoiseMaterial;
     public SimulationAnalyzer _simulationAnalyzer;
 
 
@@ -109,11 +105,6 @@ public class VehicleControlSystem : MonoBehaviour
             _noiseShpereVisualization = value; 
         }
     }
-
-    /// <summary>
-    /// List of all buildings and their noise objects.
-    /// </summary>
-    public Dictionary<string, BuildingNoise> BuildingNoiseElements { get; private set; } = new Dictionary<string, BuildingNoise>();
 
     // private SceneManagerBase sceneManager;
     public SceneManagerBase sceneManager;    
@@ -256,10 +247,6 @@ public class VehicleControlSystem : MonoBehaviour
         }
         else
         {
-            foreach (var b in BuildingNoiseElements)
-            {
-                b.Value.ResetNoise();
-            }
             foreach (var o in _aaoControls)
             {
                 o.Destroy();
@@ -276,36 +263,6 @@ public class VehicleControlSystem : MonoBehaviour
 
                 r.material = Resources.Load<Material>("Materials/Route");
             }
-        }
-    }
-
-    /// <summary>
-    /// Registers a newly-placed noise component.
-    /// </summary>
-    public void RegisterNoiseComponent(BuildingNoise noise)
-    {
-        if (!BuildingNoiseElements.ContainsKey(noise.ID))
-        {
-            BuildingNoiseElements.Add(noise.ID, noise);
-        }
-        else
-        {
-            Debug.LogError("New building is already in building noise dictionary");
-        }
-    }
-
-    /// <summary>
-    /// Deregisters a noise component.
-    /// </summary>
-    public void DeRegisterNoiseComponent(BuildingNoise noise)
-    {
-        if (BuildingNoiseElements.ContainsKey(noise.ID))
-        {
-            BuildingNoiseElements.Remove(noise.ID);
-        }
-        else
-        {
-            Debug.LogError("Deleted/disabled building is not in building noise dictionary");
         }
     }
 
@@ -485,9 +442,6 @@ public class VehicleControlSystem : MonoBehaviour
         parking.CallVehecleInParkingStructure(vehicle);
     }
 
-    /// <summary>
-    /// //@EUNU comment.
-    /// </summary>
     public float GetElevation(GameObject origin, GameObject destination)
     {
         // TO-DO: Assign elevation according to the simulation rules
@@ -507,9 +461,6 @@ public class VehicleControlSystem : MonoBehaviour
         return new Vector3(x, y, z);
     }
 
-    /// <summary>
-    /// //@EUNU comment. is this called?
-    /// </summary>
     public GameObject ReserveNearestAvailableParking(GameObject v)
     {
         float min_dist = float.PositiveInfinity;
@@ -560,7 +511,7 @@ public class VehicleControlSystem : MonoBehaviour
     }
 
     /// <summary>
-    /// Generates a route from origin through specified destinations. May go through additional intermediate points as needed.//@EUNU correct?
+    /// Generates a route from origin through specified destinations. May go through additional intermediate points as needed.
     /// Null on failure.
     /// </summary>
     public Queue<GameObject> Route (GameObject origin, List<GameObject> destinations)
@@ -583,8 +534,8 @@ public class VehicleControlSystem : MonoBehaviour
 
 
     /// <summary>
-    /// Finds shortest path in corridor network from one point to another. @Eunu correct?
-    /// Assumes a vehicle gets fully charged at each stop @Eunu are we calculating charge?
+    /// Finds shortest path in corridor network from one point to another.
+    /// Assumes a vehicle gets fully charged at each stop 
     /// Null on failure.
     /// </summary>
     List<GameObject> Dijkstra(GameObject origin, GameObject destination, float vehicleRange)
@@ -622,7 +573,7 @@ public class VehicleControlSystem : MonoBehaviour
     }
 
     /// <summary>
-    /// Gets some random destinations for a CORRIDOR drone. @Eunu correct?
+    /// Gets some random destinations for a CORRIDOR drone.
     /// </summary>
     public List<GameObject> GetNewRandomDestinations()
     {
@@ -652,7 +603,7 @@ public class VehicleControlSystem : MonoBehaviour
     }
 
     /// <summary>
-    /// Finds nearest parking structure with an available drone to first destination in call. @Eunu correct?
+    /// Finds nearest parking structure with an available drone to first destination in call.
     /// </summary>
     public GameObject GetNearestAvailableParking(GameObject firstDestination)
     {
@@ -681,7 +632,7 @@ public class VehicleControlSystem : MonoBehaviour
     }
 
     /// <summary>
-    /// Gets nearest parking structure to center of low-altitude drone path. @Eunu correct?
+    /// Gets nearest parking structure to center of low-altitude drone path. 
     /// </summary>
     public GameObject GetNearestAvailableParking(Vector3 AAOCenter)
     {
@@ -708,9 +659,6 @@ public class VehicleControlSystem : MonoBehaviour
 
     }
 
-    ///// <summary>
-    ///// @Eunu remove?
-    ///// </summary>
     //public bool Register(DroneBase v)
     //{
     //    return true;
@@ -726,9 +674,6 @@ public class VehicleControlSystem : MonoBehaviour
     //    }*/
     //}
 
-    ///// <summary>
-    ///// @Eunu comment
-    ///// </summary>
     //public bool UpdateVehicleStatus(DroneBase v)
     //{
     //    if (activeVehicles.ContainsKey(v.gameObject))
@@ -815,14 +760,6 @@ public class VehicleControlSystem : MonoBehaviour
         //    }
         //}
 
-    }
-
-    /// <summary>
-    /// Allows user to toggle noise visualization at runtime.
-    /// </summary>
-    public void ToggleNoiseVisualization ( bool toggle )
-    {
-        noiseVisualization = toggle;
     }
 
     /// <summary>

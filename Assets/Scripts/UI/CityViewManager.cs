@@ -120,8 +120,8 @@ namespace Assets.Scripts.UI
                             }
                         case VisibilityType.Noise:
                             {
-                                var u = args.Update as ModifyBoolPropertyArg;
-                                _vehicleControlSystem.ToggleNoiseVisualization(u.Value);
+                                //var u = args.Update as ModifyBoolPropertyArg;
+                                //_vehicleControlSystem.ToggleNoiseVisualization(u.Value);
                                 break;
                             }
                         case VisibilityType.Privacy:

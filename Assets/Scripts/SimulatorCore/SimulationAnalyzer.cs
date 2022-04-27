@@ -31,6 +31,10 @@ namespace Assets.Scripts.SimulatorCore
         private float _lastAvgSpeedUpdate = 0;
         private bool _isPlaying = false;
 
+
+        private float _noiseUpdateInterval = 0.5f;//how frequently to check the noise, in seconds
+        private float _lastNoiseUpdate = 0.0f;//last unity time we checked noise
+
         void Start()
         {
             averageSpeed = 0.0f;
@@ -44,12 +48,15 @@ namespace Assets.Scripts.SimulatorCore
             congestedCorridors = new List<Corridor>();
             congestedParkingStructures = new List<GameObject>();
             congestedDronePorts = new List<GameObject>();
+            UpdateGlobalNoiseValues();
         }
 
         void Update()
         {
-            if (_isPlaying && Time.unscaledTime - _lastAvgSpeedUpdate > _avgSpeedUpdateInterval)
+            var t = Time.unscaledTime;
+            if (_isPlaying && t - _lastAvgSpeedUpdate > _avgSpeedUpdateInterval)
             {
+                _lastAvgSpeedUpdate = t;
                 float sum = 0;
                 foreach (var d in flyingDrones)
                 {
@@ -58,6 +65,35 @@ namespace Assets.Scripts.SimulatorCore
 
                 averageSpeed = sum / flyingDrones.Count;
             }
+
+            if (_isPlaying && t - _lastNoiseUpdate > _noiseUpdateInterval)
+            {
+                _lastNoiseUpdate = t;
+                UpdateGlobalNoiseValues();
+            }
+
+        }
+
+        private void UpdateGlobalNoiseValues()
+        {
+            //var p = Shader.GetGlobalVectorArray("_dronePositions");
+            //var n = Shader.GetGlobalFloatArray("_noiseRadii");
+            //https://forum.unity.com/threads/shader-read-static-variable-in-c-script.171914/
+            var positions = new List<Vector4>();
+            var radii = new List<float>();
+            for (int i = 0; i < 1000; i++)
+            {
+                if (i >= flyingDrones.Count)
+                {
+                    positions.Add(new Vector4(999999, 999999, 999999, 999999));
+                    radii.Add(0);
+                    continue;
+                }
+                positions.Add(flyingDrones[i].transform.position);
+                radii.Add(flyingDrones[i].NoiseRadius);
+            }
+            Shader.SetGlobalVectorArray("_dronePositions", positions);
+            Shader.SetGlobalFloatArray("_noiseRadii", radii);
         }
         /// <summary>
         /// Performs reset actions when stopping, otherwise commences analysis
