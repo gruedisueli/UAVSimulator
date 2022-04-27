@@ -804,9 +804,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   averageSpeed: 0
   throughput: 0
-  highNoiseBuildings: []
-  mediumNoiseBuildings: []
-  lowNoiseBuildings: []
   flyingDrones: []
   congestedCorridors: []
   congestedParkingStructures: []
@@ -824,10 +821,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   TEMPORARY_IsRegionView: 1
-  _lowNoiseMaterial: {fileID: 2100000, guid: 083b7bd93bc49ed4883968584a264fd8, type: 2}
-  _midNoiseMaterial: {fileID: 2100000, guid: c31ef6ee723d4174fbe19aeb849fb102, type: 2}
-  _highNoiseMaterial: {fileID: 2100000, guid: 8643050f8572fa541b30f8eea76da458, type: 2}
-  _noNoiseMaterial: {fileID: 2100000, guid: 45d0913bc4ed185428204c7f0f0b44c9, type: 2}
   _simulationAnalyzer: {fileID: 246965923}
   MIN_DRONE_RANGE: 0
   DRONE_SCALE: 1
@@ -2409,6 +2402,11 @@ PrefabInstance:
       propertyPath: m_Name
       value: TextElement_MedNoiseBldg
       objectReference: {fileID: 0}
+    - target: {fileID: 1911747379306107199, guid: 60a7e5436cb058a48b804618e74d327a,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 2384794186238728023, guid: 60a7e5436cb058a48b804618e74d327a,
         type: 3}
       propertyPath: m_Pivot.x
@@ -2432,7 +2430,7 @@ PrefabInstance:
     - target: {fileID: 2384794186238728023, guid: 60a7e5436cb058a48b804618e74d327a,
         type: 3}
       propertyPath: m_AnchorMax.y
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 2384794186238728023, guid: 60a7e5436cb058a48b804618e74d327a,
         type: 3}
@@ -2442,7 +2440,7 @@ PrefabInstance:
     - target: {fileID: 2384794186238728023, guid: 60a7e5436cb058a48b804618e74d327a,
         type: 3}
       propertyPath: m_AnchorMin.y
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 2384794186238728023, guid: 60a7e5436cb058a48b804618e74d327a,
         type: 3}
@@ -2492,12 +2490,12 @@ PrefabInstance:
     - target: {fileID: 2384794186238728023, guid: 60a7e5436cb058a48b804618e74d327a,
         type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: 0
+      value: 135
       objectReference: {fileID: 0}
     - target: {fileID: 2384794186238728023, guid: 60a7e5436cb058a48b804618e74d327a,
         type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: 0
+      value: -110
       objectReference: {fileID: 0}
     - target: {fileID: 2384794186238728023, guid: 60a7e5436cb058a48b804618e74d327a,
         type: 3}
@@ -2724,6 +2722,11 @@ PrefabInstance:
       propertyPath: m_Name
       value: TextElement_LowNoiseBldg
       objectReference: {fileID: 0}
+    - target: {fileID: 1911747379306107199, guid: 60a7e5436cb058a48b804618e74d327a,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 2384794186238728023, guid: 60a7e5436cb058a48b804618e74d327a,
         type: 3}
       propertyPath: m_Pivot.x
@@ -2747,7 +2750,7 @@ PrefabInstance:
     - target: {fileID: 2384794186238728023, guid: 60a7e5436cb058a48b804618e74d327a,
         type: 3}
       propertyPath: m_AnchorMax.y
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 2384794186238728023, guid: 60a7e5436cb058a48b804618e74d327a,
         type: 3}
@@ -2757,7 +2760,7 @@ PrefabInstance:
     - target: {fileID: 2384794186238728023, guid: 60a7e5436cb058a48b804618e74d327a,
         type: 3}
       propertyPath: m_AnchorMin.y
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 2384794186238728023, guid: 60a7e5436cb058a48b804618e74d327a,
         type: 3}
@@ -2807,12 +2810,12 @@ PrefabInstance:
     - target: {fileID: 2384794186238728023, guid: 60a7e5436cb058a48b804618e74d327a,
         type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: 0
+      value: 135
       objectReference: {fileID: 0}
     - target: {fileID: 2384794186238728023, guid: 60a7e5436cb058a48b804618e74d327a,
         type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: 0
+      value: -130
       objectReference: {fileID: 0}
     - target: {fileID: 2384794186238728023, guid: 60a7e5436cb058a48b804618e74d327a,
         type: 3}
@@ -5455,6 +5458,11 @@ PrefabInstance:
       propertyPath: m_Name
       value: TextElement_HighNoiseBldg
       objectReference: {fileID: 0}
+    - target: {fileID: 1911747379306107199, guid: 60a7e5436cb058a48b804618e74d327a,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 2384794186238728023, guid: 60a7e5436cb058a48b804618e74d327a,
         type: 3}
       propertyPath: m_Pivot.x
@@ -5478,7 +5486,7 @@ PrefabInstance:
     - target: {fileID: 2384794186238728023, guid: 60a7e5436cb058a48b804618e74d327a,
         type: 3}
       propertyPath: m_AnchorMax.y
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 2384794186238728023, guid: 60a7e5436cb058a48b804618e74d327a,
         type: 3}
@@ -5488,7 +5496,7 @@ PrefabInstance:
     - target: {fileID: 2384794186238728023, guid: 60a7e5436cb058a48b804618e74d327a,
         type: 3}
       propertyPath: m_AnchorMin.y
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 2384794186238728023, guid: 60a7e5436cb058a48b804618e74d327a,
         type: 3}
@@ -5538,12 +5546,12 @@ PrefabInstance:
     - target: {fileID: 2384794186238728023, guid: 60a7e5436cb058a48b804618e74d327a,
         type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: 0
+      value: 135
       objectReference: {fileID: 0}
     - target: {fileID: 2384794186238728023, guid: 60a7e5436cb058a48b804618e74d327a,
         type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: 0
+      value: -90
       objectReference: {fileID: 0}
     - target: {fileID: 2384794186238728023, guid: 60a7e5436cb058a48b804618e74d327a,
         type: 3}

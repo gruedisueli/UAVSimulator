@@ -66,9 +66,9 @@ namespace Assets.Scripts.UI.Tools
             i.SetTextElement(ElementPropertyType.Throughput, s.throughput);
             //i.SetTextElement(ElementPropertyType.GrossEnergyConsumption, s.grossEnergyConsumption);
             //i.SetTextElement(ElementPropertyType.GrossEmission, s.grossEmission);
-            i.SetTextElement(ElementPropertyType.HighNoiseBuildings, s.highNoiseBuildings?.Count ?? 0);
-            i.SetTextElement(ElementPropertyType.MediumNoiseBuildings, s.mediumNoiseBuildings?.Count ?? 0);
-            i.SetTextElement(ElementPropertyType.LowNoiseBuildings, s.lowNoiseBuildings?.Count ?? 0);
+            //i.SetTextElement(ElementPropertyType.HighNoiseBuildings, s.highNoiseBuildings?.Count ?? 0);
+            //i.SetTextElement(ElementPropertyType.MediumNoiseBuildings, s.mediumNoiseBuildings?.Count ?? 0);
+            //i.SetTextElement(ElementPropertyType.LowNoiseBuildings, s.lowNoiseBuildings?.Count ?? 0);
             i.SetTextElement(ElementPropertyType.FlyingDrones, s.flyingDrones?.Count ?? 0);
             i.SetTextElement(ElementPropertyType.CongestedCorridors, s.congestedCorridors?.Count ?? 0);
             i.SetTextElement(ElementPropertyType.CongestedParkingStructures, s.congestedParkingStructures?.Count ?? 0);

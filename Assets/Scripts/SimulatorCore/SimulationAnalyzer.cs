@@ -19,9 +19,9 @@ namespace Assets.Scripts.SimulatorCore
         public float throughput; //{ get; set; }
         //public float grossEnergyConsumption; //{ get; set; }
         //public float grossEmission; //{ get; set; }
-        public List<GameObject> highNoiseBuildings;  //{ get; set; }//list of current buildings with "high noise"
-        public List<GameObject> mediumNoiseBuildings; //{ get; set; }//list of current buildings with "medium noise"
-        public List<GameObject> lowNoiseBuildings; //{ get; set; }//list of current buildings with "low noise"
+        //public List<GameObject> highNoiseBuildings;  //{ get; set; }//list of current buildings with "high noise"
+        //public List<GameObject> mediumNoiseBuildings; //{ get; set; }//list of current buildings with "medium noise"
+        //public List<GameObject> lowNoiseBuildings; //{ get; set; }//list of current buildings with "low noise"
         public List<DroneBase> flyingDrones; //{ get; set; }//list of drones in the air right now.
         public List<Corridor> congestedCorridors; //{ get; set; }//list of corridors currently labeled as congested.
         public List<GameObject> congestedParkingStructures; //{ get; set; }//list of parking structures currently labeled as congested.
@@ -41,9 +41,9 @@ namespace Assets.Scripts.SimulatorCore
             throughput = 0.0f;
             //grossEmission = 0.0f;
             //grossEnergyConsumption = 0.0f;
-            highNoiseBuildings = new List<GameObject>();
-            mediumNoiseBuildings = new List<GameObject>();
-            lowNoiseBuildings = new List<GameObject>();
+            //highNoiseBuildings = new List<GameObject>();
+            //mediumNoiseBuildings = new List<GameObject>();
+            //lowNoiseBuildings = new List<GameObject>();
             flyingDrones = new List<DroneBase>();
             congestedCorridors = new List<Corridor>();
             congestedParkingStructures = new List<GameObject>();
@@ -107,57 +107,57 @@ namespace Assets.Scripts.SimulatorCore
                 congestedCorridors.Clear();
                 congestedParkingStructures.Clear();
                 congestedDronePorts.Clear();
-                highNoiseBuildings.Clear();
-                mediumNoiseBuildings.Clear();
-                lowNoiseBuildings.Clear();
+                //highNoiseBuildings.Clear();
+                //mediumNoiseBuildings.Clear();
+                //lowNoiseBuildings.Clear();
                 averageSpeed = 0;
                 throughput = 0;
             }
         }
 
         #region Building Related Methods
-        /// <summary>
-        /// Add building to high noise building list.
-        /// </summary>
-        public void AddHighNoiseBuilding ( GameObject building )
-        {
-            if (!highNoiseBuildings.Contains(building)) highNoiseBuildings.Add(building);
-        }
-        /// <summary>
-        /// Remove building from high noise building list.
-        /// </summary>
-        public void RemoveHighNoiseBuilding(GameObject building)
-        {
-            if (highNoiseBuildings.Contains(building)) highNoiseBuildings.Remove(building);
-        }
-        /// <summary>
-        /// Add building to medium noise building list.
-        /// </summary>
-        public void AddMediumNoiseBuilding(GameObject building)
-        {
-            if (!mediumNoiseBuildings.Contains(building)) mediumNoiseBuildings.Add(building);
-        }
-        /// <summary>
-        /// Remove building from medium noise building list.
-        /// </summary>
-        public void RemoveMediumNoiseBuilding(GameObject building)
-        {
-            if (mediumNoiseBuildings.Contains(building)) mediumNoiseBuildings.Remove(building);
-        }
-        /// <summary>
-        /// Add building to low noise building list.
-        /// </summary>
-        public void AddLowNoiseBuilding(GameObject building)
-        {
-            if (!lowNoiseBuildings.Contains(building)) lowNoiseBuildings.Add(building);
-        }
-        /// <summary>
-        /// Remove building from low noise building list.
-        /// </summary>
-        public void RemoveLowNoiseBuilding(GameObject building)
-        {
-            if (lowNoiseBuildings.Contains(building)) lowNoiseBuildings.Remove(building);
-        }
+        ///// <summary>
+        ///// Add building to high noise building list.
+        ///// </summary>
+        //public void AddHighNoiseBuilding ( GameObject building )
+        //{
+        //    if (!highNoiseBuildings.Contains(building)) highNoiseBuildings.Add(building);
+        //}
+        ///// <summary>
+        ///// Remove building from high noise building list.
+        ///// </summary>
+        //public void RemoveHighNoiseBuilding(GameObject building)
+        //{
+        //    if (highNoiseBuildings.Contains(building)) highNoiseBuildings.Remove(building);
+        //}
+        ///// <summary>
+        ///// Add building to medium noise building list.
+        ///// </summary>
+        //public void AddMediumNoiseBuilding(GameObject building)
+        //{
+        //    if (!mediumNoiseBuildings.Contains(building)) mediumNoiseBuildings.Add(building);
+        //}
+        ///// <summary>
+        ///// Remove building from medium noise building list.
+        ///// </summary>
+        //public void RemoveMediumNoiseBuilding(GameObject building)
+        //{
+        //    if (mediumNoiseBuildings.Contains(building)) mediumNoiseBuildings.Remove(building);
+        //}
+        ///// <summary>
+        ///// Add building to low noise building list.
+        ///// </summary>
+        //public void AddLowNoiseBuilding(GameObject building)
+        //{
+        //    if (!lowNoiseBuildings.Contains(building)) lowNoiseBuildings.Add(building);
+        //}
+        ///// <summary>
+        ///// Remove building from low noise building list.
+        ///// </summary>
+        //public void RemoveLowNoiseBuilding(GameObject building)
+        //{
+        //    if (lowNoiseBuildings.Contains(building)) lowNoiseBuildings.Remove(building);
+        //}
         #endregion
 
         #region Drone Related Methods
