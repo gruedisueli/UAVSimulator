@@ -25,9 +25,14 @@ namespace Assets.Scripts.UI.Tools
         protected override void Awake()
         {
             base.Awake();
+
+            UpdateUnits(EnvironManager.Instance.Environ.SimSettings.IsMetricUnits);
+        }
+
+        public void UpdateUnits(bool isMetric)
+        {
             if (_unitType != UnitType.None)
             {
-                bool isMetric = EnvironManager.Instance.Environ.SimSettings.IsMetricUnits;
                 string u = "";
                 if (_unitType == UnitType.Distance)
                 {

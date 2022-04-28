@@ -111,7 +111,14 @@ namespace Assets.Scripts
         FlyingDrones = 60,
         CongestedCorridors = 61,
         CongestedParkingStructures = 62,
-        CongestedDronePorts = 63
+        CongestedDronePorts = 63,
+        CallGenInterval = 64,
+        AcceptableNoiseThreshold = 65,
+        SimulationSpeedMultiplier = 66,
+        SoundLevelAtSource = 67,
+        DroneCount = 68,
+        UpperElevation = 69,
+        LowerElevation = 70
     }
 
     public enum VisibilityType

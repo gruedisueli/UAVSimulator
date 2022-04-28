@@ -140,5 +140,22 @@ namespace Assets.Scripts.Environment
         {
 
         }
+
+        public SimulationSettings (SimulationSettings orig)
+        {
+            _isMetricUnits = orig.IsMetricUnits;
+            _callGenerationInterval_S = orig.CallGenerationInterval_S;
+            _acceptableNoiseThreshold_Decibels = orig.AcceptableNoiseThreshold_Decibels;
+            _simulationSpeedMultiplier = orig.SimulationSpeedMultiplier;
+            _strategicDeconfliction = orig.StrategicDeconfliction;
+            _corridorDroneSettings = new DroneSettings(orig.CorridorDroneSettings);
+            _corridorFlightElevation_M = orig.CorridorFlightElevation_M;
+            _corridorSeparationDistance_M = orig.CorridorSeparationDistance_M;
+            _lowAltitudeDroneSettings = new DroneSettings(orig.LowAltitudeDroneSettings);
+            _lowAltitudeFlightElevation_M = orig.LowAltitudeFlightElevation_M;
+            _backgroundDroneCount = orig.BackgroundDroneCount;
+            _backgroundDroneUpperElev_M = orig.BackgroundDroneUpperElev_M;
+            _backgroundDroneLowerElev_M = orig.BackgoundDroneLowerElev_M;
+        }
     }
 }

@@ -387,7 +387,7 @@ namespace Assets.Scripts.UI
             {
                 if (_workingCopy == null)
                 {
-                    Debug.LogError("Working copy is null");
+                    //ignore. modifying some other setting
                     return;
                 }
                 if (_workingCopy is SceneDronePort)

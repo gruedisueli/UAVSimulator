@@ -82,5 +82,17 @@ namespace Assets.Scripts.Environment
             _soundAtSource_Decibels = soundAtSourceDb;
         }
 
+        public DroneSettings(DroneSettings orig)
+        {
+            _droneType = orig.DroneType;
+            _yawSpeed = orig.YawSpeed;
+            _maxSpeed_MPS = orig.MaxSpeed_MPS;
+            _takeOffSpeed_MPS = orig.TakeOffSpeed_MPS;
+            _landingSpeed_MPS = orig.LandingSpeed_MPS;
+            _waitTime_S = orig.WaitTime_S;
+            _capacity = orig.Capacity;
+            _soundAtSource_Decibels = orig.SoundAtSource_Decibels;
+        }
+
     }
 }
