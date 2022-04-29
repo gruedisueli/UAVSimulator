@@ -289,6 +289,7 @@ public abstract class DroneBase : MonoBehaviour
     public virtual void LandGranted()
     {
         State = "land";
+        CurrentSpeed = LandingSpeed;
     }
 
     /// <summary>

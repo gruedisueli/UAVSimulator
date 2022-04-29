@@ -20,7 +20,7 @@ public class LowAltitudeDrone : DroneBase
         }
         transform.position = Vector3.MoveTowards(transform.position, TargetPosition, CurrentSpeed * Time.deltaTime * EnvironManager.Instance.Environ.SimSettings.SimulationSpeedMultiplier);
 
-        if ( Vector3.Distance(transform.position, TargetPosition) < ApproachingThreshold && WayPointsQueue.Count == 0 )
+        if ( Vector3.Distance(transform.position, TargetPosition) < ArrivalThreshold && WayPointsQueue.Count == 0 )
         {
             GetNextAction();
         }
