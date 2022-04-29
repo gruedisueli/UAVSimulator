@@ -183,7 +183,7 @@ public class VehicleControlSystem : MonoBehaviour
         {
             watch += Time.deltaTime;
             //periodic check-in
-            if (watch > EnvironManager.Instance.Environ.SimSettings.CallGenerationInterval_S)
+            if (watch > EnvironManager.Instance.Environ.SimSettings.CallGenerationInterval_S / EnvironManager.Instance.Environ.SimSettings.SimulationSpeedMultiplier)
             {
                 //var sa = gameObject.GetComponent<SimulationAnalyzer>();
                 ////make sure we don't have excess drones in simulation.
