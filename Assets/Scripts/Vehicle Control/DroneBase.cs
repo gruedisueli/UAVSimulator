@@ -279,7 +279,7 @@ public abstract class DroneBase : MonoBehaviour
     /// </summary>
     protected virtual void Pending()
     {
-        CurrentSpeed = 0;
+        CurrentSpeed = LandingSpeed;
         State = "pending";
         CurrentCommunicationPoint.SendMessage("RegisterInQueue", this.gameObject);
     }

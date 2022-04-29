@@ -46,7 +46,7 @@ public class LowAltitudeDrone : DroneBase
         else if (State == "move")
         {
             State = "pending";
-            CurrentSpeed = 0;
+            CurrentSpeed = LandingSpeed;
             CurrentCommunicationPoint.SendMessage("RegisterInQueue", this.gameObject);
         }
         else if (State == "land")
