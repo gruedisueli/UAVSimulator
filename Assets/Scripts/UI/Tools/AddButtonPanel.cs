@@ -30,7 +30,7 @@ namespace Assets.Scripts.UI.Tools
                         foreach (var kvp in assets)
                         {
                             var a = kvp.Value;
-                            InstantiateButton(_family, kvp.Key, a, "Port");
+                            InstantiateButton(_family, kvp.Key, a, "Landing Pad");
                         }
                         break;
                     }
