@@ -19,7 +19,6 @@ namespace Assets.Scripts.UI.Tools
             var s = _droneSettingsCopy;
             _flightElevM = flightElevM;
             _isMetric = isMetric;
-            SetModifyToolValue(ElementPropertyType.WaitTime, s.WaitTime_S);
             SetModifyToolValue(ElementPropertyType.Capacity, s.Capacity);
             SetModifyToolValue(ElementPropertyType.SoundLevelAtSource, s.SoundAtSource_Decibels);
             if (isMetric)
@@ -49,14 +48,6 @@ namespace Assets.Scripts.UI.Tools
                     if (args.Update is ModifyFloatPropertyArg f)
                     {
                         _flightElevM = _isMetric ? f.Value : UnitUtils.FeetToMeters(f.Value);
-                    }
-                    break;
-                }
-                case ElementPropertyType.WaitTime:
-                {
-                    if (args.Update is ModifyFloatPropertyArg f)
-                    {
-                        s.WaitTime_S = f.Value;
                     }
                     break;
                 }
