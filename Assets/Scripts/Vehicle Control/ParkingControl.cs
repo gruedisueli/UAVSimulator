@@ -160,7 +160,7 @@ public class ParkingControl : TrafficControl
         // Temporary function
 
         List<Vector3> guides = new List<Vector3>();
-        if (type.Equals("Simple_4Way_Stack"))
+        if (type.Contains("corridor"))
         {
             Vector3 direction = new Vector3(spot.x, 0.0f, spot.z).normalized;
             direction = Quaternion.Euler(parkingInfo.Rotation.x, parkingInfo.Rotation.y, parkingInfo.Rotation.z) * direction;

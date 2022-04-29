@@ -158,12 +158,13 @@ namespace Assets.Scripts.SimulatorCore
             var droneSettings = isCorridor ? EnvironManager.Instance.Environ.SimSettings.CorridorDroneSettings : EnvironManager.Instance.Environ.SimSettings.LowAltitudeDroneSettings;
             //string droneType = isCorridor ? "corridor" : "LowAltitude";
             float progress = 0.0f;
-            int parkingCapacity = vcs.GetParkingCapacity();
+            //int parkingCapacity = vcs.GetParkingCapacity();
             int typeSpecificCapacity = vcs.GetParkingCapacity(droneSettings.DroneType);
             int currentDroneCt = isCorridor ? _corridorDrones.Count : _lowAltitudeDrones.Count;
-            int vehiclesToInstantiate = UnityEngine.Random.Range(parkingCapacity - typeSpecificCapacity - 10 - currentDroneCt, parkingCapacity - typeSpecificCapacity - currentDroneCt);
+            int vehiclesToInstantiate = UnityEngine.Random.Range(typeSpecificCapacity - 10 - currentDroneCt, typeSpecificCapacity - 10);
+            //int vehiclesToInstantiate = UnityEngine.Random.Range(parkingCapacity - typeSpecificCapacity - 10 - currentDroneCt, parkingCapacity - typeSpecificCapacity - currentDroneCt);
 
-            if (vehiclesToInstantiate < 0) yield break;
+            //if (vehiclesToInstantiate < 0) yield break;
 
             var pG = Instantiate(EnvironManager.Instance.ProgressBarPrefab, _canvas.gameObject.transform);
             var progressBar = pG.GetComponent<ProgressBar>();
