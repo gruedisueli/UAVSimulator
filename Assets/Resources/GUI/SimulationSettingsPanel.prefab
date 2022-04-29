@@ -2695,6 +2695,11 @@ PrefabInstance:
       propertyPath: _propertyType
       value: 31
       objectReference: {fileID: 0}
+    - target: {fileID: 2966743247853539428, guid: 9dd4af3bd9e0cbc4890162a6d96757ee,
+        type: 3}
+      propertyPath: _optPlcHlderTxtPref
+      value: Max Speed
+      objectReference: {fileID: 0}
     - target: {fileID: 5701136653670066961, guid: 9dd4af3bd9e0cbc4890162a6d96757ee,
         type: 3}
       propertyPath: m_AnchorMax.y
@@ -2884,6 +2889,11 @@ PrefabInstance:
         type: 3}
       propertyPath: _propertyType
       value: 69
+      objectReference: {fileID: 0}
+    - target: {fileID: 2966743247853539428, guid: 9dd4af3bd9e0cbc4890162a6d96757ee,
+        type: 3}
+      propertyPath: _optPlcHlderTxtPref
+      value: Upper Elevation
       objectReference: {fileID: 0}
     - target: {fileID: 5701136653670066961, guid: 9dd4af3bd9e0cbc4890162a6d96757ee,
         type: 3}
@@ -3075,6 +3085,11 @@ PrefabInstance:
       propertyPath: _propertyType
       value: 40
       objectReference: {fileID: 0}
+    - target: {fileID: 2966743247853539428, guid: 9dd4af3bd9e0cbc4890162a6d96757ee,
+        type: 3}
+      propertyPath: _optPlcHlderTxtPref
+      value: Flight Elevation
+      objectReference: {fileID: 0}
     - target: {fileID: 5701136653670066961, guid: 9dd4af3bd9e0cbc4890162a6d96757ee,
         type: 3}
       propertyPath: m_AnchorMax.y
@@ -3264,6 +3279,11 @@ PrefabInstance:
         type: 3}
       propertyPath: _propertyType
       value: 34
+      objectReference: {fileID: 0}
+    - target: {fileID: 2966743247853539428, guid: 9dd4af3bd9e0cbc4890162a6d96757ee,
+        type: 3}
+      propertyPath: _optPlcHlderTxtPref
+      value: Landing Speed
       objectReference: {fileID: 0}
     - target: {fileID: 5701136653670066961, guid: 9dd4af3bd9e0cbc4890162a6d96757ee,
         type: 3}
@@ -3825,6 +3845,11 @@ PrefabInstance:
       propertyPath: _propertyType
       value: 70
       objectReference: {fileID: 0}
+    - target: {fileID: 2966743247853539428, guid: 9dd4af3bd9e0cbc4890162a6d96757ee,
+        type: 3}
+      propertyPath: _optPlcHlderTxtPref
+      value: Lower Elevation
+      objectReference: {fileID: 0}
     - target: {fileID: 5701136653670066961, guid: 9dd4af3bd9e0cbc4890162a6d96757ee,
         type: 3}
       propertyPath: m_AnchorMax.y
@@ -4385,6 +4410,11 @@ PrefabInstance:
       propertyPath: _propertyType
       value: 34
       objectReference: {fileID: 0}
+    - target: {fileID: 2966743247853539428, guid: 9dd4af3bd9e0cbc4890162a6d96757ee,
+        type: 3}
+      propertyPath: _optPlcHlderTxtPref
+      value: Landing Speed
+      objectReference: {fileID: 0}
     - target: {fileID: 5701136653670066961, guid: 9dd4af3bd9e0cbc4890162a6d96757ee,
         type: 3}
       propertyPath: m_AnchorMax.y
@@ -4574,6 +4604,11 @@ PrefabInstance:
         type: 3}
       propertyPath: _propertyType
       value: 33
+      objectReference: {fileID: 0}
+    - target: {fileID: 2966743247853539428, guid: 9dd4af3bd9e0cbc4890162a6d96757ee,
+        type: 3}
+      propertyPath: _optPlcHlderTxtPref
+      value: Takeoff Speed
       objectReference: {fileID: 0}
     - target: {fileID: 5701136653670066961, guid: 9dd4af3bd9e0cbc4890162a6d96757ee,
         type: 3}
@@ -4765,6 +4800,11 @@ PrefabInstance:
       propertyPath: _propertyType
       value: 44
       objectReference: {fileID: 0}
+    - target: {fileID: 2966743247853539428, guid: 9dd4af3bd9e0cbc4890162a6d96757ee,
+        type: 3}
+      propertyPath: _optPlcHlderTxtPref
+      value: Separation Distance
+      objectReference: {fileID: 0}
     - target: {fileID: 5701136653670066961, guid: 9dd4af3bd9e0cbc4890162a6d96757ee,
         type: 3}
       propertyPath: m_AnchorMax.y
@@ -4955,6 +4995,11 @@ PrefabInstance:
       propertyPath: _propertyType
       value: 31
       objectReference: {fileID: 0}
+    - target: {fileID: 2966743247853539428, guid: 9dd4af3bd9e0cbc4890162a6d96757ee,
+        type: 3}
+      propertyPath: _optPlcHlderTxtPref
+      value: Max Speed
+      objectReference: {fileID: 0}
     - target: {fileID: 5701136653670066961, guid: 9dd4af3bd9e0cbc4890162a6d96757ee,
         type: 3}
       propertyPath: m_AnchorMax.y
@@ -5144,6 +5189,11 @@ PrefabInstance:
         type: 3}
       propertyPath: _propertyType
       value: 40
+      objectReference: {fileID: 0}
+    - target: {fileID: 2966743247853539428, guid: 9dd4af3bd9e0cbc4890162a6d96757ee,
+        type: 3}
+      propertyPath: _optPlcHlderTxtPref
+      value: Flight Elevation
       objectReference: {fileID: 0}
     - target: {fileID: 5701136653670066961, guid: 9dd4af3bd9e0cbc4890162a6d96757ee,
         type: 3}
@@ -6444,6 +6494,11 @@ PrefabInstance:
         type: 3}
       propertyPath: _propertyType
       value: 33
+      objectReference: {fileID: 0}
+    - target: {fileID: 2966743247853539428, guid: 9dd4af3bd9e0cbc4890162a6d96757ee,
+        type: 3}
+      propertyPath: _optPlcHlderTxtPref
+      value: Takeoff Speed
       objectReference: {fileID: 0}
     - target: {fileID: 5701136653670066961, guid: 9dd4af3bd9e0cbc4890162a6d96757ee,
         type: 3}

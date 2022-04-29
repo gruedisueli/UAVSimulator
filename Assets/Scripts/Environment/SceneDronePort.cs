@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using UnityEngine;
 
 using Assets.Scripts.UI.Tags;
+using UnityEngine.UI;
 
 namespace Assets.Scripts.Environment
 {
@@ -26,6 +27,13 @@ namespace Assets.Scripts.Environment
             Guid = guid;
             SceneCanvas = canvas;
             Sprite2d = Instantiate(EnvironManager.Instance.PortSpritePrefab, SceneCanvas.transform);
+            var b = Sprite2d.GetComponentInChildren<Button>();
+            if (b == null)
+            {
+                Debug.LogError("Button not found on drone port sprite prefab");
+            }
+
+            b.onClick.AddListener(SpriteClicked);
             DronePortSpecs = dP;
             gameObject.name = "DronePort_" + dP.Type;
             gameObject.tag = "DronePort";
@@ -53,5 +61,6 @@ namespace Assets.Scripts.Environment
             gameObject.transform.localScale = DronePortSpecs.Scale;
             
         }
+
     }
 }

@@ -42,7 +42,7 @@ namespace Assets.Scripts.Environment
         /// <summary>
         /// This is the position at the BOTTOM of the stack. Element positions are LOCAL positions relative to this parent.
         /// </summary>
-        public Vector3 Position
+        public override Vector3 Position
         {
             get
             {

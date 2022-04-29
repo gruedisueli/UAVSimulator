@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using UnityEngine;
 
 using Assets.Scripts.UI.Tags;
+using UnityEngine.UI;
 
 namespace Assets.Scripts.Environment
 {
@@ -26,6 +27,12 @@ namespace Assets.Scripts.Environment
             Guid = guid;
             SceneCanvas = canvas;
             Sprite2d = Instantiate(EnvironManager.Instance.ParkingSpritePrefab, SceneCanvas.transform);
+            var b = Sprite2d.GetComponentInChildren<Button>();
+            if (b == null)
+            {
+                Debug.LogError("Button not found on parking structure sprite prefab");
+            }
+            b.onClick.AddListener(SpriteClicked);
             ParkingStructureSpecs = pS;
             gameObject.tag = "ParkingStructure";
             gameObject.name = "Parking_" + pS.Type;

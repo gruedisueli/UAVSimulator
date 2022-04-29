@@ -107,5 +107,12 @@ namespace Assets.Scripts.Environment
                 o.OnSelected += Selected;
             }
         }
+
+        protected void SpriteClicked()
+        {
+            if (EnvironManager.Instance.VCS.playing) return;//prevent modification of scene elements when playing.
+            Debug.Log("Clicked scene element " + Guid);
+            OnSceneElementSelected?.Invoke(this);
+        }
     }
 }

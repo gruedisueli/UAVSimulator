@@ -121,11 +121,15 @@ namespace Assets.Scripts.Environment
 
         [JsonProperty]
         private SerVect3f _position = new SerVect3f();
-        public Vector3 Position
+        public override Vector3 Position
         {
             get
             {
                 return _position.ToVector3();
+            }
+            set
+            {
+                _position = new SerVect3f(value);
             }
         }
 

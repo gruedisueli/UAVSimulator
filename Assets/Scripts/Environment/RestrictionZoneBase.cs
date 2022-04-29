@@ -17,6 +17,8 @@ namespace Assets.Scripts.Environment
         public int Layer { get; set; } = 8;
         public abstract string Type { get; }
         public abstract string Description { get; }
+
+        public abstract Vector3 Position { get; set; }
         public abstract void UpdateParams(ModifyPropertyArgBase args);
         public abstract RestrictionZoneBase GetCopy();
     }

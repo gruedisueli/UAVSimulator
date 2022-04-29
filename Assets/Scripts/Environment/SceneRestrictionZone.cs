@@ -3,8 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-
+using Assets.Scripts.UI.Tags;
 using UnityEngine;
+using UnityEngine.UI;
 
 using Assets.Scripts.UI.Tools;
 
@@ -18,13 +19,19 @@ namespace Assets.Scripts.Environment
         public RestrictionZoneBase RestrictionZoneSpecs { get; private set; }
         public List<GameObject> SubElements { get; private set; } = new List<GameObject>();
 
-        public void Initialize(string guid, RestrictionZoneBase rZ)
+        public void Initialize(string guid, RestrictionZoneBase rZ, Canvas canvas)
         {
             Guid = guid;
+            SceneCanvas = canvas;
+            Sprite2d = Instantiate(EnvironManager.Instance.RestrictionSpritePrefab, SceneCanvas.transform);
+            var b = Sprite2d.GetComponentInChildren<Button>();
+            if (b == null)
+            {
+                Debug.LogError("Button not found on restriction zone sprite prefab");
+            }
+            b.onClick.AddListener(SpriteClicked);
             RestrictionZoneSpecs = rZ;
             _defaultMaterial = Instantiate(EnvironManager.Instance.RestrictionZoneMaterial);
-
-
             string type = "";
             if (rZ is RestrictionZoneRect)
             {
@@ -71,7 +78,9 @@ namespace Assets.Scripts.Environment
                 c.AddComponent<SelectableGameObject>();
             }
             MakeSelectable();
-            
+
+            var tag = Sprite2d.GetComponent<UIWorldTag>();
+            tag?.SetWorldPos(RestrictionZoneSpecs.Position);
         }
 
         /// <summary>
@@ -91,6 +100,9 @@ namespace Assets.Scripts.Environment
         /// </summary>
         public override void UpdateGameObject()
         {
+            var tag = Sprite2d.GetComponent<UIWorldTag>();
+            tag?.SetWorldPos(RestrictionZoneSpecs.Position);
+
             if (RestrictionZoneSpecs is RestrictionZoneRect)
             {
                 if (SubElements.Count == 1)

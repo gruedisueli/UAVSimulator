@@ -96,7 +96,7 @@ namespace Assets.Scripts.Environment
             set => _lowAltitudeDroneSettings = value;
         }
 
-        [JsonProperty] private float _lowAltitudeFlightElevation_M = 150;
+        [JsonProperty] private float _lowAltitudeFlightElevation_M = 152.4f;
 
         public float LowAltitudeFlightElevation_M
         {

@@ -74,6 +74,7 @@ namespace Assets.Scripts.Environment
         public FOA_MapboxSettings MapboxSettings { get; private set; } = null;
         public GameObject ProgressBarPrefab { get; private set; } = null;
         public GameObject ParkingSpritePrefab { get; private set; } = null;
+        public GameObject RestrictionSpritePrefab { get; private set; } = null;
         public GameObject PortSpritePrefab { get; private set; } = null;
         public VehicleControlSystem VCS { get; set; } = null;
 
@@ -740,6 +741,7 @@ namespace Assets.Scripts.Environment
                     RestrictionZoneAssets.Add(type, new RestrictionZoneAssetPack(null, null, t, c));
                 }
             }
+            RestrictionSpritePrefab = Resources.Load<GameObject>("GUI/RestrictionIcon");
         }
 
         /// <summary>

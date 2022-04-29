@@ -86,7 +86,7 @@ namespace Assets.Scripts.UI.Tools
             _generalSettings.Initialize(this, s.IsMetricUnits, s.CallGenerationInterval_S, s.AcceptableNoiseThreshold_Decibels, s.SimulationSpeedMultiplier);
             _corridorSettings.Initialize(this, s.CorridorDroneSettings, s.CorridorFlightElevation_M, s.CorridorSeparationDistance_M, s.IsMetricUnits);
             _lowAltitudeSettings.Initialize(this, s.LowAltitudeDroneSettings, s.LowAltitudeFlightElevation_M, s.IsMetricUnits);
-            _backgroundSettings.Initialize(this, s.BackgroundDroneCount, s.BackgroundDroneUpperElev_M, s.LowAltitudeFlightElevation_M, s.IsMetricUnits);
+            _backgroundSettings.Initialize(this, s.BackgroundDroneCount, s.BackgroundDroneUpperElev_M, s.BackgoundDroneLowerElev_M, s.IsMetricUnits);
         }
 
     }

@@ -1293,7 +1293,7 @@ namespace Assets.Scripts.UI
             var zoneParent = new GameObject();
 
             var sRZ = zoneParent.AddComponent<SceneRestrictionZone>();
-            sRZ.Initialize(guid, rZ);
+            sRZ.Initialize(guid, rZ, _canvas);
 
             if (register)
             {
