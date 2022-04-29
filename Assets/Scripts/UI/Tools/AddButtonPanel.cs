@@ -30,7 +30,7 @@ namespace Assets.Scripts.UI.Tools
                         foreach (var kvp in assets)
                         {
                             var a = kvp.Value;
-                            InstantiateButton(_family, kvp.Key, a);
+                            InstantiateButton(_family, kvp.Key, a, "Port");
                         }
                         break;
                     }
@@ -40,7 +40,16 @@ namespace Assets.Scripts.UI.Tools
                         foreach (var kvp in assets)
                         {
                             var a = kvp.Value;
-                            InstantiateButton(_family, kvp.Key, a);
+                            string n = "";
+                            if (a.Category == ParkingStructCategory.Rect)
+                            {
+                                n = "Rect Parking";
+                            }
+                            else if (a.Specs != null)
+                            {
+                                n = a.Specs.Type.Contains("LowAltitude") ? "Low Altitude Parking" : "Corridor Parking";
+                            }
+                            InstantiateButton(_family, kvp.Key, a, n);
                         }
                         break;
                     }
@@ -50,7 +59,20 @@ namespace Assets.Scripts.UI.Tools
                         foreach (var kvp in assets)
                         {
                             var a = kvp.Value;
-                            InstantiateButton(_family, kvp.Key, a);
+                            string n = "";
+                            if (a.Category == RestrictionZoneCategory.Rect)
+                            {
+                                n = "Rect Restriction";
+                            }
+                            else if (a.Category == RestrictionZoneCategory.Cylindrical)
+                            {
+                                n = "Cylindrical Restriction";
+                            }
+                            else if (a.Category == RestrictionZoneCategory.CylindricalStacked)
+                            {
+                                n = "Stacked Restriction";
+                            }
+                            InstantiateButton(_family, kvp.Key, a, n);
                         }
                         break;
                     }
@@ -62,7 +84,7 @@ namespace Assets.Scripts.UI.Tools
         /// <summary>
         /// Creates basic configuration of button instance.
         /// </summary>
-        private void InstantiateButton(ElementFamily family, string type, AssetPackBase asset)
+        private void InstantiateButton(ElementFamily family, string type, AssetPackBase asset, string nameOverride = "")
         {
             var sprite = asset.PreviewImage;
             var prefab = EnvironManager.Instance.AddButtonPrefab;
@@ -123,7 +145,7 @@ namespace Assets.Scripts.UI.Tools
             }
             else
             {
-                text.text = type;
+                text.text = nameOverride == "" ? type : nameOverride;
             }
 
             clone.transform.SetParent(transform);
