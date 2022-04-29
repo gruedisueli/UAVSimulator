@@ -15,13 +15,14 @@ namespace Assets.Scripts.Environment
         #region GENERAL SETTINGS
 
         [JsonProperty] 
-        private bool _isMetricUnits = false;
+        private bool _isMetricUnits = true;
         public bool IsMetricUnits
         {
             get => _isMetricUnits;
             set => _isMetricUnits = value;
         }
 
+        public FloatRange CallGenIntervalRange_S { get; } = new FloatRange( 0.1f, 60.0f);
         [JsonProperty] private float _callGenerationInterval_S = 2.0f;
 
         public float CallGenerationInterval_S
@@ -30,6 +31,7 @@ namespace Assets.Scripts.Environment
             set => _callGenerationInterval_S = value;
         }
 
+        public FloatRange AcceptableNoiseThresholdRange_Db { get; } = new FloatRange(1.0f, 100.0f);
         [JsonProperty] private float _acceptableNoiseThreshold_Decibels = 50.0f;
 
         public float AcceptableNoiseThreshold_Decibels
@@ -38,6 +40,7 @@ namespace Assets.Scripts.Environment
             set => _acceptableNoiseThreshold_Decibels = value;
         }
 
+        public FloatRange SimulationSpeedMultiplierRange { get; } = new FloatRange(1.0f, 500.0f);
         [JsonProperty] private float _simulationSpeedMultiplier = 1.0f;
 
         public float SimulationSpeedMultiplier
@@ -67,7 +70,10 @@ namespace Assets.Scripts.Environment
             set => _corridorDroneSettings = value;
         }
 
-
+        /// <summary>
+        /// Limit settings to these values.
+        /// </summary>
+        public FloatRange CorridorFlightElevRange_M { get; } = new FloatRange(50.0f, 5000.0f);
         [JsonProperty] private float _corridorFlightElevation_M = 152.4f;
 
         public float CorridorFlightElevation_M
@@ -76,6 +82,7 @@ namespace Assets.Scripts.Environment
             set => _corridorFlightElevation_M = value;
         }
 
+        public FloatRange CorridorSeparationDistanceRange_M { get; } = new FloatRange(1.0f, 5000.0f); 
         [JsonProperty] private float _corridorSeparationDistance_M = 25.0f;
 
         public float CorridorSeparationDistance_M
@@ -96,6 +103,10 @@ namespace Assets.Scripts.Environment
             set => _lowAltitudeDroneSettings = value;
         }
 
+        /// <summary>
+        /// Limit settings to these values.
+        /// </summary>
+        public FloatRange LowAltFlightElevationRange_M { get; } = new FloatRange(50.0f, 5000.0f);
         [JsonProperty] private float _lowAltitudeFlightElevation_M = 152.4f;
 
         public float LowAltitudeFlightElevation_M
@@ -104,6 +115,7 @@ namespace Assets.Scripts.Environment
             set => _lowAltitudeFlightElevation_M = value;
         }
 
+        public FloatRange LowAltTravelRadiusRange_M { get; } = new FloatRange(100.0f, 50000.0f);
         [JsonProperty] private float _lowAltitudeDroneTravelRadius_M = 5000.0f;
 
         public float LowAltitudeDroneTravelRadius_M
@@ -118,6 +130,7 @@ namespace Assets.Scripts.Environment
         
         //note that "background" drones are instantiations of one of the explicitly defined types above; other properties previously defined.
 
+        public int[] BackgroundDroneCountRange { get; } = new[] {0, 1000};
         [JsonProperty] private int _backgroundDroneCount = 250;
 
         public int BackgroundDroneCount
@@ -126,6 +139,7 @@ namespace Assets.Scripts.Environment
             set => _backgroundDroneCount = value;
         }
 
+        public FloatRange BackgroundDroneUpperElevRange_M = new FloatRange(50.0f, 5000.0f);
         [JsonProperty] private float _backgroundDroneUpperElev_M = 135;
 
         public float BackgroundDroneUpperElev_M
@@ -133,7 +147,7 @@ namespace Assets.Scripts.Environment
             get => _backgroundDroneUpperElev_M;
             set => _backgroundDroneUpperElev_M = value;
         }
-
+        public FloatRange BackgroundDroneLowerElevRange_M = new FloatRange(50.0f, 5000.0f);
         [JsonProperty] private float _backgroundDroneLowerElev_M = 100;
 
         public float BackgoundDroneLowerElev_M

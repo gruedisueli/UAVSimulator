@@ -35,6 +35,10 @@ namespace Assets.Scripts.UI.Tools
                 _simulationSettingsCopy.IsMetricUnits = isMetric;
                 InitializeAllPanels();//need to refresh units and numbers
             }
+            else
+            {
+                InitializeGeneral();
+            }
         }
 
         public void UpdateCorridorDroneSettings(DroneSettings droneSettings, float flightElevM, float sepDistM)
@@ -42,6 +46,7 @@ namespace Assets.Scripts.UI.Tools
             _simulationSettingsCopy.CorridorDroneSettings = new DroneSettings(droneSettings);
             _simulationSettingsCopy.CorridorFlightElevation_M = flightElevM;
             _simulationSettingsCopy.CorridorSeparationDistance_M = sepDistM;
+            InitializeCorridor();
         }
 
         public void UpdateLowAltitudeDroneSettings(DroneSettings droneSettings, float flightElevM, float travelRadiusM)
@@ -49,6 +54,7 @@ namespace Assets.Scripts.UI.Tools
             _simulationSettingsCopy.LowAltitudeDroneSettings = new DroneSettings(droneSettings);
             _simulationSettingsCopy.LowAltitudeFlightElevation_M = flightElevM;
             _simulationSettingsCopy.LowAltitudeDroneTravelRadius_M = travelRadiusM;
+            InitializeLowAlt();
         }
 
         public void UpdateBackgroundDroneSettings(int droneCt, float upperElevM, float lowerElevM)
@@ -56,6 +62,7 @@ namespace Assets.Scripts.UI.Tools
             _simulationSettingsCopy.BackgroundDroneCount = droneCt;
             _simulationSettingsCopy.BackgroundDroneUpperElev_M = upperElevM;
             _simulationSettingsCopy.BackgoundDroneLowerElev_M = lowerElevM;
+            InitializeBackground();
         }
 
         public void Activate()
@@ -83,11 +90,34 @@ namespace Assets.Scripts.UI.Tools
         }
         private void InitializeAllPanels()
         {
+            InitializeGeneral();
+            InitializeCorridor();
+            InitializeLowAlt();
+            InitializeBackground();
+        }
+
+        private void InitializeGeneral()
+        {
             var s = _simulationSettingsCopy;
-            _generalSettings.Initialize(this, s.IsMetricUnits, s.CallGenerationInterval_S, s.AcceptableNoiseThreshold_Decibels, s.SimulationSpeedMultiplier);
-            _corridorSettings.Initialize(this, s.CorridorDroneSettings, s.CorridorFlightElevation_M, s.CorridorSeparationDistance_M, s.IsMetricUnits);
-            _lowAltitudeSettings.Initialize(this, s.LowAltitudeDroneSettings, s.LowAltitudeFlightElevation_M, s.LowAltitudeDroneTravelRadius_M, s.IsMetricUnits);
-            _backgroundSettings.Initialize(this, s.BackgroundDroneCount, s.BackgroundDroneUpperElev_M, s.BackgoundDroneLowerElev_M, s.IsMetricUnits);
+            _generalSettings.Initialize(this, s.IsMetricUnits, s.CallGenerationInterval_S, s.AcceptableNoiseThreshold_Decibels, s.SimulationSpeedMultiplier, s.CallGenIntervalRange_S, s.AcceptableNoiseThresholdRange_Db, s.SimulationSpeedMultiplierRange);
+        }
+
+        private void InitializeCorridor()
+        {
+            var s = _simulationSettingsCopy;
+            _corridorSettings.Initialize(this, s.CorridorDroneSettings, s.CorridorFlightElevation_M, s.CorridorSeparationDistance_M, s.CorridorFlightElevRange_M, s.CorridorSeparationDistanceRange_M, s.IsMetricUnits);
+        }
+
+        private void InitializeLowAlt()
+        {
+            var s = _simulationSettingsCopy;
+            _lowAltitudeSettings.Initialize(this, s.LowAltitudeDroneSettings, s.LowAltitudeFlightElevation_M, s.LowAltitudeDroneTravelRadius_M, s.LowAltFlightElevationRange_M, s.LowAltTravelRadiusRange_M, s.IsMetricUnits);
+        }
+
+        private void InitializeBackground()
+        {
+            var s = _simulationSettingsCopy;
+            _backgroundSettings.Initialize(this, s.BackgroundDroneCount, s.BackgroundDroneUpperElev_M, s.BackgoundDroneLowerElev_M, s.BackgroundDroneUpperElevRange_M, s.BackgroundDroneLowerElevRange_M, s.BackgroundDroneCountRange, s.IsMetricUnits);
         }
 
     }

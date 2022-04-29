@@ -8,6 +8,7 @@ using Assets.Scripts.UI.EventArgs;
 using Assets.Scripts.DataStructure;
 using Assets.Scripts.Environment;
 using Assets.Scripts.SimulatorCore;
+using TMPro;
 
 /// <summary>
 /// Base class from which all drones are derived.
@@ -430,8 +431,9 @@ public abstract class DroneBase : MonoBehaviour
         //to find sound level at source: SPL₂ = SPL₁ - 20 * log (R₂ / R₁)
         //SPL₂ = 100 - 20 * log (1 / 100)
         //SPL₂ = 140dB
+        var nT = EnvironManager.Instance.Environ.SimSettings.AcceptableNoiseThreshold_Decibels;
 
-        _noiseRadius = (float)Math.Pow(10, ((double)EnvironManager.Instance.Environ.SimSettings.AcceptableNoiseThreshold_Decibels - (double)noiseDb) / (-20));
+        _noiseRadius = _currentNoiseDb >= nT ? (float)Math.Pow(10, ((double)nT - (double)noiseDb) / (-20)) : 0;
     }
     #endregion
 }

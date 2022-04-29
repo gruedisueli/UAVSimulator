@@ -14,7 +14,8 @@ namespace Assets.Scripts.UI.Tools
         public Slider _unitSelector;
         private bool _isMetric;
         private float _callGenInt, _acceptNoiseThresh, _simSpeedMult;
-        public void Initialize(SimulationSettingsMainPanel mainPanel, bool isMetric, float callGenInt, float acceptNoiseThresh, float simSpeedMult)
+        private FloatRange _callGenRange, _noiseRange, _simSpeedRange;
+        public void Initialize(SimulationSettingsMainPanel mainPanel, bool isMetric, float callGenInt, float acceptNoiseThresh, float simSpeedMult, FloatRange callGenRange, FloatRange noiseRange, FloatRange simSpeedRange)
         {
             _mainPanel = mainPanel;
             GetModifyTools();
@@ -27,6 +28,9 @@ namespace Assets.Scripts.UI.Tools
             _callGenInt = callGenInt;
             _acceptNoiseThresh = acceptNoiseThresh;
             _simSpeedMult = simSpeedMult;
+            _callGenRange = callGenRange;
+            _noiseRange = noiseRange;
+            _simSpeedRange = simSpeedRange;
             _unitSelector.SetValueWithoutNotify(isMetric ? 0 : 1);
             SetModifyToolValue(ElementPropertyType.CallGenInterval, callGenInt);
             SetModifyToolValue(ElementPropertyType.AcceptableNoiseThreshold, acceptNoiseThresh);
@@ -49,7 +53,7 @@ namespace Assets.Scripts.UI.Tools
                 {
                     if (args.Update is ModifyFloatPropertyArg f)
                     {
-                        _callGenInt = f.Value;
+                        _callGenInt = _callGenRange.ClampToRange(f.Value);
                     }
                     break;
                 }
@@ -57,7 +61,7 @@ namespace Assets.Scripts.UI.Tools
                 {
                     if (args.Update is ModifyFloatPropertyArg f)
                     {
-                        _acceptNoiseThresh = f.Value;
+                        _acceptNoiseThresh = _noiseRange.ClampToRange(f.Value);
                     }
                     break;
                 }
@@ -65,7 +69,7 @@ namespace Assets.Scripts.UI.Tools
                 {
                     if (args.Update is ModifyFloatPropertyArg f)
                     {
-                        _simSpeedMult = f.Value;
+                        _simSpeedMult = _simSpeedRange.ClampToRange(f.Value);
                     }
                     break;
                 }

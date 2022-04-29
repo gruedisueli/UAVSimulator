@@ -12,12 +12,14 @@ namespace Assets.Scripts.UI.Tools
     public class CorridorSettingsPanel : DroneSettingsPanel
     {
         private float _sepDistM;
-        public void Initialize(SimulationSettingsMainPanel mainPanel, DroneSettings droneSettings, float flightElevM, float sepDistM, bool isMetric)
+        private FloatRange _sepDistRange;
+        public void Initialize(SimulationSettingsMainPanel mainPanel, DroneSettings droneSettings, float flightElevM, float sepDistM, FloatRange flightElevRange, FloatRange sepDistRange, bool isMetric)
         {
             _mainPanel = mainPanel;
             GetModifyTools();
             UpdateIsMetric(isMetric);
             _sepDistM = sepDistM;
+            _sepDistRange = sepDistRange;
             if (isMetric)
             {
                 SetModifyToolValue(ElementPropertyType.Separation, _sepDistM);
@@ -26,7 +28,7 @@ namespace Assets.Scripts.UI.Tools
             {
                 SetModifyToolValue(ElementPropertyType.Separation, UnitUtils.MetersToFeet(_sepDistM));
             }
-            InitializeDroneSettings(droneSettings, flightElevM, isMetric);
+            InitializeDroneSettings(droneSettings, flightElevM, flightElevRange, isMetric);
         }
 
         protected override void OnModification(IModifyElementArgs args)
@@ -35,7 +37,8 @@ namespace Assets.Scripts.UI.Tools
 
             if (args.Update.ElementPropertyType == ElementPropertyType.Separation && args.Update is ModifyFloatPropertyArg f)
             {
-                _sepDistM = _isMetric ? f.Value : UnitUtils.FeetToMeters(f.Value);
+                var d = _isMetric ? f.Value : UnitUtils.FeetToMeters(f.Value);
+                _sepDistM = _sepDistRange.ClampToRange(d);
             }
             _mainPanel.UpdateCorridorDroneSettings(_droneSettingsCopy, _flightElevM, _sepDistM);
         }

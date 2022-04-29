@@ -23,7 +23,8 @@ namespace Assets.Scripts.Environment
         {
             get => _yawSpeed;
         }
-
+        
+        public FloatRange MaxSpeedRange_MPS { get; } = new FloatRange(1.0f, 250.0f);
         [JsonProperty] private float _maxSpeed_MPS;
         public float MaxSpeed_MPS
         {
@@ -31,6 +32,7 @@ namespace Assets.Scripts.Environment
             set => _maxSpeed_MPS = value;
         }
 
+        public FloatRange TakeOffSpeedRange_MPS { get; } = new FloatRange(1.0f, 250.0f);
         [JsonProperty] private float _takeOffSpeed_MPS;
         public float TakeOffSpeed_MPS
         {
@@ -38,6 +40,7 @@ namespace Assets.Scripts.Environment
             set => _takeOffSpeed_MPS = value;
         }
 
+        public FloatRange LandingOffSpeedRange_MPS { get; } = new FloatRange(1.0f, 250.0f);
         [JsonProperty] private float _landingSpeed_MPS;
 
         public float LandingSpeed_MPS
@@ -62,6 +65,7 @@ namespace Assets.Scripts.Environment
             set => _capacity = value;
         }
 
+        public FloatRange SoundAtSourceRange_Db { get; } = new FloatRange(50.0f, 150.0f);
         [JsonProperty] private float _soundAtSource_Decibels;
 
         public float SoundAtSource_Decibels

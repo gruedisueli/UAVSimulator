@@ -12,12 +12,14 @@ namespace Assets.Scripts.UI.Tools
     {
         protected DroneSettings _droneSettingsCopy;
         protected float _flightElevM;
+        protected FloatRange _flightElevRange;
         protected bool _isMetric;
-        protected void InitializeDroneSettings(DroneSettings droneSettings, float flightElevM, bool isMetric)
+        protected void InitializeDroneSettings(DroneSettings droneSettings, float flightElevM, FloatRange flightElevRange, bool isMetric)
         {
             _droneSettingsCopy = new DroneSettings(droneSettings);
             var s = _droneSettingsCopy;
             _flightElevM = flightElevM;
+            _flightElevRange = flightElevRange;
             _isMetric = isMetric;
             SetModifyToolValue(ElementPropertyType.Capacity, s.Capacity);
             SetModifyToolValue(ElementPropertyType.SoundLevelAtSource, s.SoundAtSource_Decibels);
@@ -47,7 +49,8 @@ namespace Assets.Scripts.UI.Tools
                 {
                     if (args.Update is ModifyFloatPropertyArg f)
                     {
-                        _flightElevM = _isMetric ? f.Value : UnitUtils.FeetToMeters(f.Value);
+                        var e = _isMetric ? f.Value : UnitUtils.FeetToMeters(f.Value);
+                        _flightElevM = _flightElevRange.ClampToRange(e);
                     }
                     break;
                 }
@@ -63,7 +66,7 @@ namespace Assets.Scripts.UI.Tools
                 {
                     if (args.Update is ModifyFloatPropertyArg f)
                     {
-                        s.SoundAtSource_Decibels = f.Value;
+                        s.SoundAtSource_Decibels = _droneSettingsCopy.SoundAtSourceRange_Db.ClampToRange(f.Value);
                     }
                     break;
                 }
@@ -71,7 +74,8 @@ namespace Assets.Scripts.UI.Tools
                 {
                     if (args.Update is ModifyFloatPropertyArg f)
                     {
-                        s.MaxSpeed_MPS = _isMetric ? UnitUtils.KilometersPerHourToMetersPerSecond(f.Value) : UnitUtils.MilesPerHourToMetersPerSecond(f.Value);
+                        var spd = _isMetric ? UnitUtils.KilometersPerHourToMetersPerSecond(f.Value) : UnitUtils.MilesPerHourToMetersPerSecond(f.Value);
+                        s.MaxSpeed_MPS = _droneSettingsCopy.MaxSpeedRange_MPS.ClampToRange(spd);
                     }
                     break;
                 }
@@ -79,7 +83,8 @@ namespace Assets.Scripts.UI.Tools
                 {
                     if (args.Update is ModifyFloatPropertyArg f)
                     {
-                        s.TakeOffSpeed_MPS = _isMetric ? UnitUtils.KilometersPerHourToMetersPerSecond(f.Value) : UnitUtils.MilesPerHourToMetersPerSecond(f.Value);
+                        var spd = _isMetric ? UnitUtils.KilometersPerHourToMetersPerSecond(f.Value) : UnitUtils.MilesPerHourToMetersPerSecond(f.Value);
+                        s.TakeOffSpeed_MPS = _droneSettingsCopy.TakeOffSpeedRange_MPS.ClampToRange(spd);
                     }
                     break;
                 }
@@ -87,7 +92,8 @@ namespace Assets.Scripts.UI.Tools
                 {
                     if (args.Update is ModifyFloatPropertyArg f)
                     {
-                        s.LandingSpeed_MPS = _isMetric ? UnitUtils.KilometersPerHourToMetersPerSecond(f.Value) : UnitUtils.MilesPerHourToMetersPerSecond(f.Value);
+                        var spd = _isMetric ? UnitUtils.KilometersPerHourToMetersPerSecond(f.Value) : UnitUtils.MilesPerHourToMetersPerSecond(f.Value);
+                        s.LandingSpeed_MPS = _droneSettingsCopy.LandingOffSpeedRange_MPS.ClampToRange(spd);
                     }
                     break;
                 }

@@ -11,8 +11,10 @@ namespace Assets.Scripts.UI.Tools
     {
         private int _droneCt;
         private float _upperElevM, _lowerElevM;
+        private FloatRange _upperElevRange, _lowerElevRange;
+        private int[] _countRange;
         private bool _isMetric;
-        public void Initialize(SimulationSettingsMainPanel mainPanel, int droneCt, float upperElev, float lowerElev, bool isMetric)
+        public void Initialize(SimulationSettingsMainPanel mainPanel, int droneCt, float upperElev, float lowerElev, FloatRange upperElevRange, FloatRange lowerElevRange, int[] countRange, bool isMetric)
         {
             _mainPanel = mainPanel;
             GetModifyTools();
@@ -20,6 +22,9 @@ namespace Assets.Scripts.UI.Tools
             _droneCt = droneCt;
             _upperElevM = upperElev;
             _lowerElevM = lowerElev;
+            _upperElevRange = upperElevRange;
+            _lowerElevRange = lowerElevRange;
+            _countRange = countRange;
 
             UpdateIsMetric(isMetric);
             SetModifyToolValue(ElementPropertyType.DroneCount, droneCt);
@@ -44,7 +49,17 @@ namespace Assets.Scripts.UI.Tools
                 {
                     if (args.Update is ModifyIntPropertyArg i)
                     {
-                        _droneCt = i.Value;
+                        var c = i.Value;
+                        var min = _countRange[0];
+                        var max = _countRange[1];
+                        if (c <= max && c >= min)
+                        {
+                            _droneCt = c;
+                        }
+                        else
+                        {
+                            _droneCt = c > max ? max : min;
+                        }
                     }
                     break;
                 }
@@ -52,7 +67,12 @@ namespace Assets.Scripts.UI.Tools
                 {
                     if (args.Update is ModifyFloatPropertyArg f)
                     {
-                        _upperElevM = _isMetric ? f.Value : UnitUtils.FeetToMeters(f.Value);
+                        var e = _isMetric ? f.Value : UnitUtils.FeetToMeters(f.Value);
+                        _upperElevM = _upperElevRange.ClampToRange(e);
+                        if (_upperElevM <= _lowerElevM)
+                        {
+                            _upperElevM = _lowerElevM + 1;
+                        }
                     }
                     break;
                 }
@@ -60,7 +80,12 @@ namespace Assets.Scripts.UI.Tools
                 {
                     if (args.Update is ModifyFloatPropertyArg f)
                     {
-                        _lowerElevM = _isMetric ? f.Value : UnitUtils.FeetToMeters(f.Value);
+                        var e = _isMetric ? f.Value : UnitUtils.FeetToMeters(f.Value);
+                        _lowerElevM = _lowerElevRange.ClampToRange(e);
+                        if (_lowerElevM >= _upperElevM)
+                        {
+                            _lowerElevM = _upperElevM - 1;
+                        }
                     }
                     break;
                 }
