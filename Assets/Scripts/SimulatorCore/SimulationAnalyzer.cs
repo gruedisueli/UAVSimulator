@@ -32,7 +32,7 @@ namespace Assets.Scripts.SimulatorCore
         private bool _isPlaying = false;
 
 
-        private float _noiseUpdateInterval = 0.2f;//how frequently to check the noise, in seconds
+        private float _noiseUpdateInterval = 0.05f;//how frequently to check the noise, in seconds
         private float _lastNoiseUpdate = 0.0f;//last unity time we checked noise
 
         void Start()
