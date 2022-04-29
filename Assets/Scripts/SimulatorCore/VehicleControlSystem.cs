@@ -391,6 +391,14 @@ public class VehicleControlSystem : MonoBehaviour
                     //// Create random polygon
                     //Polygon p = new Polygon(Mathf.RoundToInt(UnityEngine.Random.Range(3, 10)));
                     Vector3 destination = GetRandomPointXZ(0, parking.transform.position.x, parking.transform.position.z, EnvironManager.Instance.Environ.SimSettings.LowAltitudeDroneTravelRadius_M);//GetRandomPointXZ(0.0f);
+
+                    var standBy = parking.GetComponent<ParkingControl>().parkingInfo.StandbyPosition;
+
+                    var generatedPoints = FindPath(standBy + parking.transform.position, destination, 5, 1 << 9 | 1 << 8);
+                    for (int i = generatedPoints.Count - 1; i >= 0; i--)
+                    {
+                        generatedPoints.Add(generatedPoints[i]);
+                    }
                     //p.Move(destination);
                     // Generate 
                     //Mesh m = p.CreateExtrusion(simulationParam.lowAltitudeBoundary);
@@ -417,8 +425,8 @@ public class VehicleControlSystem : MonoBehaviour
                     //List<Vector3> generatedPoints = p.GeneratePointsinExtrusion(aaoCon.GetVehicleCount(), EnvironManager.Instance.Environ.SimSettings.LowAltitudeFlightElevation_M);
                     
                     //set of points includes destination point(s) plus those required for landing.
-                    var generatedPoints = new List<Vector3> {destination};
-                    generatedPoints.Add(parking.GetComponent<ParkingControl>().parkingInfo.StandbyPosition + parking.transform.position);
+                    //var generatedPoints = new List<Vector3> {destination};
+                    generatedPoints.Add(standBy + parking.transform.position);
                     LowAltitudeDrone vehicleInfo = vehicle.GetComponent<LowAltitudeDrone>();
                     vehicleInfo.SetOperationPoints(new Queue<Vector3>(generatedPoints));
                     CallVehicle(vehicle, parking.GetComponent<ParkingControl>(), null);
