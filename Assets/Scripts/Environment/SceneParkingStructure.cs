@@ -33,6 +33,7 @@ namespace Assets.Scripts.Environment
                 Debug.LogError("Button not found on parking structure sprite prefab");
             }
             b.onClick.AddListener(SpriteClicked);
+            Sprite2d.transform.SetAsFirstSibling();
             ParkingStructureSpecs = pS;
             gameObject.tag = "ParkingStructure";
             gameObject.name = "Parking_" + pS.Type;

@@ -19,17 +19,21 @@ namespace Assets.Scripts.Environment
         public RestrictionZoneBase RestrictionZoneSpecs { get; private set; }
         public List<GameObject> SubElements { get; private set; } = new List<GameObject>();
 
-        public void Initialize(string guid, RestrictionZoneBase rZ, Canvas canvas)
+        public void Initialize(string guid, RestrictionZoneBase rZ, Canvas canvas, bool enableIcon)
         {
             Guid = guid;
             SceneCanvas = canvas;
-            Sprite2d = Instantiate(EnvironManager.Instance.RestrictionSpritePrefab, SceneCanvas.transform);
-            var b = Sprite2d.GetComponentInChildren<Button>();
-            if (b == null)
+            if (enableIcon)
             {
-                Debug.LogError("Button not found on restriction zone sprite prefab");
+                Sprite2d = Instantiate(EnvironManager.Instance.RestrictionSpritePrefab, SceneCanvas.transform);
+                var b = Sprite2d.GetComponentInChildren<Button>();
+                if (b == null)
+                {
+                    Debug.LogError("Button not found on restriction zone sprite prefab");
+                }
+                b.onClick.AddListener(SpriteClicked);
+                Sprite2d.transform.SetAsFirstSibling();
             }
-            b.onClick.AddListener(SpriteClicked);
             RestrictionZoneSpecs = rZ;
             _defaultMaterial = Instantiate(EnvironManager.Instance.RestrictionZoneMaterial);
             string type = "";
@@ -79,8 +83,11 @@ namespace Assets.Scripts.Environment
             }
             MakeSelectable();
 
-            var tag = Sprite2d.GetComponent<UIWorldTag>();
-            tag?.SetWorldPos(RestrictionZoneSpecs.Position);
+            if (enableIcon)
+            {
+                var tag = Sprite2d.GetComponent<UIWorldTag>();
+                tag?.SetWorldPos(RestrictionZoneSpecs.Position);
+            }
         }
 
         /// <summary>

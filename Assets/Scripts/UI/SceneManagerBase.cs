@@ -556,7 +556,7 @@ namespace Assets.Scripts.UI
             {
                 var sRS = _selectedElement as SceneRestrictionZone;
                 var specs = sRS.RestrictionZoneSpecs.GetCopy();
-                _workingCopy = InstantiateRestrictionZone(guid, specs, false);
+                _workingCopy = InstantiateRestrictionZone(guid, specs, false, true);
             }
             else if (_selectedElement is SceneCity)
             {
@@ -618,7 +618,7 @@ namespace Assets.Scripts.UI
                     var wC = _workingCopy as SceneRestrictionZone;
                     RemoveRestrictionZone(guidOld);
                     EnvironManager.Instance.AddRestrictionZone(guidNew, wC.RestrictionZoneSpecs);
-                    _selectedElement = InstantiateRestrictionZone(guidNew, wC.RestrictionZoneSpecs, true);
+                    _selectedElement = InstantiateRestrictionZone(guidNew, wC.RestrictionZoneSpecs, true, true);
                     if (_currentInfoPanel is RestrictionInfoPanel p) p.UpdateFields(wC.RestrictionZoneSpecs);
                     _vehicleControlSystem.RebuildNetwork();
                 }
@@ -1008,7 +1008,7 @@ namespace Assets.Scripts.UI
             }
             string guid = Guid.NewGuid().ToString();
             EnvironManager.Instance.AddRestrictionZone(guid, rZ);
-            InstantiateRestrictionZone(guid, rZ, true);
+            InstantiateRestrictionZone(guid, rZ, true, true);
             _vehicleControlSystem.RebuildNetwork();
         }
 
@@ -1138,7 +1138,7 @@ namespace Assets.Scripts.UI
             foreach (var kvp in env.RestrictionZones)
             {
                 var rZ = kvp.Value;
-                InstantiateRestrictionZone(kvp.Key, rZ, true);
+                InstantiateRestrictionZone(kvp.Key, rZ, true, true);
             }
         }
 
@@ -1288,12 +1288,12 @@ namespace Assets.Scripts.UI
         /// <summary>
         /// Instantiates a restriction zone. Does not update enviornment.
         /// </summary>
-        protected SceneRestrictionZone InstantiateRestrictionZone(string guid, RestrictionZoneBase rZ, bool register)
+        protected SceneRestrictionZone InstantiateRestrictionZone(string guid, RestrictionZoneBase rZ, bool register, bool enableIcon)
         {
             var zoneParent = new GameObject();
 
             var sRZ = zoneParent.AddComponent<SceneRestrictionZone>();
-            sRZ.Initialize(guid, rZ, _canvas);
+            sRZ.Initialize(guid, rZ, _canvas, enableIcon);
 
             if (register)
             {
@@ -1310,7 +1310,7 @@ namespace Assets.Scripts.UI
         /// </summary>
         protected SceneRestrictionZone InstantiateRestrictionZone(string guid, RestrictionZoneBase rZ, bool register, Transform parentTransform)
         {
-            var sRZ = InstantiateRestrictionZone(guid, rZ, register);
+            var sRZ = InstantiateRestrictionZone(guid, rZ, register, false);
             sRZ.gameObject.transform.parent = parentTransform;
             
             return sRZ;

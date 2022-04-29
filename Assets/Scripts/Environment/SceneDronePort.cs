@@ -32,7 +32,7 @@ namespace Assets.Scripts.Environment
             {
                 Debug.LogError("Button not found on drone port sprite prefab");
             }
-
+            Sprite2d.transform.SetAsFirstSibling();
             b.onClick.AddListener(SpriteClicked);
             DronePortSpecs = dP;
             gameObject.name = "DronePort_" + dP.Type;
