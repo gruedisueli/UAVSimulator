@@ -12,9 +12,9 @@ namespace Assets.Scripts.UI.Tools
         private int _droneCt;
         private float _upperElevM, _lowerElevM;
         private FloatRange _upperElevRange, _lowerElevRange;
-        private int[] _countRange;
+        private IntRange _countRange;
         private bool _isMetric;
-        public void Initialize(SimulationSettingsMainPanel mainPanel, int droneCt, float upperElev, float lowerElev, FloatRange upperElevRange, FloatRange lowerElevRange, int[] countRange, bool isMetric)
+        public void Initialize(SimulationSettingsMainPanel mainPanel, int droneCt, float upperElev, float lowerElev, FloatRange upperElevRange, FloatRange lowerElevRange, IntRange countRange, bool isMetric)
         {
             _mainPanel = mainPanel;
             GetModifyTools();
@@ -49,17 +49,7 @@ namespace Assets.Scripts.UI.Tools
                 {
                     if (args.Update is ModifyIntPropertyArg i)
                     {
-                        var c = i.Value;
-                        var min = _countRange[0];
-                        var max = _countRange[1];
-                        if (c <= max && c >= min)
-                        {
-                            _droneCt = c;
-                        }
-                        else
-                        {
-                            _droneCt = c > max ? max : min;
-                        }
+                        _droneCt = _countRange.ClampToRange(i.Value);
                     }
                     break;
                 }

@@ -130,7 +130,7 @@ namespace Assets.Scripts.Environment
         
         //note that "background" drones are instantiations of one of the explicitly defined types above; other properties previously defined.
 
-        public int[] BackgroundDroneCountRange { get; } = new[] {0, 1000};
+        public IntRange BackgroundDroneCountRange { get; } = new IntRange(0, 1000);
         [JsonProperty] private int _backgroundDroneCount = 250;
 
         public int BackgroundDroneCount
