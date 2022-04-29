@@ -44,10 +44,11 @@ namespace Assets.Scripts.UI.Tools
             _simulationSettingsCopy.CorridorSeparationDistance_M = sepDistM;
         }
 
-        public void UpdateLowAltitudeDroneSettings(DroneSettings droneSettings, float flightElevM)
+        public void UpdateLowAltitudeDroneSettings(DroneSettings droneSettings, float flightElevM, float travelRadiusM)
         {
             _simulationSettingsCopy.LowAltitudeDroneSettings = new DroneSettings(droneSettings);
             _simulationSettingsCopy.LowAltitudeFlightElevation_M = flightElevM;
+            _simulationSettingsCopy.LowAltitudeDroneTravelRadius_M = travelRadiusM;
         }
 
         public void UpdateBackgroundDroneSettings(int droneCt, float upperElevM, float lowerElevM)
@@ -85,7 +86,7 @@ namespace Assets.Scripts.UI.Tools
             var s = _simulationSettingsCopy;
             _generalSettings.Initialize(this, s.IsMetricUnits, s.CallGenerationInterval_S, s.AcceptableNoiseThreshold_Decibels, s.SimulationSpeedMultiplier);
             _corridorSettings.Initialize(this, s.CorridorDroneSettings, s.CorridorFlightElevation_M, s.CorridorSeparationDistance_M, s.IsMetricUnits);
-            _lowAltitudeSettings.Initialize(this, s.LowAltitudeDroneSettings, s.LowAltitudeFlightElevation_M, s.IsMetricUnits);
+            _lowAltitudeSettings.Initialize(this, s.LowAltitudeDroneSettings, s.LowAltitudeFlightElevation_M, s.LowAltitudeDroneTravelRadius_M, s.IsMetricUnits);
             _backgroundSettings.Initialize(this, s.BackgroundDroneCount, s.BackgroundDroneUpperElev_M, s.BackgoundDroneLowerElev_M, s.IsMetricUnits);
         }
 

@@ -21,6 +21,7 @@ using Assets.Scripts.UI.Tags;
 using Assets.Scripts.UI.EventArgs;
 using Assets.Scripts.DataStructure;
 using Assets.Scripts.SimulatorCore;
+using UnityEngine.UI;
 
 namespace Assets.Scripts.UI
 {
@@ -39,6 +40,9 @@ namespace Assets.Scripts.UI
         public AbstractMap _largeScaleMap;
         public Canvas _canvas;
         public MainButtonPanel _buttonPanel;
+        public Button _settingsButton;
+        public Button _saveButton;
+        public Slider _speedMultiplier;
 
         protected Camera _mainCamera;
 
@@ -89,6 +93,25 @@ namespace Assets.Scripts.UI
                 Debug.LogError("Main canvas not found in children of scene manager");
                 return;
             }
+
+            if (_settingsButton == null)
+            {
+                Debug.LogError("Settings button not specified");
+                return;
+            }
+            if (_saveButton == null)
+            {
+                Debug.LogError("Save button not specified");
+                return;
+            }
+            if (_speedMultiplier == null)
+            {
+                Debug.LogError("Speed multiplier not specified");
+                return;
+            }
+
+            _speedMultiplier.value = EnvironManager.Instance.Environ.SimSettings.SimulationSpeedMultiplier;
+            _speedMultiplier.onValueChanged.AddListener(UpdateSimSpeedMult);
 
             //get mapbox abstract map
             //_abstractMap = FindObjectOfType<AbstractMap>(true);
@@ -271,6 +294,14 @@ namespace Assets.Scripts.UI
         #region SIMULATION CONTROL
 
         /// <summary>
+        /// Allows modification of simulation speed while running
+        /// </summary>
+        protected void UpdateSimSpeedMult(float v)
+        {
+            EnvironManager.Instance.Environ.SimSettings.SimulationSpeedMultiplier = v;
+        }
+
+        /// <summary>
         /// Called whenever we push play/pause button.
         /// </summary>
         protected void PlayPause(object sender, PlayPauseArgs args)
@@ -281,8 +312,13 @@ namespace Assets.Scripts.UI
                 if (addTool != null)
                 {
                     b.interactable = !args.IsPlaying;
+                    continue;
                 }
             }
+
+            _settingsButton.interactable = !args.IsPlaying;
+            _saveButton.interactable = !args.IsPlaying;
+
             _droneIcons.Clear();
             if (_vehicleControlSystem != null)
             {

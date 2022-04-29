@@ -16,6 +16,7 @@ namespace Assets.Scripts.UI.Tools
     {
         public float _min = 0;
         public float _max = 360;
+        public string _nameOverride = "";
         protected Slider _slider;
         protected Text _text;
         protected float _value = 0;
@@ -38,7 +39,14 @@ namespace Assets.Scripts.UI.Tools
                 return;
             }
 
-            _text.text = _isVisibilityModifier ? _visibilityType.ToString() : _propertyType.ToString() + ": " + _slider.value.ToString("F2");
+            if (_nameOverride != "")
+            {
+                _text.text = _nameOverride;
+            }
+            else
+            {
+                _text.text = _isVisibilityModifier ? _visibilityType.ToString() : _propertyType.ToString() + ": " + _slider.value.ToString("F2");
+            }
 
             _slider.minValue = _min;
             _slider.maxValue = _max;

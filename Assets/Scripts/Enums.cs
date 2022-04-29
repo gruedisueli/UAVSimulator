@@ -118,7 +118,8 @@ namespace Assets.Scripts
         SoundLevelAtSource = 67,
         DroneCount = 68,
         UpperElevation = 69,
-        LowerElevation = 70
+        LowerElevation = 70,
+        LowAltDroneTravelRadius = 71
     }
 
     public enum VisibilityType

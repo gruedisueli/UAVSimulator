@@ -104,6 +104,14 @@ namespace Assets.Scripts.Environment
             set => _lowAltitudeFlightElevation_M = value;
         }
 
+        [JsonProperty] private float _lowAltitudeDroneTravelRadius_M = 5000.0f;
+
+        public float LowAltitudeDroneTravelRadius_M
+        {
+            get => _lowAltitudeDroneTravelRadius_M;
+            set => _lowAltitudeDroneTravelRadius_M = value;
+        }
+
         #endregion
 
         #region BACKGROUND DRONE SETTINGS
@@ -153,6 +161,7 @@ namespace Assets.Scripts.Environment
             _corridorSeparationDistance_M = orig.CorridorSeparationDistance_M;
             _lowAltitudeDroneSettings = new DroneSettings(orig.LowAltitudeDroneSettings);
             _lowAltitudeFlightElevation_M = orig.LowAltitudeFlightElevation_M;
+            _lowAltitudeDroneTravelRadius_M = orig.LowAltitudeDroneTravelRadius_M;
             _backgroundDroneCount = orig.BackgroundDroneCount;
             _backgroundDroneUpperElev_M = orig.BackgroundDroneUpperElev_M;
             _backgroundDroneLowerElev_M = orig.BackgoundDroneLowerElev_M;

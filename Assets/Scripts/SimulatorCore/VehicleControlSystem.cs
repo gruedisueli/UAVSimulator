@@ -19,7 +19,7 @@ using Assets.Scripts.Serialization;
 using Assets.Scripts.UI.Tools;
 
 using DelaunatorSharp;
-
+using Random = System.Random;
 
 
 /// <summary>
@@ -370,16 +370,10 @@ public class VehicleControlSystem : MonoBehaviour
 
                 if (withAAOString.Equals("AAO")) // generating calls with AAO
                 {
-                    // Create random polygon
-                    Polygon p = new Polygon(Mathf.RoundToInt(UnityEngine.Random.Range(3, 10)));
-
-                    // Generate random center within the boundary of the maps - Integration TO-DO: Get the boundary coordinates from UI
-
-                    Vector3 polygonCenter = GetRandomPointXZ(0.0f);
-                    p.Move(polygonCenter);
-
                     // TO-DO: Augment vehicle type (make it find the right type) and make it possible to have more than one drone in operation per AAO
-                    GameObject parking = GetNearestAvailableParking(polygonCenter);
+
+                    //just choosing a random parking structure on map to generate a call from, for now.
+                    GameObject parking = GetNearestAvailableParking(GetRandomPointXZ(0));
                     if(parking == null)
                     {
                         Debug.Log("No available vehicle");
@@ -391,6 +385,13 @@ public class VehicleControlSystem : MonoBehaviour
                         Debug.Log("No available vehicle");
                         return;
                     }
+
+                    //find a random destination for this drone, within the allowable radius.
+
+                    //// Create random polygon
+                    //Polygon p = new Polygon(Mathf.RoundToInt(UnityEngine.Random.Range(3, 10)));
+                    Vector3 destination = GetRandomPointXZ(0, parking.transform.position.x, parking.transform.position.z, EnvironManager.Instance.Environ.SimSettings.LowAltitudeDroneTravelRadius_M);//GetRandomPointXZ(0.0f);
+                    //p.Move(destination);
                     // Generate 
                     //Mesh m = p.CreateExtrusion(simulationParam.lowAltitudeBoundary);
                     var AAO = new GameObject("AAO_" + vehicle.name);
@@ -412,8 +413,11 @@ public class VehicleControlSystem : MonoBehaviour
                     AAOControl aaoCon = AAO.AddComponent<AAOControl>();
                     aaoCon.AddVehicle(vehicle);
                     
-
-                    List<Vector3> generatedPoints = p.GeneratePointsinExtrusion(aaoCon.GetVehicleCount(), EnvironManager.Instance.Environ.SimSettings.LowAltitudeFlightElevation_M);
+                    //disabling multiple pts for now...
+                    //List<Vector3> generatedPoints = p.GeneratePointsinExtrusion(aaoCon.GetVehicleCount(), EnvironManager.Instance.Environ.SimSettings.LowAltitudeFlightElevation_M);
+                    
+                    //set of points includes destination point(s) plus those required for landing.
+                    var generatedPoints = new List<Vector3> {destination};
                     generatedPoints.Add(parking.GetComponent<ParkingControl>().parkingInfo.StandbyPosition + parking.transform.position);
                     LowAltitudeDrone vehicleInfo = vehicle.GetComponent<LowAltitudeDrone>();
                     vehicleInfo.SetOperationPoints(new Queue<Vector3>(generatedPoints));
@@ -451,7 +455,7 @@ public class VehicleControlSystem : MonoBehaviour
     }
 
     /// <summary>
-    /// Gives us a random point on the map. //@EUNU correct?
+    /// Gives us a random point on the map.
     /// </summary>
     public Vector3 GetRandomPointXZ(float y)
     {
@@ -459,6 +463,16 @@ public class VehicleControlSystem : MonoBehaviour
         float x = UnityEngine.Random.Range(mapBounds[0][0], mapBounds[0][1]);
         float z = UnityEngine.Random.Range(mapBounds[1][0], mapBounds[1][1]);
         return new Vector3(x, y, z);
+    }
+
+    /// <summary>
+    /// Gives us a random point within some radius of start
+    /// </summary>
+    public Vector3 GetRandomPointXZ(float y, float centerX, float centerZ, float radius)
+    {
+        var rPt = UnityEngine.Random.insideUnitCircle * radius;
+        rPt += new Vector2(centerX, centerZ);
+        return new Vector3(rPt.x, y, rPt.y);
     }
 
     public GameObject ReserveNearestAvailableParking(GameObject v)
@@ -961,7 +975,13 @@ public class VehicleControlSystem : MonoBehaviour
 
         while (iter <= maxIter && head < visited.Count && Physics.Raycast(visited[head], destination - visited[head], Vector3.Distance(visited[head], destination), layerMask) && head <= tail)
         {
-            RaycastHit currentHitObject = GetClosestHit(visited[head], Physics.RaycastAll(visited[head], destination - visited[head], Vector3.Distance(visited[head], destination), layerMask));
+            var h = Physics.RaycastAll(visited[head], destination - visited[head], Vector3.Distance(visited[head], destination), layerMask);
+            //if (h == null || h.Length == 0)
+            //{
+            //    iter++;
+            //    continue;
+            //}
+            RaycastHit currentHitObject = GetClosestHit(visited[head], h);
             Vector3 lastHit = currentHitObject.point;
             for (int i = angleIncrement; i <= 85; i += angleIncrement)
             {

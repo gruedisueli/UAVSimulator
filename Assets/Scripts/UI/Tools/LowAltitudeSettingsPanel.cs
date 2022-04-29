@@ -11,11 +11,21 @@ namespace Assets.Scripts.UI.Tools
 {
     public class LowAltitudeSettingsPanel : DroneSettingsPanel
     {
-        public void Initialize(SimulationSettingsMainPanel mainPanel, DroneSettings droneSettings, float flightElevM, bool isMetric)
+        private float _travelRadiusM;
+        public void Initialize(SimulationSettingsMainPanel mainPanel, DroneSettings droneSettings, float flightElevM, float travelRadiusM, bool isMetric)
         {
             _mainPanel = mainPanel;
             GetModifyTools();
             UpdateIsMetric(isMetric);
+            _travelRadiusM = travelRadiusM;
+            if (isMetric)
+            {
+                SetModifyToolValue(ElementPropertyType.LowAltDroneTravelRadius, _travelRadiusM);
+            }
+            else
+            {
+                SetModifyToolValue(ElementPropertyType.LowAltDroneTravelRadius, UnitUtils.MetersToFeet(_travelRadiusM));
+            }
             InitializeDroneSettings(droneSettings, flightElevM, isMetric);
         }
 
@@ -23,7 +33,12 @@ namespace Assets.Scripts.UI.Tools
         {
             base.OnModification(args);
 
-            _mainPanel.UpdateLowAltitudeDroneSettings(_droneSettingsCopy, _flightElevM);
+            if (args.Update.ElementPropertyType == ElementPropertyType.LowAltDroneTravelRadius && args.Update is ModifyFloatPropertyArg f)
+            {
+                _travelRadiusM = _isMetric ? f.Value : UnitUtils.FeetToMeters(f.Value);
+            }
+
+            _mainPanel.UpdateLowAltitudeDroneSettings(_droneSettingsCopy, _flightElevM, _travelRadiusM);
         }
     }
 }
