@@ -1198,7 +1198,7 @@ namespace Assets.Scripts.UI
                 return null;
             }
 
-            var rZ = new RestrictionZoneCyl(pS.Position, 0.0f, 200.0f, 100.0f);
+            var rZ = new RestrictionZoneCyl(pS.Position, pS.Position.y, pS.Position.y + 200.0f, 100.0f);
             rZ.Layer = 13;//landing zone
             InstantiateRestrictionZone(Guid.NewGuid().ToString(), rZ, true, sPS.gameObject.transform);
 
@@ -1270,7 +1270,7 @@ namespace Assets.Scripts.UI
                 Debug.LogError("Drone port type requested for instantiation not recognized");
                 return null;
             }
-            var rZ = new RestrictionZoneCyl(dP.Position, 0.0f, 200.0f, 100.0f);
+            var rZ = new RestrictionZoneCyl(dP.Position, dP.Position.y, dP.Position.y + 200.0f, 100.0f);
             rZ.Layer = 13;//landing zone
             InstantiateRestrictionZone(Guid.NewGuid().ToString(), rZ, true, sDP.gameObject.transform);
 
