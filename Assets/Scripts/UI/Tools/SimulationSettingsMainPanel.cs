@@ -16,12 +16,20 @@ namespace Assets.Scripts.UI.Tools
         public BackgroundSettingsPanel _backgroundSettings;
 
         private SimulationSettings _simulationSettingsCopy;
+        private VehicleControlSystem _vehicleControlSystem;
 
         void Awake()
         {
             if (_generalSettings == null || _corridorSettings == null || _lowAltitudeSettings == null || _backgroundSettings == null)
             {
                 Debug.LogError("Not all panels defined for simulation settings main panel");
+                return;
+            }
+
+            _vehicleControlSystem = FindObjectOfType<VehicleControlSystem>(true);
+            if (_vehicleControlSystem == null)
+            {
+                Debug.LogError("Could not find vehicle control system in scene");
                 return;
             }
         }
@@ -79,6 +87,11 @@ namespace Assets.Scripts.UI.Tools
 
         public void Ok()
         {
+            if (Math.Abs(_simulationSettingsCopy.CorridorFlightElevation_M - EnvironManager.Instance.Environ.SimSettings.CorridorFlightElevation_M) > 0.1)
+            {
+                //new height of corridors means network is out of date.
+                _vehicleControlSystem.RebuildNetwork();
+            }
             EnvironManager.Instance.Environ.SimSettings = new SimulationSettings(_simulationSettingsCopy);
             gameObject.SetActive(false);
         }
