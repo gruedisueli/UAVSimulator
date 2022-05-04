@@ -200,4 +200,18 @@ namespace Assets.Scripts
         Speed = 1,
         Distance = 2
     }
+
+    public enum ViewDirection
+    {
+        Top = 0,
+        North = 1,
+        Northeast = 2,
+        East = 3,
+        Southeast = 4,
+        South = 5,
+        Southwest = 6,
+        West = 7,
+        Northwest = 8
+    }
+
 }

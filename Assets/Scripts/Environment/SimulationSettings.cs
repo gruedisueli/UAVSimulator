@@ -14,6 +14,13 @@ namespace Assets.Scripts.Environment
 
         #region GENERAL SETTINGS
 
+        [JsonProperty] private bool _displayToolTips = true;
+        public bool DisplayTooltips
+        {
+            get => _displayToolTips;
+            set => _displayToolTips = value;
+        }
+
         [JsonProperty] 
         private bool _isMetricUnits = true;
         public bool IsMetricUnits

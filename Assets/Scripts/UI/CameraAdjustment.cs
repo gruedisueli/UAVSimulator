@@ -13,6 +13,7 @@ using Mapbox.Geocoding;
 using Mapbox.Unity.Map;
 
 using Assets.Scripts.Environment;
+using UnityEngine.EventSystems;
 
 namespace Assets.Scripts.UI
 {
@@ -52,6 +53,11 @@ namespace Assets.Scripts.UI
         private float _minZ = float.MinValue;
         private float _maxZ = float.MaxValue;
 
+        private Vector3 _lastCenter = new Vector3();
+        private float _lastD = 0;
+        private bool _lastActionWasSetView = false;
+        private Vector3 _homePos = new Vector3();
+
         void Start() { Init(); }
         void OnEnable() { Init(); }
 
@@ -62,6 +68,7 @@ namespace Assets.Scripts.UI
             _currentRotation = _camera.transform.rotation;
             _desiredRotation = _camera.transform.rotation;
             _isPerspective = !_camera.orthographic;
+            _homePos = _camera.transform.position;
 
             _xDeg = Vector3.Angle(Vector3.right, _camera.transform.right);
             _yDeg = Vector3.Angle(Vector3.up, _camera.transform.up);
@@ -85,28 +92,23 @@ namespace Assets.Scripts.UI
          */
         void LateUpdate()
         {
+            if (EventSystem.current.IsPointerOverGameObject()) return;
             bool changed = false;
-            if (_allowPan && Input.GetMouseButtonDown(1))
+            if (_allowPan && Input.GetMouseButtonDown(0))
             {
                 OnStartPan?.Invoke(this, new System.EventArgs());
+                _lastActionWasSetView = false;
             }
-            else if (_allowPan && Input.GetMouseButtonUp(1))
+            else if (_allowPan && Input.GetMouseButtonUp(0))
             {
                 OnEndPan?.Invoke(this, new System.EventArgs());
+                _lastActionWasSetView = false;
             }
 
-            //set to top view if certain macro pressed:
-            if (Input.GetKeyUp(KeyCode.T) && (Input.GetKeyUp(KeyCode.LeftControl) || Input.GetKeyUp(KeyCode.RightControl)))//set view to top
-            {
-                _desiredRotation = Quaternion.Euler(90, 0, 0);
-                //currentRotation = transform.rotation;
-                _rotation = _desiredRotation;
-                _camera.transform.rotation = _rotation;
-                changed = true;
-            }
             // If middle mouse ORBIT
-            else if (_allowTilt && Input.GetMouseButton(2))
+            if (_allowTilt && Input.GetMouseButton(1))
             {
+                _lastActionWasSetView = false;
                 _xDeg += Input.GetAxis("Mouse X") * _xSpeed * 0.02f;
                 _yDeg -= Input.GetAxis("Mouse Y") * _ySpeed * 0.02f;
 
@@ -122,9 +124,9 @@ namespace Assets.Scripts.UI
                 _camera.transform.rotation = _rotation;
                 changed = true;
             }
-            // otherwise if middle mouse is selected, we pan by way of transforming the target in screenspace
-            else if (_allowPan && Input.GetMouseButton(1))
+            else if (_allowPan && Input.GetMouseButton(0))
             {
+                _lastActionWasSetView = false;
                 var tX = _camera.transform.right * -Input.GetAxis("Mouse X") * (_camera.transform.position.y / _panSpeed);
                 var tY = _camera.transform.up * -Input.GetAxis("Mouse Y") * (_camera.transform.position.y / _panSpeed);
                 var combined = tX + tY;
@@ -151,6 +153,7 @@ namespace Assets.Scripts.UI
             //zoom
             if (_allowZoom)
             {
+                _lastActionWasSetView = false;
                 var wheel = Input.GetAxis("Mouse ScrollWheel");
                 if (_isPerspective && wheel != 0)
                 {
@@ -205,6 +208,92 @@ namespace Assets.Scripts.UI
             if (angle > 360)
                 angle -= 360;
             return Mathf.Clamp(angle, min, max);
+        }
+
+        /// <summary>
+        /// Sets camera to view specified.
+        /// </summary>
+        public void GoToView(int direction)
+        {
+            ViewDirection dir = (ViewDirection) direction;
+            //camera "target" will be the spot on the ground below the camera, not the current target.
+            Vector3 t;
+            float d;//distance to this target.
+            if (_lastActionWasSetView)
+            {
+                t = _lastCenter;
+                d = _lastD;
+            }
+            else
+            {
+                t = new Vector3(_camera.transform.position.x, 0, _camera.transform.position.z);
+                d = _camera.transform.position.y;
+            }
+            float a = d * (float) Math.Cos(Math.PI / 4);//distance along ground to camera positions not directly above the target
+            float o = d * (float) Math.Sin(Math.PI / 4);//vertical distance from ground to camera positions not directly above the target
+            var u = new Vector3(0, o, 0);//vector up to the position if not directly above target
+            Vector3 p = new Vector3();
+            switch (dir)
+            {
+                case ViewDirection.Top:
+                {
+                    p = new Vector3(t.x, d, t.z);
+                    break;
+                }
+                case ViewDirection.North:
+                {
+                    p = t + new Vector3(0, 0, 1) * a + u;
+                    break;
+                }
+                case ViewDirection.Northeast:
+                {
+                    p = t + new Vector3(1, 0, 1) * a + u;
+                    break;
+                }
+                case ViewDirection.East:
+                {
+                    p = t + new Vector3(1, 0, 0) * a + u;
+                    break;
+                }
+                case ViewDirection.Southeast:
+                {
+                    p = t + new Vector3(1, 0, -1) * a + u;
+                    break;
+                }
+                case ViewDirection.South:
+                {
+                    p = t + new Vector3(0, 0, -1) * a + u;
+                    break;
+                }
+                case ViewDirection.Southwest:
+                {
+                    p = t + new Vector3(-1, 0, -1) * a + u;
+                    break;
+                }
+                case ViewDirection.West:
+                {
+                    p = t + new Vector3(-1, 0, 0) * a + u;
+                    break; 
+                }
+                case ViewDirection.Northwest:
+                {
+                    p = t + new Vector3(-1, 0, 1) * a + u;
+                    break;
+                }
+            }
+
+            _camera.transform.position = p;
+            _camera.transform.LookAt(t);
+
+            _lastCenter = t;
+            _lastD = d;
+            _lastActionWasSetView = true;
+        }
+
+        public void GoHomePos()
+        {
+            _camera.transform.position = _homePos;
+            _camera.transform.LookAt(new Vector3(_homePos.x, 0, _homePos.z));
         }
     }
 }
