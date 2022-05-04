@@ -67,22 +67,22 @@ namespace Assets.Scripts.UI.Tools
                 float maxSpeed, takeOffSpeed, landingSpeed, currentSpeed, elevation;
                 if (isMetric)
                 {
-                    maxSpeed = UnitUtils.MetersPerSecondToKilometersPerHour(d.MaxSpeed);
-                    takeOffSpeed = UnitUtils.MetersPerSecondToKilometersPerHour(d.TakeOffSpeed);
-                    landingSpeed = UnitUtils.MetersPerSecondToKilometersPerHour(d.LandingSpeed);
+                    maxSpeed = UnitUtils.MetersPerSecondToKilometersPerHour(d.DroneSettingsReference.MaxSpeed_MPS);
+                    takeOffSpeed = UnitUtils.MetersPerSecondToKilometersPerHour(d.DroneSettingsReference.TakeOffSpeed_MPS);
+                    landingSpeed = UnitUtils.MetersPerSecondToKilometersPerHour(d.DroneSettingsReference.LandingSpeed_MPS);
                     currentSpeed = UnitUtils.MetersPerSecondToKilometersPerHour(d.CurrentSpeed);
                     elevation = d.Elevation;
                 }
                 else
                 {
-                    maxSpeed = UnitUtils.MetersPerSecondToMilesPerHour(d.MaxSpeed);
-                    takeOffSpeed = UnitUtils.MetersPerSecondToMilesPerHour(d.TakeOffSpeed);
-                    landingSpeed = UnitUtils.MetersPerSecondToMilesPerHour(d.LandingSpeed);
+                    maxSpeed = UnitUtils.MetersPerSecondToMilesPerHour(d.DroneSettingsReference.MaxSpeed_MPS);
+                    takeOffSpeed = UnitUtils.MetersPerSecondToMilesPerHour(d.DroneSettingsReference.TakeOffSpeed_MPS);
+                    landingSpeed = UnitUtils.MetersPerSecondToMilesPerHour(d.DroneSettingsReference.LandingSpeed_MPS);
                     currentSpeed = UnitUtils.MetersPerSecondToMilesPerHour(d.CurrentSpeed);
                     elevation = UnitUtils.MetersToFeet(d.Elevation);
                 }
                 i.SetTextElement(ElementPropertyType.Id, d.Id);
-                i.SetTextElement(ElementPropertyType.Type, d.DroneType);
+                i.SetTextElement(ElementPropertyType.Type, d.DroneSettingsReference.DroneType);
                 //i.SetTextElement(ElementPropertyType.Capacity, d.capacity);
                 i.SetTextElement(ElementPropertyType.MaxSpeed, maxSpeed);
                 //i.SetTextElement(ElementPropertyType.YawSpeed, d.yawSpeed);

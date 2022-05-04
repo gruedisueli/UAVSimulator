@@ -16,7 +16,7 @@ public class BackgroundDrone : DroneBase
     {
         //@Eunu comment on what's happening in here.
 
-        CurrentSpeed = MaxSpeed * EnvironManager.Instance.Environ.SimSettings.SimulationSpeedMultiplier;
+        CurrentSpeed = DroneSettingsReference.MaxSpeed_MPS * EnvironManager.Instance.Environ.SimSettings.SimulationSpeedMultiplier;
         if (Vector3.Distance(TargetPosition, transform.position) < ArrivalThreshold)
         {
             if ( WayPointsQueue.Count == 0 ) WayPointsQueue = new Queue<Vector3>(_vcs.FindPath(transform.position, _vcs.GetRandomPointXZ(transform.position.y), 5, 1 << 8 | 1 << 9 | 1 << 13 | 1 << 14)); //note use of bit-wise shift operators as a handy way to create a layer mask
@@ -25,7 +25,7 @@ public class BackgroundDrone : DroneBase
         else
         {
             Quaternion wantedRotation = Quaternion.LookRotation(TargetPosition - transform.position, transform.up);
-            if (State == "move") transform.rotation = Quaternion.Lerp(transform.rotation, wantedRotation, Time.deltaTime * YawSpeed);
+            if (State == "move") transform.rotation = Quaternion.Lerp(transform.rotation, wantedRotation, Time.deltaTime * DroneSettingsReference.YawSpeed);
             transform.position = Vector3.MoveTowards(transform.position, TargetPosition, CurrentSpeed * Time.deltaTime);
         }
     }

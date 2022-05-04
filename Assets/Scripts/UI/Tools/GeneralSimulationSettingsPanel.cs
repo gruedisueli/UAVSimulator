@@ -40,7 +40,7 @@ namespace Assets.Scripts.UI.Tools
         public void UnitChange()
         {
             _isMetric = _unitSelector.value == 0;
-            _mainPanel.UpdateGeneralSettings(_isMetric, _callGenInt, _acceptNoiseThresh, _simSpeedMult);
+            _mainPanel?.UpdateGeneralSettings(_isMetric, _callGenInt, _acceptNoiseThresh, _simSpeedMult);
         }
 
         protected override void OnModification(IModifyElementArgs args)

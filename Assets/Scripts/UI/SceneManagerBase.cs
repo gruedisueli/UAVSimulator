@@ -379,7 +379,7 @@ namespace Assets.Scripts.UI
                 }
             }
 
-            _settingsButton.interactable = !args.IsPlaying;
+            //_settingsButton.interactable = !args.IsPlaying;
             _saveButton.interactable = !args.IsPlaying;
 
             _droneIcons.Clear();

@@ -27,8 +27,8 @@ namespace Assets.Scripts.SimulatorCore
         public List<GameObject> congestedParkingStructures; //{ get; set; }//list of parking structures currently labeled as congested.
         public List<GameObject> congestedDronePorts; //{ get; set; }//list of drone ports currently labeled as congested.
 
-        private float _avgSpeedUpdateInterval = 1;//seconds
-        private float _lastAvgSpeedUpdate = 0;
+        private float _statsUpdateInterval = 1;//seconds
+        private float _lastStatsUpdate = 0;
         private bool _isPlaying = false;
 
 
@@ -54,9 +54,9 @@ namespace Assets.Scripts.SimulatorCore
         void Update()
         {
             var t = Time.unscaledTime;
-            if (_isPlaying && t - _lastAvgSpeedUpdate > _avgSpeedUpdateInterval)
+            if (_isPlaying && t - _lastStatsUpdate > _statsUpdateInterval)
             {
-                _lastAvgSpeedUpdate = t;
+                _lastStatsUpdate = t;
                 float sum = 0;
                 foreach (var d in flyingDrones)
                 {
@@ -64,6 +64,12 @@ namespace Assets.Scripts.SimulatorCore
                 }
 
                 averageSpeed = sum / flyingDrones.Count;
+
+                throughput = 0;
+                foreach (var d in flyingDrones)
+                {
+                    throughput += d.DroneSettingsReference.Capacity;
+                }
             }
 
             if (_isPlaying && t - _lastNoiseUpdate > _noiseUpdateInterval)
@@ -169,7 +175,6 @@ namespace Assets.Scripts.SimulatorCore
         {
             if (!flyingDrones.Contains(drone))
             {
-                throughput += drone.Capacity;
                 flyingDrones.Add(drone);
             }
         }
@@ -181,7 +186,6 @@ namespace Assets.Scripts.SimulatorCore
         {
             if (flyingDrones.Contains(drone))
             {
-                throughput -= drone.Capacity;
                 flyingDrones.Remove(drone);
             }
         }

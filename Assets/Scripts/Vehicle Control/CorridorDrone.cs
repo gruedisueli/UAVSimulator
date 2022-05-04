@@ -69,7 +69,7 @@ public class CorridorDrone : DroneBase
                 Vector3 rotation = TargetPosition - transform.position;
                 rotation.y = 0.0f;
                 Quaternion wantedRotation = Quaternion.LookRotation(rotation, transform.up);
-                transform.rotation = Quaternion.Lerp(transform.rotation, wantedRotation, Time.deltaTime * YawSpeed);
+                transform.rotation = Quaternion.Lerp(transform.rotation, wantedRotation, Time.deltaTime * DroneSettingsReference.YawSpeed);
                 inCorridorSpeed = CurrentSpeed;
             }
             transform.position = Vector3.MoveTowards(transform.position, TargetPosition, CurrentSpeed * Time.deltaTime * EnvironManager.Instance.Environ.SimSettings.SimulationSpeedMultiplier);
@@ -83,7 +83,7 @@ public class CorridorDrone : DroneBase
     protected override void Pending()
     {
         State = "pending";
-        CurrentSpeed = LandingSpeed;
+        CurrentSpeed = DroneSettingsReference.LandingSpeed_MPS;
         CurrentCommunicationPoint.SendMessage("RegisterInQueue", this.gameObject);
         inCorridorSpeed = 0.0f;
     }
@@ -95,7 +95,7 @@ public class CorridorDrone : DroneBase
     {
         State = "land";
         inCorridorSpeed = 0.0f;
-        CurrentSpeed = LandingSpeed;
+        CurrentSpeed = DroneSettingsReference.LandingSpeed_MPS;
         _currentCorridor.RemoveDrone(this.gameObject);
     }
 

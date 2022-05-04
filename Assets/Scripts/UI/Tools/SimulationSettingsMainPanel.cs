@@ -87,12 +87,19 @@ namespace Assets.Scripts.UI.Tools
 
         public void Ok()
         {
-            if (Math.Abs(_simulationSettingsCopy.CorridorFlightElevation_M - EnvironManager.Instance.Environ.SimSettings.CorridorFlightElevation_M) > 0.1)
+            bool rebuildNetwork = Math.Abs(_simulationSettingsCopy.CorridorFlightElevation_M - EnvironManager.Instance.Environ.SimSettings.CorridorFlightElevation_M) > 0.1 || Math.Abs(_simulationSettingsCopy.CorridorSeparationDistance_M - EnvironManager.Instance.Environ.SimSettings.CorridorSeparationDistance_M) > 0.1;
+            var updateBackgroundDrones = _simulationSettingsCopy.BackgroundDroneCount != EnvironManager.Instance.Environ.SimSettings.BackgroundDroneCount;
+
+            EnvironManager.Instance.Environ.SimSettings.ApplySettings(_simulationSettingsCopy);
+
+            if (rebuildNetwork)
             {
-                //new height of corridors means network is out of date.
                 _vehicleControlSystem.RebuildNetwork();
             }
-            EnvironManager.Instance.Environ.SimSettings = new SimulationSettings(_simulationSettingsCopy);
+            if (updateBackgroundDrones)
+            {
+                _vehicleControlSystem.UpdateVehicleCount(_simulationSettingsCopy.BackgroundDroneCount);
+            }
             gameObject.SetActive(false);
         }
 

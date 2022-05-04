@@ -16,7 +16,7 @@ public class LowAltitudeDrone : DroneBase
             Vector3 rotation = TargetPosition - transform.position;
             rotation.y = 0.0f;
             Quaternion wantedRotation = Quaternion.LookRotation(rotation, transform.up);
-            transform.rotation = Quaternion.Lerp(transform.rotation, wantedRotation, Time.deltaTime * YawSpeed);
+            transform.rotation = Quaternion.Lerp(transform.rotation, wantedRotation, Time.deltaTime * DroneSettingsReference.YawSpeed);
         }
         transform.position = Vector3.MoveTowards(transform.position, TargetPosition, CurrentSpeed * Time.deltaTime * EnvironManager.Instance.Environ.SimSettings.SimulationSpeedMultiplier);
 
@@ -40,13 +40,13 @@ public class LowAltitudeDrone : DroneBase
         {
             WayPointsQueue = operationPoints;
             CurrentCommunicationPoint.SendMessage("FreeUp");
-            CurrentSpeed = MaxSpeed;
+            CurrentSpeed = DroneSettingsReference.MaxSpeed_MPS;
             State = "move";
         }
         else if (State == "move")
         {
             State = "pending";
-            CurrentSpeed = LandingSpeed;
+            CurrentSpeed = DroneSettingsReference.LandingSpeed_MPS;
             CurrentCommunicationPoint.SendMessage("RegisterInQueue", this.gameObject);
         }
         else if (State == "land")

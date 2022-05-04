@@ -21,13 +21,13 @@ public abstract class DroneBase : MonoBehaviour
     public float ArrivalThreshold { get; private set; }//distance within which drone should notify destination of arrival
     public float ApproachingThreshold { get; private set; }
     public string Id { get; } = Guid.NewGuid().ToString().Substring(0, 10);
-    public string DroneType { get; private set; }
-    public int Capacity { get; private set; }
-    public float MaxSpeed { get; private set; }
-    public float YawSpeed { get; private set; }
-    public float TakeOffSpeed { get; private set; }
-    public float LandingSpeed { get; private set; }
-    public float SoundAtSourceDb { get; private set; }
+    private DroneSettings _droneSettings;
+
+    public DroneSettings DroneSettingsReference
+    {
+        get => _droneSettings;
+    }
+
     private float _currentNoiseDb = 0;
 
     public float CurrentNoiseDb
@@ -75,7 +75,6 @@ public abstract class DroneBase : MonoBehaviour
     //public bool isUTM;
     public bool IsBackgroundDrone { get; private set; }
     public float WaitTimer { get; protected set; }
-    public float WaitTime { get; private set; }
     public GameObject Clone2d { get; set; } = null;
     public GameObject SelectionCircle { get; set; } = null;
 
@@ -147,7 +146,7 @@ public abstract class DroneBase : MonoBehaviour
         else if ( State == "wait" )
         {
             WaitTimer += Time.deltaTime;            
-            if ( WaitTimer > WaitTime )
+            if ( WaitTimer > DroneSettingsReference.WaitTime_S )
             {
                 GetNextAction();
             }
@@ -188,7 +187,7 @@ public abstract class DroneBase : MonoBehaviour
         //     : Needs dynamic tactical deconfliction
         
         Quaternion wantedRotation = Quaternion.LookRotation(TargetPosition - transform.position, transform.up);
-        if (State == "move") transform.rotation = Quaternion.Lerp(transform.rotation, wantedRotation, Time.deltaTime * YawSpeed);
+        if (State == "move") transform.rotation = Quaternion.Lerp(transform.rotation, wantedRotation, Time.deltaTime * DroneSettingsReference.YawSpeed);
         transform.position = Vector3.MoveTowards(transform.position, TargetPosition, CurrentSpeed * Time.deltaTime * EnvironManager.Instance.Environ.SimSettings.SimulationSpeedMultiplier);
     }
 
@@ -204,7 +203,7 @@ public abstract class DroneBase : MonoBehaviour
         else if (State == "takeoff")
         {
             WayPointsQueue = GetWayPointsToNextDestination();
-            CurrentSpeed = MaxSpeed;
+            CurrentSpeed = DroneSettingsReference.MaxSpeed_MPS;
             CurrentCommunicationPoint.SendMessage("FreeUp");
             CurrentCommunicationPoint = DestinationQueue.Dequeue();
             State = "move";
@@ -269,9 +268,9 @@ public abstract class DroneBase : MonoBehaviour
             IsParked = false;
         }
         TargetPosition = WayPointsQueue.Dequeue();
-        CurrentSpeed = TakeOffSpeed;
+        CurrentSpeed = DroneSettingsReference.TakeOffSpeed_MPS;
         State = "takeoff";
-        SetNoise(SoundAtSourceDb);
+        SetNoise(DroneSettingsReference.SoundAtSource_Decibels);
     }
 
     /// <summary>
@@ -279,7 +278,7 @@ public abstract class DroneBase : MonoBehaviour
     /// </summary>
     protected virtual void Pending()
     {
-        CurrentSpeed = LandingSpeed;
+        CurrentSpeed = DroneSettingsReference.LandingSpeed_MPS;
         State = "pending";
         CurrentCommunicationPoint.SendMessage("RegisterInQueue", this.gameObject);
     }
@@ -290,7 +289,7 @@ public abstract class DroneBase : MonoBehaviour
     public virtual void LandGranted()
     {
         State = "land";
-        CurrentSpeed = LandingSpeed;
+        CurrentSpeed = DroneSettingsReference.LandingSpeed_MPS;
     }
 
     /// <summary>
@@ -313,6 +312,7 @@ public abstract class DroneBase : MonoBehaviour
         }
         Clone2d?.Destroy();
         SelectionCircle?.Destroy();
+        EnvironManager.Instance.Environ.SimSettings.OnModified -= RefreshSettings;
     }
 
     #region Public Methods
@@ -320,18 +320,37 @@ public abstract class DroneBase : MonoBehaviour
     /// <summary>
     /// Initializes the properties of this object.
     /// </summary>
-    public void Initialize(DroneSettings droneSettings, string state, bool isBackgroundDrone)
+    public void Initialize(ref DroneSettings droneSettings, string state, bool isBackgroundDrone)
     {
-        DroneType = droneSettings.DroneType;
-        Capacity = droneSettings.Capacity;
-        MaxSpeed = droneSettings.MaxSpeed_MPS;
-        YawSpeed = droneSettings.YawSpeed;
-        TakeOffSpeed = droneSettings.TakeOffSpeed_MPS;
-        LandingSpeed = droneSettings.LandingSpeed_MPS;
-        WaitTime = droneSettings.WaitTime_S;
-        SoundAtSourceDb = droneSettings.SoundAtSource_Decibels;
+        _droneSettings = droneSettings;
         State = state;
         IsBackgroundDrone = isBackgroundDrone;
+        EnvironManager.Instance.Environ.SimSettings.OnModified += RefreshSettings;
+    }
+
+    private void RefreshSettings(object sender, System.EventArgs args)
+    {
+        if (State == "move")
+        {
+            CurrentSpeed = DroneSettingsReference.MaxSpeed_MPS;
+        }
+        else if (State == "takeoff")
+        {
+            CurrentSpeed = DroneSettingsReference.TakeOffSpeed_MPS;
+        }
+        else if (State == "land")
+        {
+            CurrentSpeed = DroneSettingsReference.LandingSpeed_MPS;
+        }
+        else if (State == "pending")
+        {
+            CurrentSpeed = DroneSettingsReference.LandingSpeed_MPS;
+        }
+
+        if (State != "idle")
+        {
+            SetNoise(DroneSettingsReference.SoundAtSource_Decibels);
+        }
     }
 
     /// <summary>

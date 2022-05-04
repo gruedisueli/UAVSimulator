@@ -10,6 +10,8 @@ namespace Assets.Scripts.Environment
     [JsonObject(MemberSerialization.OptIn)]
     public class SimulationSettings
     {
+        public EventHandler<System.EventArgs> OnModified;
+
         //ALL UNITS ARE IN METRIC! THE UNITY SIMULATION IS METRIC-BASED
 
         #region GENERAL SETTINGS
@@ -179,6 +181,8 @@ namespace Assets.Scripts.Environment
 
         public SimulationSettings (SimulationSettings orig)
         {
+            _displayToolTips = orig.DisplayTooltips;
+            _tutorialActive = orig.TutorialActive;
             _isMetricUnits = orig.IsMetricUnits;
             _callGenerationInterval_S = orig.CallGenerationInterval_S;
             _acceptableNoiseThreshold_Decibels = orig.AcceptableNoiseThreshold_Decibels;
@@ -193,6 +197,30 @@ namespace Assets.Scripts.Environment
             _backgroundDroneCount = orig.BackgroundDroneCount;
             _backgroundDroneUpperElev_M = orig.BackgroundDroneUpperElev_M;
             _backgroundDroneLowerElev_M = orig.BackgoundDroneLowerElev_M;
+        }
+
+        /// <summary>
+        /// Applies new settings to existing object
+        /// </summary>
+        public void ApplySettings(SimulationSettings s)
+        {
+            _displayToolTips = s.DisplayTooltips;
+            _tutorialActive = s.TutorialActive;
+            _isMetricUnits = s.IsMetricUnits;
+            _callGenerationInterval_S = s.CallGenerationInterval_S;
+            _acceptableNoiseThreshold_Decibels = s.AcceptableNoiseThreshold_Decibels;
+            _simulationSpeedMultiplier = s.SimulationSpeedMultiplier;
+            _strategicDeconfliction = s.StrategicDeconfliction;
+            _corridorDroneSettings.ApplySettings(s.CorridorDroneSettings);
+            _corridorFlightElevation_M = s.CorridorFlightElevation_M;
+            _corridorSeparationDistance_M = s.CorridorSeparationDistance_M;
+            _lowAltitudeDroneSettings.ApplySettings(s.LowAltitudeDroneSettings);
+            _lowAltitudeFlightElevation_M = s.LowAltitudeFlightElevation_M;
+            _lowAltitudeDroneTravelRadius_M = s.LowAltitudeDroneTravelRadius_M;
+            _backgroundDroneCount = s.BackgroundDroneCount;
+            _backgroundDroneUpperElev_M = s.BackgroundDroneUpperElev_M;
+            _backgroundDroneLowerElev_M = s.BackgoundDroneLowerElev_M;
+            OnModified?.Invoke(this, new System.EventArgs());
         }
     }
 }

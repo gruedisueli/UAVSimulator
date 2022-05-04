@@ -10,6 +10,7 @@ namespace Assets.Scripts.Environment
     [JsonObject(MemberSerialization.OptIn)]
     public class DroneSettings
     {
+        public EventHandler<System.EventArgs> OnModified;
         //ALL UNITS ARE IN METRIC! THE UNITY SIMULATION IS METRIC-BASED
 
         [JsonProperty] private string _droneType;
@@ -96,6 +97,19 @@ namespace Assets.Scripts.Environment
             _waitTime_S = orig.WaitTime_S;
             _capacity = orig.Capacity;
             _soundAtSource_Decibels = orig.SoundAtSource_Decibels;
+        }
+
+        public void ApplySettings(DroneSettings s)
+        {
+            _droneType = s.DroneType;
+            _yawSpeed = s.YawSpeed;
+            _maxSpeed_MPS = s.MaxSpeed_MPS;
+            _takeOffSpeed_MPS = s.TakeOffSpeed_MPS;
+            _landingSpeed_MPS = s.LandingSpeed_MPS;
+            _waitTime_S = s.WaitTime_S;
+            _capacity = s.Capacity;
+            _soundAtSource_Decibels = s.SoundAtSource_Decibels;
+            OnModified?.Invoke(this, new System.EventArgs());
         }
 
     }
