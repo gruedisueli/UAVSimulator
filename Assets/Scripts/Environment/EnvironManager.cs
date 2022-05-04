@@ -15,6 +15,7 @@ using Newtonsoft.Json;
 
 using Assets.Scripts.Serialization;
 using Assets.Scripts.MapboxCustom;
+using Assets.Scripts.UI.Tools;
 
 namespace Assets.Scripts.Environment
 {
@@ -77,6 +78,7 @@ namespace Assets.Scripts.Environment
         public GameObject RestrictionSpritePrefab { get; private set; } = null;
         public GameObject PortSpritePrefab { get; private set; } = null;
         public VehicleControlSystem VCS { get; set; } = null;
+        public MouseHint CanvasMouseHint { get; set; } = null;
 
 
         /// <summary>

@@ -4,13 +4,14 @@ using System.Collections;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-
+using Assets.Scripts.Environment;
 using Mapbox.Unity.MeshGeneration.Data;
 
 using Assets.Scripts.UI.EventArgs;
 using Assets.Scripts.UI;
 
 using UnityEngine;
+using UnityEngine.UI;
 
 namespace Assets.Scripts.UI.Tools
 {
@@ -42,11 +43,13 @@ namespace Assets.Scripts.UI.Tools
 
         public virtual void Add()
         {
+            ActivateMouseHint();
             StartCoroutine(PlaceAtLocationCoroutine());
         }
 
         protected abstract void Initialize();
         protected abstract IAddElementArgs GatherInformation();
+        protected abstract void ActivateMouseHint();
         
         private IEnumerator PlaceAtLocationCoroutine()
         {
@@ -77,6 +80,8 @@ namespace Assets.Scripts.UI.Tools
                     ElementAddedEvent.Invoke(GatherInformation());
                 }
             }
+
+            EnvironManager.Instance.CanvasMouseHint.Deactivate();
         }
     }
 }

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Assets.Scripts.Environment;
 using Assets.Scripts.UI.EventArgs;
 
 namespace Assets.Scripts.UI.Tools
@@ -12,6 +13,10 @@ namespace Assets.Scripts.UI.Tools
         protected override void Initialize()
         {
             
+        }
+        protected override void ActivateMouseHint()
+        {
+            EnvironManager.Instance.CanvasMouseHint.Activate("");
         }
 
         protected override IAddElementArgs GatherInformation()

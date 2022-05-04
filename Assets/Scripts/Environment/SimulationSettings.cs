@@ -21,6 +21,13 @@ namespace Assets.Scripts.Environment
             set => _displayToolTips = value;
         }
 
+        [JsonProperty] private bool _tutorialActive = true;
+        public bool TutorialActive
+        {
+            get => _tutorialActive;
+            set => _tutorialActive = value;
+        }
+
         [JsonProperty] 
         private bool _isMetricUnits = true;
         public bool IsMetricUnits

@@ -43,6 +43,7 @@ namespace Assets.Scripts.UI
         public Button _settingsButton;
         public Button _saveButton;
         public Slider _speedMultiplier;
+        public MouseHint _mouseHint;
 
         protected Camera _mainCamera;
 
@@ -86,8 +87,8 @@ namespace Assets.Scripts.UI
             RestrictionZones = new Dictionary<string, SceneRestrictionZone>();
             
 
-        //get main canvase
-        _mainCanvas = GetComponentInChildren<Canvas>(true);
+            //get main canvas
+            _mainCanvas = GetComponentInChildren<Canvas>(true);
             if (_mainCanvas == null)
             {
                 Debug.LogError("Main canvas not found in children of scene manager");
@@ -199,11 +200,24 @@ namespace Assets.Scripts.UI
                 _downloadAirspaceTool.OnDownloadAirspace += GetAirspaceData;
             }
 
+            if (_mouseHint == null)
+            {
+                Debug.LogError("Mouse hint not specified");
+            }
+            EnvironManager.Instance.CanvasMouseHint = _mouseHint;
+
             Init();
 
             InstantiateObjects();
 
             _vehicleControlSystem.RebuildNetwork();
+
+            //basic visualization settings by default:
+            _vehicleControlSystem.ToggleTrailVisualization(true);
+            Shader.SetGlobalInt("_displayNoise", 1);
+            _vehicleControlSystem.ToggleRouteVisualization(true);
+
+            //StartCoroutine(Tutorial());
         }
 
         private void OnDestroy()
@@ -290,6 +304,55 @@ namespace Assets.Scripts.UI
         /// What objects we want to instantiate will vary from scene to scene.
         /// </summary>
         protected abstract void InstantiateObjects();
+
+        #region TUTORIAL MODE
+
+        ///// <summary>
+        ///// Tutorial mode runs as long as tutorial mode is enabled and user has not gone through required steps.
+        ///// </summary>
+        //private IEnumerator Tutorial()
+        //{
+        //    if (!EnvironManager.Instance.Environ.SimSettings.TutorialActive)
+        //    {
+        //        yield break;
+        //    }
+
+        //    //show welcome screen, ask user if they want to do the tutorial
+
+        //    if (!EnvironManager.Instance.Environ.SimSettings.TutorialActive)//if user skipped the tutorial
+        //    {
+        //        yield break;
+        //    }
+
+        //    //try to set location? as opposed to separate view
+
+        //    //try to pan
+        //    //try to tilt
+        //    //try set the view direction
+
+        //    while (DronePorts.Count < 3)
+        //    {
+        //        //if step not started, start
+        //        yield return new WaitForEndOfFrame();
+        //    }
+        //    while (ParkingStructures.Count < 1)
+        //    {
+        //        //if step not started, start
+        //        yield return new WaitForEndOfFrame();
+        //    }
+        //    while (!_vehicleControlSystem.playing)
+        //    {
+        //        //if step not started, start
+        //        yield return new WaitForEndOfFrame();
+        //    }
+
+        //    //try to modify a structure
+        //    //turn on simulation
+        //    //tell about visualization settings
+        //    //tell about overall settings menu
+        //}
+
+        #endregion
 
         #region SIMULATION CONTROL
 
