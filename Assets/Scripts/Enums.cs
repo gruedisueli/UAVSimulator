@@ -214,4 +214,21 @@ namespace Assets.Scripts
         Northwest = 8
     }
 
+    public enum TutorialStepType
+    {
+        General = 0,
+        UnityEditorConfig = 1,
+        AwaitPanView = 2,
+        AwaitTiltView = 3,
+        AwaitZoomView = 4,
+        Await3DronePorts = 5,
+        Await1Parking = 6,
+        Await1Restriction = 7,
+        AwaitZoomToRestriction = 8,
+        AwaitModify = 9,
+        AwaitZoomToBuildingLevel = 10,
+        Await4DronePorts = 11
+        
+    }
+
 }

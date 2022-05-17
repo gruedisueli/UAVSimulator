@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.ComponentModel.Design;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -34,6 +35,21 @@ namespace Assets.Scripts.UI
     /// </summary>
     public abstract class SceneManagerBase : MonoBehaviour
     {
+        /// <summary>
+        /// Invoked when a scene element has been modified and change committed to environment.
+        /// </summary>
+        public EventHandler<System.EventArgs> OnElementChanged;
+
+        /// <summary>
+        /// Invoked when a scene element has been added to environment.
+        /// </summary>
+        public EventHandler<System.EventArgs> OnElementAdded;
+
+        /// <summary>
+        /// Invoked when a scene element has been removed from environment.
+        /// </summary>
+        public EventHandler<System.EventArgs> OnElementRemoved;
+
         #region PROTECTED FIELDS
 
         public AbstractMap _abstractMap;
@@ -51,6 +67,7 @@ namespace Assets.Scripts.UI
 
         protected ModifyTool[] _modifyTools;//certain modify tools that are not for modifying scene elements but simulation, etc. Modify tools for scene elements get instantiated dynamically.
         protected ToggleTool _noiseVisualToggle;
+        protected ToggleTool _buildingToggle;
         protected AddTool[] _addTools;
         protected SceneChangeTool[] _sceneChangeTools;
         protected DeselectTool[] _deselectTools;
@@ -58,6 +75,13 @@ namespace Assets.Scripts.UI
         protected PlayPauseTool _playPause;
         protected DownloadAirspaceTool _downloadAirspaceTool;
 
+        /// <summary>
+        /// Whatever scene element may be selected at any point in time. Null if none.
+        /// </summary>
+        public SceneElementBase SelectedElement
+        {
+            get => _selectedElement;
+        }
         protected SceneElementBase _selectedElement = null;
         protected SceneElementBase _workingCopy = null;
         protected ElementInfoPanel _currentInfoPanel = null;
@@ -147,16 +171,23 @@ namespace Assets.Scripts.UI
             {
                 foreach (var m in _modifyTools)
                 {
-                    if (m is ToggleTool {_visibilityType: VisibilityType.Noise} t)
+                    if (_noiseVisualToggle == null && m is ToggleTool {_visibilityType: VisibilityType.Noise} t)
                     {
                         _noiseVisualToggle = t;
-                        break;
+                    }
+                    else if (_buildingToggle == null && m is ToggleTool {_visibilityType: VisibilityType.Buildings} tB)
+                    {
+                        _buildingToggle = tB;
                     }
                 }
             }
             if (_noiseVisualToggle == null)
             {
                 Debug.LogError("Could not find noise visual toggle");
+            }
+            if (_buildingToggle == null)
+            {
+                Debug.LogError("Could not find building visual toggle");
             }
             _addTools = FindObjectsOfType<AddTool>(true);
             _sceneChangeTools = FindObjectsOfType<SceneChangeTool>(true);
@@ -216,8 +247,6 @@ namespace Assets.Scripts.UI
             _vehicleControlSystem.ToggleTrailVisualization(true);
             Shader.SetGlobalInt("_displayNoise", 1);
             _vehicleControlSystem.ToggleRouteVisualization(true);
-
-            //StartCoroutine(Tutorial());
         }
 
         private void OnDestroy()
@@ -304,55 +333,6 @@ namespace Assets.Scripts.UI
         /// What objects we want to instantiate will vary from scene to scene.
         /// </summary>
         protected abstract void InstantiateObjects();
-
-        #region TUTORIAL MODE
-
-        ///// <summary>
-        ///// Tutorial mode runs as long as tutorial mode is enabled and user has not gone through required steps.
-        ///// </summary>
-        //private IEnumerator Tutorial()
-        //{
-        //    if (!EnvironManager.Instance.Environ.SimSettings.TutorialActive)
-        //    {
-        //        yield break;
-        //    }
-
-        //    //show welcome screen, ask user if they want to do the tutorial
-
-        //    if (!EnvironManager.Instance.Environ.SimSettings.TutorialActive)//if user skipped the tutorial
-        //    {
-        //        yield break;
-        //    }
-
-        //    //try to set location? as opposed to separate view
-
-        //    //try to pan
-        //    //try to tilt
-        //    //try set the view direction
-
-        //    while (DronePorts.Count < 3)
-        //    {
-        //        //if step not started, start
-        //        yield return new WaitForEndOfFrame();
-        //    }
-        //    while (ParkingStructures.Count < 1)
-        //    {
-        //        //if step not started, start
-        //        yield return new WaitForEndOfFrame();
-        //    }
-        //    while (!_vehicleControlSystem.playing)
-        //    {
-        //        //if step not started, start
-        //        yield return new WaitForEndOfFrame();
-        //    }
-
-        //    //try to modify a structure
-        //    //turn on simulation
-        //    //tell about visualization settings
-        //    //tell about overall settings menu
-        //}
-
-        #endregion
 
         #region SIMULATION CONTROL
 
@@ -674,6 +654,7 @@ namespace Assets.Scripts.UI
         protected void CommitUpdates(object sender, System.EventArgs args)
         {
             EndModification(true);
+            OnElementChanged?.Invoke(sender, args);
         }
 
         /// <summary>
@@ -997,6 +978,8 @@ namespace Assets.Scripts.UI
             {
                 RemoveCity((_selectedElement as SceneCity).Guid);
             }
+
+            OnElementRemoved?.Invoke(sender,args);
         }
 
         /// <summary>

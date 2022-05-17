@@ -23,6 +23,7 @@ namespace Assets.Scripts.UI
     /// </summary>
     public class RegionViewManager : SceneManagerBase
     {
+        public EventHandler<System.EventArgs> OnZoomToBuildingLevel;
         public float _boundaryWidth = 100;
         private Coroutine _reloadRoutine;
         private WaitForSeconds _wait;
@@ -112,8 +113,11 @@ namespace Assets.Scripts.UI
             CurrentZoom = GetZoomLevel(_cameraAdj._camera.transform.position.y);
             Reload(CurrentZoom);
             _cameraAdj.OnZoom += OnZoomAction;
-            _cameraAdj.OnStartPan += OnStartPanAction;
-            _cameraAdj.OnEndPan += OnEndPanAction;
+            //_cameraAdj.OnStartPan += OnStartPanAction;
+            _cameraAdj.OnEndPan += OnSetViewAction;
+            _cameraAdj.OnSetView += OnSetViewAction;
+            _cameraAdj.OnSetViewHome += OnZoomAction;
+            _cameraAdj.OnZoomToPos += OnZoomAction;
 
             _buildingsLayer = _abstractMap.VectorData.FindFeatureSubLayerWithName("Buildings");
             if (_buildingsLayer == null)
@@ -168,23 +172,7 @@ namespace Assets.Scripts.UI
             _vehicleControlSystem.droneInstantiator.OnDroneInstantiated -= OnDroneInstantiated;
         }
 
-        private void OnZoomAction(object o, System.EventArgs args)
-        {
-            if (!(o is CameraAdjustment cA)) return;
-            var z = GetZoomLevel(cA._camera.transform.position.y);
-            Reload(z);
-        }
-
-        private void OnStartPanAction(object o, System.EventArgs args)
-        {
-            //if (_allowBuildings)
-            //{
-            //    _temporarySuppressBuildings = true;
-            //    SetAllowBuildings(false);
-            //}
-        }
-
-        private void OnEndPanAction(object o, System.EventArgs args)
+        private void OnSetViewAction(object o, System.EventArgs args)
         {
             //if (_temporarySuppressBuildings)
             //{
@@ -194,6 +182,33 @@ namespace Assets.Scripts.UI
             var z = GetZoomLevel(_cameraAdj._camera.transform.position.y);
             Reload(z);
         }
+
+        private void OnZoomAction(object o, System.EventArgs args)
+        {
+            if (!(o is CameraAdjustment cA)) return;
+            var z = GetZoomLevel(cA._camera.transform.position.y);
+            Reload(z);
+        }
+
+        //private void OnStartPanAction(object o, System.EventArgs args)
+        //{
+        //    //if (_allowBuildings)
+        //    //{
+        //    //    _temporarySuppressBuildings = true;
+        //    //    SetAllowBuildings(false);
+        //    //}
+        //}
+
+        //private void OnEndPanAction(object o, System.EventArgs args)
+        //{
+        //    //if (_temporarySuppressBuildings)
+        //    //{
+        //    //    _temporarySuppressBuildings = false;
+        //    //    SetAllowBuildings(true);
+        //    //}
+        //    var z = GetZoomLevel(_cameraAdj._camera.transform.position.y);
+        //    Reload(z);
+        //}
 
         private void SetAllowBuildings(bool toggle)
         {
@@ -233,11 +248,17 @@ namespace Assets.Scripts.UI
                     _buildingsLayer.SetActive(true);
                 }
                 _atBuildingZoomLevel = true;
+                OnZoomToBuildingLevel?.Invoke(this, System.EventArgs.Empty);
             }
             else if (zoom < _biggestZoom && _atBuildingZoomLevel)
             {
                 _buildingsLayer.SetActive(false);
                 _atBuildingZoomLevel = false;
+            }
+            _buildingToggle.SetInteractable(_atBuildingZoomLevel);
+            if (!_atBuildingZoomLevel && _buildingToggle._isOn)
+            {
+                _buildingToggle.SetToggleValue(false);
             }
             _abstractMap.UpdateMap(_abstractMap.CenterLatitudeLongitude, zoom);
             _reloadRoutine = null;
@@ -270,6 +291,8 @@ namespace Assets.Scripts.UI
             {
                 Debug.LogError("Added elements arguments of unrecognized type");
             }
+
+            OnElementAdded?.Invoke(this, System.EventArgs.Empty);
         }
 
         #endregion

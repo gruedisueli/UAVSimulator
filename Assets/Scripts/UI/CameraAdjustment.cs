@@ -25,6 +25,11 @@ namespace Assets.Scripts.UI
         public EventHandler<System.EventArgs> OnZoom;
         public EventHandler<System.EventArgs> OnStartPan;
         public EventHandler<System.EventArgs> OnEndPan;
+        public EventHandler<System.EventArgs> OnStartTilt;
+        public EventHandler<System.EventArgs> OnEndTilt;
+        public EventHandler<System.EventArgs> OnZoomToPos;
+        public EventHandler<System.EventArgs> OnSetView;
+        public EventHandler<System.EventArgs> OnSetViewHome;
         public Camera _camera;
 
         public float _xSpeed = 200.0f;
@@ -38,8 +43,10 @@ namespace Assets.Scripts.UI
         public bool _allowTilt = false;
         public bool _allowPan = true;
         public float _minOrthoZoom = 6000.0f;
+
         public float _farClipMultPersp = 2.5f;
         public float _fogRangeFactor = 2.5f;
+        public float _zoomSelectedHeight = 350.0f;
 
         private float _xDeg = 0.0f;
         private float _yDeg = 0.0f;
@@ -94,18 +101,31 @@ namespace Assets.Scripts.UI
         {
             if (EventSystem.current.IsPointerOverGameObject()) return;
             bool changed = false;
-            if (_allowPan && Input.GetMouseButtonDown(0))
+            if (_allowPan)
             {
-                OnStartPan?.Invoke(this, new System.EventArgs());
-                _lastActionWasSetView = false;
+                if (Input.GetMouseButtonDown(0))
+                {
+                    OnStartPan?.Invoke(this, System.EventArgs.Empty);
+                    _lastActionWasSetView = false;
+                }
+                else if (Input.GetMouseButtonUp(0))
+                {
+                    OnEndPan?.Invoke(this, System.EventArgs.Empty);
+                    _lastActionWasSetView = false;
+                }
             }
-            else if (_allowPan && Input.GetMouseButtonUp(0))
+            if (_allowTilt)
             {
-                OnEndPan?.Invoke(this, new System.EventArgs());
-                _lastActionWasSetView = false;
+                if (Input.GetMouseButtonDown(1))
+                {
+                    OnStartTilt?.Invoke(this, System.EventArgs.Empty);
+                }
+                else if (Input.GetMouseButtonUp(1))
+                {
+                    OnEndTilt?.Invoke(this, System.EventArgs.Empty);
+                }
             }
 
-            // If middle mouse ORBIT
             if (_allowTilt && Input.GetMouseButton(1))
             {
                 _lastActionWasSetView = false;
@@ -168,7 +188,7 @@ namespace Assets.Scripts.UI
                     _camera.farClipPlane = _camera.transform.position.y * _farClipMultPersp;
                     SetFog();
                     changed = true;
-                    OnZoom?.Invoke(this, new System.EventArgs());
+                    OnZoom?.Invoke(this, System.EventArgs.Empty);
                 }
                 else if (wheel != 0)
                 {
@@ -183,7 +203,7 @@ namespace Assets.Scripts.UI
                     }
                     _camera.orthographicSize = s > _minOrthoZoom ? s : _minOrthoZoom;
                     changed = true;
-                    OnZoom?.Invoke(this, new System.EventArgs());
+                    OnZoom?.Invoke(this, System.EventArgs.Empty);
 
                 }
             }
@@ -208,6 +228,22 @@ namespace Assets.Scripts.UI
             if (angle > 360)
                 angle -= 360;
             return Mathf.Clamp(angle, min, max);
+        }
+
+        /// <summary>
+        /// Zoom to the specified point.
+        /// </summary>
+        public void ZoomToPosition(Vector3 pos)
+        {
+            _camera.transform.position = new Vector3(pos.x, _zoomSelectedHeight, pos.z);
+            _camera.transform.LookAt(pos);
+
+            _lastCenter = pos;
+            _lastD = _zoomSelectedHeight;
+            _camera.farClipPlane = _camera.transform.position.y * _farClipMultPersp;
+            _lastActionWasSetView = true;
+
+            OnZoomToPos?.Invoke(this, System.EventArgs.Empty);
         }
 
         /// <summary>
@@ -288,12 +324,17 @@ namespace Assets.Scripts.UI
             _lastCenter = t;
             _lastD = d;
             _lastActionWasSetView = true;
+
+            OnSetView?.Invoke(this, System.EventArgs.Empty);
         }
 
         public void GoHomePos()
         {
             _camera.transform.position = _homePos;
             _camera.transform.LookAt(new Vector3(_homePos.x, 0, _homePos.z));
+            _camera.farClipPlane = _camera.transform.position.y * _farClipMultPersp;
+
+            OnSetViewHome?.Invoke(this, System.EventArgs.Empty);
         }
     }
 }

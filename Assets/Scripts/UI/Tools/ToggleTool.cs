@@ -50,6 +50,15 @@ namespace Assets.Scripts.UI.Tools
             RegisterModification();
         }
 
+        /// <summary>
+        /// Sets toggle value.
+        /// </summary>
+        public void SetToggleValue(bool on)
+        {
+            _toggle.isOn = on;
+            _isOn = on;
+        }
+
         protected override IModifyElementArgs GatherInformation()
         {
             if (_propertyType != ElementPropertyType.Unset)
