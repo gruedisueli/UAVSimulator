@@ -227,7 +227,8 @@ namespace Assets.Scripts
         AwaitZoomToRestriction = 8,
         AwaitModify = 9,
         AwaitZoomToBuildingLevel = 10,
-        Await4DronePorts = 11
+        Await4DronePorts = 11,
+        AwaitBuildingsEnabled = 12
         
     }
 

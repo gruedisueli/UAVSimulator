@@ -37,7 +37,7 @@ namespace Assets.Scripts.UI
         private float _biggestZoom = 15;
         //private float _smallestZoom = 7;
         private bool _atBuildingZoomLevel = false;//activated whenever we get to a zoom level that we could possibly display buildings at without enormous processing cost.
-        private bool _allowBuildings = false;//true if user toggle for buildings is in "on" position. Only if true can we show buildings.
+        public bool AllowBuildings { get; private set; } = false;//true if user toggle for buildings is in "on" position. Only if true can we show buildings.
         private bool _temporarySuppressBuildings = false;//set true of just holding off buildings for a second while changing view.
         private VectorSubLayerProperties _buildingsLayer = null;
 
@@ -212,14 +212,15 @@ namespace Assets.Scripts.UI
 
         private void SetAllowBuildings(bool toggle)
         {
-            _allowBuildings = toggle;
-            if (_atBuildingZoomLevel && !_allowBuildings)
+            AllowBuildings = toggle;
+            if (_atBuildingZoomLevel && !AllowBuildings)
             {
                 _buildingsLayer.SetActive(false);
             }
-            else if (_atBuildingZoomLevel && _allowBuildings)
+            else if (_atBuildingZoomLevel && AllowBuildings)
             {
                 _buildingsLayer.SetActive(true);
+                OnBuildingsEnabled?.Invoke(this, System.EventArgs.Empty);
             }
         }
 
@@ -243,7 +244,7 @@ namespace Assets.Scripts.UI
             //_camera.transform.position = _cameraStartPos;
             if (zoom >= _biggestZoom && !_atBuildingZoomLevel)
             {
-                if (_allowBuildings)
+                if (AllowBuildings)
                 {
                     _buildingsLayer.SetActive(true);
                 }

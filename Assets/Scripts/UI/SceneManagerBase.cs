@@ -50,6 +50,11 @@ namespace Assets.Scripts.UI
         /// </summary>
         public EventHandler<System.EventArgs> OnElementRemoved;
 
+        /// <summary>
+        /// Invoked when a buildings are enabled.
+        /// </summary>
+        public EventHandler<System.EventArgs> OnBuildingsEnabled;
+
         #region PROTECTED FIELDS
 
         public AbstractMap _abstractMap;

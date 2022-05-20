@@ -102,6 +102,14 @@ namespace Assets.Scripts.UI
                     }
                     break;
                 }
+                case TutorialStepType.AwaitBuildingsEnabled:
+                {
+                    if (GetSceneManager())
+                    {
+                        _sceneManager.OnBuildingsEnabled += CompletedRequirementCallback;
+                    }
+                    break;
+                }
             }
         }
 
@@ -135,6 +143,10 @@ namespace Assets.Scripts.UI
         }
         public void CompletedRequirement()
         {
+            if (!gameObject.activeSelf)
+            {
+                return;
+            }
             _isComplete = true;
             OnCompleted?.Invoke(this, System.EventArgs.Empty);
         }
@@ -185,6 +197,11 @@ namespace Assets.Scripts.UI
                 case TutorialStepType.Await4DronePorts:
                 {
                     _isComplete = EnvironManager.Instance.Environ.DronePorts.Count >= 4;
+                    break;
+                }
+                case TutorialStepType.AwaitBuildingsEnabled:
+                {
+                    _isComplete = _sceneManager.AllowBuildings;
                     break;
                 }
             }

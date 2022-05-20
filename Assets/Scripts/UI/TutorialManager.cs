@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -20,42 +21,6 @@ namespace Assets.Scripts.UI
         //subscribe to events from children
 
         //each step may have requirements, when completed, you can move to next step
-        
-        //TUTORIAL SEQUENCE
-        //WELCOME SCREEN. continue with tutorial? YES/NO
-        //MOUSE ACTIONS: pan, tilt, zoom
-        //VIEW PRESETS
-        //EXPLAIN AIRSPACE
-        //EXPLAIN TYPES OF STRUCTURES
-        //[critical] ADD DRONE PORTS
-            //CLICK ON DRONE PORT ROLLOUT
-            //CLICK ON DRONE PORT BUTTON
-            //PLACE ON MAP
-            //WAIT FOR TWO MORE TO BE PLACED
-        //[critical] ADD CORRIDOR PARKING STRUCTURE
-            //CLICK ON PARKING STRUCTURE ROLLOUT
-            //CLICK ON CORRIDOR PARKING
-            //PLACE ON MAP
-        //ADD RESTRICTION ZONE
-            //CLICK ON RESTRICTION ZONE ROLLOUT
-            //CLICK ON CYLINDRICAL RESTRICTION ZONE
-            //PLACE ON MAP
-        //SELECT RESTRICTION ZONE
-        //ZOOM TO ELEMENT
-        //MODIFY ELEMENT
-        //COMMIT MODIFY
-        //SHOW VISIBILITY PANEL/EXPLAIN GIS INTEGRATION CAPABILITY
-        //TURN ON BUILDINGS, TURN OFF BUILDINGS
-        //TOGGLE ROUTE DISPLAY
-        //[critical] RUN SIMULATION
-        //CHANGE SIM SPEED
-        //TOGGLE NOISE
-        //SHOW SIM INFO PANEL
-        //CLICK A DRONE
-        //STOP SIMULATION
-        //SHOW SETTINGS PANEL
-        //SHOW SAVE BUTTON
-        //SHOW HELP BUTTON
 
         public Button _nextButton;
         public Button _prevButton;
@@ -78,7 +43,7 @@ namespace Assets.Scripts.UI
                 _tutorialSteps[i].OnCompleted += StepCompletedCallback;
             }
 
-            _currentStep = 0;
+            StartTutorial();
         }
 
         public void StartTutorial()
@@ -86,7 +51,17 @@ namespace Assets.Scripts.UI
             gameObject.SetActive(true);
             _currentStep = 0;
             _tutorialSteps[_currentStep].Activate();
-            _progress.SetCompletion(0);
+            _nextButton.interactable = _tutorialSteps[_currentStep].CheckCompletion();
+            StartCoroutine(ProgressInitCoroutine());
+        }
+
+        private IEnumerator ProgressInitCoroutine()
+        {
+            while (!_progress.isActiveAndEnabled)
+            {
+                yield return new WaitForEndOfFrame();
+            }
+            _progress.Init("Tutorial Progress");
         }
 
         public void CloseTutorial()
@@ -105,7 +80,7 @@ namespace Assets.Scripts.UI
                 _prevButton.interactable = false;
             }
             _nextButton.interactable = true;
-            _progress.Init("tutorial progress");
+            _progress.SetCompletion((float)_currentStep / (float)_tutorialSteps.Length);
         }
 
         public void NextStep()

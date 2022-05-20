@@ -57,7 +57,7 @@ namespace Assets.Scripts.Environment
         }
 
         public FloatRange SimulationSpeedMultiplierRange { get; } = new FloatRange(1.0f, 500.0f);
-        [JsonProperty] private float _simulationSpeedMultiplier = 1.0f;
+        [JsonProperty] private float _simulationSpeedMultiplier = 20.0f;
 
         public float SimulationSpeedMultiplier
         {
@@ -78,7 +78,7 @@ namespace Assets.Scripts.Environment
 
         #region CORRIDOR DRONE SETTINGS
 
-        [JsonProperty] private DroneSettings _corridorDroneSettings = new DroneSettings("corridor", 30.0f, 50.0f, 10.0f, 10.0f, 0.0f, 5, 125.0f);
+        [JsonProperty] private DroneSettings _corridorDroneSettings = new DroneSettings("corridor", 30.0f, 50.0f, 10.0f, 10.0f, 0.0f, 5, 114.0f);
 
         public DroneSettings CorridorDroneSettings
         {
@@ -111,7 +111,7 @@ namespace Assets.Scripts.Environment
 
         #region LOW ALTITUDE DRONE SETTINGS
 
-        [JsonProperty] private DroneSettings _lowAltitudeDroneSettings = new DroneSettings("LowAltitude", 50.0f, 40.0f, 25.0f, 25.0f, 0.0f, 0, 125.0f);
+        [JsonProperty] private DroneSettings _lowAltitudeDroneSettings = new DroneSettings("LowAltitude", 50.0f, 40.0f, 25.0f, 25.0f, 0.0f, 0, 114.0f);
 
         public DroneSettings LowAltitudeDroneSettings
         {
