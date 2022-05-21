@@ -65,6 +65,7 @@ namespace Assets.Scripts.UI
         public Button _saveButton;
         public Slider _speedMultiplier;
         public MouseHint _mouseHint;
+        public TutorialManager _tutorialManager;
 
         protected Camera _mainCamera;
 
@@ -252,6 +253,8 @@ namespace Assets.Scripts.UI
             _vehicleControlSystem.ToggleTrailVisualization(true);
             Shader.SetGlobalInt("_displayNoise", 1);
             _vehicleControlSystem.ToggleRouteVisualization(true);
+
+            _tutorialManager.StartTutorial();
         }
 
         private void OnDestroy()

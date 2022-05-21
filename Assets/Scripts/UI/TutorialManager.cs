@@ -43,7 +43,6 @@ namespace Assets.Scripts.UI
                 _tutorialSteps[i].OnCompleted += StepCompletedCallback;
             }
 
-            StartTutorial();
         }
 
         public void StartTutorial()
@@ -51,7 +50,8 @@ namespace Assets.Scripts.UI
             gameObject.SetActive(true);
             _currentStep = 0;
             _tutorialSteps[_currentStep].Activate();
-            _nextButton.interactable = _tutorialSteps[_currentStep].CheckCompletion();
+            _nextButton.interactable = true;
+            _prevButton.interactable = false;
             StartCoroutine(ProgressInitCoroutine());
         }
 
@@ -85,6 +85,7 @@ namespace Assets.Scripts.UI
 
         public void NextStep()
         {
+            _prevButton.interactable = true;
             if (_currentStep == _tutorialSteps.Length - 1)
             {
                 CloseTutorial();
