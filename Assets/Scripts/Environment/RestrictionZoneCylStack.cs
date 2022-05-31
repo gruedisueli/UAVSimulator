@@ -99,25 +99,29 @@ namespace Assets.Scripts.Environment
             return new RestrictionZoneCylStack(this);
         }
 
+        public void SetXZPos(Vector3 xz)
+        {
+            _position = new SerVect3f(xz.x, Position.y, xz.z);
+        }
+
         public override void UpdateParams(ModifyPropertyArgBase args)
         {
-            //try
-            //{
-            //    switch (args.ElementPropertyType)
-            //    {
-            //        case ElementPropertyType.Position:
-            //            {
-            //                Position = (args as ModifyVector3PropertyArg).Value;
-            //                break;
-            //            }
-            //    }
-            //}
-            //catch
-            //{
-            //    Debug.LogError("Casting error in restriction zone property update");
-            //    return;
-            //}
-            Debug.LogError("Modification of cylindrical stacked restriction zones not yet implemented");
+            try
+            {
+                switch (args.ElementPropertyType)
+                {
+                    case ElementPropertyType.Position:
+                    {
+                        SetXZPos((args as ModifyVector3PropertyArg).Value);
+                        break;
+                    }
+                }
+            }
+            catch
+            {
+                Debug.LogError("Casting error in restriction zone property update");
+                return;
+            }
         }
 
         /// <summary>

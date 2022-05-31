@@ -248,16 +248,16 @@ namespace Assets.Scripts.Environment
                             }
                             break;
                         }
-                    //case ElementPropertyType.XZPosition:
-                    //    {
-                    //        SetXZPos((args as ModifyVector3PropertyArg).Value);
-                    //        break;
-                    //    }
-                    //case ElementPropertyType.Rotation:
-                    //    {
-                    //        Rotation = (args as ModifyVector3PropertyArg).Value;
-                    //        break;
-                    //    }
+                    case ElementPropertyType.Position:
+                        {
+                            SetXZPos((args as ModifyVector3PropertyArg).Value);
+                            break;
+                        }
+                        //case ElementPropertyType.Rotation:
+                        //    {
+                        //        Rotation = (args as ModifyVector3PropertyArg).Value;
+                        //        break;
+                        //    }
                 }
             }
             catch

@@ -130,7 +130,10 @@ namespace Assets.Scripts.Environment
         {
             _scale = new SerVect3f(Scale.x, Scale.y, z);
         }
-
+        public void SetXZPos(Vector3 xz)
+        {
+            _position = new SerVect3f(xz.x, Position.y, xz.z);
+        }
         public override void UpdateParams(ModifyPropertyArgBase args)
         {
             bool isMetric = EnvironManager.Instance.Environ.SimSettings.IsMetricUnits;
@@ -168,11 +171,11 @@ namespace Assets.Scripts.Environment
                             }
                             break;
                         }
-                    //case ElementPropertyType.Position:
-                    //    {
-                    //        Position = (args as ModifyVector3PropertyArg).Value;
-                    //        break;
-                    //    }
+                    case ElementPropertyType.Position:
+                        {
+                            SetXZPos((args as ModifyVector3PropertyArg).Value);
+                            break;
+                        }
                     case ElementPropertyType.Rotation:
                         {
                             Rotation = (args as ModifyVector3PropertyArg).Value;

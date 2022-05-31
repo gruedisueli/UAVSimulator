@@ -18,6 +18,8 @@ namespace Assets.Scripts.UI.Tools
         public ModifyTool[] ModifyTools { get; private set; } = null;
         public StartModifyTool StartModifyTool { get; private set; } = null;
         public RemoveTool RemoveTool { get; private set; } = null;
+        public MoveTool MoveTool { get; private set; } = null;
+
         public DeselectTool DeselectTool { get; private set; } = null;
 
         protected Image _image;
@@ -148,6 +150,7 @@ namespace Assets.Scripts.UI.Tools
             _elementFollower = FindCompInChildren<ElementFollower>();
             StartModifyTool = FindCompInChildren<StartModifyTool>();
             RemoveTool = FindCompInChildren<RemoveTool>();
+            MoveTool = FindCompInChildren<MoveTool>();
             DeselectTool = FindCompInChildren<DeselectTool>();
 
             foreach (var m in ModifyTools)

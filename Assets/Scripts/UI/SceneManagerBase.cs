@@ -22,6 +22,7 @@ using Assets.Scripts.UI.Tags;
 using Assets.Scripts.UI.EventArgs;
 using Assets.Scripts.DataStructure;
 using Assets.Scripts.SimulatorCore;
+using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
 namespace Assets.Scripts.UI
@@ -307,6 +308,8 @@ namespace Assets.Scripts.UI
                 {
                     t.OnElementModified -= ElementModify;
                 }
+
+                _currentInfoPanel.MoveTool.OnClicked -= MoveSelectedElement;
                 //removal tool
                 _currentInfoPanel.RemoveTool.OnSelectedElementRemoved -= RemoveSelectedElement;
 
@@ -570,6 +573,7 @@ namespace Assets.Scripts.UI
                 t.OnElementModified += ElementModify;
             }
             _currentInfoPanel.RemoveTool.OnSelectedElementRemoved += RemoveSelectedElement;
+            _currentInfoPanel.MoveTool.OnClicked += MoveSelectedElement;
             _currentInfoPanel.DeselectTool.OnDeselect += DeselectElement;
             if (_currentInfoPanel is CityInfoPanel)
             {
@@ -678,7 +682,8 @@ namespace Assets.Scripts.UI
         /// </summary>
         protected void EndModification(bool commit)
         {
-                var old = _selectedElement;
+            _mouseHint.Deactivate();
+            var old = _selectedElement;
             if (commit) ///throw out old version of selected element and replace in both game and environment
             {
                 string guidOld = _selectedElement.Guid;
@@ -764,11 +769,11 @@ namespace Assets.Scripts.UI
                     //        //envDP.Type = (args.Update as UpdateStringPropertyArg)?.Value;
                     //        //special case: need to reinstantiate
                     //    }
-                    //case ElementPropertyType.Position:
-                    //    {
-                    //        dP.Position = (args.Update as ModifyVector3PropertyArg).Value;
-                    //        break;
-                    //    }
+                    case ElementPropertyType.Position:
+                        {
+                            dP.Position = (args.Update as ModifyVector3PropertyArg).Value;
+                            break;
+                        }
                     case ElementPropertyType.Rotation:
                         {
                             dP.Rotation = (args.Update as ModifyVector3PropertyArg).Value;
@@ -868,11 +873,11 @@ namespace Assets.Scripts.UI
                     //        //envDP.Type = (args.Update as UpdateStringPropertyArg)?.Value;
                     //        //special case: need to reinstantiate
                     //    }
-                    //case ElementPropertyType.Position:
-                    //    {
-                    //        pS.Position = (args.Update as ModifyVector3PropertyArg).Value;
-                    //        break;
-                    //    }
+                    case ElementPropertyType.Position:
+                        {
+                            pS.Position = (args.Update as ModifyVector3PropertyArg).Value;
+                            break;
+                        }
                     case ElementPropertyType.Rotation:
                         {
                             pS.Rotation = (args.Update as ModifyVector3PropertyArg).Value;
@@ -932,6 +937,7 @@ namespace Assets.Scripts.UI
         }
 
         /// <summary>
+        /// <summary>
         /// Modifies a restriction zone
         /// </summary>
         protected void RestrictionZoneUpdate(IModifyElementArgs args)
@@ -953,7 +959,66 @@ namespace Assets.Scripts.UI
         }
         #endregion
 
-        #region ADD/REMOVE ELEMENTS
+        #region ADD/REMOVE/MOVE ELEMENTS
+
+        protected void MoveSelectedElement(object sender, System.EventArgs args)
+        {
+            if (_selectedElement == null)
+            {
+                Debug.LogError("Nothing selected");
+                return;
+            }
+            _mouseHint.Activate("Click new location");
+            StartCoroutine(MoveCoroutine());
+        }
+
+        protected IEnumerator MoveCoroutine()
+        {
+
+            #region ALLOW CLICK FROM BUTTON TO CLEAR OUT
+
+            while (!Input.GetMouseButtonUp(0) && !Input.GetKeyUp(KeyCode.Escape))
+            {
+                yield return new WaitForEndOfFrame();
+            }
+
+            if (Input.GetMouseButtonUp(0)) //after initial button press
+            {
+                yield return new WaitForEndOfFrame();
+            }
+
+            #endregion
+
+            while (!Input.GetMouseButtonUp(0))
+            {
+                if (Input.GetKeyUp(KeyCode.Escape))
+                {
+                    _mouseHint.Deactivate();
+                    yield break;
+                }
+                yield return null;
+            }
+
+            _mouseHint.Deactivate();
+            if (EventSystem.current.IsPointerOverGameObject() || !GUIUtils.TryToSelect(out var hitInfo))
+            {
+                yield break;
+            }
+
+            var args = new ModifyElementArgs(new ModifyVector3PropertyArg(ElementPropertyType.Position, hitInfo.point));
+            if (_selectedElement is SceneDronePort)
+            {
+                DronePortUpdate(args);
+            }
+            else if (_selectedElement is SceneParkingStructure)
+            {
+                ParkingStructureUpdate(args);
+            }
+            else if (_selectedElement is SceneRestrictionZone)
+            {
+                RestrictionZoneUpdate(args);
+            }
+        }
 
         /// <summary>
         /// Adds any type of element to scene.
