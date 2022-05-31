@@ -12,6 +12,8 @@ using UnityEngine;
 
 namespace Assets.Scripts.MapboxCustom
 {
+    //MODIFIED FROM MAPBOX SDK. REFER TO LICENSE FILE FOR ADDITIONAL INFO.
+
     /// <summary>
     /// Adapted from Mapbox.Unity.MeshGeneration.Modifiers.PolygonMeshModifier, to work within our context (airspace).
     /// </summary>

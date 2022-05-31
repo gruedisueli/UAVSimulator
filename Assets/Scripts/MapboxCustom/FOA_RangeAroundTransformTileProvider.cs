@@ -6,10 +6,13 @@ using Mapbox.Unity.Map.TileProviders;
 
 namespace Assets.Scripts.MapboxCustom
 {
-    /// <summary>
-    /// A special tile provider for our FOA project, based on the Mapbox RangeAroundTransformTileProvider.
-    /// </summary>
-    public class FOA_RangeAroundTransformTileProvider : AbstractTileProvider
+	//MODIFIED FROM MAPBOX SDK. REFER TO LICENSE FILE FOR ADDITIONAL INFO.
+
+
+	/// <summary>
+	/// A special tile provider for our FOA project, based on the Mapbox RangeAroundTransformTileProvider.
+	/// </summary>
+	public class FOA_RangeAroundTransformTileProvider : AbstractTileProvider
 	{
 		[SerializeField] private FOA_RangeAroundTransformTileProviderOptions _rangeTileProviderOptions;
 

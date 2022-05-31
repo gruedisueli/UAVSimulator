@@ -2,6 +2,8 @@
 
 namespace Assets.Scripts.MapboxCustom
 {
+    //MODIFIED FROM MAPBOX SDK. REFER TO LICENSE FILE FOR ADDITIONAL INFO.
+
 	using System;
 	using UnityEngine;
 	[Serializable]

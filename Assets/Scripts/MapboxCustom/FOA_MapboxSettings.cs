@@ -8,6 +8,8 @@ using Newtonsoft.Json;
 
 namespace Assets.Scripts.MapboxCustom
 {
+    //MODIFIED FROM MAPBOX SDK. REFER TO LICENSE FILE FOR ADDITIONAL INFO.
+
     [JsonObject(MemberSerialization.OptIn)]
     public class FOA_MapboxSettings
     {

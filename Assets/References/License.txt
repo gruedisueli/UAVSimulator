@@ -1,36 +1,26 @@
-This project uses Newtonsoft.Json. License for Newtonsoft.Json as follows: 
-
-The MIT License (MIT)
-
+This project was built in Unity. Our software utilizes the following libraries, follow the links for license information specific to these libraries:
+****
+Project: Mapbox Unity SDK: https://github.com/mapbox/mapbox-unity-sdk [accessed 5/31/2022]
+Mapbox Unity SDK copyright (c) 2016-2017 Mapbox.
+Licensed under MIT License: https://github.com/mapbox/mapbox-unity-sdk/blob/develop/LICENSE [accessed 5/31/2022]
+****
+Project: Patryk Grech's port of Mapbox Delaunator
+Copyright (c) 2020 Patryk Grech
+Licensed under MIT License: https://github.com/nol1fe/delaunator-sharp/blob/master/DelaunatorSharp.Unity/LICENSE [accessed 5/31/2022]
+****
+Project: Newtonsoft.Json: https://github.com/JamesNK/Newtonsoft.Json [accessed 5/31/2022]
 Copyright (c) 2007 James Newton-King
+Licensed under MIT License: https://github.com/JamesNK/Newtonsoft.Json/blob/master/LICENSE.md [accessed 5/31/2022]
+****
 
-Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
-
-
-UltimateOutlineShader:
-
-MIT License
-
-Copyright (c) 2018 Luke Kabat
-
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-SOFTWARE.
+Additional thanks go to:
+****
+reavenk's code snippets outlining how to download text files from a Unity WebGL app, copyright 2020
+https://pixeleuphoria.com/blog/index.php/2020/04/27/unity-webgl-download-content/ [accessed 5/31/2022]
+****
+reavenk's code snippets outlining how to upload text files to a Unity WebGL app, copyright 2020
+https://pixeleuphoria.com/blog/index.php/2020/04/29/unity-webgl-upload-content/ [accessed 5/31/2022]
+****
+Mouse 3d orbit and zoom example (heavily-modified in our project)
+https://wiki.unity3d.com/index.php/MouseOrbitZoom [dead link as of 5/31/2022]
+****

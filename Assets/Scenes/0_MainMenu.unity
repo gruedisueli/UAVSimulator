@@ -1048,7 +1048,7 @@ RectTransform:
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 160, y: 30}
+  m_SizeDelta: {x: 500, y: 60}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &214324616
 MonoBehaviour:
@@ -1071,11 +1071,11 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls: []
   m_FontData:
-    m_Font: {fileID: 10102, guid: 0000000000000000e000000000000000, type: 0}
-    m_FontSize: 14
+    m_Font: {fileID: 12800000, guid: bd1ea67ca2b5742d1a24fcbdc17c55e1, type: 3}
+    m_FontSize: 40
     m_FontStyle: 0
     m_BestFit: 0
-    m_MinSize: 10
+    m_MinSize: 2
     m_MaxSize: 40
     m_Alignment: 1
     m_AlignByGeometry: 0
@@ -1083,7 +1083,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: MAIN MENU
+  m_Text: Future of Air Travel
 --- !u!222 &214324617
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -1267,7 +1267,7 @@ RectTransform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 1265748627}
-  m_RootOrder: 7
+  m_RootOrder: 6
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 1, y: 0}
   m_AnchorMax: {x: 1, y: 0}
@@ -1492,7 +1492,7 @@ RectTransform:
   m_Children:
   - {fileID: 1019064143}
   m_Father: {fileID: 1097839031}
-  m_RootOrder: 3
+  m_RootOrder: 4
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
@@ -1844,7 +1844,7 @@ RectTransform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 1265748627}
-  m_RootOrder: 6
+  m_RootOrder: 5
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 1, y: 0}
   m_AnchorMax: {x: 1, y: 0}
@@ -1990,7 +1990,7 @@ RectTransform:
   m_Children:
   - {fileID: 1574266663}
   m_Father: {fileID: 1097839031}
-  m_RootOrder: 4
+  m_RootOrder: 5
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
@@ -2123,7 +2123,7 @@ RectTransform:
   m_Children:
   - {fileID: 273749816}
   m_Father: {fileID: 1097839031}
-  m_RootOrder: 5
+  m_RootOrder: 6
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
@@ -2928,7 +2928,7 @@ RectTransform:
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 670, y: 750}
+  m_SizeDelta: {x: 670, y: 700}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &813470401
 MonoBehaviour:
@@ -3387,8 +3387,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 385, y: -425}
-  m_SizeDelta: {x: 750, y: 750}
+  m_AnchoredPosition: {x: 385, y: -400}
+  m_SizeDelta: {x: 750, y: 700}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1011092554
 MonoBehaviour:
@@ -3423,62 +3423,107 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: 'Version 0.0
+  m_Text: 'Version 1.0
 
+    
 
-    Copyright 2021 Laboratory for Design Technology, Harvard
-    Graduate School of Design
+    Copyright 2022 Laboratory for Design Technology,
+    Harvard Graduate School of Design
 
-    Authors: Eunu Kim, Hyojin Kwon, Gavin Ruedisueli,
+    Team: Eunu Kim, Hyojin Kwon, Gavin Ruedisueli,
     Andrew Witt
 
+    
 
-    License Information:
+    
 
+    This project was built in Unity. Our software
+    utilizes the following libraries, follow the links for license information specific
+    to these libraries:
 
-    This project uses the following
-    libraries:
+    ****
 
+    Project: Mapbox Unity SDK: https://github.com/mapbox/mapbox-unity-sdk
+    [accessed 5/31/2022]
 
-    Mapbox Unity SDK:
+    Mapbox Unity SDK copyright (c) 2016-2017 Mapbox.
 
-    See Mapbox Icon / Menu
+    Licensed
+    under MIT License: https://github.com/mapbox/mapbox-unity-sdk/blob/develop/LICENSE
+    [accessed 5/31/2022]
 
+    ****
 
+    Project: Patryk Grech''s port of Mapbox
+    Delaunator
 
-    NewtonSoft
-    JSON:
+    Copyright (c) 2020 Patryk Grech
 
-    The MIT License (MIT)
+    Licensed under MIT License:
+    https://github.com/nol1fe/delaunator-sharp/blob/master/DelaunatorSharp.Unity/LICENSE
+    [accessed 5/31/2022]
 
+    ****
 
+    Project: Newtonsoft.Json: https://github.com/JamesNK/Newtonsoft.Json
+    [accessed 5/31/2022]
 
     Copyright (c) 2007 James Newton-King
 
+    Licensed
+    under MIT License: https://github.com/JamesNK/Newtonsoft.Json/blob/master/LICENSE.md
+    [accessed 5/31/2022]
 
+    ****
 
-    Permission
-    is hereby granted, free of charge, to any person obtaining a copy of this software
-    and associated documentation files (the "Software"), to deal in the Software
-    without restriction, including without limitation the rights to use, copy, modify,
-    merge, publish, distribute, sublicense, and/or sell copies of the Software, and
-    to permit persons to whom the Software is furnished to do so, subject to the
-    following conditions:
+    
 
+    Additional thanks go to:
 
+    ****
 
-    The above copyright notice and this permission notice
-    shall be included in all copies or substantial portions of the Software.
+    reavenk''s
+    code snippets outlining how to download text files from a Unity WebGL app, copyright
+    2020
 
+    https://pixeleuphoria.com/blog/index.php/2020/04/27/unity-webgl-download-content/
+    [accessed 5/31/2022]
 
+    ****
 
-    THE
-    SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
-    INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A
-    PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT
-    HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
-    OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
-    SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+    reavenk''s code snippets outlining how
+    to upload text files to a Unity WebGL app, copyright 2020
+
+    https://pixeleuphoria.com/blog/index.php/2020/04/29/unity-webgl-upload-content/
+    [accessed 5/31/2022]
+
+    ****
+
+    Mouse 3d orbit and zoom example (heavily-modified
+    in our project)
+
+    https://wiki.unity3d.com/index.php/MouseOrbitZoom [dead
+    link as of 5/31/2022]
+
+    ****
+
+    
+
+    Sound level calculations taken
+    from the following pages:
+
+    (equations) https://www.omnicalculator.com/physics/distance-attenuation
+    [accessed 5/31/2022]
+
+    (rules of thumb) https://www.chem.purdue.edu/chemsafety/Training/PPETrain/dblevels.htm
+    [accessed 5/31/2022]
+
+    
+
+    Scale of slippy tiles:
+
+    https://wiki.openstreetmap.org/wiki/Slippy_map_tilenames#Resolution_and_Scale
+    [accessed 5/31/2022]
 
 '
 --- !u!222 &1011092555
@@ -3604,7 +3649,7 @@ RectTransform:
   m_Children:
   - {fileID: 813470400}
   m_Father: {fileID: 1265748627}
-  m_RootOrder: 2
+  m_RootOrder: 8
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
@@ -3661,7 +3706,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 385, y: -825}
+  m_AnchoredPosition: {x: 385, y: -775}
   m_SizeDelta: {x: 160, y: 30}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1068513385
@@ -3878,6 +3923,7 @@ RectTransform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 214324615}
+  - {fileID: 1748250538}
   - {fileID: 1280251561}
   - {fileID: 1825167816}
   - {fileID: 325826813}
@@ -3950,13 +3996,13 @@ RectTransform:
   m_Children:
   - {fileID: 1097839031}
   - {fileID: 1044819197}
-  - {fileID: 1052078013}
   - {fileID: 2067161565}
   - {fileID: 1683996845}
   - {fileID: 2582340652879464372}
   - {fileID: 441200796}
   - {fileID: 250618860}
   - {fileID: 1458007798}
+  - {fileID: 1052078013}
   m_Father: {fileID: 1422719017}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -4058,7 +4104,7 @@ RectTransform:
   m_Children:
   - {fileID: 32024068}
   m_Father: {fileID: 1097839031}
-  m_RootOrder: 1
+  m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
@@ -4446,7 +4492,7 @@ RectTransform:
   m_Children:
   - {fileID: 779287511}
   m_Father: {fileID: 1265748627}
-  m_RootOrder: 8
+  m_RootOrder: 7
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
@@ -4681,7 +4727,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: About
+  m_Text: Attributions
 --- !u!222 &1574266665
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -4928,7 +4974,7 @@ PrefabInstance:
     - target: {fileID: 224000011463966310, guid: 3adcee2515f8c49f4a7afb3bacf2c56e,
         type: 3}
       propertyPath: m_SizeDelta.y
-      value: 0
+      value: 47.2
       objectReference: {fileID: 0}
     - target: {fileID: 224000011463966310, guid: 3adcee2515f8c49f4a7afb3bacf2c56e,
         type: 3}
@@ -4938,7 +4984,7 @@ PrefabInstance:
     - target: {fileID: 224000011463966310, guid: 3adcee2515f8c49f4a7afb3bacf2c56e,
         type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: 0
+      value: -253.2
       objectReference: {fileID: 0}
     - target: {fileID: 224000012654707720, guid: 3adcee2515f8c49f4a7afb3bacf2c56e,
         type: 3}
@@ -4958,7 +5004,7 @@ PrefabInstance:
     - target: {fileID: 224000012654707720, guid: 3adcee2515f8c49f4a7afb3bacf2c56e,
         type: 3}
       propertyPath: m_SizeDelta.y
-      value: 0
+      value: 47.2
       objectReference: {fileID: 0}
     - target: {fileID: 224000012654707720, guid: 3adcee2515f8c49f4a7afb3bacf2c56e,
         type: 3}
@@ -4968,7 +5014,7 @@ PrefabInstance:
     - target: {fileID: 224000012654707720, guid: 3adcee2515f8c49f4a7afb3bacf2c56e,
         type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: 0
+      value: -306.4
       objectReference: {fileID: 0}
     - target: {fileID: 224000012669324860, guid: 3adcee2515f8c49f4a7afb3bacf2c56e,
         type: 3}
@@ -4988,7 +5034,7 @@ PrefabInstance:
     - target: {fileID: 224000012669324860, guid: 3adcee2515f8c49f4a7afb3bacf2c56e,
         type: 3}
       propertyPath: m_SizeDelta.y
-      value: 0
+      value: 47.2
       objectReference: {fileID: 0}
     - target: {fileID: 224000012669324860, guid: 3adcee2515f8c49f4a7afb3bacf2c56e,
         type: 3}
@@ -4998,7 +5044,7 @@ PrefabInstance:
     - target: {fileID: 224000012669324860, guid: 3adcee2515f8c49f4a7afb3bacf2c56e,
         type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: 0
+      value: -93.6
       objectReference: {fileID: 0}
     - target: {fileID: 224000012954539924, guid: 3adcee2515f8c49f4a7afb3bacf2c56e,
         type: 3}
@@ -5018,7 +5064,7 @@ PrefabInstance:
     - target: {fileID: 224000012954539924, guid: 3adcee2515f8c49f4a7afb3bacf2c56e,
         type: 3}
       propertyPath: m_SizeDelta.y
-      value: 0
+      value: 47.2
       objectReference: {fileID: 0}
     - target: {fileID: 224000012954539924, guid: 3adcee2515f8c49f4a7afb3bacf2c56e,
         type: 3}
@@ -5028,7 +5074,7 @@ PrefabInstance:
     - target: {fileID: 224000012954539924, guid: 3adcee2515f8c49f4a7afb3bacf2c56e,
         type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: 0
+      value: -146.8
       objectReference: {fileID: 0}
     - target: {fileID: 224000013044306136, guid: 3adcee2515f8c49f4a7afb3bacf2c56e,
         type: 3}
@@ -5168,7 +5214,7 @@ PrefabInstance:
     - target: {fileID: 224000014186409798, guid: 3adcee2515f8c49f4a7afb3bacf2c56e,
         type: 3}
       propertyPath: m_SizeDelta.y
-      value: 0
+      value: 47.2
       objectReference: {fileID: 0}
     - target: {fileID: 224000014186409798, guid: 3adcee2515f8c49f4a7afb3bacf2c56e,
         type: 3}
@@ -5178,7 +5224,7 @@ PrefabInstance:
     - target: {fileID: 224000014186409798, guid: 3adcee2515f8c49f4a7afb3bacf2c56e,
         type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: 0
+      value: -200
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 3adcee2515f8c49f4a7afb3bacf2c56e, type: 3}
@@ -5226,7 +5272,7 @@ RectTransform:
   - {fileID: 127858397}
   - {fileID: 233784481}
   m_Father: {fileID: 1265748627}
-  m_RootOrder: 4
+  m_RootOrder: 3
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
@@ -5414,6 +5460,85 @@ CanvasRenderer:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1741411326}
+  m_CullTransparentMesh: 0
+--- !u!1 &1748250537
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1748250538}
+  - component: {fileID: 1748250540}
+  - component: {fileID: 1748250539}
+  m_Layer: 5
+  m_Name: Text_subtitle
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!224 &1748250538
+RectTransform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1748250537}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 1097839031}
+  m_RootOrder: 1
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_AnchorMin: {x: 0, y: 0}
+  m_AnchorMax: {x: 0, y: 0}
+  m_AnchoredPosition: {x: 0, y: 0}
+  m_SizeDelta: {x: 500, y: 60}
+  m_Pivot: {x: 0.5, y: 0.5}
+--- !u!114 &1748250539
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1748250537}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5f7201a12d95ffc409449d95f23cf332, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_Material: {fileID: 0}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_RaycastTarget: 1
+  m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
+  m_Maskable: 1
+  m_OnCullStateChanged:
+    m_PersistentCalls:
+      m_Calls: []
+  m_FontData:
+    m_Font: {fileID: 12800000, guid: bd1ea67ca2b5742d1a24fcbdc17c55e1, type: 3}
+    m_FontSize: 25
+    m_FontStyle: 0
+    m_BestFit: 0
+    m_MinSize: 1
+    m_MaxSize: 40
+    m_Alignment: 1
+    m_AlignByGeometry: 0
+    m_RichText: 1
+    m_HorizontalOverflow: 0
+    m_VerticalOverflow: 0
+    m_LineSpacing: 1
+  m_Text: Airspace Configurator
+--- !u!222 &1748250540
+CanvasRenderer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1748250537}
   m_CullTransparentMesh: 0
 --- !u!1 &1801134474
 GameObject:
@@ -5700,7 +5825,7 @@ RectTransform:
   m_Children:
   - {fileID: 1913558056}
   m_Father: {fileID: 1097839031}
-  m_RootOrder: 2
+  m_RootOrder: 3
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
@@ -5912,7 +6037,7 @@ RectTransform:
   m_Children:
   - {fileID: 573079154}
   m_Father: {fileID: 1097839031}
-  m_RootOrder: 6
+  m_RootOrder: 7
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
@@ -6043,7 +6168,7 @@ RectTransform:
   m_Children:
   - {fileID: 1801134475}
   m_Father: {fileID: 1265748627}
-  m_RootOrder: 3
+  m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
@@ -6200,7 +6325,7 @@ RectTransform:
   - {fileID: 9092517341904678223}
   - {fileID: 9092517342923675349}
   m_Father: {fileID: 1265748627}
-  m_RootOrder: 5
+  m_RootOrder: 4
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
