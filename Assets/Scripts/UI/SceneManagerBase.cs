@@ -974,21 +974,17 @@ namespace Assets.Scripts.UI
 
         protected IEnumerator MoveCoroutine()
         {
+            yield return new WaitForEndOfFrame();
 
-            #region ALLOW CLICK FROM BUTTON TO CLEAR OUT
-
-            while (!Input.GetMouseButtonUp(0) && !Input.GetKeyUp(KeyCode.Escape))
+            while (!Input.GetMouseButtonDown(0))
             {
-                yield return new WaitForEndOfFrame();
+                if (Input.GetKeyUp(KeyCode.Escape))
+                {
+                    _mouseHint.Deactivate();
+                    yield break;
+                }
+                yield return null;
             }
-
-            if (Input.GetMouseButtonUp(0)) //after initial button press
-            {
-                yield return new WaitForEndOfFrame();
-            }
-
-            #endregion
-
             while (!Input.GetMouseButtonUp(0))
             {
                 if (Input.GetKeyUp(KeyCode.Escape))
@@ -1000,7 +996,7 @@ namespace Assets.Scripts.UI
             }
 
             _mouseHint.Deactivate();
-            if (EventSystem.current.IsPointerOverGameObject() || !GUIUtils.TryToSelect(out var hitInfo))
+            if (!GUIUtils.TryToSelect(out var hitInfo))
             {
                 yield break;
             }
