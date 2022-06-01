@@ -43,6 +43,8 @@ public class VehicleControlSystem : MonoBehaviour
     /// </summary>
     public float scaleMultiplier = 5.0f;
     public Canvas _canvas;
+    private Camera _mainCamera;
+    private float _camStartHeight = 0;
 
 
     #region UI Variables
@@ -157,6 +159,9 @@ public class VehicleControlSystem : MonoBehaviour
         cube.Destroy();
 
         UpdateVehicleCount(EnvironManager.Instance.Environ.SimSettings.BackgroundDroneCount);
+
+        _mainCamera = Camera.main;
+        _camStartHeight = _mainCamera.transform.position.y;
     }
 
     // Update is called once per frames
@@ -1118,8 +1123,8 @@ public class VehicleControlSystem : MonoBehaviour
 
     private float CalcLineWidth()
     {
-        float slippyZoomRange = 22;
-        return UISettings.REGIONVIEW_NETWORK_WIDTH_FACTOR * ((slippyZoomRange - sceneManager.CurrentZoom) / slippyZoomRange);
+        var hP = _mainCamera.transform.position.y / _camStartHeight;
+        return UISettings.REGIONVIEW_NETWORK_WIDTH_FACTOR * hP;
     }
 
     /// <summary>
