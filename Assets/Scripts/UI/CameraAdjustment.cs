@@ -79,8 +79,6 @@ namespace Assets.Scripts.UI
 
             _xDeg = Vector3.Angle(Vector3.right, _camera.transform.right);
             _yDeg = Vector3.Angle(Vector3.up, _camera.transform.up);
-
-            if (_isPerspective) SetFog();
         }
 
         /// <summary>
@@ -164,8 +162,6 @@ namespace Assets.Scripts.UI
                 else z1 = z0;
 
                 _camera.transform.position = new Vector3(x1, y, z1);
-                //_camera.transform.Translate(tX);
-                //_camera.transform.Translate(tY, Space.World);
                 changed = true;
             }
 
@@ -185,8 +181,7 @@ namespace Assets.Scripts.UI
 
                     var transZoom = Vector3.forward * forwardDist;
                     _camera.transform.Translate(transZoom);
-                    _camera.farClipPlane = _camera.transform.position.y * _farClipMultPersp;
-                    SetFog();
+                    SetNearClipPlane();
                     changed = true;
                     OnZoom?.Invoke(this, System.EventArgs.Empty);
                 }
@@ -212,14 +207,6 @@ namespace Assets.Scripts.UI
                 EnvironManager.Instance.LastCamXZS = new float[] { _camera.transform.position.x, _camera.transform.position.z, _camera.orthographicSize };
             }
         }
-        /// <summary>
-        /// Adjusts fog factor on camera
-        /// </summary>
-        private void SetFog()
-        {
-            RenderSettings.fogEndDistance = _camera.farClipPlane;
-            RenderSettings.fogStartDistance = _camera.farClipPlane - _camera.farClipPlane / _fogRangeFactor;
-        }
 
         private static float ClampAngle(float angle, float min, float max)
         {
@@ -240,7 +227,7 @@ namespace Assets.Scripts.UI
 
             _lastCenter = pos;
             _lastD = _zoomSelectedHeight;
-            _camera.farClipPlane = _camera.transform.position.y * _farClipMultPersp;
+            SetNearClipPlane();
             _lastActionWasSetView = true;
 
             OnZoomToPos?.Invoke(this, System.EventArgs.Empty);
@@ -332,9 +319,14 @@ namespace Assets.Scripts.UI
         {
             _camera.transform.position = _homePos;
             _camera.transform.LookAt(new Vector3(_homePos.x, 0, _homePos.z));
-            _camera.farClipPlane = _camera.transform.position.y * _farClipMultPersp;
+            SetNearClipPlane();
 
             OnSetViewHome?.Invoke(this, System.EventArgs.Empty);
+        }
+
+        private void SetNearClipPlane()
+        {
+            _camera.nearClipPlane = _camera.transform.position.y < 10000.0f ? 10.0f : _camera.transform.position.y - _camera.transform.position.y / 10.0f;
         }
     }
 }
