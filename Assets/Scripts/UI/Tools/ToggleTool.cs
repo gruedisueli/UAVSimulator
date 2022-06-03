@@ -63,14 +63,14 @@ namespace Assets.Scripts.UI.Tools
         {
             if (_propertyType != ElementPropertyType.Unset)
             {
-                return new ModifyElementArgs(new ModifyBoolPropertyArg(_propertyType, _isOn));
+                return new ModifyElementArgs(this, new ModifyBoolPropertyArg(_propertyType, _isOn));
             }
             else if (_visibilityType != VisibilityType.Unset)
             {
-                return new ModifyElementArgs(new ModifyBoolPropertyArg(_visibilityType, _isOn));
+                return new ModifyElementArgs(this, new ModifyBoolPropertyArg(_visibilityType, _isOn));
             }
 
-            return new ModifyElementArgs(new ModifyBoolPropertyArg(ElementPropertyType.Unset, _isOn));
+            return new ModifyElementArgs(this, new ModifyBoolPropertyArg(ElementPropertyType.Unset, _isOn));
         }
     }
 }

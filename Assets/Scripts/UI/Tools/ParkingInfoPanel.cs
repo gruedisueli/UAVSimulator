@@ -78,6 +78,7 @@ namespace Assets.Scripts.UI.Tools
                     SetModifyToolValue(ElementPropertyType.Rotation, pS.Rotation.y);
                     SetModifyToolValue(ElementPropertyType.XScale, sX);
                     SetModifyToolValue(ElementPropertyType.ZScale, sZ);
+                    SetModifyToolValue(ElementPropertyType.DroneInstantiationCt, pS.GetDroneInstantiationCt());
                     break;
                 }
                 case ParkingPanelType.Custom:
@@ -85,7 +86,8 @@ namespace Assets.Scripts.UI.Tools
                     if (!(specs is ParkingStructureCustom pS)) break;
                     _infoPanel.SetTextElement(ElementPropertyType.Rotation, pS.Rotation.y);
                     SetModifyToolValue(ElementPropertyType.Rotation, pS.Rotation.y);
-                    break;
+                    SetModifyToolValue(ElementPropertyType.DroneInstantiationCt, pS.GetDroneInstantiationCt());
+                        break;
                 }
             }
         }

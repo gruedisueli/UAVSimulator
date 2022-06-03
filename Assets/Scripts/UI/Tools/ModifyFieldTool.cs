@@ -81,13 +81,13 @@ namespace Assets.Scripts.UI.Tools
             {
                 case InputFieldType.String_:
                     {
-                        return new ModifyElementArgs(new ModifyStringPropertyArg(_propertyType, t));
+                        return new ModifyElementArgs(this, new ModifyStringPropertyArg(_propertyType, t));
                     }
                 case InputFieldType.Integer_:
                     {
                         if (int.TryParse(t, out int i))
                         {
-                            return new ModifyElementArgs(new ModifyIntPropertyArg(_propertyType, i));
+                            return new ModifyElementArgs(this, new ModifyIntPropertyArg(_propertyType, i));
                         }
                         else
                         {
@@ -99,7 +99,7 @@ namespace Assets.Scripts.UI.Tools
                     {
                         if (float.TryParse(t, out float f))
                         {
-                            return new ModifyElementArgs(new ModifyFloatPropertyArg(_propertyType, f));
+                            return new ModifyElementArgs(this, new ModifyFloatPropertyArg(_propertyType, f));
                         }
                         else
                         {
@@ -109,7 +109,7 @@ namespace Assets.Scripts.UI.Tools
                     }
             }
 
-            return new ModifyElementArgs(new ModifyStringPropertyArg(ElementPropertyType.Unset, t));//just a placeholder
+            return new ModifyElementArgs(this, new ModifyStringPropertyArg(ElementPropertyType.Unset, t));//just a placeholder
         }
     }
 }

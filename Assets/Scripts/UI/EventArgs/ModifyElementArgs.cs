@@ -8,14 +8,12 @@ namespace Assets.Scripts.UI.EventArgs
 {
     public class ModifyElementArgs : IModifyElementArgs
     {
-        //public ElementFamily Family { get; private set; }
-        //public string Guid { get; private set; }
         public ModifyPropertyArgBase Update { get; private set; }
+        public object Sender { get; private set; }
 
-        public ModifyElementArgs(/*ElementFamily family, string guid, */ModifyPropertyArgBase update)
+        public ModifyElementArgs(object sender, ModifyPropertyArgBase update)
         {
-            //Family = family;
-           // Guid = guid;
+            Sender = sender;
             Update = update;
         }
     }

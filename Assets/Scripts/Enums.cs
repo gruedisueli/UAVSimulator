@@ -119,7 +119,8 @@ namespace Assets.Scripts
         DroneCount = 68,
         UpperElevation = 69,
         LowerElevation = 70,
-        LowAltDroneTravelRadius = 71
+        LowAltDroneTravelRadius = 71,
+        DroneInstantiationCt = 73
     }
 
     public enum VisibilityType

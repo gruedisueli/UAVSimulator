@@ -1185,28 +1185,28 @@ public class VehicleControlSystem : MonoBehaviour
 
 
 
-    /// <summary>
-    /// Gets number of parking spots in current scene.
-    /// </summary>
-    public int GetParkingCapacity()
-    {
-        int parking_capacity = 0;
-        foreach (var kvp in sceneManager.ParkingStructures)
-        {
-            parking_capacity += kvp.Value.ParkingStructureSpecs.ParkingSpots.Count;
-        }
-        return parking_capacity;
-    }
+    ///// <summary>
+    ///// Gets number of parking spots in current scene.
+    ///// </summary>
+    //public int GetParkingCapacity()
+    //{
+    //    int parking_capacity = 0;
+    //    foreach (var kvp in sceneManager.ParkingStructures)
+    //    {
+    //        parking_capacity += kvp.Value.ParkingStructureSpecs.ParkingSpots.Count;
+    //    }
+    //    return parking_capacity;
+    //}
 
-    public int GetParkingCapacity(string type)
-    {
-        int parking_capacity = 0;
-        foreach (var kvp in sceneManager.ParkingStructures)
-        {
-            if (kvp.Value.ParkingStructureSpecs.Type.Contains(type)) parking_capacity += kvp.Value.ParkingStructureSpecs.ParkingSpots.Count;
-        }
-        return parking_capacity;
-    }
+    //public int GetParkingCapacity(string type)
+    //{
+    //    int parking_capacity = 0;
+    //    foreach (var kvp in sceneManager.ParkingStructures)
+    //    {
+    //        if (kvp.Value.ParkingStructureSpecs.Type.Contains(type)) parking_capacity += kvp.Value.ParkingStructureSpecs.ParkingSpots.Count;
+    //    }
+    //    return parking_capacity;
+    //}
     #endregion
 }
 

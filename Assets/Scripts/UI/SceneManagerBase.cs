@@ -925,6 +925,26 @@ namespace Assets.Scripts.UI
                         pS.Scale = new Vector3(pS.Scale.x, pS.Scale.y, sZ);
                         break;
                     }
+                    case ElementPropertyType.DroneInstantiationCt:
+                    {
+                        if (!(args.Update is ModifyIntPropertyArg iP))
+                        {
+                            break;
+                        }
+
+                        var c = iP.Value;
+                        if (!pS.TrySetDroneInstantiationCt(c))
+                        {
+                            c = pS.GetDroneInstantiationCt();
+                        }
+
+                        if (args.Sender is ModifyFieldTool fT)
+                        {
+                            fT.SetCurrentValue(c.ToString());
+                        }
+
+                        break;
+                    }
                 }
             }
             catch
@@ -1001,7 +1021,7 @@ namespace Assets.Scripts.UI
                 yield break;
             }
 
-            var args = new ModifyElementArgs(new ModifyVector3PropertyArg(ElementPropertyType.Position, hitInfo.point));
+            var args = new ModifyElementArgs(this, new ModifyVector3PropertyArg(ElementPropertyType.Position, hitInfo.point));
             if (_selectedElement is SceneDronePort)
             {
                 DronePortUpdate(args);

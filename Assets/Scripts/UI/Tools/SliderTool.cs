@@ -80,23 +80,23 @@ namespace Assets.Scripts.UI.Tools
             {
                 case ElementPropertyType.Rotation:
                 {
-                    return new ModifyElementArgs(new ModifyVector3PropertyArg(_propertyType, new Vector3(0, _value, 0)));
+                    return new ModifyElementArgs(this, new ModifyVector3PropertyArg(_propertyType, new Vector3(0, _value, 0)));
                 }
                 case ElementPropertyType.Bottom:
                 {
-                    return new ModifyElementArgs(new ModifyFloatPropertyArg(ElementPropertyType.Bottom, _value));
+                    return new ModifyElementArgs(this, new ModifyFloatPropertyArg(ElementPropertyType.Bottom, _value));
                 }
                 case ElementPropertyType.Top:
                 {
-                    return new ModifyElementArgs(new ModifyFloatPropertyArg(ElementPropertyType.Top, _value));
+                    return new ModifyElementArgs(this, new ModifyFloatPropertyArg(ElementPropertyType.Top, _value));
                 }
                 case ElementPropertyType.Height:
                 {
-                    return new ModifyElementArgs(new ModifyFloatPropertyArg(ElementPropertyType.Height, _value));
+                    return new ModifyElementArgs(this, new ModifyFloatPropertyArg(ElementPropertyType.Height, _value));
                 }
                 case ElementPropertyType.Radius:
                 {
-                    return new ModifyElementArgs(new ModifyFloatPropertyArg(ElementPropertyType.Radius, _value));
+                    return new ModifyElementArgs(this, new ModifyFloatPropertyArg(ElementPropertyType.Radius, _value));
                 }
             }
             
@@ -104,11 +104,11 @@ namespace Assets.Scripts.UI.Tools
             {
                 case VisibilityType.DroneCount:
                     {
-                        return new ModifyElementArgs(new ModifyIntPropertyArg(_visibilityType, (int)_value));
+                        return new ModifyElementArgs(this, new ModifyIntPropertyArg(_visibilityType, (int)_value));
                     }
             }
 
-            return new ModifyElementArgs(new ModifyFloatPropertyArg(_propertyType, _value));
+            return new ModifyElementArgs(this, new ModifyFloatPropertyArg(_propertyType, _value));
         }
     }
 }
