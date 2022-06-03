@@ -32,6 +32,8 @@ namespace Assets.Scripts.UI.Tools
                 Debug.LogError("Could not find vehicle control system in scene");
                 return;
             }
+            _simulationSettingsCopy = new SimulationSettings(EnvironManager.Instance.Environ.SimSettings);
+            InitializeAllPanels();
         }
         public void UpdateGeneralSettings(bool isMetric, float callGenInt, float acceptNoiseThresh, float simSpeedMult)
         {
@@ -47,6 +49,8 @@ namespace Assets.Scripts.UI.Tools
             {
                 InitializeGeneral();
             }
+
+            ApplyToEnvironment();
         }
 
         public void UpdateCorridorDroneSettings(DroneSettings droneSettings, float flightElevM, float sepDistM)
@@ -55,6 +59,8 @@ namespace Assets.Scripts.UI.Tools
             _simulationSettingsCopy.CorridorFlightElevation_M = flightElevM;
             _simulationSettingsCopy.CorridorSeparationDistance_M = sepDistM;
             InitializeCorridor();
+
+            ApplyToEnvironment();
         }
 
         public void UpdateLowAltitudeDroneSettings(DroneSettings droneSettings, float flightElevM, float travelRadiusM)
@@ -63,6 +69,8 @@ namespace Assets.Scripts.UI.Tools
             _simulationSettingsCopy.LowAltitudeFlightElevation_M = flightElevM;
             _simulationSettingsCopy.LowAltitudeDroneTravelRadius_M = travelRadiusM;
             InitializeLowAlt();
+
+            ApplyToEnvironment();
         }
 
         public void UpdateBackgroundDroneSettings(int droneCt, float upperElevM, float lowerElevM)
@@ -71,21 +79,33 @@ namespace Assets.Scripts.UI.Tools
             _simulationSettingsCopy.BackgroundDroneUpperElev_M = upperElevM;
             _simulationSettingsCopy.BackgoundDroneLowerElev_M = lowerElevM;
             InitializeBackground();
+
+            ApplyToEnvironment();
         }
 
-        public void Activate()
+        public void Toggle()
         {
-            gameObject.SetActive(true);
-            _simulationSettingsCopy = new SimulationSettings(EnvironManager.Instance.Environ.SimSettings);
-            InitializeAllPanels();
+            bool activate = !gameObject.activeSelf;
+            gameObject.SetActive(activate);
+            if (activate)
+            {
+                _simulationSettingsCopy = new SimulationSettings(EnvironManager.Instance.Environ.SimSettings);
+                InitializeAllPanels();
+            }
         }
 
-        public void Cancel()
-        {
-            gameObject.SetActive(false);
-        }
+        //public void Cancel()
+        //{
+        //    gameObject.SetActive(false);
+        //}
 
-        public void Ok()
+        //public void Ok()
+        //{
+        //    ApplyToEnvironment();
+        //    gameObject.SetActive(false);
+        //}
+
+        private void ApplyToEnvironment()
         {
             bool rebuildNetwork = Math.Abs(_simulationSettingsCopy.CorridorFlightElevation_M - EnvironManager.Instance.Environ.SimSettings.CorridorFlightElevation_M) > 0.1 || Math.Abs(_simulationSettingsCopy.CorridorSeparationDistance_M - EnvironManager.Instance.Environ.SimSettings.CorridorSeparationDistance_M) > 0.1;
             var updateBackgroundDrones = _simulationSettingsCopy.BackgroundDroneCount != EnvironManager.Instance.Environ.SimSettings.BackgroundDroneCount;
@@ -100,13 +120,13 @@ namespace Assets.Scripts.UI.Tools
             {
                 _vehicleControlSystem.UpdateVehicleCount(_simulationSettingsCopy.BackgroundDroneCount);
             }
-            gameObject.SetActive(false);
         }
 
         public void ResetToDefaults()
         {
             _simulationSettingsCopy = new SimulationSettings();
             InitializeAllPanels();
+            ApplyToEnvironment();
         }
         private void InitializeAllPanels()
         {
