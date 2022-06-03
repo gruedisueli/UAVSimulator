@@ -26,6 +26,7 @@ namespace Assets.Scripts.UI
     {
         public Canvas _canvas;
         public Button _createProjectButton;
+        public MouseHint _mouseHint;
 
         private AbstractMap _map;
 
@@ -44,7 +45,7 @@ namespace Assets.Scripts.UI
             _map.SetZoom(EnvironSettings.FINDLOCATION_ZOOM_LEVEL);
             _tileSize = _map.Options.scalingOptions.unityTileSize;
             _regionTileSize = _tileSize / (float)Math.Pow(2, EnvironSettings.REGION_ZOOM_LEVEL - EnvironSettings.FINDLOCATION_ZOOM_LEVEL);
-
+            _mouseHint.Activate("Click map to select a region (click again to move it)");
 
         }
 
@@ -100,6 +101,14 @@ namespace Assets.Scripts.UI
             _placedRegion.transform.SetAsFirstSibling();
             var rB = _placedRegion.GetComponent<RegionBox>();
             rB.SetWorldExtents(trueCenter, infDist);
+
+            var button = rB.GetComponentInChildren<Button>(true);
+            if (button == null)
+            {
+                Debug.LogError("Could not find button in region box children");
+                return;
+            }
+            button.onClick.AddListener(CreateProject);
 
             EnvironManager.Instance.Environ.CenterLatLong = _map.WorldToGeoPosition(trueCenter);
 
