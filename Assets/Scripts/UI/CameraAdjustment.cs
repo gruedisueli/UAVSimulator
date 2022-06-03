@@ -198,6 +198,7 @@ namespace Assets.Scripts.UI
                     }
                     _camera.orthographicSize = s > _minOrthoZoom ? s : _minOrthoZoom;
                     changed = true;
+                    SetNearClipPlane();
                     OnZoom?.Invoke(this, System.EventArgs.Empty);
 
                 }
@@ -312,6 +313,8 @@ namespace Assets.Scripts.UI
             _lastD = d;
             _lastActionWasSetView = true;
 
+            SetNearClipPlane();
+
             OnSetView?.Invoke(this, System.EventArgs.Empty);
         }
 
@@ -326,7 +329,7 @@ namespace Assets.Scripts.UI
 
         private void SetNearClipPlane()
         {
-            _camera.nearClipPlane = _camera.transform.position.y < 10000.0f ? 10.0f : _camera.transform.position.y - _camera.transform.position.y / 10.0f;
+            _camera.nearClipPlane = _camera.transform.position.y < 30000.0f || _camera.transform.rotation.x < 80 ? 10.0f : _camera.transform.position.y - _camera.transform.position.y / 10.0f;
         }
     }
 }
