@@ -55,6 +55,9 @@ public class VehicleControlSystem : MonoBehaviour
     #endregion
 
     #region Private Variables
+
+    private bool _haveCorridorSim = false;
+    private bool _haveLowAltSim = false;
     private float watch;
 
     // Visualization related params
@@ -245,6 +248,22 @@ public class VehicleControlSystem : MonoBehaviour
 
         if ( playing )
         {
+            var e = EnvironManager.Instance.Environ;
+            var dPCt = e.DronePorts.Count;
+            _haveCorridorSim = false;
+            _haveLowAltSim = false;
+            foreach (var ps in e.ParkingStructures)
+            {
+                if (ps.Value.Type.Contains("LowAltitude"))
+                {
+                    _haveLowAltSim = true;
+                }
+                else if (dPCt >= 3)
+                {
+                    _haveCorridorSim = true;
+                }
+            }
+
             droneInstantiator.ClearDrones();
             droneInstantiator.InstantiateDrones(sceneManager, scaleMultiplier, _canvas);
             var simSettings = EnvironManager.Instance.Environ.SimSettings;
@@ -343,7 +362,7 @@ public class VehicleControlSystem : MonoBehaviour
         // strategicDeconfliction == "none"
         if (EnvironManager.Instance.Environ.SimSettings.StrategicDeconfliction.Equals("none"))
         {
-            if (call_type_string.Equals("corridor"))
+            if (call_type_string.Equals("corridor") && _haveCorridorSim)
             {
                 List<GameObject> destinations_list = GetNewRandomDestinations();
                 GameObject parking = GetNearestAvailableParking(destinations_list[0]);
@@ -368,7 +387,7 @@ public class VehicleControlSystem : MonoBehaviour
                 //if (parking.GetComponent<ParkingControl>().queue.Count < 3) 
                 CallVehicle(vehicle, parking.GetComponent<ParkingControl>(), destinations);
             }
-            else // call_type_string == "low-altitude"
+            else if (_haveLowAltSim) // call_type_string == "low-altitude"
             {
                 int withAAO = Mathf.FloorToInt(UnityEngine.Random.Range(0.0f, 1.0f));
                 string withAAOString = withAAO == 0 ? "AAO" : "None";
@@ -869,10 +888,7 @@ public class VehicleControlSystem : MonoBehaviour
     /// </summary>
     private void GenerateNetwork()
     {
-
-
-
-
+        DroneNetwork = new Assets.Scripts.DataStructure.Network();
         List<GameObject> points = new List<GameObject>();
         foreach (SceneDronePort sdp in sceneManager.DronePorts.Values) points.Add(sdp.gameObject);
         foreach (SceneParkingStructure sps in sceneManager.ParkingStructures.Values)
@@ -884,7 +900,6 @@ public class VehicleControlSystem : MonoBehaviour
 
         IPoint[] vertices = GetVertices(points);
         Delaunator delaunay = new Delaunator(vertices);
-        DroneNetwork = new Assets.Scripts.DataStructure.Network();
         DroneNetwork.vertices = points;
         var utmElev = EnvironManager.Instance.Environ.SimSettings.CorridorFlightElevation_M;
         var utmSep = EnvironManager.Instance.Environ.SimSettings.CorridorSeparationDistance_M;
