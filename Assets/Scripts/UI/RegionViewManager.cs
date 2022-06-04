@@ -156,6 +156,8 @@ namespace Assets.Scripts.UI
             _cameraAdj.SetExtents(extents[0][0], extents[0][1], extents[1][0], extents[1][1]);
 
             Shader.SetGlobalInt("_displayNoise", 0);
+
+            CheckPartsForSimulation();
         }
 
         protected override void OnDestroyDerived()
@@ -279,10 +281,18 @@ namespace Assets.Scripts.UI
             if (args is AddDronePortArgs)
             {
                 AddNewDronePort(args as AddDronePortArgs);
+                if (!_playPause.GetIsInteractable())
+                {
+                    CheckPartsForSimulation();
+                }
             }
             else if (args is AddParkingStructArgs)
             {
                 AddNewParkingStruct(args as AddParkingStructArgs);
+                if (!_playPause.GetIsInteractable())
+                {
+                    CheckPartsForSimulation();
+                }
             }
             else if (args is AddRestrictionZoneArgs)
             {

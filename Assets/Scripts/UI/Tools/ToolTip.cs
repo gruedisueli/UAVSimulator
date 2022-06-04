@@ -14,6 +14,7 @@ namespace Assets.Scripts.UI.Tools
     public class ToolTip : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
     {
         private GameObject _toolTip;
+        private Text _text;
         public float _timeTrigger = 1;//in seconds, how long you have to hover mouse before it shows up.
         private bool _entered = false;
         private float _timeEntered = 0;
@@ -33,6 +34,12 @@ namespace Assets.Scripts.UI.Tools
             {
                 Debug.LogError("Could not find tooltip child");
             }
+
+            _text = _toolTip?.GetComponentInChildren<Text>(true);
+            if (_text == null)
+            {
+                Debug.LogError("Could not locate text component of tooltip");
+            }
         }
         public void OnPointerEnter(PointerEventData d)
         {
@@ -50,6 +57,13 @@ namespace Assets.Scripts.UI.Tools
             {
                 _entered = false;
             }
+        }
+        /// <summary>
+        /// Sets text to display on tooltip
+        /// </summary>
+        public void SetText(string t)
+        {
+            _text.text = t;
         }
 
         private IEnumerator DisplayTooltip()

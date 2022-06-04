@@ -1042,6 +1042,44 @@ namespace Assets.Scripts.UI
         protected abstract void AddElement(IAddElementArgs args);
 
         /// <summary>
+        /// Checks to see if user has added all necessary elements to run sim.
+        /// </summary>
+        protected void CheckPartsForSimulation()
+        {
+            var e = EnvironManager.Instance.Environ;
+            int c = e.DronePorts.Count;
+            bool ready = false;
+            foreach (var ps in e.ParkingStructures)
+            {
+                bool isLowAlt = ps.Value.Type.Contains("LowAltitude");
+                if (c > 0)//user is building drone ports, expecting a parking structure for them...
+                {
+                    if (!isLowAlt && c >= 3)
+                    {
+                        ready = true;
+                        break;
+                    }
+                }
+                else if (isLowAlt)//user may not be building drone ports.
+                {
+                    ready = true;
+                    break;
+                }
+            }
+
+            if (ready)
+            {
+                _playPause._toolTip.SetText("Play / Stop Simulation");
+                _playPause.SetIsInteractable(true);
+            }
+            else
+            {
+                _playPause._toolTip.SetText("Add either: (3 landing pads & 1 corridor parking structure)\nor (1 low altitude parking structure)\nto run simulation");
+                _playPause.SetIsInteractable(false);
+            }
+        }
+
+        /// <summary>
         /// Removes any type of element from scene.
         /// </summary>
         protected virtual void RemoveSelectedElement(object sender, System.EventArgs args)
@@ -1054,10 +1092,18 @@ namespace Assets.Scripts.UI
             if (_selectedElement is SceneDronePort)
             {
                 RemoveDronePort((_selectedElement as SceneDronePort).Guid);
+                if (_playPause.GetIsInteractable())
+                {
+                    CheckPartsForSimulation();
+                }
             }
             else if (_selectedElement is SceneParkingStructure)
             {
                 RemoveParkingStructure((_selectedElement as SceneParkingStructure).Guid);
+                if (_playPause.GetIsInteractable())
+                {
+                    CheckPartsForSimulation();
+                }
             }
             else if (_selectedElement is SceneRestrictionZone)
             {
