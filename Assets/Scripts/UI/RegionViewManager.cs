@@ -29,7 +29,6 @@ namespace Assets.Scripts.UI
         private WaitForSeconds _wait;
         private CameraAdjustment _cameraAdj;
 
-        private GameObject _cityMarkerPrefab;
         private LineRenderer _regionBoundaries;
 
         private float _minCamSize = 1000.0f;
@@ -72,12 +71,6 @@ namespace Assets.Scripts.UI
         protected override void Init()
         {
             string rPath = "GUI/";
-            _cityMarkerPrefab = AssetUtils.ReadPrefab(rPath, "CityMarker");
-            if (_cityMarkerPrefab == null)
-            {
-                Debug.LogError("City marker prefab not found");
-                return;
-            }
 
             //RangeTileProviderOptions range = new RangeTileProviderOptions();
             //range.east = EnvironSettings.REGION_TILE_EXTENTS;

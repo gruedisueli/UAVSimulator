@@ -51,7 +51,6 @@ namespace Assets.Scripts.Environment
 
         public Environ Environ { get; private set; } = new Environ();
         public string OpenedFile { get; private set; } = "";
-        public string ActiveCity { get; private set; } = "";
         /// <summary>
         /// Last position of the camera, X, Z, and S, where "S" is Camera component "Size" parameter
         /// </summary>
@@ -62,7 +61,6 @@ namespace Assets.Scripts.Environment
         public Material SelectedSceneElementMat { get; private set; } = null;
         public Material DefaultSceneElementMat { get; private set; } = null;
         public Material RestrictionZoneMaterial { get; private set; } = null;
-        public GameObject CityInfoPanelPrefab { get; private set; } = null;
         public GameObject DronePortInfoPanelPrefab { get; private set; } = null;
         public GameObject ParkingRectInfoPanelPrefab { get; private set; } = null;
         public GameObject ParkingCustomInfoPanelPrefab { get; private set; } = null;
@@ -452,14 +450,6 @@ namespace Assets.Scripts.Environment
         }
 
         /// <summary>
-        /// Sets the currently active city for simulating
-        /// </summary>
-        public void SetActiveCity(string guid)
-        {
-            ActiveCity = guid;
-        }
-
-        /// <summary>
         /// Updates access token in MapboxSettings file. Writes to actual file.
         /// </summary>
         public void SetAccessToken(string token)
@@ -609,7 +599,6 @@ namespace Assets.Scripts.Environment
         private void ReadInfoPanelPrefabs()
         {
             string rPath = "GUI/";
-            CityInfoPanelPrefab = AssetUtils.ReadPrefab(rPath, "CityInfoPanel");
             DronePortInfoPanelPrefab = AssetUtils.ReadPrefab(rPath, "DronePortInfoPanel");
             ParkingRectInfoPanelPrefab = AssetUtils.ReadPrefab(rPath, "ParkingRectInfoPanel");
             ParkingCustomInfoPanelPrefab = AssetUtils.ReadPrefab(rPath, "ParkingCustomInfoPanel");
