@@ -5756,6 +5756,7 @@ MonoBehaviour:
   _isOn: 0
   _playImage: {fileID: 21300000, guid: aecf55f7bf6f3274eac4d2eb72ea5085, type: 3}
   _stopImage: {fileID: 21300000, guid: dccc281f1e5ebd746bb4fbe655ad5c79, type: 3}
+  _toolTip: {fileID: 0}
 --- !u!224 &444420557 stripped
 RectTransform:
   m_CorrespondingSourceObject: {fileID: 1877224052915756291, guid: fbd7d39aa8ab73542b829ccad29691d5,
@@ -24385,7 +24386,7 @@ PrefabInstance:
     - target: {fileID: 2308453124726985584, guid: 5d0936292fa340f4499fd693e31614ae,
         type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: -125
+      value: -285
       objectReference: {fileID: 0}
     - target: {fileID: 2308453124726985584, guid: 5d0936292fa340f4499fd693e31614ae,
         type: 3}
@@ -24415,12 +24416,17 @@ PrefabInstance:
     - target: {fileID: 8040641364357866409, guid: 5d0936292fa340f4499fd693e31614ae,
         type: 3}
       propertyPath: m_Text
-      value: "You will see on the satellite view there are circular regions labeled
+      value: 'You will see on the satellite view there are circular regions labeled
         with numbers. These are airspace markings. An explanation of each marking
         type is beyond the scope of this tutorial. The dataset used for these was
-        pulled from an FAA GIS dataset, and duplicated in our own custom Mapbox tileset.
-        \n\nAs an interesting side-note, it would be possible to extend this tool
-        with any GIS dataset you please, although for now we only show the airspace."
+        pulled from an FAA GIS dataset, and duplicated in our own custom Mapbox tileset. 
+        Please note that this data is not official, and is not updated dynamically.
+        Newer datasets may exist.
+
+
+        As an interesting side-note, it would
+        be possible to extend this tool with any GIS dataset you please, although
+        for now we only show the airspace.'
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 5d0936292fa340f4499fd693e31614ae, type: 3}

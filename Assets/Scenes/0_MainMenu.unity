@@ -3872,41 +3872,50 @@ MonoBehaviour:
     m_LineSpacing: 1
   m_Text: 'Version 1.0
 
+    
 
+    
 
-    Copyright 2022 Laboratory for Design Technology, Harvard
-    Graduate School of Design
+    Copyright 2022 Laboratory for Design Technology,
+    Harvard Graduate School of Design
 
     Team: Eunu Kim, Hyojin Kwon, Gavin Ruedisueli,
     Andrew Witt
 
+    
 
+    
 
+    
 
-
-    This project was built in Unity. Our software utilizes the
-    following libraries, follow the links for license information specific to these
-    libraries:
-
-    ****
-
-    Project: Mapbox Unity SDK: https://github.com/mapbox/mapbox-unity-sdk
-    [accessed 5/31/2022]
-
-    Mapbox Unity SDK copyright (c) 2016-2017 Mapbox.
-
-    Licensed
-    under MIT License: https://github.com/mapbox/mapbox-unity-sdk/blob/develop/LICENSE
-    [accessed 5/31/2022]
+    
 
     ****
 
-    Project: Patryk Grech''s port of Mapbox Delaunator
+    This project was built
+    in Unity. Our software utilizes the following libraries, follow the links for
+    license information specific to these libraries:
 
-    Copyright
-    (c) 2020 Patryk Grech
+    ****
 
-    Licensed under MIT License: https://github.com/nol1fe/delaunator-sharp/blob/master/DelaunatorSharp.Unity/LICENSE
+    Project: Mapbox
+    Unity SDK: https://github.com/mapbox/mapbox-unity-sdk [accessed 5/31/2022]
+
+    Mapbox
+    Unity SDK copyright (c) 2016-2017 Mapbox.
+
+    Licensed under MIT License: https://github.com/mapbox/mapbox-unity-sdk/blob/develop/LICENSE
+    [accessed 5/31/2022]
+
+    ****
+
+    Project: Patryk Grech''s port of Mapbox
+    Delaunator
+
+    Copyright (c) 2020 Patryk Grech
+
+    Licensed under MIT License:
+    https://github.com/nol1fe/delaunator-sharp/blob/master/DelaunatorSharp.Unity/LICENSE
     [accessed 5/31/2022]
 
     ****
@@ -3922,23 +3931,40 @@ MonoBehaviour:
 
     ****
 
-
-
-    Additional thanks go to:
+    
 
     ****
 
-    reavenk''s
-    code snippets outlining how to download text files from a Unity WebGL app, copyright
-    2020
+    Airspace map GIS data
+    is publicly-available here, published by the FAA: https://adds-faa.opendata.arcgis.com/datasets/faa::class-airspace/about
+    [accessed 6/23/2022]
+
+    Please note that this data is not official, and is
+    not updated dynamically. Adding this data to our tool requires downloading the
+    dataset and uploading it to our own private Mapbox tileset. Newer data may exist
+    than what you see, since the FAA updates the GIS dataset every 8 weeks.
+
+    ****
+
+    
+
+    ****
+
+    Additional
+    thanks go to:
+
+    ****
+
+    reavenk''s code snippets outlining how to download
+    text files from a Unity WebGL app, copyright 2020
 
     https://pixeleuphoria.com/blog/index.php/2020/04/27/unity-webgl-download-content/
     [accessed 5/31/2022]
 
     ****
 
-    reavenk''s code snippets outlining how to
-    upload text files to a Unity WebGL app, copyright 2020
+    reavenk''s code snippets outlining how
+    to upload text files to a Unity WebGL app, copyright 2020
 
     https://pixeleuphoria.com/blog/index.php/2020/04/29/unity-webgl-upload-content/
     [accessed 5/31/2022]
@@ -3953,10 +3979,12 @@ MonoBehaviour:
 
     ****
 
+    
 
+    ****
 
-    Sound level calculations taken from the
-    following pages:
+    Sound level calculations
+    taken from the following pages:
 
     (equations) https://www.omnicalculator.com/physics/distance-attenuation
     [accessed 5/31/2022]
@@ -3964,12 +3992,14 @@ MonoBehaviour:
     (rules of thumb) https://www.chem.purdue.edu/chemsafety/Training/PPETrain/dblevels.htm
     [accessed 5/31/2022]
 
-
+    ****
 
     Scale of slippy tiles:
 
     https://wiki.openstreetmap.org/wiki/Slippy_map_tilenames#Resolution_and_Scale
     [accessed 5/31/2022]
+
+    ****
 
 '
 --- !u!222 &1011092555

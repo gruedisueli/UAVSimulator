@@ -1,3 +1,17 @@
+THIS FILE INCLUDES THE LONG-VERSION OF LICENSES. THERE IS ANOTHER DOCUMENT CALLED "License_short.txt" THAT IS WHAT WE REFERENCE IN THE "About" SECTION OF THE GUI
+******************************************************************************************
+
+
+Version 1.0
+
+
+Copyright 2022 Laboratory for Design Technology, Harvard Graduate School of Design
+Team: Eunu Kim, Hyojin Kwon, Gavin Ruedisueli, Andrew Witt
+
+
+
+
+
 This project was built in Unity. Our software utilizes the following libraries, follow the links for license information specific to these libraries:
 
 ******************************************************************************************
@@ -175,6 +189,15 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 
 ******************************************************************************************
 
+Airspace map GIS data is publicly-available here, published by the FAA: https://adds-faa.opendata.arcgis.com/datasets/faa::class-airspace/about [accessed 6/23/2022]
+Please note that this data is not official, and is not updated dynamically. Adding this data to our tool requires downloading the dataset and uploading it to our own private Mapbox tileset. Newer data may exist than what you see, since the FAA updates the GIS dataset every 8 weeks.
+
+Wording of license from the above website:
+The data provided is for public use. A limited number of Non-US Landing Facilities are included in this file. Some of these, in particular the Canadian facilities, are included to facilitate cartographic requirements in border regions. These records are not guaranteed to be complete and are not inclusive of all Canadian facilities. This airport data should not be considered official source for non-US facilities. Please contact the appropriate authority for more accurate and updated non-US airports data.
+
+
+******************************************************************************************
+
 Additional thanks go to:
 
 ******************************************************************************************
@@ -193,3 +216,12 @@ Mouse 3d orbit and zoom example (heavily-modified in our project)
 https://wiki.unity3d.com/index.php/MouseOrbitZoom [dead link as of 5/31/2022]
 
 ******************************************************************************************
+
+Sound level calculations taken from the following pages:
+(equations) https://www.omnicalculator.com/physics/distance-attenuation [accessed 5/31/2022]
+(rules of thumb) https://www.chem.purdue.edu/chemsafety/Training/PPETrain/dblevels.htm [accessed 5/31/2022]
+
+******************************************************************************************
+
+Scale of slippy tiles:
+https://wiki.openstreetmap.org/wiki/Slippy_map_tilenames#Resolution_and_Scale [accessed 5/31/2022]
