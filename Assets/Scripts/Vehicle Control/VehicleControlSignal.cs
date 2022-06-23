@@ -8,11 +8,11 @@ namespace Assets.Scripts.Vehicle_Control
 {
     public class VehicleControlSignal
     {
-        public string signal;//@Eunu comment
-        public GameObject from;//@Eunu comment
-        public Vector3 vector;//@Eunu comment
-        public Queue<GameObject> destinations;//@Eunu comment
-        private GameObject gameObject;//@Eunu comment
+        public string signal;
+        public GameObject from;
+        public Vector3 vector;
+        public Queue<GameObject> destinations;
+        private GameObject gameObject;
 
         public VehicleControlSignal(GameObject from_i, string signal_i, Queue<GameObject> dest_i)
         {
