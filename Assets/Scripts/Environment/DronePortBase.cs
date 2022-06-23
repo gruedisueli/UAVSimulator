@@ -37,32 +37,10 @@ namespace Assets.Scripts.Environment
 
         public List<Vector3> GetLandingGuide(string mode)
         {
-            // mode == {parking, unparking}
-            // Temporary function
-
             List<Vector3> guides = new List<Vector3>();
 
             guides.Add(StandbyPosition);
             guides.Add(LandingPoint);
-
-            /*
-            if (type.Equals("Simple_4Way_Stack"))
-            {
-                Vector3 direction = new Vector3(spot.x, 0.0f, spot.z).normalized;
-                direction = Quaternion.Euler(rotation.x, rotation.y, rotation.z) * direction;
-                guides.Add(spot);
-                Vector3 current_spot = spot + direction * 20.0f;
-                guides.Add(current_spot);
-                current_spot.y = standbyPosition.y;
-                guides.Add(current_spot);
-                guides.Add(standbyPosition);
-            }
-            else if (type.Equals("generic_rectangular_lot"))
-            {
-                guides.Add(spot);
-                guides.Add(standbyPosition);
-            }*/
-
 
             if (mode == "takeoff")
             {

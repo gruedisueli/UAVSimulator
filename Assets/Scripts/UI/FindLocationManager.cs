@@ -113,62 +113,6 @@ namespace Assets.Scripts.UI
             EnvironManager.Instance.Environ.CenterLatLong = _map.WorldToGeoPosition(trueCenter);
 
             _createProjectButton.interactable = true;
-
-
-            //string name = gO.name;
-            //string d = "/";
-            //var frags = name.Split(new string[] { d }, StringSplitOptions.None);
-            //Vector3 center = gO.transform.position;
-            //if (frags != null && frags.Length == 3)
-            //{
-            //    foreach(var t in _selectedTiles)
-            //    {
-            //        var mR = t.GetComponent<MeshRenderer>();
-            //        if (mR != null)
-            //        {
-            //            mR.material.SetFloat("_FirstOutlineWidth", 0.0f);
-            //        }
-            //    }
-            //    _selectedTiles = new List<GameObject>();
-            //    string zLevel = frags[0];
-            //    int rI = EnvironSettings.FINDLOCATION_SELECTION_INFLATION;
-            //    bool haveX = int.TryParse(frags[1], out int xTile);
-            //    bool haveY = int.TryParse(frags[2], out int yTile);
-            //    List<string> toHighlight = new List<string>() { name };
-            //    if (haveX && haveY)
-            //    {
-            //        for (int x = xTile - rI; x <= xTile + rI; x++)
-            //        {
-            //            for (int y = yTile - rI; y <= yTile + rI; y++)
-            //            {
-            //                if (x == xTile && y == yTile)//already have this tile
-            //                {
-            //                    continue;
-            //                }
-
-            //                toHighlight.Add(zLevel + d + x.ToString() + d + y.ToString());
-            //            }
-            //        }
-            //    }
-
-            //    foreach(var n in toHighlight)
-            //    {
-            //        var foundTile = GameObject.Find(n);
-            //        if (foundTile == null)
-            //        {
-            //            Debug.LogError("Could not find specified tile");
-            //            continue;
-            //        }
-            //        var mR = foundTile.GetComponent<MeshRenderer>();
-            //        if (mR != null)
-            //        {
-            //            mR.material.SetFloat("_FirstOutlineWidth", 10.0f);
-            //        }
-
-            //        _selectedTiles.Add(foundTile);
-            //    }
-            //}
-            //EnvironManager.Instance.Environ.CenterLatLong = _map.WorldToGeoPosition(center);
         }
 
         IEnumerator LoadAsyncOperation(int scenePath)

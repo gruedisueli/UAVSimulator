@@ -156,15 +156,6 @@ namespace Assets.Scripts.SimulatorCore
         {
             string drone_path = vcs.TEMPORARY_IsRegionView ? "GUI/DroneIcon2" : "Drones/";
             var droneSettings = isCorridor ? EnvironManager.Instance.Environ.SimSettings.CorridorDroneSettings : EnvironManager.Instance.Environ.SimSettings.LowAltitudeDroneSettings;
-            //string droneType = isCorridor ? "corridor" : "LowAltitude";
-            
-            //int parkingCapacity = vcs.GetParkingCapacity();
-            //int typeSpecificCapacity = vcs.GetParkingCapacity(droneSettings.DroneType);
-            //int currentDroneCt = isCorridor ? _corridorDrones.Count : _lowAltitudeDrones.Count;
-            //int vehiclesToInstantiate = UnityEngine.Random.Range(typeSpecificCapacity - 10 - currentDroneCt, typeSpecificCapacity - 10);
-            //int vehiclesToInstantiate = UnityEngine.Random.Range(parkingCapacity - typeSpecificCapacity - 10 - currentDroneCt, parkingCapacity - typeSpecificCapacity - currentDroneCt);
-
-            //if (vehiclesToInstantiate < 0) yield break;
 
             if (isCorridor) corridorDroneInstantiationStarted = true;
             else lowAltitudeDroneInstantiationStarted = true;
@@ -393,8 +384,6 @@ namespace Assets.Scripts.SimulatorCore
             {
                 clone = new GameObject();
                 clone.transform.position = spot;
-                //clone = Instantiate(new GameObject(), spot, Quaternion.Euler(0.0f, 0.0f, 0.0f));
-                //element follower knows to destroy itself if drone is destroyed.
                 clone2d = Instantiate(prefab, vcs._canvas.transform);
                 clone2d.name = "Drone sprite";
                 var f = clone2d.GetComponent<ElementFollower>();

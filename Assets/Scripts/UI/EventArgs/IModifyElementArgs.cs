@@ -8,8 +8,6 @@ namespace Assets.Scripts.UI.EventArgs
 {
     public interface IModifyElementArgs
     {
-        //ElementFamily Family { get; }
-        //string Guid { get; }
         ModifyPropertyArgBase Update { get; }
         object Sender { get; }
     }

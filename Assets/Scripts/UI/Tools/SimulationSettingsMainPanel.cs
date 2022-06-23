@@ -94,17 +94,6 @@ namespace Assets.Scripts.UI.Tools
             }
         }
 
-        //public void Cancel()
-        //{
-        //    gameObject.SetActive(false);
-        //}
-
-        //public void Ok()
-        //{
-        //    ApplyToEnvironment();
-        //    gameObject.SetActive(false);
-        //}
-
         private void ApplyToEnvironment()
         {
             bool rebuildNetwork = Math.Abs(_simulationSettingsCopy.CorridorFlightElevation_M - EnvironManager.Instance.Environ.SimSettings.CorridorFlightElevation_M) > 0.1 || Math.Abs(_simulationSettingsCopy.CorridorSeparationDistance_M - EnvironManager.Instance.Environ.SimSettings.CorridorSeparationDistance_M) > 0.1;

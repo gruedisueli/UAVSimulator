@@ -41,38 +41,20 @@ public abstract class DroneBase : MonoBehaviour
         get => _noiseRadius;
     }
 
-    //public float range { get; private set; }
-
-    //public List<float> emission;
-    //public List<float> noise;
-
-    // Analysis/control related information
-
-    //public Vector3 currentLocation { get; set; }//where the drone is right now.
     public Vector3 TargetPosition { get; set; }//the next point the drone is going to. may be a destination or waypoint. it depends on situation.
     public float CurrentSpeed { get; protected set; }
     public float Elevation { get; private set; }
-    //public string origin { get; set; }
 
     public GameObject CurrentCommunicationPoint { get; set; }//point that we are either taking off from or landing at.
     public Queue<GameObject> DestinationQueue { get; set; }//list of all points that a drone may go to during course of its trip.
     public Queue<Vector3> WayPointsQueue { get; set; }//list of just the points at at takeoff or landing to get drone to the landing pad or into the air. 
-
-    //public float separation { get; set; }
-    //public Time elapsedTime { get; set; }
-
 
     // State machine variable
     // idle, takeoff, move, (land)pending, land, wait
     public string State { get; set; }
     public bool IsParked { get; protected set; }
 
-    
-    //public int placeInQueue;
-    //private float landingElevation;
     public bool ToPark { get; set; }
-    //public bool moveForward;
-    //public bool isUTM;
     public bool IsBackgroundDrone { get; private set; }
     public float WaitTimer { get; protected set; }
     public GameObject Clone2d { get; set; } = null;
@@ -82,7 +64,6 @@ public abstract class DroneBase : MonoBehaviour
     protected VehicleControlSystem _vcs;
     protected int _droneLayermask;
     private TrailRenderer _trailRenderer;
-    //private SphereCollider sphereCollider;
     private GameObject _noiseSphere;
     private Mesh _originalMesh = null;
 
@@ -101,7 +82,6 @@ public abstract class DroneBase : MonoBehaviour
         ArrivalThreshold = 0.5f;
         DestinationQueue = new Queue<GameObject>();
         _trailRenderer = gameObject.GetComponent<TrailRenderer>();
-        //sphereCollider = gameObject.GetComponent<SphereCollider>();
         IsParked = true;
         if (!_vcs.TEMPORARY_IsRegionView) _originalMesh = gameObject.transform.GetChild(0).gameObject.GetComponent<MeshFilter>().mesh;
 
@@ -118,7 +98,6 @@ public abstract class DroneBase : MonoBehaviour
     void Update()
     {
         if (!_vcs.playing) return;
-        //sphereCollider.center = gameObject.transform.position;
 
         if (this is CorridorDrone || this is LowAltitudeDrone)
         {

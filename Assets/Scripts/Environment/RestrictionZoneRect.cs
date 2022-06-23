@@ -141,10 +141,6 @@ namespace Assets.Scripts.Environment
             {
                 switch (args.ElementPropertyType)
                 {
-                    //case UpdatePropertyType.Type:
-                    //    {
-
-                    //    }
                     case ElementPropertyType.Height:
                         {
                             if (args is ModifyFloatPropertyArg fP)

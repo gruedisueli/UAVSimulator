@@ -156,9 +156,6 @@ public class ParkingControl : TrafficControl
 
     public List<Vector3> GetParkingGuide(Vector3 spot, string mode, string type)
     {
-        // mode == {parking, unparking}
-        // Temporary function
-
         List<Vector3> guides = new List<Vector3>();
         if (type.Contains("corridor"))
         {

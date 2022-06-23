@@ -222,28 +222,6 @@ namespace Assets.Scripts.Environment
             }
         }
 
-        ///// <summary>
-        ///// Sets drone port. False on failure.
-        ///// </summary>
-        //public bool SetDronePort(string guid, DronePortBase dP)
-        //{
-        //    var city = GetCurrentCity();
-        //    if (city == null)
-        //    {
-        //        return false;
-        //    }
-        //    if (city.DronePorts.ContainsKey(guid))
-        //    {
-        //        city.DronePorts[guid] = dP;
-        //        return true;
-        //    }
-        //    else
-        //    {
-        //        Debug.LogError("Specified drone port not present in dictionary");
-        //        return false;
-        //    }
-        //}
-
         /// <summary>
         /// Gets parking structure. Null on failure.
         /// </summary>
@@ -264,28 +242,6 @@ namespace Assets.Scripts.Environment
             }
         }
 
-        ///// <summary>
-        ///// Sets parking structure. False on failure.
-        ///// </summary>
-        //public bool SetParkingStructure(string guid, ParkingStructureBase pS)
-        //{
-        //    var city = GetCurrentCity();
-        //    if (city == null)
-        //    {
-        //        return false;
-        //    }
-        //    if (city.ParkingStructures.ContainsKey(guid))
-        //    {
-        //        city.ParkingStructures[guid] = pS;
-        //        return true;
-        //    }
-        //    else
-        //    {
-        //        Debug.LogError("Specified parking structure not present in dictionary");
-        //        return false;
-        //    }
-        //}
-
         /// <summary>
         /// Gets restriction zone. Null on failure.
         /// </summary>
@@ -305,28 +261,6 @@ namespace Assets.Scripts.Environment
                 return null;
             }
         }
-
-        ///// <summary>
-        ///// Sets restriction zone. False on failure.
-        ///// </summary>
-        //public bool SetRestrictionZone(string guid, RestrictionZoneBase rZ)
-        //{
-        //    var city = GetCurrentCity();
-        //    if (city == null)
-        //    {
-        //        return false;
-        //    }
-        //    if (city.RestrictionZones.ContainsKey(guid))
-        //    {
-        //        city.RestrictionZones[guid] = rZ;
-        //        return true;
-        //    }
-        //    else
-        //    {
-        //        Debug.LogError("Specified restriction zone not present in dictionary");
-        //        return false;
-        //    }
-        //}
 
         /// <summary>
         /// Create an entirely new environment.
@@ -390,9 +324,7 @@ namespace Assets.Scripts.Environment
         /// </summary>
         public void SaveFile(string name)
         {
-            //string path = SerializationSettings.SAVE_PATH + name + ".json";
             SerializeJsonFile(Environ, name);
-           // Debug.Log("File written to " + path);
         }
 
         /// <summary>
@@ -404,8 +336,6 @@ namespace Assets.Scripts.Environment
             {
                 return false;
             }
-            //string path = SerializationSettings.SAVE_PATH + name + ".json";
-            //if (!File.Exists(path)) return;
             try
             {
                 Environ = DeserializeJsonEnviron(json);
@@ -416,46 +346,6 @@ namespace Assets.Scripts.Environment
                 Debug.LogError("Failed to parse JSON file");
                 return false;
             }
-            //OpenedFile = name;
-            //Debug.Log("File read from " + path);
-        }
-
-        /// <summary>
-        /// Renames a file. True on success
-        /// </summary>
-        public bool RenameFile(string oldName, string newName)
-        {
-            if (IsFilenameValid(oldName) && IsFilenameValid(newName) && DoesFileExist(oldName) && !DoesFileExist(newName))
-            {
-                string oldPath = SerializationSettings.SAVE_PATH + oldName + ".json";
-                string newPath = SerializationSettings.SAVE_PATH + newName + ".json";
-                File.Move(oldPath, newPath);
-                return true;
-            }
-            return false;
-        }
-        
-        /// <summary>
-        /// Deletes a file. True on success
-        /// </summary>
-        public bool DeleteFile(string name)
-        {
-            if (IsFilenameValid(name) && DoesFileExist(name))
-            {
-                string path = SerializationSettings.SAVE_PATH + name + ".json";
-                File.Delete(path);
-                return true;
-            }
-            return false;
-        }
-
-        /// <summary>
-        /// Updates access token in MapboxSettings file. Writes to actual file.
-        /// </summary>
-        public void SetAccessToken(string token)
-        {
-            //MapboxSettings.AccessToken = token;
-            //SerializeJsonFile(MapboxSettings/*, SerializationSettings.ROOT + "\\Resources\\Mapbox\\MapboxConfiguration.txt"*/);
         }
 
         /// <summary>
@@ -661,20 +551,6 @@ namespace Assets.Scripts.Environment
             s.Formatting = Formatting.Indented;//makes output file easier to read
             s.TypeNameHandling = TypeNameHandling.All;//required for keeping track of derived classes.
             var jsonStr = JsonConvert.SerializeObject(obj, s);
-
-
-            //JsonSerializer serializer = new JsonSerializer();
-
-            //serializer.Formatting = Formatting.Indented; //makes output file easier to read
-            //serializer.TypeNameHandling = TypeNameHandling.All; //required for keeping track of derived classes.
-
-            //using (StreamWriter sW = new StreamWriter(path))
-            //{
-            //    using (JsonWriter writer = new JsonTextWriter(sW))
-            //    {
-            //        serializer.Serialize(writer, obj);
-            //    }
-            //}
 
             //https://pixeleuphoria.com/blog/index.php/2020/04/27/unity-webgl-download-content/
             WebFileManager.BrowserTextDownload($"{name}.json", jsonStr);

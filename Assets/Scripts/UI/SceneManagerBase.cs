@@ -142,8 +142,6 @@ namespace Assets.Scripts.UI
             _speedMultiplier.value = EnvironManager.Instance.Environ.SimSettings.SimulationSpeedMultiplier;
             _speedMultiplier.onValueChanged.AddListener(UpdateSimSpeedMult);
 
-            //get mapbox abstract map
-            //_abstractMap = FindObjectOfType<AbstractMap>(true);
             if (_abstractMap == null)
             {
                 Debug.LogError("Abstract map not specified");
@@ -348,7 +346,6 @@ namespace Assets.Scripts.UI
                 }
             }
 
-            //_settingsButton.interactable = !args.IsPlaying;
             _saveButton.interactable = !args.IsPlaying;
 
             _droneIcons.Clear();
@@ -695,15 +692,6 @@ namespace Assets.Scripts.UI
             {
                 switch (args.Update.ElementPropertyType)
                 {
-                    //case UpdatePropertyType.Type:
-                    //    {
-                    //        //remove old port and reinstantiate
-                    //        _dronePorts[args.Guid].gameObject.Destroy();
-                    //        _dronePorts.Remove(args.Guid);
-                    //        AddNewDronePort(new AddDronePortArgs())
-                    //        //envDP.Type = (args.Update as UpdateStringPropertyArg)?.Value;
-                    //        //special case: need to reinstantiate
-                    //    }
                     case ElementPropertyType.Position:
                         {
                             dP.Position = (args.Update as ModifyVector3PropertyArg).Value;
@@ -799,15 +787,6 @@ namespace Assets.Scripts.UI
             {
                 switch (args.Update.ElementPropertyType)
                 {
-                    //case UpdatePropertyType.Type:
-                    //    {
-                    //        //remove old port and reinstantiate
-                    //        _dronePorts[args.Guid].gameObject.Destroy();
-                    //        _dronePorts.Remove(args.Guid);
-                    //        AddNewDronePort(new AddDronePortArgs())
-                    //        //envDP.Type = (args.Update as UpdateStringPropertyArg)?.Value;
-                    //        //special case: need to reinstantiate
-                    //    }
                     case ElementPropertyType.Position:
                         {
                             pS.Position = (args.Update as ModifyVector3PropertyArg).Value;
@@ -1288,7 +1267,6 @@ namespace Assets.Scripts.UI
             if (register)
             {
                 ParkingStructures.Add(guid, sPS);
-               //_vehicleControlSystem.InstantiateCorridorAndLowAltDrones();
             }
 
             return sPS;
@@ -1302,11 +1280,6 @@ namespace Assets.Scripts.UI
             var pfb = EnvironManager.Instance.ParkingStructAssets[pS.Type].Prefab;
             GameObject clone = Instantiate(pfb);
 
-            //foreach (var c in clone.GetComponentsInChildren<Transform>(true))
-            //{
-            //    if (selectable) c.gameObject.AddComponent<SelectableGameObject>();
-            //    c.gameObject.AddComponent<BoxCollider>();
-            //}
             var sPS = clone.AddComponent<SceneParkingStructure>();
             clone.AddComponent<BoxCollider>();
             sPS.Initialize(pS, guid, _canvas);
@@ -1314,7 +1287,6 @@ namespace Assets.Scripts.UI
             if (register)
             {
                 ParkingStructures.Add(guid, sPS);
-               //_vehicleControlSystem.InstantiateCorridorAndLowAltDrones();
             }
 
             return sPS;
@@ -1356,11 +1328,6 @@ namespace Assets.Scripts.UI
         {
             var pfb = EnvironManager.Instance.DronePortAssets[dP.Type].Prefab;
             GameObject clone = Instantiate(pfb);
-            //foreach (var c in clone.GetComponentsInChildren<Transform>(true))
-            //{
-            //    if (selectable) c.gameObject.AddComponent<SelectableGameObject>();
-            //    c.gameObject.AddComponent<BoxCollider>();
-            //}
             var sDP = clone.AddComponent<SceneDronePort>();
             clone.AddComponent<BoxCollider>();
             sDP.Initialize(dP, guid, _canvas);

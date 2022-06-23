@@ -29,10 +29,6 @@ public class VehicleControlSystem : MonoBehaviour
 {
     public bool TEMPORARY_IsRegionView = true;
     public SimulationAnalyzer _simulationAnalyzer;
-
-
-    //const float AGL_700_METERS = 213.36f;//AGL 700 in meters, not feet. "700" is a feet measurement.
-    //const float AGL_1200_METERS = 365.76f;//AGL 1200 in meters, not feet. "1200" is a feet measurement.
     public float MIN_DRONE_RANGE;
     /// <summary>
     /// Initial scale for simulation. (vestigial and probably can be removed)
@@ -46,14 +42,6 @@ public class VehicleControlSystem : MonoBehaviour
     private Camera _mainCamera;
     private float _camStartHeight = 0;
 
-
-    #region UI Variables
-
-    //public SimulationParam simulationParam;
-
-
-    #endregion
-
     #region Private Variables
 
     private bool _haveCorridorSim = false;
@@ -63,7 +51,6 @@ public class VehicleControlSystem : MonoBehaviour
     // Visualization related params
     public bool playing;
     public bool _networkVisible = false;
-    public bool noiseVisualization;
     public bool privacyVisualization;
     public bool landingCorridorVisualization;
     public bool demographicVisualization;
@@ -111,17 +98,10 @@ public class VehicleControlSystem : MonoBehaviour
         }
     }
 
-    // private SceneManagerBase sceneManager;
     public SceneManagerBase sceneManager;    
 
     // Background drone related params
-    //public int backgroundDroneCount = 250;
-    //public float lowerElevationBound = 100;
-    //public float upperElevationBound = 135;
     public float[][] mapBounds;
-    
-
-    //public float speedMultiplier = 1.0f;
 
     #endregion
 
@@ -136,13 +116,9 @@ public class VehicleControlSystem : MonoBehaviour
     private bool _networkUpdateFlag = false;
     private int _framesSinceNetworkUpdateFlag = 0;
 
-    //private const float UTM_ELEVATION = 152.4f;
-    //private const float UTM_SEPARATION = 25.0f;
-
     void Awake()
     {
         EnvironManager.Instance.VCS = this;
-        //droneCount = 200;
         playing = false;
 
         MIN_DRONE_RANGE = 999999.0f;
@@ -170,37 +146,14 @@ public class VehicleControlSystem : MonoBehaviour
     // Update is called once per frames
     void Update()
     {
-        //var debug = sceneManager.RestrictionZones.Values.ElementAt<SceneRestrictionZone>(0).GetComponent<SelectableGameObject>();
-
-        #region Basic Initialization Stuff.
-
-        //if (!TEMPORARY_IsRegionView && !buildingNoiseAttachmentStarted) StartCoroutine(AttachBuildingNoiseComponent());
-
-
-
-
-        //if (isBuildingNoiseComponentAttached && !droneInstantiator.corridorDroneInstantiationStarted ) StartCoroutine(droneInstantiator.InstantiateCorridorDrones(sceneManager, DRONE_SCALE, _canvas));
-        //else if (isBuildingNoiseComponentAttached && droneInstantiator.isCorridorDroneInstantiated && !droneInstantiator.lowAltitudeDroneInstantiationStarted ) StartCoroutine(droneInstantiator.InstantiateLowAltitudeDrones(sceneManager, DRONE_SCALE, _canvas));
-
-        #endregion
-
-
         #region Typical play actions
 
-        if (playing && droneInstantiator.isCorridorDroneInstantiated && droneInstantiator.isLowAltitudeDroneInstantiated /*&& (TEMPORARY_IsRegionView || isBuildingNoiseComponentAttached)*/)
+        if (playing && droneInstantiator.isCorridorDroneInstantiated && droneInstantiator.isLowAltitudeDroneInstantiated)
         {
             watch += Time.deltaTime;
             //periodic check-in
             if (watch > EnvironManager.Instance.Environ.SimSettings.CallGenerationInterval_S / EnvironManager.Instance.Environ.SimSettings.SimulationSpeedMultiplier)
             {
-                //var sa = gameObject.GetComponent<SimulationAnalyzer>();
-                ////make sure we don't have excess drones in simulation.
-                //if (sa.flyingDrones.Count + droneInstantiator._backgroundDrones.Count >= droneCount && droneInstantiator._backgroundDrones.Count > 0)
-                //{
-                //    var droneToRemove = droneInstantiator._backgroundDrones[0];
-                //    droneInstantiator._backgroundDrones.RemoveAt(0);
-                //    droneToRemove.Destroy();
-                //}
                 watch = 0.0f;
                 GenerateRandomCalls();
             }
@@ -211,7 +164,6 @@ public class VehicleControlSystem : MonoBehaviour
 
     void FixedUpdate()
     {
-
         //We have to use a flag because it seems that the colliders for restriction zones only become active after a game frame
         if (_networkUpdateFlag && _framesSinceNetworkUpdateFlag < 2)
         {
@@ -228,22 +180,12 @@ public class VehicleControlSystem : MonoBehaviour
 
     #region Methods
 
-    ///// <summary>
-    ///// Instantiates drones as needed.
-    ///// </summary>
-    //public void InstantiateCorridorAndLowAltDrones()
-    //{
-    //    if (droneInstantiator != null) droneInstantiator.InstantiateDrones(sceneManager, scaleMultiplier, _canvas);
-    //    else Debug.LogError("Drone instantiator is null");
-    //}
-
     /// <summary>
     /// Called (from scene manager) whenever we push the button that plays/pauses simulation. If currently playing, pauses simulation, else plays simulation.
     /// </summary>
     public void PlayPause(bool play)
     {
         playing = play;
-        //mapBounds = UnitUtils.GetRegionExtents();
         _simulationAnalyzer.PlayStop(play);
 
         if ( playing )
@@ -290,67 +232,6 @@ public class VehicleControlSystem : MonoBehaviour
         }
     }
 
-    ///// <summary>
-    ///// Coroutine that iterates through all the objects in scene and attaches noise components to those things that should get it.
-    ///// </summary>
-    //private IEnumerator AttachBuildingNoiseComponent()
-    //{
-    //    buildingNoiseAttachmentStarted = true;
-    //    int totalChildren = 0;
-    //    int done = 0;
-    //    Transform citySimulatorMapTransform = GameObject.Find("CitySimulatorMap").transform;
-
-    //    var simulationAnalyzer = GetComponent<SimulationAnalyzer>();
-
-    //    var pG = Instantiate(EnvironManager.Instance.ProgressBarPrefab, _canvas.gameObject.transform);
-    //    var progressBar = pG.GetComponent<ProgressBar>();
-    //    progressBar.Init("Adding Noise Calculation Components");
-    //    foreach (Transform child in citySimulatorMapTransform)
-    //        totalChildren += child.childCount;
-
-    //    int childrenPerFrame = 100;//how many buildings to process per frame (yield return null finishes coroutine's work in frame)
-    //    int subprocessCt = 0;
-    //    foreach (Transform child in citySimulatorMapTransform)
-    //    {
-    //        foreach (Transform grandchild in child)
-    //        {
-    //            //Debug.Log("The name of current object:" + grandchild.gameObject.name);
-    //            //if (grandchild.gameObject.name.Contains("Buildings"))
-    //            //{
-    //            var n = grandchild.gameObject.name;
-    //            if (!n.Contains("Building")) continue;
-    //            n = "Building_" + buildingCt.ToString();//give unique name
-    //            buildingCt++;
-    //            grandchild.gameObject.name = n;
-    //            var bN = new BuildingNoise(lowNoiseMaterial, midNoiseMaterial, highNoiseMaterial, noNoiseMaterial, this, simulationAnalyzer, grandchild.gameObject);
-    //            if (!BuildingNoiseElements.ContainsKey(n))
-    //            {
-    //                BuildingNoiseElements.Add(n, bN);
-    //            }
-    //            else
-    //            {
-    //                Debug.LogError("Building name already present in dictionary for building noise elements");
-    //            }
-    //            grandchild.gameObject.layer = 9;
-    //            grandchild.gameObject.tag = "Building";
-                    
-    //            //}
-    //            done++;
-    //            subprocessCt++;
-    //            if (subprocessCt == childrenPerFrame)
-    //            {
-    //                subprocessCt = 0;
-    //                progress = (float)done / (float)totalChildren;
-    //                progressBar.SetCompletion(progress);
-    //                yield return null;
-    //            }
-    //        }
-    //    }
-
-    //    isBuildingNoiseComponentAttached = true;
-    //    pG.Destroy();
-    //}
-
     /// <summary>
     /// Generates random calls for drone actions (only low-altitude and corridor drones, not background).
     /// </summary>
@@ -358,8 +239,7 @@ public class VehicleControlSystem : MonoBehaviour
     {
         int call_type = Mathf.FloorToInt(UnityEngine.Random.Range(0.0f, 3.0f));
         string call_type_string = call_type <= 0 ? "corridor" : "low-altitude";
-
-        // strategicDeconfliction == "none"
+        
         if (EnvironManager.Instance.Environ.SimSettings.StrategicDeconfliction.Equals("none"))
         {
             if (call_type_string.Equals("corridor") && _haveCorridorSim)
@@ -368,7 +248,6 @@ public class VehicleControlSystem : MonoBehaviour
                 GameObject parking = GetNearestAvailableParking(destinations_list[0]);
                 if (parking == null)
                 {
-                    //Debug.Log("No available vehicle");
                     return;
                 }
                 destinations_list.Add(parking);
@@ -381,10 +260,8 @@ public class VehicleControlSystem : MonoBehaviour
                 GameObject vehicle = GetAvailableVehicleinParkingStrcuture(parking);
                 if (vehicle == null)
                 {
-                    //Debug.Log("No available vehicle");
                     return;
                 }
-                //if (parking.GetComponent<ParkingControl>().queue.Count < 3) 
                 CallVehicle(vehicle, parking.GetComponent<ParkingControl>(), destinations);
             }
             else if (_haveLowAltSim) // call_type_string == "low-altitude"
@@ -412,8 +289,6 @@ public class VehicleControlSystem : MonoBehaviour
 
                     //find a random destination for this drone, within the allowable radius.
 
-                    //// Create random polygon
-                    //Polygon p = new Polygon(Mathf.RoundToInt(UnityEngine.Random.Range(3, 10)));
                     Vector3 destination = GetRandomPointXZ(EnvironManager.Instance.Environ.SimSettings.LowAltitudeFlightElevation_M, parking.transform.position.x, parking.transform.position.z, EnvironManager.Instance.Environ.SimSettings.LowAltitudeDroneTravelRadius_M);//GetRandomPointXZ(0.0f);
 
                     var standBy = parking.GetComponent<ParkingControl>().parkingInfo.StandbyPosition;
@@ -425,34 +300,12 @@ public class VehicleControlSystem : MonoBehaviour
                         generatedPoints.Add(generatedPoints[i]);
                     }
                     generatedPoints.Add(standBy + parking.transform.position);
-                    //p.Move(destination);
-                    // Generate 
-                    //Mesh m = p.CreateExtrusion(simulationParam.lowAltitudeBoundary);
                     var AAO = new GameObject("AAO_" + vehicle.name);
                     _aaoControls.Add(AAO);
-                    /*
-                    AAO.AddComponent<MeshFilter>().mesh = m;
-                    MeshRenderer mr = AAO.AddComponent<MeshRenderer>();
-                    mr.material.color = translucentRed;
-                    mr.material.SetOverrideTag("RenderType", "Transparent");
-                    mr.material.SetInt("_SrcBlend", (int)UnityEngine.Rendering.BlendMode.SrcAlpha);
-                    mr.material.SetInt("_DstBlend", (int)UnityEngine.Rendering.BlendMode.OneMinusSrcAlpha);
-                    mr.material.SetInt("_ZWrite", 0);
-                    mr.material.DisableKeyword("_ALPHATEST_ON");
-                    mr.material.EnableKeyword("_ALPHABLEND_ON");
-                    mr.material.DisableKeyword("_ALPHAPREMULTIPLY_ON");
-                    mr.material.renderQueue = (int)UnityEngine.Rendering.RenderQueue.Transparent;
-                    */
                     AAO.layer = 8;
                     AAOControl aaoCon = AAO.AddComponent<AAOControl>();
                     aaoCon.AddVehicle(vehicle);
                     
-                    //disabling multiple pts for now...
-                    //List<Vector3> generatedPoints = p.GeneratePointsinExtrusion(aaoCon.GetVehicleCount(), EnvironManager.Instance.Environ.SimSettings.LowAltitudeFlightElevation_M);
-                    
-                    //set of points includes destination point(s) plus those required for landing.
-                    //var generatedPoints = new List<Vector3> {destination};
-                    //generatedPoints.Add(standBy + parking.transform.position);
                     LowAltitudeDrone vehicleInfo = vehicle.GetComponent<LowAltitudeDrone>();
                     vehicleInfo.SetOperationPoints(new Queue<Vector3>(generatedPoints));
                     CallVehicle(vehicle, parking.GetComponent<ParkingControl>(), null);
@@ -707,107 +560,15 @@ public class VehicleControlSystem : MonoBehaviour
 
     }
 
-    //public bool Register(DroneBase v)
-    //{
-    //    return true;
-    //    /*
-    //    if (!activeVehicles.ContainsKey(v.id))
-    //    {
-    //        activeVehicles.Add(v.id, v);
-    //        return true;
-    //    }
-    //    else
-    //    {
-    //        return false;
-    //    }*/
-    //}
-
-    //public bool UpdateVehicleStatus(DroneBase v)
-    //{
-    //    if (activeVehicles.ContainsKey(v.gameObject))
-    //    {
-    //        //Debug.Log(v.id + " " + v.status);
-    //        activeVehicles[v.gameObject] = v.state;
-    //        return true;
-    //    }
-    //    else
-    //    {
-    //        return false;
-    //    }
-    //}
-
     /// <summary>
     /// Allows user to specify number of background drones in simulation at runtime.
     /// </summary>
     public void UpdateVehicleCount(int count)
     {
-        //backgroundDroneCount = count;
         if (playing)
         {
             droneInstantiator.SetBackgroundDroneCt(count);
         }
-        //droneCount = count;
-        //SimulationAnalyzer sa = gameObject.GetComponent<SimulationAnalyzer>();
-        //if ( count < droneInstantiator._backgroundDrones.Count + sa.flyingDrones.Count)//if too many drones are in simulation, we need to remove some.
-        //{
-        //    int dronesToRemove = droneInstantiator._backgroundDrones.Count + sa.flyingDrones.Count - count;
-        //    if (droneInstantiator._backgroundDrones.Count > 0)
-        //    {
-        //        List<GameObject> backgroundDronesCopy = new List<GameObject>(droneInstantiator._backgroundDrones);
-        //        for (int i = 0; i < droneInstantiator._backgroundDrones.Count + sa.flyingDrones.Count - count; i++)
-        //        {
-        //            var droneToDestroy = droneInstantiator._backgroundDrones[i];
-        //            backgroundDronesCopy.Remove(droneToDestroy); 
-        //            droneToDestroy.Destroy();
-        //            dronesToRemove--;
-        //            if (backgroundDronesCopy.Count == 0) break;
-        //        }
-        //        droneInstantiator._backgroundDrones = backgroundDronesCopy;
-        //        if ( dronesToRemove > 0 )
-        //        {
-        //            List<GameObject> flyingDronesCopy = new List<GameObject>(sa.flyingDrones);
-        //            for ( int i = 0; i < dronesToRemove; i++ )
-        //            {
-        //                var droneToHide = sa.flyingDrones[i];
-        //                hiddenDrones.Add(droneToHide);
-        //                droneToHide.GetComponent<DroneBase>().HideMesh();
-        //                flyingDronesCopy.Remove(droneToHide);
-        //                if (flyingDronesCopy.Count == 0) break;
-        //            }
-        //            sa.flyingDrones = flyingDronesCopy;
-        //        }
-        //    }
-        //}
-        //else if ( count == droneInstantiator._backgroundDrones.Count + sa.flyingDrones.Count )//no reason to change anything.
-        //{
-        //    return;
-        //}
-        //else//we should add some
-        //{
-        //    int dronesToAdd = count - (droneInstantiator._backgroundDrones.Count + sa.flyingDrones.Count);
-        //    if ( hiddenDrones.Count > 0 )
-        //    {
-        //        List<GameObject> hiddenDronesCopy = new List<GameObject>(hiddenDrones);
-        //        for ( int i = 0; i < hiddenDrones.Count; i++ )
-        //        {
-        //            var dronesToShow = hiddenDrones[i];
-        //            var droneState = dronesToShow.GetComponent<DroneBase>();
-        //            if (droneState.state != "idle")
-        //            {
-        //                sa.flyingDrones.Add(dronesToShow);
-        //                dronesToAdd--;
-        //                if (dronesToAdd == 0) break;
-        //                droneState.ShowMesh();
-        //                hiddenDronesCopy.Remove(dronesToShow);
-        //            }
-        //        }
-        //    }
-        //    for ( int i = 0; i < dronesToAdd; i++)
-        //    {
-        //        droneInstantiator.AddBackgroundDrone(sceneManager, scaleMultiplier, lowerElevationBound, upperElevationBound);
-        //    }
-        //}
-
     }
 
     /// <summary>
@@ -866,22 +627,6 @@ public class VehicleControlSystem : MonoBehaviour
         _networkUpdateFlag = true;
         _framesSinceNetworkUpdateFlag = 0;
     }
-
-    ///// <summary>
-    ///// Resets the drones, etc after any kind of update
-    ///// </summary>
-    //public void ResetSimulation()
-    //{
-    //    droneInstantiator.ResetDrones();
-    //    RebuildNetwork();
-    //    droneInstantiator.InstantiateDrones(sceneManager, scaleMultiplier, _canvas);
-    //    if (playing)
-    //    {
-    //        //this shouldn't logically happen, but just in case
-    //        playing = false;
-    //        PlayPause(false);
-    //    }
-    //}
 
     /// <summary>
     /// Generates data structure for network
@@ -1006,11 +751,6 @@ public class VehicleControlSystem : MonoBehaviour
         while (iter <= maxIter && head < visited.Count && Physics.Raycast(visited[head], destination - visited[head], Vector3.Distance(visited[head], destination), layerMask) && head <= tail)
         {
             var h = Physics.RaycastAll(visited[head], destination - visited[head], Vector3.Distance(visited[head], destination), layerMask);
-            //if (h == null || h.Length == 0)
-            //{
-            //    iter++;
-            //    continue;
-            //}
             RaycastHit currentHitObject = GetClosestHit(visited[head], h);
             Vector3 lastHit = currentHitObject.point;
             for (int i = angleIncrement; i <= 85; i += angleIncrement)
@@ -1074,7 +814,6 @@ public class VehicleControlSystem : MonoBehaviour
         }
         else // cannot find a path - just fly straight
         {
-            //path.Add(origin);
             path.Add(destination);
         }
 
@@ -1091,7 +830,6 @@ public class VehicleControlSystem : MonoBehaviour
             result.Add(visited[pointer]);
             pointer = from[pointer];
         } while (pointer >= 0 && from[pointer] != -1);
-        //if (pointer != -1) result.Add(visited[pointer]);
         result.Reverse();
         return result;
     }
@@ -1197,31 +935,6 @@ public class VehicleControlSystem : MonoBehaviour
         else if (congestionLevel == 0 && sa.congestedCorridors.Contains(c)) sa.congestedCorridors.Remove(c);
 
     }
-
-
-
-    ///// <summary>
-    ///// Gets number of parking spots in current scene.
-    ///// </summary>
-    //public int GetParkingCapacity()
-    //{
-    //    int parking_capacity = 0;
-    //    foreach (var kvp in sceneManager.ParkingStructures)
-    //    {
-    //        parking_capacity += kvp.Value.ParkingStructureSpecs.ParkingSpots.Count;
-    //    }
-    //    return parking_capacity;
-    //}
-
-    //public int GetParkingCapacity(string type)
-    //{
-    //    int parking_capacity = 0;
-    //    foreach (var kvp in sceneManager.ParkingStructures)
-    //    {
-    //        if (kvp.Value.ParkingStructureSpecs.Type.Contains(type)) parking_capacity += kvp.Value.ParkingStructureSpecs.ParkingSpots.Count;
-    //    }
-    //    return parking_capacity;
-    //}
     #endregion
 }
 

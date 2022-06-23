@@ -34,34 +34,19 @@ namespace Assets.Scripts.UI
         private float _minCamSize = 1000.0f;
         private float _maxCamSize = 256000.0f;
         private float _biggestZoom = 15;
-        //private float _smallestZoom = 7;
         private bool _atBuildingZoomLevel = false;//activated whenever we get to a zoom level that we could possibly display buildings at without enormous processing cost.
         public bool AllowBuildings { get; private set; } = false;//true if user toggle for buildings is in "on" position. Only if true can we show buildings.
         private VectorSubLayerProperties _buildingsLayer = null;
 
         private DroneInfoPanel _droneInfoPanel;
 
-        //zoom levels:
-        //500
-        //1000
-        //2000
-        //4000
-        //8000
-        //16000
-        //32000
-        //64000
-        //128000
-        //256000
-
         private float GetZoomLevel(float viewSize)
         {
             float z = CurrentZoom;
-            if (/*viewSize > _minCamSize &&*/ viewSize < _maxCamSize)
+            if (viewSize < _maxCamSize)
             {
                 float m = viewSize / _minCamSize;//how many times bigger than min?
                 z = _biggestZoom - (float)Math.Log(m, 2); //how many powers of two higher?
-
-                //z = _biggestZoom - (viewSize / _maxCamSize) * (_biggestZoom - _smallestZoom);
             }
 
             return z;
@@ -69,14 +54,7 @@ namespace Assets.Scripts.UI
 
         protected override void Init()
         {
-            //RangeTileProviderOptions range = new RangeTileProviderOptions();
-            //range.east = EnvironSettings.REGION_TILE_EXTENTS;
-            //range.west = EnvironSettings.REGION_TILE_EXTENTS;
-            //range.north = EnvironSettings.REGION_TILE_EXTENTS;
-            //range.south = EnvironSettings.REGION_TILE_EXTENTS;
-            //_abstractMap.SetExtentOptions(range);
             _abstractMap.Initialize(EnvironManager.Instance.Environ.CenterLatLong, EnvironSettings.REGION_ZOOM_LEVEL);
-            //_largeScaleMap.Initialize(EnvironManager.Instance.Environ.CenterLatLong, EnvironSettings.AIRSPACE_ZOOM_LEVEL);
 
             _droneInfoPanel = FindObjectOfType<DroneInfoPanel>(true);
             if (_droneInfoPanel == null)
@@ -85,13 +63,6 @@ namespace Assets.Scripts.UI
                 return;
             }
             _droneInfoPanel.SetActive(false);
-
-            //if (EnvironManager.Instance.LastCamXZS != null)
-            //{
-            //    var p = EnvironManager.Instance.LastCamXZS;
-            //    _mainCamera.transform.position = new Vector3(p[0], _mainCamera.transform.position.y, p[1]);
-            //    _mainCamera.orthographicSize = p[2];
-            //}
 
             _cameraAdj = FindObjectOfType<CameraAdjustment>(true);
             if (_cameraAdj == null)
@@ -103,7 +74,6 @@ namespace Assets.Scripts.UI
             CurrentZoom = GetZoomLevel(_cameraAdj._camera.transform.position.y);
             Reload(CurrentZoom);
             _cameraAdj.OnZoom += OnZoomAction;
-            //_cameraAdj.OnStartPan += OnStartPanAction;
             _cameraAdj.OnEndPan += OnSetViewAction;
             _cameraAdj.OnSetView += OnSetViewAction;
             _cameraAdj.OnSetViewHome += OnZoomAction;
@@ -152,7 +122,6 @@ namespace Assets.Scripts.UI
 
         protected override void OnDestroyDerived()
         {
-            //_abstractMap.OnTileFinished -= PullAirspaceOffMapbox;
             foreach (var i in _droneIcons)
             {
                 if (i != null)
@@ -166,11 +135,6 @@ namespace Assets.Scripts.UI
 
         private void OnSetViewAction(object o, System.EventArgs args)
         {
-            //if (_temporarySuppressBuildings)
-            //{
-            //    _temporarySuppressBuildings = false;
-            //    SetAllowBuildings(true);
-            //}
             var z = GetZoomLevel(_cameraAdj._camera.transform.position.y);
             Reload(z);
         }
@@ -181,27 +145,6 @@ namespace Assets.Scripts.UI
             var z = GetZoomLevel(cA._camera.transform.position.y);
             Reload(z);
         }
-
-        //private void OnStartPanAction(object o, System.EventArgs args)
-        //{
-        //    //if (_allowBuildings)
-        //    //{
-        //    //    _temporarySuppressBuildings = true;
-        //    //    SetAllowBuildings(false);
-        //    //}
-        //}
-
-        //private void OnEndPanAction(object o, System.EventArgs args)
-        //{
-        //    //if (_temporarySuppressBuildings)
-        //    //{
-        //    //    _temporarySuppressBuildings = false;
-        //    //    SetAllowBuildings(true);
-        //    //}
-        //    var z = GetZoomLevel(_cameraAdj._camera.transform.position.y);
-        //    Reload(z);
-        //}
-
         private void SetAllowBuildings(bool toggle)
         {
             AllowBuildings = toggle;
@@ -233,7 +176,6 @@ namespace Assets.Scripts.UI
         IEnumerator ReloadAfterDelay(float zoom)
         {
             yield return _wait;
-            //_camera.transform.position = _cameraStartPos;
             if (zoom >= _biggestZoom && !_atBuildingZoomLevel)
             {
                 if (AllowBuildings)
@@ -264,10 +206,6 @@ namespace Assets.Scripts.UI
 
         protected override void AddElement(IAddElementArgs args)
         {
-            //if (args is AddCityArgs)
-            //{
-            //    AddNewCity(args as AddCityArgs);
-            //}
             if (args is AddDronePortArgs)
             {
                 AddNewDronePort(args as AddDronePortArgs);
@@ -302,16 +240,6 @@ namespace Assets.Scripts.UI
 
         protected override void InstantiateObjects()
         {
-
-            //foreach (var kvp in EnvironManager.Instance.GetCities())
-            //{
-            //    var c = kvp.Value;
-            //    if (c != null)
-            //    {
-            //        InstantiateCity(kvp.Key, c.CityStats, true);
-            //    }
-            //}
-
             InstantiateSimulationObjects();
         }
 
@@ -426,49 +354,6 @@ namespace Assets.Scripts.UI
                 {
                     RestrictionZoneUpdate(args);
                 }
-                //if (_workingCopy is SceneCity)
-                //{
-                //    var sC = _workingCopy as SceneCity;
-                //    try
-                //    {
-                //        switch (args.Update.ElementPropertyType)
-                //        {
-                //            case ElementPropertyType.Name:
-                //                {
-                //                    sC.CitySpecs.Name = (args.Update as ModifyStringPropertyArg).Value;
-                //                    break;
-                //                }
-                //            case ElementPropertyType.EastExt:
-                //                {
-                //                    sC.CitySpecs.EastExt = (args.Update as ModifyIntPropertyArg).Value;
-                //                    break;
-                //                }
-                //            case ElementPropertyType.WestExt:
-                //                {
-                //                    sC.CitySpecs.WestExt = (args.Update as ModifyIntPropertyArg).Value;
-                //                    break;
-                //                }
-                //            case ElementPropertyType.NorthExt:
-                //                {
-                //                    sC.CitySpecs.NorthExt = (args.Update as ModifyIntPropertyArg).Value;
-                //                    break;
-                //                }
-                //            case ElementPropertyType.SouthExt:
-                //                {
-                //                    sC.CitySpecs.SouthExt = (args.Update as ModifyIntPropertyArg).Value;
-                //                    break;
-                //                }
-                //        }
-
-                //    }
-                //    catch
-                //    {
-                //        Debug.LogError("Casting error in working city modification");
-                //        return;
-                //    }
-                //}
-
-                //_workingCopy.UpdateGameObject();
             }
 
         }

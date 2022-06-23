@@ -28,11 +28,6 @@ namespace Assets.Scripts.Environment
 
         private void Awake()
         {
-            //if (IsSelectable)
-            //{
-            //    MakeSelectable();
-            //}
-
             if (_renderers == null)//some scene elements may define this before "Start" is called.
             {
                 _renderers = GetComponentsInChildren<MeshRenderer>(true);

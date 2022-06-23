@@ -113,7 +113,6 @@ public class LandingPoint : MonoBehaviour
                 {
                     GameObject vehicle = vcs.from;
                     vehicle.GetComponent<DroneBase>().State = "standby";
-                    //vehicle.GetComponent<Vehicle>().currentPoint.GetComponent<Parking>().Park( vehicle );
                     vehicle.GetComponent<DroneBase>().ToPark = false;
                     state = "idle";
                 }
