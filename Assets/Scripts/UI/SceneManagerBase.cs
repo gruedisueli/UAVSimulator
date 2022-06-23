@@ -101,8 +101,6 @@ namespace Assets.Scripts.UI
         #endregion
 
         #region PROPERTIES
-
-        public Dictionary<string, SceneCity> Cities { get; protected set; } = new Dictionary<string, SceneCity>();
         public Dictionary<string, SceneDronePort> DronePorts { get; protected set; }
         public Dictionary<string, SceneParkingStructure> ParkingStructures { get; protected set; }
         public Dictionary<string, SceneRestrictionZone> RestrictionZones { get; protected set; }
@@ -283,10 +281,6 @@ namespace Assets.Scripts.UI
             {
                 r.Value.OnSceneElementSelected -= SelectElement;
             }
-            foreach (var c in Cities.Values)
-            {
-                c.OnSceneElementSelected -= SelectElement;
-            }
             _playPause.OnPlayPause -= PlayPause;
             if (_currentInfoPanel != null)
             {
@@ -309,12 +303,6 @@ namespace Assets.Scripts.UI
 
                 //deselect tool
                 _currentInfoPanel.DeselectTool.OnDeselect -= DeselectElement;
-                //scene change
-                if (_currentInfoPanel is CityInfoPanel)
-                {
-                    var cP = _currentInfoPanel as CityInfoPanel;
-                    cP.GoToCity.OnSceneChange -= ChangeScene;
-                }
             }
 
             OnDestroyDerived();
@@ -397,11 +385,6 @@ namespace Assets.Scripts.UI
         {
             switch (args.SceneType)
             {
-                case SceneType.City:
-                    {
-                        GoToCity();
-                        break;
-                    }
                 case SceneType.FindLoc:
                     {
                         GoToFindLoc();
@@ -446,15 +429,6 @@ namespace Assets.Scripts.UI
             _savePrompt.Quit();
         }
 
-        protected void GoToCity()
-        {
-            if (_selectedElement is SceneCity)
-            {
-                EnvironManager.Instance.SetActiveCity(_selectedElement.Guid);
-                StartCoroutine(LoadAsyncOperation(UISettings.CITYVIEW_SCENEPATH));
-            }
-        }
-
         protected void GoToFindLoc()
         {
             StartCoroutine(LoadAsyncOperation(UISettings.FINDLOCATION_SCENEPATH));
@@ -494,11 +468,7 @@ namespace Assets.Scripts.UI
 
                 //instantiate and turn on info panel
                 GameObject clone = null;
-                if (_selectedElement is SceneCity)
-                {
-                    clone = Instantiate(EnvironManager.Instance.CityInfoPanelPrefab);
-                }
-                else if (_selectedElement is SceneDronePort)
+                if (_selectedElement is SceneDronePort)
                 {
                     clone = Instantiate(EnvironManager.Instance.DronePortInfoPanelPrefab);
                 }
@@ -565,11 +535,6 @@ namespace Assets.Scripts.UI
             _currentInfoPanel.RemoveTool.OnSelectedElementRemoved += RemoveSelectedElement;
             _currentInfoPanel.MoveTool.OnClicked += MoveSelectedElement;
             _currentInfoPanel.DeselectTool.OnDeselect += DeselectElement;
-            if (_currentInfoPanel is CityInfoPanel)
-            {
-                var cP = _currentInfoPanel as CityInfoPanel;
-                cP.GoToCity.OnSceneChange += ChangeScene;
-            }
             return true;
         }
 
@@ -638,12 +603,6 @@ namespace Assets.Scripts.UI
                 var sRS = _selectedElement as SceneRestrictionZone;
                 var specs = sRS.RestrictionZoneSpecs.GetCopy();
                 _workingCopy = InstantiateRestrictionZone(guid, specs, false, true);
-            }
-            else if (_selectedElement is SceneCity)
-            {
-                var sC = _selectedElement as SceneCity;
-                var specs = new CityOptions(sC.CitySpecs);
-                _workingCopy = InstantiateCity(guid, specs, false);
             }
 
             _selectedElement.SetActive(false); //hide original element
@@ -1460,28 +1419,6 @@ namespace Assets.Scripts.UI
             sRZ.gameObject.transform.parent = parentTransform;
             
             return sRZ;
-        }
-
-        /// <summary>
-        /// Places a marker at a city.
-        /// </summary>
-        protected SceneCity InstantiateCity(string guid, CityOptions cityOptions, bool register)
-        {
-            var c = cityOptions;
-
-            var clone = GameObject.CreatePrimitive(PrimitiveType.Cube);
-
-            var sCity = clone.AddComponent<SceneCity>();
-            sCity.Initialize(guid, c);
-
-            sCity.OnSceneElementSelected += SelectElement;
-
-            if (register)
-            {
-                Cities.Add(guid, sCity);
-            }
-
-            return sCity;
         }
 
         #endregion

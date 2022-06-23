@@ -8,7 +8,8 @@
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProductVersion>10.0.20506</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
-    <RootNamespace></RootNamespace>
+    <RootNamespace>
+    </RootNamespace>
     <ProjectGuid>{365135D0-FE80-8477-C2D5-A30D0A9F9CDA}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
@@ -56,7 +57,6 @@
     <Compile Include="Assets\Mapbox\Core\mapbox-sdk-cs\Directions\Response\Annotation.cs" />
     <Compile Include="Assets\Scripts\Vehicle Control\CorridorDrone.cs" />
     <Compile Include="Assets\Mapbox\Core\mapbox-sdk-cs\Platform\HTTPRequestNonThreaded.cs" />
-    <Compile Include="Assets\Scripts\UI\Tools\MapboxSettingsPanel.cs" />
     <Compile Include="Assets\Mapbox\Examples\Scripts\LocationStatus.cs" />
     <Compile Include="Assets\Mapbox\Unity\MeshGeneration\Data\KdTree\NearestNeighbour.cs" />
     <Compile Include="Assets\Scripts\UI\Tools\StartModifyTool.cs" />
@@ -116,14 +116,12 @@
     <Compile Include="Assets\Mapbox\Core\mapbox-sdk-cs\Utils\JsonConverters\BboxToGeoCoordinateBoundsConverter.cs" />
     <Compile Include="Assets\Mapbox\Unity\Utilities\Console.cs" />
     <Compile Include="Assets\Mapbox\Unity\SourceLayers\ITerrainLayer.cs" />
-    <Compile Include="Assets\Scripts\Environment\SceneCity.cs" />
     <Compile Include="Assets\Mapbox\Unity\Utilities\TelemetryConfigurationButton.cs" />
     <Compile Include="Assets\Mapbox\Core\mapbox-sdk-cs\Map\UnwrappedTileId.cs" />
     <Compile Include="Assets\Scripts\UI\Tools\RestrictionInfoPanel.cs" />
     <Compile Include="Assets\Mapbox\Unity\Styling\ScriptablePalette.cs" />
     <Compile Include="Assets\Mapbox\Examples\5_Playground\Scripts\ReverseGeocoderExample.cs" />
     <Compile Include="Assets\Scripts\UI\HelpItem.cs" />
-    <Compile Include="Assets\Scripts\Environment\CityOptions.cs" />
     <Compile Include="Assets\Mapbox\Unity\Map\Interfaces\IUnifiedMap.cs" />
     <Compile Include="Assets\Scripts\Environment\DronePortRect.cs" />
     <Compile Include="Assets\Mapbox\Unity\MeshGeneration\Modifiers\GameObjectModifiers\MapboxStylesColorModifier.cs" />
@@ -134,7 +132,6 @@
     <Compile Include="Assets\Mapbox\Unity\Telemetry\TelemetryAndroid.cs" />
     <Compile Include="Assets\Mapbox\Unity\DataContainers\MapExtentOptions.cs" />
     <Compile Include="Assets\Mapbox\Core\mapbox-sdk-cs\Directions\Response\Leg.cs" />
-    <Compile Include="Assets\Scripts\Environment\AirspaceTile.cs" />
     <Compile Include="Assets\Mapbox\Unity\MeshGeneration\Factories\MapImageFactory.cs" />
     <Compile Include="Assets\Mapbox\Unity\Location\AngleSmoothing\AngleSmoothingEMA.cs" />
     <Compile Include="Assets\Scripts\UI\GUIUtils.cs" />
@@ -160,7 +157,6 @@
     <Compile Include="Assets\Mapbox\Unity\Utilities\SingletonScriptableObject.cs" />
     <Compile Include="Assets\Mapbox\Examples\1_DataExplorer\Scripts\TextMeshOutline.cs" />
     <Compile Include="Assets\Scripts\UI\Tools\PanelBase.cs" />
-    <Compile Include="Assets\Scripts\UI\Tags\CityMarker.cs" />
     <Compile Include="Assets\Mapbox\Examples\8_VoxelMap\Scripts\VoxelTile.cs" />
     <Compile Include="Assets\Mapbox\Unity\DataContainers\LocationPrefabCategoryOptions.cs" />
     <Compile Include="Assets\Scripts\UI\Tools\AddTool.cs" />
@@ -218,7 +214,6 @@
     <Compile Include="Assets\Mapbox\Unity\MeshGeneration\Modifiers\MeshModifiers\LoftModifier.cs" />
     <Compile Include="Assets\Scripts\UI\Tools\SceneIconBase.cs" />
     <Compile Include="Assets\Scripts\UI\Tools\SimulationSettingsMainPanel.cs" />
-    <Compile Include="Assets\Scripts\UI\Tools\CityInfoPanel.cs" />
     <Compile Include="Assets\Scripts\UI\Tools\ZoomSelected.cs" />
     <Compile Include="Assets\Scripts\Environment\ParkingStructureAssetPack.cs" />
     <Compile Include="Assets\Scripts\SimulatorCore\AAOControl.cs" />
@@ -236,7 +231,6 @@
     <Compile Include="Assets\Scripts\Environment\DronePortAssetPack.cs" />
     <Compile Include="Assets\Mapbox\Core\mapbox-sdk-cs\Map\TileErrorEventArgs.cs" />
     <Compile Include="Assets\Mapbox\Examples\Scripts\TrafficUvAnimator.cs" />
-    <Compile Include="Assets\Scripts\MapboxCustom\FOA_RangeAroundTransformTileProviderOptions.cs" />
     <Compile Include="Assets\Mapbox\Core\mapbox-sdk-cs\Platform\TileJSON\TileJSONReponse.cs" />
     <Compile Include="Assets\Mapbox\Unity\SourceLayers\MapboxDefaultElevation.cs" />
     <Compile Include="Assets\Mapbox\Core\mapbox-sdk-cs\Platform\IAsyncRequest.cs" />
@@ -253,7 +247,6 @@
     <Compile Include="Assets\Mapbox\Core\mapbox-sdk-cs\MapMatching\MapMatchingParameters.cs" />
     <Compile Include="Assets\Mapbox\Unity\MeshGeneration\Modifiers\MeshModifiers\ReplaceFeatureCollectionModifier.cs" />
     <Compile Include="Assets\Mapbox\Unity\Location\AngleSmoothing\IAngleSmoothing.cs" />
-    <Compile Include="Assets\Scripts\Environment\AirspaceFeature.cs" />
     <Compile Include="Assets\Scripts\UI\EventArgs\AddParkingStructArgs.cs" />
     <Compile Include="Assets\Mapbox\Core\mapbox-sdk-cs\Platform\IResource.cs" />
     <Compile Include="Assets\Mapbox\Core\mapbox-sdk-cs\Directions\RoutingProfile.cs" />
@@ -310,7 +303,6 @@
     <Compile Include="Assets\Mapbox\Unity\MeshGeneration\Factories\TerrainFactoryBase.cs" />
     <Compile Include="Assets\Mapbox\Unity\DataContainers\MapScalingOptions.cs" />
     <Compile Include="Assets\Mapbox\Unity\SourceLayers\SubLayerLightStyle.cs" />
-    <Compile Include="Assets\Scripts\Environment\City.cs" />
     <Compile Include="Assets\Mapbox\Core\mapbox-sdk-cs\Platform\Cache\ICache.cs" />
     <Compile Include="Assets\Mapbox\Unity\LayerProperties\ImageryLayerProperties.cs" />
     <Compile Include="Assets\Mapbox\Unity\Map\TileProviders\QuadTreeMapVisualizer.cs" />
@@ -344,7 +336,6 @@
     <Compile Include="Assets\Mapbox\Unity\Location\UnityLocationWrappers\MapboxLocationServiceUnityWrapper.cs" />
     <Compile Include="Assets\Mapbox\Unity\MeshGeneration\Data\KdTree\DistanceFunctions.cs" />
     <Compile Include="Assets\Mapbox\Unity\SourceLayers\ImageryLayer.cs" />
-    <Compile Include="Assets\Scripts\UI\EventArgs\AddCityArgs.cs" />
     <Compile Include="Assets\Scripts\UI\HelpManager.cs" />
     <Compile Include="Assets\Scripts\Classes\DataStructure.cs" />
     <Compile Include="Assets\Mapbox\Core\mapbox-sdk-cs\MapMatching\Tracepoint.cs" />
@@ -399,7 +390,6 @@
     <Compile Include="Assets\Mapbox\Core\mapbox-sdk-cs\Utils\CircularBuffer.cs" />
     <Compile Include="Assets\Mapbox\Unity\MeshGeneration\Modifiers\MeshModifier.cs" />
     <Compile Include="Assets\Scripts\UI\EventArgs\ModifyFloatPropertyArg.cs" />
-    <Compile Include="Assets\Scripts\MapboxCustom\FOA_RangeAroundTransformTileProvider.cs" />
     <Compile Include="Assets\Scripts\UI\Tools\SavePrompt.cs" />
     <Compile Include="Assets\Mapbox\Unity\SourceLayers\AbstractLayer.cs" />
     <Compile Include="Assets\Scripts\UI\Tools\GeneralSimulationSettingsPanel.cs" />
@@ -429,7 +419,6 @@
     <Compile Include="Assets\Mapbox\Core\mapbox-sdk-cs\Platform\Resource.cs" />
     <Compile Include="Assets\Scripts\Environment\DronePortCustom.cs" />
     <Compile Include="Assets\Mapbox\Examples\Scripts\PositionWithLocationProvider.cs" />
-    <Compile Include="Assets\Scripts\MapboxCustom\FOA_PolygonMesh.cs" />
     <Compile Include="Assets\Mapbox\Examples\5_Playground\Scripts\RasterTileExample.cs" />
     <Compile Include="Assets\Scripts\IntRange.cs" />
     <Compile Include="Assets\Mapbox\Unity\MeshGeneration\Modifiers\GameObjectModifiers\TextureModifier.cs" />
@@ -535,7 +524,6 @@
     <Compile Include="Assets\Scripts\UI\EventArgs\IModifyElementArgs.cs" />
     <Compile Include="Assets\Mapbox\Examples\8_VoxelMap\Scripts\TextureScaler.cs" />
     <Compile Include="Assets\Mapbox\Unity\DataContainers\TileJsonData.cs" />
-    <Compile Include="Assets\Scripts\MapboxCustom\FOA_MapboxSettings.cs" />
     <Compile Include="Assets\Scripts\UI\Tools\LoadPrompt.cs" />
     <Compile Include="Assets\Mapbox\Core\mapbox-sdk-cs\Utils\IObserver.cs" />
     <Compile Include="Assets\Mapbox\Unity\Utilities\GeocodeAttribute.cs" />

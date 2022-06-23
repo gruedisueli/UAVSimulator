@@ -47,20 +47,6 @@ namespace Assets.Scripts
         }
 
         /// <summary>
-        /// Converts city options into city extents in world coords
-        /// </summary>
-        public static float[][] GetCityExtents(CityOptions c)
-        {
-            float rTHalfSide = GetRegionTileSideLength() / 2;
-            float cTSide = GetCityTileSideLength();
-            Vector3 minCorner = new Vector3(c.RegionTileWorldCenter.x - rTHalfSide, 0, c.RegionTileWorldCenter.z - rTHalfSide);
-
-            var tile = GetLocalCityTileCoords(c.WorldPos, minCorner, cTSide);
-
-            return TileCoordsToWorldExtents(tile, minCorner, cTSide, c.EastExt, c.WestExt, c.NorthExt, c.SouthExt);
-        }
-
-        /// <summary>
         /// Gets 2d extents of region view. { {minX, maxX}, {minZ, maxZ} }
         /// </summary>
         /// <returns></returns>

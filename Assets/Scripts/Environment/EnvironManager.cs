@@ -14,7 +14,6 @@ using Mapbox.Unity.MeshGeneration.Data;
 using Newtonsoft.Json;
 
 using Assets.Scripts.Serialization;
-using Assets.Scripts.MapboxCustom;
 using Assets.Scripts.UI.Tools;
 
 namespace Assets.Scripts.Environment
@@ -72,46 +71,12 @@ namespace Assets.Scripts.Environment
         public GameObject RestrictionInfoPanelCylStackedPrefab { get; private set; } = null;
         public GameObject AddButtonPrefab { get; private set; } = null;
         public GameObject DroneIconPrefab { get; private set; } = null;
-        public FOA_MapboxSettings MapboxSettings { get; private set; } = null;
         public GameObject ProgressBarPrefab { get; private set; } = null;
         public GameObject ParkingSpritePrefab { get; private set; } = null;
         public GameObject RestrictionSpritePrefab { get; private set; } = null;
         public GameObject PortSpritePrefab { get; private set; } = null;
         public VehicleControlSystem VCS { get; set; } = null;
         public MouseHint CanvasMouseHint { get; set; } = null;
-
-        /// <summary>
-        /// Tries to download from url. Null on failure.
-        /// </summary>
-        private byte[] TryDownload(string url)
-        {
-            byte[] b = null;
-
-            try
-            {
-                HttpWebRequest request = (HttpWebRequest)WebRequest.Create(url);
-                request.AutomaticDecompression = DecompressionMethods.GZip;
-
-                using (HttpWebResponse response = (HttpWebResponse)request.GetResponse())
-                {
-                    using (Stream str = response.GetResponseStream())
-                    {
-                        using (var memoryStream = new MemoryStream())
-                        {
-                            str.CopyTo(memoryStream);
-                            b = memoryStream.ToArray();
-                        }
-                    }
-                }
-
-            }
-            catch (Exception e)
-            {
-                Debug.Log(e.Message);
-            }
-
-            return b;
-        }
 
         /// <summary>
         /// Adds new drone port to environment. False on failure.
@@ -378,7 +343,6 @@ namespace Assets.Scripts.Environment
             ReadInfoPanelPrefabs();
             ReadButtonPrefabs();
             ReadIconPrefabs();
-            ReadMapboxSettings();
             ReadProgressBarPrefabs();
             if (!Directory.Exists(SerializationSettings.SAVE_PATH))
             {
@@ -637,21 +601,6 @@ namespace Assets.Scripts.Environment
                 }
             }
             RestrictionSpritePrefab = Resources.Load<GameObject>("GUI/RestrictionIcon");
-        }
-
-        /// <summary>
-        /// Reads Mapbox settings from assets.
-        /// </summary>
-        private void ReadMapboxSettings()
-        {
-            string rPath = "Mapbox/MapboxConfiguration";
-            var settings = Resources.Load<TextAsset>(rPath);
-            if (settings == null)
-            {
-                Debug.LogError("Could not load Mapbox settings file");
-                return;
-            }
-            MapboxSettings = DeserializeJsonString<FOA_MapboxSettings>(settings.text);
         }
 
         /// <summary>
