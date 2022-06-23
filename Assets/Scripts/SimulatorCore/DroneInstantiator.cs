@@ -122,7 +122,7 @@ namespace Assets.Scripts.SimulatorCore
         }
 
         /// <summary>
-        /// Coroutine for instantiation of background drones. @Eunu please comment on when we use this versus "AddBackgroundDrone()"
+        /// Coroutine for instantiation of background drones.
         /// </summary>
         private IEnumerator InstantiateBackgroundDronesCoroutine(SceneManagerBase sceneManager, int backgroundDroneCount, float scale, float lowerElevationBound, float upperElevationBound, Canvas _canvas)
         {

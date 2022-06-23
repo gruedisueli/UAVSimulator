@@ -109,7 +109,7 @@ namespace Assets.Scripts.DataStructure
     }
 
     /// <summary>
-    /// The network of all the corridors in the simulation. @Eunu comment.
+    /// The network of all the corridors in the simulation.
     /// </summary>
     [Serializable]
     public class Network

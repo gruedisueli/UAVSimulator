@@ -19,12 +19,12 @@ namespace Assets.Scripts.Environment
         public abstract Vector3 Position { get; set; }
         public abstract Vector3 Rotation { get; set; }
         public abstract Vector3 Scale { get; set; }
-        public abstract Vector3 StandbyPosition { get; set; }//@Eunu comment
-        public abstract Vector3 LandingQueueHead { get; set; }//@Eunu comment
-        public abstract Vector3 LandingQueueDirection { get; set; }//@Eunu comment
-        public abstract Vector3 LandingPoint { get; set; }//@Eunu comment
+        public abstract Vector3 StandbyPosition { get; set; }
+        public abstract Vector3 LandingQueueHead { get; set; }
+        public abstract Vector3 LandingQueueDirection { get; set; }
+        public abstract Vector3 LandingPoint { get; set; }
         public abstract float MaximumVehicleSize { get; set; }
-        public abstract bool IsMountable { get; set; }//@Eunu comment
+        public abstract bool IsMountable { get; set; }
         public abstract bool IsOnTheGround { get; set; }
         public abstract bool IsScalable { get; set; }
         public abstract DronePortBase GetCopy();

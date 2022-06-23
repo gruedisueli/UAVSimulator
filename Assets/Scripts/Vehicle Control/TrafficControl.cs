@@ -10,7 +10,7 @@ using Assets.Scripts.SimulatorCore;
 public abstract class TrafficControl : MonoBehaviour
 {
     protected bool busy { get; set; } // = {idle, busy}
-    protected Queue<GameObject> queue { get; set; }//@Eunu comment. how do we manage take-off and landing queues? Aren't they different? Or does everything just get put into one queue since the tower can only do one thing at a time?
+    protected Queue<GameObject> queue { get; set; }
     public int queueLength
     {
         get
@@ -18,8 +18,8 @@ public abstract class TrafficControl : MonoBehaviour
             return queue.Count;
         }
     }
-    protected GameObject currentVehicle { get; set; }//vehicle that is currently executing takeoff/landing? @Eunu comment
-    protected DroneBase vehicleState { get; set; }//@Eunu comment
+    protected GameObject currentVehicle { get; set; }
+    protected DroneBase vehicleState { get; set; }
     private SimulationAnalyzer _simulationAnalyzer;
     protected DroneInstantiator _droneInstantiator;
     protected VehicleControlSystem _vcs;
@@ -122,9 +122,6 @@ public abstract class TrafficControl : MonoBehaviour
         
     }
 
-    /// <summary>
-    /// @Eunu comment
-    /// </summary>
     public void FreeUp()
     {
         currentVehicle = null;
@@ -132,9 +129,6 @@ public abstract class TrafficControl : MonoBehaviour
         busy = false;
     }
 
-    /// <summary>
-    /// Adds a drone to the queue.
-    /// </summary>
     public void RegisterInQueue(GameObject drone)
     {
         queue.Enqueue(drone);
@@ -156,9 +150,6 @@ public abstract class TrafficControl : MonoBehaviour
         currentVehicle.SendMessage("TakeoffGranted");
     }
 
-    /// <summary>
-    /// @Eunu comment
-    /// </summary>
     protected Queue<Vector3> toQueue(List<Vector3> points)
     {
         Queue<Vector3> result = new Queue<Vector3>();

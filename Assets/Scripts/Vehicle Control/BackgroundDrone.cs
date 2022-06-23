@@ -14,8 +14,6 @@ public class BackgroundDrone : DroneBase
     /// </summary>
     protected override void Move()
     {
-        //@Eunu comment on what's happening in here.
-
         CurrentSpeed = DroneSettingsReference.MaxSpeed_MPS * EnvironManager.Instance.Environ.SimSettings.SimulationSpeedMultiplier;
         if (Vector3.Distance(TargetPosition, transform.position) < ArrivalThreshold)
         {

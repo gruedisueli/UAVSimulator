@@ -10,11 +10,10 @@ using UnityEngine.PlayerLoop;
 namespace Assets.Scripts.SimulatorCore
 {
     /// <summary>
-    /// Provides analysis of the entire simulation. @Eunu, correct?
+    /// Provides analysis of the entire simulation.
     /// </summary>
     public class SimulationAnalyzer : MonoBehaviour
     {
-        //@Eunu please review my comments on all fields:
         public float averageSpeed; //{ get; set; }
         public float throughput; //{ get; set; }
         //public float grossEnergyConsumption; //{ get; set; }

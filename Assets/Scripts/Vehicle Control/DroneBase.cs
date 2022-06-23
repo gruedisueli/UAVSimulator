@@ -160,9 +160,6 @@ public abstract class DroneBase : MonoBehaviour
         else _trailRenderer.enabled = false;
     }
 
-    /// <summary>
-    /// @Eunu. comment. Are these "waypoints" different from takeoff/landing waypoints?
-    /// </summary>
     protected virtual Queue<Vector3> GetWayPointsToNextDestination()
     {
         foreach(Corridor c in _vcs.DroneNetwork.outEdges[CurrentCommunicationPoint])
@@ -274,7 +271,7 @@ public abstract class DroneBase : MonoBehaviour
     }
 
     /// <summary>
-    /// Changes state machine to a pending state, where drone is waiting for further instructions. @Eunu correct?
+    /// Changes state machine to a pending state, where drone is waiting for further instructions.
     /// </summary>
     protected virtual void Pending()
     {

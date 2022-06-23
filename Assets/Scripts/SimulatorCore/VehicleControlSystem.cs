@@ -170,9 +170,9 @@ public class VehicleControlSystem : MonoBehaviour
     // Update is called once per frames
     void Update()
     {
-        //var debug = sceneManager.RestrictionZones.Values.ElementAt<SceneRestrictionZone>(0).GetComponent<SelectableGameObject>();//@EUNU comment/remove?
+        //var debug = sceneManager.RestrictionZones.Values.ElementAt<SceneRestrictionZone>(0).GetComponent<SelectableGameObject>();
 
-        #region Basic Initialization Stuff. //@EUNU comment why we don't do this in setup? Seems like something that only happens once?
+        #region Basic Initialization Stuff.
 
         //if (!TEMPORARY_IsRegionView && !buildingNoiseAttachmentStarted) StartCoroutine(AttachBuildingNoiseComponent());
 
@@ -352,7 +352,7 @@ public class VehicleControlSystem : MonoBehaviour
     //}
 
     /// <summary>
-    /// Generates random calls for drone actions (only low-altitude and corridor drones, not background). //@EUNU is this corret?
+    /// Generates random calls for drone actions (only low-altitude and corridor drones, not background).
     /// </summary>
     public void GenerateRandomCalls()
     {
