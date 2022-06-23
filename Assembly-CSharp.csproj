@@ -8,8 +8,7 @@
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProductVersion>10.0.20506</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
-    <RootNamespace>
-    </RootNamespace>
+    <RootNamespace></RootNamespace>
     <ProjectGuid>{365135D0-FE80-8477-C2D5-A30D0A9F9CDA}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
@@ -235,7 +234,6 @@
     <Compile Include="Assets\Mapbox\Unity\SourceLayers\MapboxDefaultElevation.cs" />
     <Compile Include="Assets\Mapbox\Core\mapbox-sdk-cs\Platform\IAsyncRequest.cs" />
     <Compile Include="Assets\Mapbox\Unity\DataContainers\UnifiedMapOptions.cs" />
-    <Compile Include="Assets\Scripts\UI\Tools\FileWindow.cs" />
     <Compile Include="Assets\Mapbox\Unity\Utilities\VectorEntity.cs" />
     <Compile Include="Assets\Scripts\SimulatorCore\SimulationAnalyzer.cs" />
     <Compile Include="Assets\Mapbox\Unity\MeshGeneration\Modifiers\MeshModifiers\SmoothLineModifier.cs" />
@@ -446,13 +444,11 @@
     <Compile Include="Assets\Mapbox\Core\mapbox-sdk-cs\Utils\Compression.cs" />
     <Compile Include="Assets\Mapbox\Unity\SourceLayers\SubLayerBehaviorModifiers.cs" />
     <Compile Include="Assets\Mapbox\Unity\MeshGeneration\Data\VectorFeatureUnity.cs" />
-    <Compile Include="Assets\Scripts\UI\Tools\FileManager.cs" />
     <Compile Include="Assets\Scripts\Environment\SceneDronePort.cs" />
     <Compile Include="Assets\Mapbox\Unity\Location\AngleSmoothing\AngleSmoothingAbstractBase.cs" />
     <Compile Include="Assets\Mapbox\Core\mapbox-sdk-cs\Map\VectorTile.cs" />
     <Compile Include="Assets\Mapbox\Unity\SourceLayers\ISubLayerCoreOptions.cs" />
     <Compile Include="Assets\Scripts\UI\CameraAdjustment.cs" />
-    <Compile Include="Assets\Scripts\UI\Tools\FileItem.cs" />
     <Compile Include="Assets\Mapbox\Examples\6_ZoomableMap\Scripts\SetCameraHeight.cs" />
     <Compile Include="Assets\Mapbox\Unity\DataContainers\TileStats.cs" />
     <Compile Include="Assets\Scripts\UI\Tools\CorridorSettingsPanel.cs" />
@@ -524,7 +520,6 @@
     <Compile Include="Assets\Scripts\UI\EventArgs\IModifyElementArgs.cs" />
     <Compile Include="Assets\Mapbox\Examples\8_VoxelMap\Scripts\TextureScaler.cs" />
     <Compile Include="Assets\Mapbox\Unity\DataContainers\TileJsonData.cs" />
-    <Compile Include="Assets\Scripts\UI\Tools\LoadPrompt.cs" />
     <Compile Include="Assets\Mapbox\Core\mapbox-sdk-cs\Utils\IObserver.cs" />
     <Compile Include="Assets\Mapbox\Unity\Utilities\GeocodeAttribute.cs" />
     <Compile Include="Assets\Mapbox\Core\mapbox-sdk-cs\Platform\Cache\SQLiteCache\SQLiteCache.cs" />

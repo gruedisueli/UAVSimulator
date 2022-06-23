@@ -13,9 +13,7 @@ namespace Assets.Scripts.UI
         public static readonly int MAINMENU_SCENEPATH = 0;
         public static readonly int FINDLOCATION_SCENEPATH = 1;
         public static readonly int REGIONVIEW_SCENEPATH = 2;
-        public static readonly int CITYVIEW_SCENEPATH = 3;
 
         public static readonly float REGIONVIEW_NETWORK_WIDTH_FACTOR = 500.0f;
-        public static readonly float CITYVIEW_NETWORK_WIDTH = 5.0f;
     }
 }

@@ -147,10 +147,5 @@ namespace Assets.Scripts.UI.Tools
             _yesButton.SetActive(!isMain);
             _noButton.SetActive(!isMain);
         }
-
-        private void SelectFile(object sender, System.EventArgs args)
-        {
-            _inputField.text = (sender as FileItem)?.GetName();
-        }
     }
 }
