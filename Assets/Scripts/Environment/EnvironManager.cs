@@ -80,38 +80,6 @@ namespace Assets.Scripts.Environment
         public VehicleControlSystem VCS { get; set; } = null;
         public MouseHint CanvasMouseHint { get; set; } = null;
 
-
-        /// <summary>
-        /// Gets airspace data from our tileset on Mapbox
-        /// </summary>
-        public void DownloadAirspace(UnityTile t)
-        {
-
-            var id = t.CanonicalTileId;
-            Debug.Log($"Starting airspace download for tile {id}");
-            string prefix = "https://api.mapbox.com/v4/grudy.0odj258s/";
-            string suffix = ".mvt?access_token=sk.eyJ1IjoiZ3J1ZHkiLCJhIjoiY2t2OG12bjRqMDNmZTJwdDJqNmc5eHZvNCJ9.oFQO2C4TCm2v8Qxxtrw86g";
-
-            string url = prefix + id.Z.ToString() + "/" + id.X.ToString() + "/" + id.Y.ToString() + suffix;
-            byte[] b = null;
-
-            b = TryDownload(url);
-
-            if (b == null)
-            {
-                Debug.Log($"Download from {url} failed");
-                return;
-            }
-            Debug.Log($"Downloaded {url}");
-
-            var reader = new VectorTileReader(b);
-            var layer = reader.GetLayer("Class_Airspace-apq25l");
-
-            var aTile = new AirspaceTile(layer, t);
-
-            Instance.Environ.AirspaceTiles.Add(id.ToString(), aTile);
-        }
-
         /// <summary>
         /// Tries to download from url. Null on failure.
         /// </summary>
@@ -396,81 +364,6 @@ namespace Assets.Scripts.Environment
         //        return false;
         //    }
         //}
-
-        /// <summary>
-        /// Adds city to current environment. False on failure.
-        /// </summary>
-        public bool AddCity(string guid, City city)
-        {
-            if (!Environ.Cities.ContainsKey(guid))
-            {
-                Environ.Cities.Add(guid, city);
-                return true;
-            }
-            else
-            {
-                Debug.LogError("Specified city already present in dictionary");
-                return false;
-            }
-        }
-
-        /// <summary>
-        /// Removes city from current environment. False on failure.
-        /// </summary>
-        public bool RemoveCity(string guid)
-        {
-            if (Environ.Cities.ContainsKey(guid))
-            {
-                Environ.Cities.Remove(guid);
-                return true;
-            }
-            else
-            {
-                Debug.LogError("Specified city not present in dictionary");
-                return false;
-            }
-        }
-
-        /// <summary>
-        /// Gets city at the specified guid, if present. Null if not.
-        /// </summary>
-        public City GetCity(string guid)
-        {
-            if (Environ.Cities.ContainsKey(guid))
-            {
-                return Environ.Cities[guid];
-            }
-            else
-            {
-                Debug.LogError("Specified city not present in dictionary");
-                return null;
-            }
-        }
-
-        /// <summary>
-        /// Gets current city dictionary.
-        /// </summary>
-        public Dictionary<string, City> GetCities()
-        {
-            return Environ.Cities;
-        }
-
-        /// <summary>
-        /// Gets the city marked as "active". Null on failure.
-        /// </summary>
-        public City GetCurrentCity()
-        {
-            if (Environ.Cities.ContainsKey(ActiveCity))
-            {
-                return Environ.Cities[ActiveCity];
-            }
-            else
-            {
-                Debug.LogError("Active city not present in dictionary");
-                return null;
-            }
-        }
-
 
         /// <summary>
         /// Create an entirely new environment.

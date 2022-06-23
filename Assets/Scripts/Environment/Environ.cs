@@ -52,40 +52,6 @@ namespace Assets.Scripts.Environment
             }
         }
 
-        /// <summary>
-        /// Dictionary of all cities, keyed by guid.
-        /// </summary>
-        [JsonProperty]
-        private  Dictionary<string, City> _cities = new Dictionary<string, City>();
-        public Dictionary<string, City> Cities
-        {
-            get
-            {
-                return _cities;
-            }
-            set
-            {
-                _cities = value;
-            }
-        }
-
-        [JsonProperty]
-        private Dictionary<string, AirspaceTile> _airspaceTiles = new Dictionary<string, AirspaceTile>();
-        /// <summary>
-        /// The airspace tiles for this region.
-        /// </summary>
-        public Dictionary<string, AirspaceTile> AirspaceTiles
-        {
-            get
-            {
-                return _airspaceTiles;
-            }
-            set
-            {
-                _airspaceTiles = value;
-            }
-        }
-
         [JsonProperty]
         private Dictionary<string, DronePortBase> _dronePorts = new Dictionary<string, DronePortBase>();
         public Dictionary<string, DronePortBase> DronePorts

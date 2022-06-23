@@ -126,7 +126,6 @@
     <Compile Include="Assets\Scripts\Environment\CityOptions.cs" />
     <Compile Include="Assets\Mapbox\Unity\Map\Interfaces\IUnifiedMap.cs" />
     <Compile Include="Assets\Scripts\Environment\DronePortRect.cs" />
-    <Compile Include="Assets\Scripts\UI\Tools\DownloadAirspaceTool.cs" />
     <Compile Include="Assets\Mapbox\Unity\MeshGeneration\Modifiers\GameObjectModifiers\MapboxStylesColorModifier.cs" />
     <Compile Include="Assets\Mapbox\Unity\Utilities\Runnable.cs" />
     <Compile Include="Assets\Mapbox\Unity\Location\AngleSmoothing\AngleSmoothingAverage.cs" />
@@ -193,7 +192,6 @@
     <Compile Include="Assets\Mapbox\Examples\Scripts\LabelTextSetter.cs" />
     <Compile Include="Assets\Mapbox\Unity\MeshGeneration\Enums\TilePropertyState.cs" />
     <Compile Include="Assets\Mapbox\Unity\Map\Strategies\MapScalingAtWorldScaleStrategy.cs" />
-    <Compile Include="Assets\Scripts\UI\CityViewManager.cs" />
     <Compile Include="Assets\Mapbox\Unity\Map\Interfaces\IMap.cs" />
     <Compile Include="Assets\Mapbox\Core\mapbox-sdk-cs\MapMatching\MapMatchingResponse.cs" />
     <Compile Include="Assets\Mapbox\Core\mapbox-sdk-cs\Directions\Directions.cs" />
@@ -333,7 +331,6 @@
     <Compile Include="Assets\Mapbox\Unity\Utilities\StyleSearchAttribute.cs" />
     <Compile Include="Assets\Mapbox\Core\mapbox-sdk-cs\Platform\FileSource.cs" />
     <Compile Include="Assets\Mapbox\Unity\Telemetry\TelemetryDummy.cs" />
-    <Compile Include="Assets\Scripts\UI\Tools\AddCityTool.cs" />
     <Compile Include="Assets\Mapbox\Unity\MeshGeneration\Modifiers\MeshModifiers\UvModifier.cs" />
     <Compile Include="Assets\Scripts\UI\Tools\DronePortInfoPanel.cs" />
     <Compile Include="Assets\Mapbox\Examples\5_Playground\Scripts\ForwardGeocoderExample.cs" />

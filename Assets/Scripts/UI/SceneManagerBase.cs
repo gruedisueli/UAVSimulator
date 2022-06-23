@@ -80,7 +80,6 @@ namespace Assets.Scripts.UI
         protected DeselectTool[] _deselectTools;
         protected SavePrompt _savePrompt;
         protected PlayPauseTool _playPause;
-        protected DownloadAirspaceTool _downloadAirspaceTool;
 
         /// <summary>
         /// Whatever scene element may be selected at any point in time. Null if none.
@@ -211,7 +210,6 @@ namespace Assets.Scripts.UI
                 Debug.LogError("Play pause tool not found");
                 return;
             }
-            _downloadAirspaceTool = FindObjectOfType<DownloadAirspaceTool>(true);
 
             //event subscription
             //QUESTION: Why register our tools directly on the scene manager and not sub-panels?
@@ -233,10 +231,6 @@ namespace Assets.Scripts.UI
                 t.OnDeselect += DeselectElement;
             }
             _playPause.OnPlayPause += PlayPause;
-            if (_downloadAirspaceTool != null)
-            {
-                _downloadAirspaceTool.OnDownloadAirspace += GetAirspaceData;
-            }
 
             if (_mouseHint == null)
             {
@@ -321,10 +315,6 @@ namespace Assets.Scripts.UI
                     var cP = _currentInfoPanel as CityInfoPanel;
                     cP.GoToCity.OnSceneChange -= ChangeScene;
                 }
-            }
-            if (_downloadAirspaceTool != null)
-            {
-                _downloadAirspaceTool.OnDownloadAirspace += GetAirspaceData;
             }
 
             OnDestroyDerived();
@@ -715,20 +705,6 @@ namespace Assets.Scripts.UI
                     if (_currentInfoPanel is RestrictionInfoPanel p) p.UpdateFields(wC.RestrictionZoneSpecs);
                     _vehicleControlSystem.RebuildNetwork();
                 }
-                else if (_workingCopy is SceneCity)
-                {
-                    //cities are special case because city object at region level is still existing, but we want to upate specs...
-                    //a bit confusing because other objects behave differently.
-                    var wc = _workingCopy as SceneCity;
-                    if (Cities.ContainsKey(guidOld))
-                    {
-                        Cities[guidOld].gameObject.Destroy();
-                        Cities.Remove(guidOld);
-                    }
-                    EnvironManager.Instance.GetCities()[guidOld].CityStats = wc.CitySpecs;
-                    _selectedElement = InstantiateCity(guidOld, wc.CitySpecs, true);
-                    if (_currentInfoPanel is CityInfoPanel p) p.UpdateFields(wc.CitySpecs);
-                }
             }
             _currentInfoPanel.ChangeSelectedObject(_selectedElement.gameObject);
 
@@ -1109,10 +1085,6 @@ namespace Assets.Scripts.UI
             {
                 RemoveRestrictionZone((_selectedElement as SceneRestrictionZone).Guid);
             }
-            else if (_selectedElement is SceneCity)
-            {
-                RemoveCity((_selectedElement as SceneCity).Guid);
-            }
 
             OnElementRemoved?.Invoke(sender,args);
         }
@@ -1229,25 +1201,6 @@ namespace Assets.Scripts.UI
             _vehicleControlSystem.RebuildNetwork();
         }
 
-        /// <summary>
-        /// Adds city to game and to environment
-        /// </summary>
-        protected void AddNewCity(AddCityArgs args)
-        {
-            var gO = args.HitInfo.transform.gameObject;
-            var uT = gO.GetComponent<UnityTile>();
-            string guid = Guid.NewGuid().ToString();
-            var p = args.Position;
-
-            //var tileBounds = Conversions.TileBounds(uT.UnwrappedTileId);
-            var regionTileWorldCenter = uT.gameObject.transform.position;
-            CityOptions s = new CityOptions();
-            s.WorldPos = p;
-            s.RegionTileWorldCenter = regionTileWorldCenter;
-            InstantiateCity(guid, s, true);
-            EnvironManager.Instance.AddCity(guid, new City(s));
-        }
-
 
         /// <summary>
         /// Attempts to remove drone port from scene and environment.
@@ -1306,27 +1259,6 @@ namespace Assets.Scripts.UI
             _vehicleControlSystem.RebuildNetwork();
         }
 
-        /// <summary>
-        /// Removes city from region.
-        /// </summary>
-        protected void RemoveCity(string guid)
-        {
-            EnvironManager.Instance.RemoveCity(guid);
-            if (Cities.ContainsKey(guid))
-            {
-                Cities[guid].OnSceneElementSelected -= SelectElement;
-                Cities[guid].gameObject.Destroy();
-                //var cM = m.GetComponentInChildren<CityMarker>();
-                //if (cM != null)
-                //{
-                //    cM._markerSelected -= CityMarkerSelected;
-                //}
-                Cities.Remove(guid);
-                //m.Destroy();
-            }
-        }
-
-
         #endregion
 
         #region INSTANTIATE ELEMENTS
@@ -1336,9 +1268,6 @@ namespace Assets.Scripts.UI
         /// </summary>
         protected void InstantiateSimulationObjects()
         {
-            // TO-DO: register the restriction zones for drone ports and parking structuresd
-            BuildAirspace();
-
             var env = EnvironManager.Instance.Environ;
             foreach (var kvp in env.DronePorts)
             {
@@ -1558,38 +1487,6 @@ namespace Assets.Scripts.UI
         #endregion
 
         #region AIRSPACE 
-
-        /// <summary>
-        /// Gets airspace data from our tileset on Mapbox 
-        /// </summary>
-        protected void GetAirspaceData(object sender, System.EventArgs args)
-        {
-            if (_largeScaleMap != null)
-            {
-                EnvironManager.Instance.Environ.AirspaceTiles = new Dictionary<string, AirspaceTile>();
-
-                UnityTile[] tiles = _largeScaleMap.GetComponentsInChildren<UnityTile>(true);
-                foreach (var t in tiles)
-                {
-                    EnvironManager.Instance.DownloadAirspace(t);
-                }
-            }
-        }
-
-        /// <summary>
-        /// Instantiates airspace elements if we have them.
-        /// </summary>
-        protected void BuildAirspace()
-        {
-            //instantiate airspace.
-            foreach (var aT in EnvironManager.Instance.Environ.AirspaceTiles.Values)
-            {
-                foreach (var f in aT.Features.Values)
-                {
-                    f.CreateGeometry(_airspaceYScale);
-                }
-            }
-        }
 
         /// <summary>
         /// Turns layer on or off
