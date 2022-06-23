@@ -104,8 +104,6 @@ public class LandingPoint : MonoBehaviour
 
                 // To-Do: add to "move to parking spot" - corresponding changes for 
                 // wait for a random period
-                int a;
-                a = 0;
                 if (!vcs.from.GetComponent<DroneBase>().ToPark || (vcs.from.GetComponent<DroneBase>().ToPark && vcs.from.GetComponent<DroneBase>().DestinationQueue.Count > 0 ))
                 {
                     state = "departing";

@@ -552,7 +552,7 @@ public class VehicleControlSystem : MonoBehaviour
             }
             catch
             {
-                bool caughtit = true;
+                
             }
         }
         return null;

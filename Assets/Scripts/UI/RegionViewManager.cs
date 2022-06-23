@@ -37,7 +37,6 @@ namespace Assets.Scripts.UI
         //private float _smallestZoom = 7;
         private bool _atBuildingZoomLevel = false;//activated whenever we get to a zoom level that we could possibly display buildings at without enormous processing cost.
         public bool AllowBuildings { get; private set; } = false;//true if user toggle for buildings is in "on" position. Only if true can we show buildings.
-        private bool _temporarySuppressBuildings = false;//set true of just holding off buildings for a second while changing view.
         private VectorSubLayerProperties _buildingsLayer = null;
 
         private DroneInfoPanel _droneInfoPanel;
@@ -70,8 +69,6 @@ namespace Assets.Scripts.UI
 
         protected override void Init()
         {
-            string rPath = "GUI/";
-
             //RangeTileProviderOptions range = new RangeTileProviderOptions();
             //range.east = EnvironSettings.REGION_TILE_EXTENTS;
             //range.west = EnvironSettings.REGION_TILE_EXTENTS;
