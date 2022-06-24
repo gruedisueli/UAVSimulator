@@ -435,7 +435,11 @@ namespace Mapbox.Unity.MeshGeneration.Interfaces
 		{
 			get
 			{
-				return (_performanceOptions != null && _performanceOptions.isEnabled && _entityInCurrentCoroutine >= _performanceOptions.entityPerCoroutine);
+				//MODIFICATION ON 6/24/2022:
+				//(this is a workaround)
+				//found that _performanceOptions.isEnabled is always false, even when specifying in the editor...due to some unknown bug.
+				//just hard-coding the number of coroutines, since we won't be modifying this very much and just need it to work right.
+				return (_entityInCurrentCoroutine > 20/*_performanceOptions != null && _performanceOptions.isEnabled && _entityInCurrentCoroutine >= _performanceOptions.entityPerCoroutine*/);
 			}
 		}
 

@@ -190,11 +190,6 @@ namespace Assets.Scripts.UI
                 _buildingsLayer.SetActive(false);
                 _atBuildingZoomLevel = false;
             }
-            _buildingToggle.SetInteractable(_atBuildingZoomLevel);
-            if (!_atBuildingZoomLevel && _buildingToggle._isOn)
-            {
-                _buildingToggle.SetToggleValue(false);
-            }
             _abstractMap.UpdateMap(_abstractMap.CenterLatitudeLongitude, zoom);
             _reloadRoutine = null;
             CurrentZoom = zoom;

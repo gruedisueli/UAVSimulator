@@ -131,8 +131,8 @@
     <Compile Include="Assets\Mapbox\Unity\Editor\MapImageFactoryEditor.cs" />
     <Compile Include="Assets\Mapbox\Unity\Editor\MergedModifierStackEditor.cs" />
     <Compile Include="Assets\Mapbox\Core\mapbox-sdk-cs\Tests\UnitTests\Editor\MapboxUnitTests_GeoCoordinateBounds.cs" />
-    <Compile Include="Assets\Mapbox\Unity\Editor\TreeElement.cs" />
     <Compile Include="Assets\Mapbox\Unity\Editor\PropertyDrawers\CameraBoundsTileProviderOptionsDrawer.cs" />
+    <Compile Include="Assets\Mapbox\Unity\Editor\TreeElement.cs" />
     <Compile Include="Assets\Mapbox\Core\cheap-ruler-cs\Tests\Editor\MapboxUnitTests_CheapRulerCs.cs" />
     <Compile Include="Assets\Mapbox\Core\mapbox-sdk-cs\Tests\UnitTests\Editor\MapboxUnitTests_GeoCoordinate.cs" />
     <Compile Include="Assets\Mapbox\Core\mapbox-sdk-cs\Tests\UnitTests\Editor\MapboxUnitTests_BboxToGeoCoordinateBoundsConverter.cs" />

@@ -59,7 +59,6 @@ namespace Assets.Scripts.UI
         #region PROTECTED FIELDS
 
         public AbstractMap _abstractMap;
-        public AbstractMap _largeScaleMap;
         public Canvas _canvas;
         public MainButtonPanel _buttonPanel;
         public Button _settingsButton;
@@ -113,7 +112,7 @@ namespace Assets.Scripts.UI
             DronePorts = new Dictionary<string, SceneDronePort>();
             ParkingStructures = new Dictionary<string, SceneParkingStructure>();
             RestrictionZones = new Dictionary<string, SceneRestrictionZone>();
-            
+
 
             //get main canvas
             _mainCanvas = GetComponentInChildren<Canvas>(true);
@@ -146,10 +145,6 @@ namespace Assets.Scripts.UI
             {
                 Debug.LogError("Abstract map not specified");
                 return;
-            }
-            if (_largeScaleMap == null) //it's ok not to specify this.
-            {
-                Debug.Log("Large scale map not specified for this view.");
             }
 
             //get main camera

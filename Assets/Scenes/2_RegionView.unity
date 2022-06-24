@@ -1492,7 +1492,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _abstractMap: {fileID: 555018383}
-  _largeScaleMap: {fileID: 0}
   _canvas: {fileID: 1495986657}
   _buttonPanel: {fileID: 1983839008}
   _settingsButton: {fileID: 1742926115}
@@ -3149,7 +3148,6 @@ MonoBehaviour:
   _canvas: {fileID: 1495986657}
   playing: 0
   _networkVisible: 0
-  noiseVisualization: 0
   privacyVisualization: 0
   landingCorridorVisualization: 0
   demographicVisualization: 0
@@ -7291,7 +7289,6 @@ MonoBehaviour:
         - aeroway
         - airport_label
         - building
-        - Class_Airspace-apq25l
         - housenum_label
         - landuse
         - landuse_overlay
@@ -7304,23 +7301,23 @@ MonoBehaviour:
         - transit_stop_label
         - water
         - waterway
-      _sourceType: 2
+      _sourceType: -1
       sourceOptions:
         isActive: 1
         layerSource:
           Name: Mapbox Streets
-          Id: mapbox.mapbox-streets-v8,grudy.0odj258s
+          Id: mapbox.3d-buildings,mapbox.mapbox-streets-v8
           Modified: 
           UserName: 
       useOptimizedStyle: 0
       optimizedStyle:
-        Name: 
-        Id: 
-        Modified: 
-        UserName: 
+        Name: Custom-v7
+        Id: mapbox://styles/grudy/cl4sl37mm000e14lch8qzmtxf
+        Modified: 2022-06-24T15:38:36.113Z
+        UserName: grudy
       performanceOptions:
-        isEnabled: 1
-        entityPerCoroutine: 50
+        isEnabled: 0
+        entityPerCoroutine: 1
       vectorSubLayers:
       - coreOptions:
           sourceId: 
@@ -7380,7 +7377,7 @@ MonoBehaviour:
           isEnabled: 0
           entityPerCoroutine: 0
         honorBuildingIdSetting: 1
-        buildingsWithUniqueIds: 0
+        buildingsWithUniqueIds: 1
         moveFeaturePositionTo: 0
         MeshModifiers: []
         GoModifiers: []
@@ -16218,7 +16215,7 @@ PrefabInstance:
     - target: {fileID: 124767089879289673, guid: 5d0936292fa340f4499fd693e31614ae,
         type: 3}
       propertyPath: _step
-      value: 12
+      value: 10
       objectReference: {fileID: 0}
     - target: {fileID: 124767089879289673, guid: 5d0936292fa340f4499fd693e31614ae,
         type: 3}
@@ -16372,7 +16369,8 @@ PrefabInstance:
         the right zoom level and enable buildings. \n\n--Zoom-in on an area of the
         map you know has buildings in it, by using the scroll wheel. You should get
         pretty close in. Buildings do not work above certain heights due to processing
-        constraints. Click the toggle to enable buildings,--"
+        constraints. You will need to check the visibility box for \"buildings\"
+        to see them, as well as be at a close-in zoom level.--"
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 5d0936292fa340f4499fd693e31614ae, type: 3}
@@ -18148,16 +18146,11 @@ PrefabInstance:
     - target: {fileID: 8040641364357866409, guid: 5d0936292fa340f4499fd693e31614ae,
         type: 3}
       propertyPath: m_Text
-      value: 'On the side of the screen, you will see a set of visibility toggles.
+      value: On the side of the screen, you will see a set of visibility toggles.
         This list is limited for now. In the future, if the tool were expanded, other
         toggles might be added here, such as "privacy", "demographics", and so on.
         An important note is that this tool can be extended to use any GIS dataset
         as a background.
-
-
-        3d buildings can be very slow to load since they
-        are resource-intensive. It is recommended that you only turn on buildings
-        when it is necessary.'
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 5d0936292fa340f4499fd693e31614ae, type: 3}
@@ -22279,7 +22272,7 @@ Camera:
   m_Depth: -1
   m_CullingMask:
     serializedVersion: 2
-    m_Bits: 4294967295
+    m_Bits: 32567
   m_RenderingPath: -1
   m_TargetTexture: {fileID: 0}
   m_TargetDisplay: 0
@@ -25896,7 +25889,7 @@ PrefabInstance:
     - target: {fileID: 2377353196901179910, guid: b6282189605bdba4c9643a1899513223,
         type: 3}
       propertyPath: onValueChanged.m_PersistentCalls.m_Calls.Array.size
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 2377353196901179910, guid: b6282189605bdba4c9643a1899513223,
         type: 3}
