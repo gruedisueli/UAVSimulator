@@ -7270,7 +7270,7 @@ MonoBehaviour:
       colliderOptions:
         addCollider: 1
       modificationOptions:
-        sampleCount: 80
+        sampleCount: 150
         useRelativeHeight: 0
         earthRadius: 6372798
       unityLayerOptions:
