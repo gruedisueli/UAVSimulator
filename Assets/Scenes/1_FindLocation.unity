@@ -249,6 +249,7 @@ MonoBehaviour:
   _canvas: {fileID: 541402231}
   _createProjectButton: {fileID: 367550005}
   _mouseHint: {fileID: 1002017791}
+  _CameraAdjustment: {fileID: 1787361573}
 --- !u!1 &367550003
 GameObject:
   m_ObjectHideFlags: 0
@@ -2029,7 +2030,7 @@ MonoBehaviour:
   _zoomRate: 10
   _panSpeed: 20
   _zoomDampening: 5
-  _allowZoom: 1
+  _allowZoom: 0
   _allowTilt: 0
   _allowPan: 1
   _minOrthoZoom: 6000

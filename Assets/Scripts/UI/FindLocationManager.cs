@@ -27,6 +27,7 @@ namespace Assets.Scripts.UI
         public Canvas _canvas;
         public Button _createProjectButton;
         public MouseHint _mouseHint;
+        public CameraAdjustment _CameraAdjustment;
 
         private AbstractMap _map;
 
@@ -45,7 +46,7 @@ namespace Assets.Scripts.UI
             _map.SetZoom(EnvironSettings.FINDLOCATION_ZOOM_LEVEL);
             _tileSize = _map.Options.scalingOptions.unityTileSize;
             _regionTileSize = _tileSize / (float)Math.Pow(2, EnvironSettings.REGION_ZOOM_LEVEL - EnvironSettings.FINDLOCATION_ZOOM_LEVEL);
-            _mouseHint.Activate("Click map to select a region (click again to move it)");
+            _mouseHint.Activate("Click map to select a region (click again to move it)\nPress the 'play' icon to start the project");
 
         }
 
@@ -60,7 +61,7 @@ namespace Assets.Scripts.UI
             {
 
             }
-            if (Input.GetMouseButtonUp(0) && !EventSystem.current.IsPointerOverGameObject() && GUIUtils.TryToSelect(out var hitInfo))
+            if (Input.GetMouseButtonUp(0) && !_CameraAdjustment.IsPanningCamera && !EventSystem.current.IsPointerOverGameObject() && GUIUtils.TryToSelect(out var hitInfo))
             {
                 PlaceMarker(hitInfo);
             }

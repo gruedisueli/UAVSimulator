@@ -31,6 +31,7 @@ namespace Assets.Scripts.UI
         public EventHandler<System.EventArgs> OnSetView;
         public EventHandler<System.EventArgs> OnSetViewHome;
         public Camera _camera;
+        public bool IsPanningCamera { get; private set; }
 
         public float _xSpeed = 200.0f;
         public float _ySpeed = 200.0f;
@@ -64,6 +65,9 @@ namespace Assets.Scripts.UI
         private float _lastD = 0;
         private bool _lastActionWasSetView = false;
         private Vector3 _homePos = new Vector3();
+
+        private float _panStartTime = 0.0f;//when clicked down mouse for panning
+        private float _panRegistrationTime = 0.1f;//how long you must hold mouse before this component registers itself as "IsPanningCamera"
 
         void Start() { Init(); }
         void OnEnable() { Init(); }
@@ -104,11 +108,13 @@ namespace Assets.Scripts.UI
                 if (Input.GetMouseButtonDown(0))
                 {
                     OnStartPan?.Invoke(this, System.EventArgs.Empty);
+                    _panStartTime = Time.unscaledTime;
                     _lastActionWasSetView = false;
                 }
                 else if (Input.GetMouseButtonUp(0))
                 {
                     OnEndPan?.Invoke(this, System.EventArgs.Empty);
+                    IsPanningCamera = false;
                     _lastActionWasSetView = false;
                 }
             }
@@ -144,6 +150,10 @@ namespace Assets.Scripts.UI
             }
             else if (_allowPan && Input.GetMouseButton(0))
             {
+                if (Time.unscaledTime - _panStartTime > _panRegistrationTime)
+                {
+                    IsPanningCamera = true;
+                }
                 _lastActionWasSetView = false;
                 var tX = _camera.transform.right * -Input.GetAxis("Mouse X") * (_camera.transform.position.y / _panSpeed);
                 var tY = _camera.transform.up * -Input.GetAxis("Mouse Y") * (_camera.transform.position.y / _panSpeed);
@@ -200,7 +210,6 @@ namespace Assets.Scripts.UI
                     changed = true;
                     SetNearClipPlane();
                     OnZoom?.Invoke(this, System.EventArgs.Empty);
-
                 }
             }
             if (changed)
