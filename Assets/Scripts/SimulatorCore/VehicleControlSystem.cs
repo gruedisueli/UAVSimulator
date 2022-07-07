@@ -6,9 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using UnityEngine;
 using System.IO;
-
-
-
+using System.Numerics;
 using Assets.Scripts.SimulatorCore;
 using Assets.Scripts.Vehicle_Control;
 using Assets.Scripts.DataStructure;
@@ -19,7 +17,13 @@ using Assets.Scripts.Serialization;
 using Assets.Scripts.UI.Tools;
 
 using DelaunatorSharp;
+using JetBrains.Annotations;
+using TMPro;
+using GameObject = UnityEngine.GameObject;
+using Quaternion = UnityEngine.Quaternion;
 using Random = System.Random;
+using Vector2 = UnityEngine.Vector2;
+using Vector3 = UnityEngine.Vector3;
 
 
 /// <summary>
@@ -647,6 +651,8 @@ public class VehicleControlSystem : MonoBehaviour
         Delaunator delaunay = new Delaunator(vertices);
         DroneNetwork.vertices = points;
         var utmElev = EnvironManager.Instance.Environ.SimSettings.CorridorFlightElevation_M;
+        int layerMask = 1 << 9 | 1 << 8;
+        var obstacleGroups = GetGroupedObstacles(1, utmElev, layerMask);
         var utmSep = EnvironManager.Instance.Environ.SimSettings.CorridorSeparationDistance_M;
         var corrSpeed = EnvironManager.Instance.Environ.SimSettings.CorridorDroneSettings.MaxSpeed_MPS;
         for (int i = 0; i < delaunay.Triangles.Length; i++)
@@ -672,12 +678,18 @@ public class VehicleControlSystem : MonoBehaviour
                 Vector3 corridor_to_from_start = new Vector3(toPosition.x, utmElev + utmSep, toPosition.z);
                 Vector3 corridor_to_from_end = new Vector3(fromPosition.x, utmElev + utmSep, fromPosition.z);
 
-                var wayPoints = FindPath(corridor_from_to_start, corridor_from_to_end, 5, 1 << 9 | 1 << 8);
-                wayPoints.Insert(0, corridor_from_to_start);
+                if (!BestRouteAroundObstacles(corridor_from_to_start, corridor_from_to_end, obstacleGroups, layerMask, 10, 0, out var wayPoints))
+                {
+                    continue;
+                }
+                //wayPoints.Insert(0, corridor_from_to_start);
                 corridor_from_to.wayPoints = new Queue<Vector3>(wayPoints);
 
-                wayPoints = FindPath(corridor_to_from_start, corridor_to_from_end, 5, 1 << 9 | 1 << 8);
-                wayPoints.Insert(0, corridor_to_from_start);
+                if (!BestRouteAroundObstacles(corridor_to_from_start, corridor_to_from_end, obstacleGroups, layerMask, 10, 0, out wayPoints))
+                {
+                    continue;
+                }
+                //wayPoints.Insert(0, corridor_to_from_start);
                 corridor_to_from.wayPoints = new Queue<Vector3>(wayPoints);
 
                 DroneNetwork.corridors.Add(corridor_from_to);
@@ -724,6 +736,32 @@ public class VehicleControlSystem : MonoBehaviour
         }
         return minHit;
     }
+    /// <summary>
+    /// Finds closest restriction zone in the hit objects, if any. Null if none found.
+    /// </summary>
+    SceneRestrictionZone GetClosestHitRestrictionZone(Vector3 current, RaycastHit[] hit)
+    {
+        RaycastHit minHit = hit[0];
+        var hitZones = new List<Tuple<SceneRestrictionZone, float>>();
+        for (int i = 0; i < hit.Length; i++)
+        {
+            var h = hit[i];
+            var z = h.transform.gameObject.GetComponentInParent<SceneRestrictionZone>();
+            if (z == null)
+            {
+                continue;
+            }
+            hitZones.Add(Tuple.Create(z, Vector3.Distance(current, h.point)));
+        }
+
+        if (hitZones.Count == 0)
+        {
+            return null;
+        }
+        hitZones = hitZones.OrderBy(z => z.Item2).ToList();
+
+        return hitZones[0].Item1;
+    }
 
     Vector3 RotateAround(Vector3 point, Vector3 pivot, float angle)
     {
@@ -731,6 +769,659 @@ public class VehicleControlSystem : MonoBehaviour
         newPoint = Quaternion.Euler(0, angle, 0) * newPoint;
         newPoint = newPoint + pivot;
         return newPoint;
+    }
+
+    private class Obstacle
+    {
+        public string ObjectId { get; }
+        public List<Vector3> InflatedPts { get; }
+        public bool IntersectsAnother { get; } = false;
+        public Dictionary<string, SceneRestrictionZone> IntersectingObjects { get; }
+
+        public Obstacle(SceneRestrictionZone z, float inflation, float height, int layerMask)
+        {
+            ObjectId = z.Guid;
+            InflatedPts = z.RestrictionZoneSpecs.GetBoundaryPtsAtHeight(height, inflation);
+            var intersectingObjects = new Dictionary<string, SceneRestrictionZone>();
+            for (int i = 0; i < InflatedPts.Count; i++)
+            {
+                int j = i < InflatedPts.Count - 1 ? i + 1 : 0;
+                var p0 = InflatedPts[i];
+                var p1 = InflatedPts[j];
+
+                if (DoesPointPairIntersectAnother(p0, p1, layerMask, out var cols))
+                {
+                    foreach (var c in cols)
+                    {
+                        var rZ = c.Value.GetComponentInParent<SceneRestrictionZone>();
+                        if (rZ == null)
+                        {
+                            Debug.Log("Intersected object doesn't contain a restriction zone");
+                            continue;
+                        }
+                        IntersectsAnother = true;
+
+                        if (!intersectingObjects.ContainsKey(rZ.Guid))
+                        {
+                            intersectingObjects.Add(rZ.Guid, rZ);
+                        }
+                    }
+                }
+            }
+
+            IntersectingObjects = intersectingObjects;
+        }
+
+        
+    }
+
+    /// <summary>
+    /// Returns true if vector between these points intersects collider(s), returning all that it intersects
+    /// </summary>
+    private static bool DoesPointPairIntersectAnother(Vector3 p0, Vector3 p1, int layerMask, out Dictionary<int, GameObject> intersectingObjects)
+    {
+        intersectingObjects = new Dictionary<int, GameObject>();
+        var hits = Physics.RaycastAll(p0, p1 - p0, Vector3.Distance(p0, p1), layerMask);
+        if (hits != null && hits.Length > 0)
+        {
+            foreach (var h in hits)
+            {
+                var id = h.transform.gameObject.GetInstanceID();
+                if (!intersectingObjects.ContainsKey(id))
+                {
+                    intersectingObjects.Add(id, h.transform.gameObject);
+                }
+            }
+        }
+
+        return intersectingObjects.Count > 0;
+    }
+
+    ///// <summary>
+    ///// Returns true if a point is inside an object on the specified layers.
+    ///// </summary>
+    //private static bool IsPointInsideObject(Vector3 p, int layerMask, out Collider containingCollider)
+    //{
+    //    //logic: a random vector from a point will result in an odd number of hits if the point is inside something.
+    //    //note, the containing object is not necessarily the first thing the ray hits.
+    //    var h = Physics.RaycastAll(p, Vector3.forward, 1000000, layerMask);
+    //    containingCollider = null;
+    //    if (h != null && h.Length % 2 == 1)
+    //    {
+    //        var instanceHitCts = new Dictionary<int, Tuple<Collider, int>>();
+    //        for (int i = 0; i < h.Length; i++)
+    //        {
+    //            var id = h[i].transform.gameObject.GetInstanceID();
+    //            if (instanceHitCts.ContainsKey(id))
+    //            {
+    //                var col = instanceHitCts[id];
+    //                var ct = col.Item2;
+    //                ct++;
+    //                instanceHitCts[id] = Tuple.Create(col.Item1, ct);
+    //            }
+    //            else
+    //            {
+    //                instanceHitCts.Add(id, Tuple.Create(h[i].collider, 1));
+    //            }
+    //        }
+
+    //        foreach (var kvp in instanceHitCts)
+    //        {
+    //            if (kvp.Value.Item2 % 2 == 1)
+    //            {
+    //                containingCollider = kvp.Value.Item1;
+    //                return true;
+    //            }
+    //        }
+
+    //        Debug.LogError("Could not locate containing object");
+    //    }
+
+    //    return false;
+    //}
+
+    /// <summary>
+    /// Gets all obstacles, grouped by those that overlap within the specified elevation. Overlap is defined by an inflated point being within a neighboring restriction zone.
+    /// </summary>
+    private List<List<Obstacle>> GetGroupedObstacles(float inflation, float height, int layerMask)
+    {
+        var ungroupedObstacles = new Dictionary<string, Obstacle>();
+        var sRZs = FindObjectsOfType<SceneRestrictionZone>(true);
+        foreach (var z in sRZs)
+        {
+            if (!EnvironManager.Instance.Environ.RestrictionZones.ContainsKey(z.Guid))
+            {
+                continue;//this could be a restriction zone around a landing pad, for example.
+            }
+
+            var o = new Obstacle(z, inflation, height, layerMask);
+            ungroupedObstacles.Add(o.ObjectId, o);
+        }
+
+        var oGrps = new List<List<string>>();
+        foreach(var kvp in ungroupedObstacles)
+        {
+            var mainID = kvp.Key;
+            var obs = kvp.Value;
+            if (!obs.IntersectsAnother)
+            {
+                oGrps.Add(new List<string>(){mainID});
+                continue;
+            }
+            foreach (var other in obs.IntersectingObjects)
+            {
+                int existingList = -1;
+                for (int z = 0; z < oGrps.Count; z++)
+                {
+                    var g = oGrps[z];
+                    if (g.Contains(mainID))
+                    {
+                        existingList = z;
+                        break;
+                    }
+                }
+                bool foundList = false;
+                bool purge = false;
+                var otherID = other.Key;
+                foreach (var g in oGrps)
+                {
+                    if (g.Contains(otherID))
+                    {
+                        foundList = true;
+                        if (!g.Contains(mainID))
+                        {
+                            if (existingList != -1)
+                            {
+                                foreach (var item in oGrps[existingList])
+                                {
+                                    if (!g.Contains(item))
+                                    {
+                                        g.Add(item);
+                                    }
+                                }
+
+                                purge = true;
+                            }
+                            else
+                            {
+                                g.Add(mainID);
+                            }
+
+                        }
+                        break;
+                    }
+                }
+                if (purge)
+                {
+                    oGrps.RemoveAt(existingList);
+                }
+                if (!foundList)
+                {
+                    oGrps.Add(new List<string>() { mainID, otherID });
+                }
+            }
+        }
+
+        Debug.Log("RZ Groups: ");
+        List<List<Obstacle>> obstacleGroups = new List<List<Obstacle>>();
+        foreach (var g in oGrps)
+        {
+            string s = "";
+            List<Obstacle> obstacles = new List<Obstacle>();
+            foreach (var k in g)
+            {
+                s += k + ",";
+                obstacles.Add(ungroupedObstacles[k]);
+            }
+            obstacleGroups.Add(obstacles);
+            Debug.Log(s);
+        }
+
+        return obstacleGroups;
+    }
+
+    /// <summary>
+    /// Routes curve around obstacles. False on failure.
+    /// </summary>
+    private bool BestRouteAroundObstacles(Vector3 startPt, Vector3 endPt, List<List<Obstacle>> obstacleGroups, int layerMask, int maxDepth, int currentDepth, out List<Vector3> routePts)
+    {
+        routePts = new List<Vector3>() { startPt };
+        if (currentDepth > maxDepth)
+        {
+            Debug.Log("Max depth exceeded");
+            return false;
+        }
+        if (!ObstacleExists(startPt, endPt, obstacleGroups, layerMask, out var obs))
+        {
+            routePts.Add(endPt);
+            return true;
+        }
+
+        currentDepth++;
+        var paths = GetPathsAround(startPt, endPt, obs);
+        if (paths == null)
+        {
+            Debug.Log("No paths around object could be found");
+            return false;
+        }
+        var fixRoutes = new List<List<Vector3>>();
+        var goodRoutes = new List<List<Vector3>>();
+        foreach (var p in paths)
+        {
+            //find first edge that intersects an obstacle, if any
+            //record the first obstacle
+            //record an edge from start of that segment to the destination
+            obs = null;
+            bool foundObs = false;
+            var rPts = new List<Vector3>(routePts);
+            for (int v0 = 0; v0 < p.Count - 1; v0++)
+            {
+                int v1 = v0 + 1;
+                if (ObstacleExists(p[v0], p[v1], obstacleGroups, layerMask, out obs))
+                {
+                    foundObs = true;
+                    fixRoutes.Add(rPts);
+                    break;
+                }
+                rPts.Add(p[v1]);
+            }
+            if (!foundObs)
+            {
+                var goodRt = new List<Vector3>(routePts);
+                for (int i = 1; i < p.Count; i++)
+                {
+                    goodRt.Add(p[i]);
+                }
+                goodRoutes.Add(goodRt);
+            }
+        }
+        double bestLen = double.MaxValue;
+        bool foundBest = false;
+        int c = 0;
+        for (int f = 0; f < fixRoutes.Count; f++)
+        {
+            c++;
+            var toFix = fixRoutes[f];
+            var rPts = new List<Vector3>();
+            if (BestRouteAroundObstacles(toFix[toFix.Count - 1], endPt, obstacleGroups, layerMask, maxDepth, currentDepth, out rPts))
+            {
+                var tmpPts = new List<Vector3>(toFix);
+                for (int i = 1; i < rPts.Count; i++)
+                {
+                    tmpPts.Add(rPts[i]);
+                }
+                tmpPts = CleanupPoints(tmpPts, layerMask, obstacleGroups);
+                goodRoutes.Add(tmpPts);
+            }
+        }
+        foreach (var gR in goodRoutes)
+        {
+            var len = GetPathLength(gR);
+            if (len < bestLen)
+            {
+                foundBest = true;
+                bestLen = len;
+                routePts = gR;
+            }
+        }
+        if (foundBest)
+        {
+            return true;
+        }
+
+        Debug.Log("Path not found");
+        return false;
+    }
+
+
+    /// <summary>
+    /// Removes unnecessary kinks from basic paths.
+    /// </summary>
+    private List<Vector3> CleanupPoints(List<Vector3> pts, int layerMask, List<List<Obstacle>> obstacleGroups)
+    {
+        var modPts = new List<Vector3>(pts);
+        int i = 0;
+        int c = 0;
+        while (i < modPts.Count - 2 && c < pts.Count)
+        {
+            c++;
+            int k = i + 2;
+            if (!ObstacleExists(modPts[i], modPts[k], obstacleGroups, layerMask, out _))
+            {
+                modPts.RemoveAt(i + 1);
+                continue;
+            }
+            i++;
+        }
+        return modPts;
+    }
+
+
+    ///// <summary>
+    ///// Finds path around restriction zones. False on failure.
+    ///// </summary>
+    //public bool FindPath(Vector3 origin, Vector3 destination, float inflation, int maxDepth, int divCt, int currentDepth, int layerMask, out List<Vector3> routePts)
+    //{
+    //    routePts = new List<Vector3>(){ origin };
+    //    if (currentDepth > maxDepth)
+    //    {
+    //        Debug.Log("Max depth exceeded");
+    //        return false;
+    //    }
+    //    RestrictionZoneBase obs;
+    //    if (!ObstacleExists(origin, destination, layerMask, out obs))
+    //    {
+    //        routePts.Add(destination);
+    //        return true;
+    //    }
+    //    currentDepth++;
+    //    var paths = GetPathsAround(origin, destination, obs, inflation, divCt);
+    //    if (paths == null)
+    //    {
+    //        Debug.Log("No paths around object could be found");
+    //        return false;
+    //    }
+        
+    //    var fixRoutes = new List<List<Vector3>>();
+    //    //dbgPaths.AddRange(paths);
+    //    foreach (var p in paths)
+    //    {
+    //        //find first edge that intersects an obstacle, if any
+    //        //record the first obstacle
+    //        //record an edge from start of that segment to the destination
+    //        obs = null;
+    //        bool foundObs = false;
+    //        var rPts = new List<Vector3>(routePts);
+    //        for (int v0 = 0; v0 < p.Count - 1; v0++)
+    //        {
+    //            int v1 = v0 + 1;
+    //            if (ObstacleExists(p[v0], p[v1], layerMask, out obs))
+    //            {
+    //                foundObs = true;
+    //                fixRoutes.Add(rPts);
+    //                break;
+    //            }
+    //            rPts.Add(p[v1]);
+    //        }
+    //        if (!foundObs)
+    //        {
+    //            for (int i = 1; i < p.Count; i++)
+    //            {
+    //                routePts.Add(p[i]);
+    //            }
+    //            Debug.Log("Routed around obstacle");
+    //            return true;
+    //        }
+    //    }
+    //    foreach (var toFix in fixRoutes)
+    //    {
+    //        var rPts = new List<Vector3>();
+    //        if (FindPath(toFix[toFix.Count - 1], destination, inflation, maxDepth, divCt, currentDepth, layerMask, out rPts))
+    //        {
+    //            routePts = new List<Vector3>(toFix);
+    //            for (int i = 1; i < rPts.Count; i++)
+    //            {
+    //                routePts.Add(rPts[i]);
+    //            }
+    //            return true;
+    //        }
+    //    }
+
+    //    Debug.Log("Path not found");
+    //    return false;
+    //}
+
+
+    /// <summary>
+    /// Routes around obstacle, if possible. Null on failure.
+    /// </summary>
+    private List<Vector3>[] GetPathsAround(Vector3 start, Vector3 end, List<Obstacle> obstacles)
+    {
+        var allPts = new List<Vertex>();
+        foreach (var o in obstacles)
+        {
+            foreach (var p in o.InflatedPts)
+            {
+                allPts.Add(new Vertex(p));
+            }
+        }
+        allPts.Add(new Vertex(start));
+        allPts.Add(new Vertex(end));
+        var rawHullPts = JarvisMarchAlgorithm.GetConvexHull(allPts);
+        var hullPts = new List<Vector3>();
+        foreach (var p in rawHullPts)
+        {
+            hullPts.Add(p.position);
+        }
+        int i0, i1;
+        if (!GetPtIdx(hullPts, start, out i0) || !GetPtIdx(hullPts, end, out i1))
+        {
+            Debug.Log("Skipping this convex hull because the start point is likely inside the obstacle in question");
+            return null;
+        }
+        var ptsPos = new List<Vector3> { hullPts[i0] };
+        var ptsNeg = new List<Vector3> { hullPts[i0] };
+        var dest = hullPts[i1];
+        bool foundPos = false;
+        bool foundNeg = false;
+        for (int i = 1; i <= hullPts.Count && (!foundPos || !foundNeg); i++)
+        {
+            if (!foundPos)
+            {
+                foundPos = BuildSinglePathAround(hullPts, ref ptsPos, i0, i, true, dest);
+            }
+            if (!foundNeg)
+            {
+                foundNeg = BuildSinglePathAround(hullPts, ref ptsNeg, i0, i, false, dest);
+            }
+        }
+        //These conditions shouldn't happen because two paths around a convex hull should be possible. They are error conditions.
+        if (!foundPos)
+        {
+            Debug.LogError("Failed to find path in positive direction around obstacle");
+            return null;
+        }
+        if (!foundNeg)
+        {
+            Debug.LogError("Failed to find path in negative direction around obstacle");
+            return null;
+        }
+
+
+        if (GetPathLength(ptsPos) < GetPathLength(ptsNeg))
+        {
+            return new[] { ptsPos, ptsNeg };
+        }
+
+        return new[] { ptsNeg, ptsPos };
+    }
+
+
+    ///// <summary>
+    ///// Routes around obstacle, if possible. Returns array ordered from shortest to longest path. Null on failure.
+    ///// </summary>
+    //private List<Vector3>[] GetPathsAround(Vector3 start, Vector3 end, RestrictionZoneBase obstacle, float inflation, int divCt)
+    //{
+
+    //    //var off1 = OffsetCrv(obstacle, inflation);
+    //    //var off2 = OffsetCrv(obstacle, inflation * -1);
+    //    //if (off1 == null && off2 == null)
+    //    //{
+    //    //    Print("Offset failed");
+    //    //    return null;
+    //    //}
+    //    //double d1 = off1 != null ? off1.GetLength() : 0;
+    //    //double d2 = off2 != null ? off2.GetLength() : 0;
+    //    //Curve inflatedObs = d1 > d2 ? off1 : off2;
+
+    //    var inflatedPts = obstacle.GetBoundaryPtsAtHeight(start.y, inflation);
+    //    var allPts = new List<Vertex>();
+    //    foreach (var p in inflatedPts)
+    //    {
+    //        allPts.Add(new Vertex(p));
+    //    }
+    //    allPts.Add(new Vertex(start));
+    //    allPts.Add(new Vertex(end));
+
+    //    //i guess we don't need to check containment...it's nice but not required.
+
+    //    //if (inflatedObs.Contains(edge.From, Plane.WorldXY, 0.001) != PointContainment.Outside || inflatedObs.Contains(edge.To, Plane.WorldXY, 0.001) != PointContainment.Outside)
+    //    //{
+    //    //    Print("Skipping this convex hull because the start point is inside the obstacle in question");
+    //    //    return null;
+    //    //}
+    //    //Point3d[] cPts;
+    //   // inflatedObs.DivideByCount(divCt, true, out cPts);
+    //    //List<Point3d> allPts = cPts.ToList();
+    //    //allPts.Add(edge.From);
+    //    //allPts.Add(edge.To);
+    //    var rawHullPts = JarvisMarchAlgorithm.GetConvexHull(allPts);
+    //    var hullPts = new List<Vector3>();
+    //    foreach (var p in rawHullPts)
+    //    {
+    //        hullPts.Add(p.position);
+    //    }
+    //    int i0, i1;
+
+    //    if (!GetPtIdx(hullPts, start, out i0) || !GetPtIdx(hullPts, end, out i1))
+    //    {
+    //        Debug.Log("Skipping this convex hull because the start point is likely inside the obstacle in question");
+    //        return null;
+    //    }
+    //    List<Vector3> ptsPos = new List<Vector3> { hullPts[i0] };
+    //    List<Vector3> ptsNeg = new List<Vector3> { hullPts[i0] };
+    //    Vector3 dest = hullPts[i1];
+    //    bool foundPos = false;
+    //    bool foundNeg = false;
+    //    for (int i = 1; i <= hullPts.Count && (!foundPos || !foundNeg); i++)
+    //    {
+    //        if (!foundPos)
+    //        {
+    //            foundPos = BuildSinglePathAround(hullPts, ref ptsPos, i0, i, true, dest);
+    //        }
+    //        if (!foundNeg)
+    //        {
+    //            foundNeg = BuildSinglePathAround(hullPts, ref ptsNeg, i0, i, false, dest);
+    //        }
+    //    }
+    //    //These conditions shouldn't happen because two paths around a convex hull should be possible. They are error conditions.
+    //    if (!foundPos)
+    //    {
+    //        Debug.LogError("Failed to find path in positive direction around obstacle");
+    //        return null;
+    //    }
+    //    if (!foundNeg)
+    //    {
+    //        Debug.LogError("Failed to find path in negative direction around obstacle");
+    //        return null;
+    //    }
+
+    //    if (GetPathLength(ptsPos) < GetPathLength(ptsNeg))
+    //    {
+    //        return new[] { ptsPos, ptsNeg };
+    //    }
+
+    //    return new [] { ptsNeg, ptsPos };
+    //}
+
+    /// <summary>
+    /// Returns length of journey through all points in path.
+    /// </summary>
+    private float GetPathLength(List<Vector3> pts)
+    {
+        float length = 0;
+        for (int i = 0; i < pts.Count - 1; i++)
+        {
+            int j = i + 1;
+            length += Vector3.Distance(pts[i], pts[j]);
+        }
+
+        return length;
+    }
+
+    /// <summary>
+    /// Builds the path around the hull in one direction (positive or negative), returning true when destination point reached.
+    /// </summary>
+    private bool BuildSinglePathAround(List<Vector3> hullPts, ref List<Vector3> route, int startI, int currentStep, bool isPos, Vector3 destination)
+    {
+        int nextPtIdx;
+        if (isPos)
+        {
+            nextPtIdx = startI + currentStep < hullPts.Count ? startI + currentStep : (startI + currentStep) - hullPts.Count;
+        }
+        else
+        {
+            nextPtIdx = startI - currentStep >= 0 ? startI - currentStep : hullPts.Count + (startI - currentStep);
+        }
+
+        Vector3 nextPt = hullPts[nextPtIdx];
+        route.Add(nextPt);
+        return (destination - nextPt).magnitude < 0.001;
+    }
+
+    /// <summary>
+    /// Returns true if found point, and index of it.
+    /// </summary>
+    private bool GetPtIdx(List<Vector3> points, Vector3 p, out int i)
+    {
+        for (i = 0; i < points.Count; i++)
+        {
+            if ((points[i] - p).magnitude < 0.01f)
+            {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    ///// <summary>
+    ///// Returns true, if obstacle exists, and first obstacle
+    ///// </summary>
+    //private bool ObstacleExists(Vector3 from, Vector3 to, int layerMask, out RestrictionZoneBase obs)
+    //{
+    //    obs = null;
+    //    var h = Physics.RaycastAll(from, to - from, Vector3.Distance(from, to), layerMask);
+    //    if (h == null || h.Length == 0)
+    //    {
+    //        return false;
+    //    }
+    //    obs = GetClosestHitRestrictionZone(from, h)?.RestrictionZoneSpecs;
+    //    return obs != null;
+    //}
+
+    /// <summary>
+    /// Returns true, if obstacle exists, and first obstacle
+    /// </summary>
+    private bool ObstacleExists(Vector3 from, Vector3 to, List<List<Obstacle>> obstacleGroups, int layerMask, out List<Obstacle> obs)
+    {
+        obs = new List<Obstacle>();
+        var h = Physics.RaycastAll(from, to - from, Vector3.Distance(from, to), layerMask);
+        if (h == null || h.Length == 0)
+        {
+            return false;
+        }
+        var rZ = GetClosestHitRestrictionZone(from, h);
+        if (rZ == null)
+        {
+            Debug.LogError("None of the hit objects is a restriction zone");
+            return false;
+        }
+
+        foreach (var oG in obstacleGroups)
+        {
+            foreach (var o in oG)
+            {
+                if (o.ObjectId == rZ.Guid)
+                {
+                    obs = oG;
+                    return true;
+                }
+            }
+        }
+
+        Debug.LogError("Couldn't find hit restriction zone in set of obstacle groups");
+        return false;
     }
 
     public List<Vector3> FindPath(Vector3 origin, Vector3 destination, int angleIncrement, int layerMask)
@@ -753,9 +1444,16 @@ public class VehicleControlSystem : MonoBehaviour
             var h = Physics.RaycastAll(visited[head], destination - visited[head], Vector3.Distance(visited[head], destination), layerMask);
             RaycastHit currentHitObject = GetClosestHit(visited[head], h);
             Vector3 lastHit = currentHitObject.point;
-            for (int i = angleIncrement; i <= 85; i += angleIncrement)
+            for (int i = angleIncrement; i <= 180; i += angleIncrement)
             {
-                Vector3 currentVector = destination - visited[head];
+                //Vector3 currentVector = destination - visited[head];
+
+
+                //to go around an object, you have two choices: left or right
+                //we choose one direction, based on least deviation from current heading
+                //but we need to know both in order to evaluate.
+
+
                 RaycastHit[] hit = Physics.RaycastAll(visited[head], Quaternion.Euler(0, i, 0) * (destination - visited[head]), Vector3.Distance(visited[head], destination), layerMask);
                 if (hit.Length == 0 || !hit[0].transform.Equals(currentHitObject.transform)) // If the ray does not hit anything or does not hit the first hitted object anymore
                 {
@@ -770,17 +1468,15 @@ public class VehicleControlSystem : MonoBehaviour
                     }
                     break;
                 }
-                else
-                {
-                    lastHit = hit[0].point;
-                }
+                lastHit = hit[0].point;
+                
             }
 
             // Do the same thing in the opposite direction
             lastHit = currentHitObject.point;
-            for (int i = angleIncrement; i <= 85; i += angleIncrement)
+            for (int i = angleIncrement; i <= 180; i += angleIncrement)
             {
-                Vector3 currentVector = destination - visited[head];
+                //Vector3 currentVector = destination - visited[head];
                 RaycastHit[] hit = Physics.RaycastAll(visited[head], Quaternion.Euler(0, -i, 0) * (destination - visited[head]), Vector3.Distance(visited[head], destination), layerMask);
                 if (hit.Length == 0 || !hit[0].transform.Equals(currentHitObject.transform)) // If the ray does not hit anything or does not hit the first hitted object anymore
                 {
@@ -791,10 +1487,7 @@ public class VehicleControlSystem : MonoBehaviour
                     tail++;
                     break;
                 }
-                else
-                {
-                    lastHit = hit[0].point;
-                }
+                lastHit = hit[0].point;
             }
 
             head++;

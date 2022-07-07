@@ -121,6 +121,35 @@ namespace Assets.Scripts.Environment
             return new RestrictionZoneRect(this);
         }
 
+        public override List<Vector3> GetBoundaryPtsAtHeight(float height, float inflation)
+        {
+            float width = _scale.X;
+            float depth = _scale.Z;
+            float h = (float) Math.Sqrt(Math.Pow(width / 2, 2) + Math.Pow(depth / 2, 2));//hypotenuse
+            float r = h + inflation;//radius of circle that inscribes the inflated rectangle
+            float scaleFactor = r / h;
+            width *= scaleFactor;
+            depth *= scaleFactor;
+            Vector2[] corners = {new Vector2(width / 2, depth / 2), new Vector2(width / 2 * -1, depth / 2), new Vector2(width / 2 * -1, depth / 2 * -1), new Vector2(width / 2, depth / 2 * -1)};
+            var rotRad = (float)(Math.PI / 180) * _rotation.Y;
+            var rotCorners = new List<Vector3>();
+            for (int i = 0; i < 4; i++)
+            {
+                var c = new Vector3(_position.X + corners[i].x, height, _position.Z + corners[i].y);
+                var dir = c - Position;
+                dir = Quaternion.Euler(0, _rotation.Y, 0) * dir;
+                c = Position + dir;
+                rotCorners.Add(c);
+
+                //double a = (double) rotRad + Math.Asin((double) (c.y / c.x));
+                //float x = _position.X + (float)Math.Cos(a) * r;
+                //float z = _position.Z + (float)Math.Sin(a) * r;
+                //rotCorners.Add(new Vector3(x, height, z));
+            }
+
+            return rotCorners;
+        }
+
         public void SetXScale(float x)
         {
             _scale = new SerVect3f(x, Scale.y, Scale.z);
