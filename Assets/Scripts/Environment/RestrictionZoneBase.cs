@@ -23,7 +23,7 @@ namespace Assets.Scripts.Environment
         public abstract RestrictionZoneBase GetCopy();
 
         /// <summary>
-        /// Builds boundary points at specified height, projecting boundary points onto this height value. Inflated by specified amount
+        /// Builds boundary points at specified height, if they exist at all. Inflated by specified amount. Empty list if this height does not intersect the volume.
         /// </summary>
         public abstract List<Vector3> GetBoundaryPtsAtHeight(float height, float inflation);
     }

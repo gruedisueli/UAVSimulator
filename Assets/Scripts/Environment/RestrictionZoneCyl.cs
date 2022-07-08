@@ -202,6 +202,10 @@ namespace Assets.Scripts.Environment
 
         public override List<Vector3> GetBoundaryPtsAtHeight(float height, float inflation)
         {
+            if (height < Bottom || height > Top)
+            {
+                return new List<Vector3>();
+            }
             var pts = new List<Vector3>();
             int divCt = 100;
             double inc = Math.PI * 2 / divCt;

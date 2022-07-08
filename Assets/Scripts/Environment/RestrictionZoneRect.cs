@@ -123,6 +123,13 @@ namespace Assets.Scripts.Environment
 
         public override List<Vector3> GetBoundaryPtsAtHeight(float height, float inflation)
         {
+            float halfH = Scale.y / 2;
+            float bottom = Position.y - halfH;
+            float top = Position.y + halfH;
+            if (height < bottom || height > top)
+            {
+                return new List<Vector3>();
+            }
             float width = _scale.X;
             float depth = _scale.Z;
             float h = (float) Math.Sqrt(Math.Pow(width / 2, 2) + Math.Pow(depth / 2, 2));//hypotenuse

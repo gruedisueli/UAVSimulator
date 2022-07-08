@@ -678,14 +678,14 @@ public class VehicleControlSystem : MonoBehaviour
                 Vector3 corridor_to_from_start = new Vector3(toPosition.x, utmElev + utmSep, toPosition.z);
                 Vector3 corridor_to_from_end = new Vector3(fromPosition.x, utmElev + utmSep, fromPosition.z);
 
-                if (!BestRouteAroundObstacles(corridor_from_to_start, corridor_from_to_end, obstacleGroups, layerMask, 10, 0, out var wayPoints))
+                if (!BestRouteAroundObstacles(corridor_from_to_start, corridor_from_to_end, obstacleGroups, layerMask, 10, 0, 100, out var wayPoints))
                 {
                     continue;
                 }
                 //wayPoints.Insert(0, corridor_from_to_start);
                 corridor_from_to.wayPoints = new Queue<Vector3>(wayPoints);
 
-                if (!BestRouteAroundObstacles(corridor_to_from_start, corridor_to_from_end, obstacleGroups, layerMask, 10, 0, out wayPoints))
+                if (!BestRouteAroundObstacles(corridor_to_from_start, corridor_to_from_end, obstacleGroups, layerMask, 10, 0, 100, out wayPoints))
                 {
                     continue;
                 }
@@ -983,7 +983,7 @@ public class VehicleControlSystem : MonoBehaviour
     /// <summary>
     /// Routes curve around obstacles. False on failure.
     /// </summary>
-    private bool BestRouteAroundObstacles(Vector3 startPt, Vector3 endPt, List<List<Obstacle>> obstacleGroups, int layerMask, int maxDepth, int currentDepth, out List<Vector3> routePts)
+    private bool BestRouteAroundObstacles(Vector3 startPt, Vector3 endPt, List<List<Obstacle>> obstacleGroups, int layerMask, int maxDepth, int currentDepth, float divDist, out List<Vector3> routePts)
     {
         routePts = new List<Vector3>() { startPt };
         if (currentDepth > maxDepth)
@@ -998,7 +998,7 @@ public class VehicleControlSystem : MonoBehaviour
         }
 
         currentDepth++;
-        var paths = GetPathsAround(startPt, endPt, obs);
+        var paths = GetPathsAround(startPt, endPt, obs, obstacleGroups, divDist, layerMask);
         if (paths == null)
         {
             Debug.Log("No paths around object could be found");
@@ -1043,7 +1043,7 @@ public class VehicleControlSystem : MonoBehaviour
             c++;
             var toFix = fixRoutes[f];
             var rPts = new List<Vector3>();
-            if (BestRouteAroundObstacles(toFix[toFix.Count - 1], endPt, obstacleGroups, layerMask, maxDepth, currentDepth, out rPts))
+            if (BestRouteAroundObstacles(toFix[toFix.Count - 1], endPt, obstacleGroups, layerMask, maxDepth, currentDepth, divDist, out rPts))
             {
                 var tmpPts = new List<Vector3>(toFix);
                 for (int i = 1; i < rPts.Count; i++)
@@ -1095,6 +1095,8 @@ public class VehicleControlSystem : MonoBehaviour
         }
         return modPts;
     }
+
+
 
 
     ///// <summary>
@@ -1175,7 +1177,7 @@ public class VehicleControlSystem : MonoBehaviour
     /// <summary>
     /// Routes around obstacle, if possible. Null on failure.
     /// </summary>
-    private List<Vector3>[] GetPathsAround(Vector3 start, Vector3 end, List<Obstacle> obstacles)
+    private List<Vector3>[] GetPathsAround(Vector3 start, Vector3 end, List<Obstacle> obstacles, List<List<Obstacle>> obstacleGroups, float divDist, int layerMask)
     {
         var allPts = new List<Vertex>();
         foreach (var o in obstacles)
@@ -1193,12 +1195,35 @@ public class VehicleControlSystem : MonoBehaviour
         {
             hullPts.Add(p.position);
         }
-        int i0, i1;
-        if (!GetPtIdx(hullPts, start, out i0) || !GetPtIdx(hullPts, end, out i1))
+
+        var haveI0 = GetPtIdx(hullPts, start, out int i0);
+        var haveI1 = GetPtIdx(hullPts, end, out int i1);
+        if (!haveI0 || !haveI1)
         {
-            Debug.Log("Skipping this convex hull because the start point is likely inside the obstacle in question");
-            return null;
+            if (!haveI0)
+            {
+                if (!RouteVertexToHull(start, ref hullPts, obstacleGroups, divDist, layerMask))
+                {
+                    Debug.Log("Could not route from point to hull.");
+                    return null;
+                }
+            }
+            if (!haveI1)
+            {
+                if (!RouteVertexToHull(end, ref hullPts, obstacleGroups, divDist, layerMask))
+                {
+                    Debug.Log("Could not route from point to hull.");
+                    return null;
+                }
+            }
+
+            if (!GetPtIdx(hullPts, start, out i0) || !GetPtIdx(hullPts, end, out i1))
+            {
+                Debug.LogError("ERROR: failed to find start or end point in list of modified hull points.");
+                return null;
+            }
         }
+
         var ptsPos = new List<Vector3> { hullPts[i0] };
         var ptsNeg = new List<Vector3> { hullPts[i0] };
         var dest = hullPts[i1];
@@ -1236,6 +1261,57 @@ public class VehicleControlSystem : MonoBehaviour
         return new[] { ptsNeg, ptsPos };
     }
 
+    /// <summary>
+    /// Returns false if could not find a path from vertex to hull. Returns true and the point if so.
+    /// </summary>
+    private bool RouteVertexToHull(Vector3 v, ref List<Vector3> hull, List<List<Obstacle>> obstacleGroups, float divDist, int layerMask)
+    {
+        List<Tuple<Vector3, float, bool, int>> goodPts = new List<Tuple<Vector3, float, bool, int>>();
+        for (int i = 0; i < hull.Count; i++)
+        {
+            int j = i < hull.Count - 1 ? i + 1 : 0;
+            var h0 = hull[i];
+            var h1 = hull[j];
+            var dir = h1 - h0;
+            dir = dir.normalized;
+            float dist = Vector3.Distance(h0, h1);
+            int divCt = (int) Math.Floor(dist / divDist);
+            float inc = dist / divCt;
+            for (int z = 0; z < divCt; z++)
+            {
+                float d = z * inc;
+                var sample = h0 + dir * d;
+                if (!ObstacleExists(v, sample, obstacleGroups, layerMask, out _))
+                {
+                    goodPts.Add(Tuple.Create(sample, Vector3.Distance(v, sample), z == 0, i));
+                }
+            }
+        }
+
+        if (goodPts.Count == 0)
+        {
+            Debug.Log("No good path found out of concave corner");
+            return false;
+        }
+        goodPts = goodPts.OrderBy(p => p.Item2).ToList();
+        var foundPt = goodPts[0].Item1;
+        var foundIsHullPt = goodPts[0].Item3;
+        var insertionIndex = goodPts[0].Item4;
+
+        if (foundIsHullPt)
+        {
+            hull.Insert(insertionIndex + 1, v);
+            hull.Insert(insertionIndex + 2, foundPt);
+        }
+        else
+        {
+            hull.Insert(insertionIndex + 1, foundPt);
+            hull.Insert(insertionIndex + 2, v);
+            hull.Insert(insertionIndex + 3, foundPt);
+        }
+
+        return true;
+    }
 
     ///// <summary>
     ///// Routes around obstacle, if possible. Returns array ordered from shortest to longest path. Null on failure.
@@ -1362,12 +1438,14 @@ public class VehicleControlSystem : MonoBehaviour
     /// <summary>
     /// Returns true if found point, and index of it.
     /// </summary>
-    private bool GetPtIdx(List<Vector3> points, Vector3 p, out int i)
+    private bool GetPtIdx(List<Vector3> points, Vector3 p, out int index)
     {
-        for (i = 0; i < points.Count; i++)
+        index = -1;
+        for (int i = 0; i < points.Count; i++)
         {
-            if ((points[i] - p).magnitude < 0.01f)
+            if (Vector3.Distance(points[i], p) < 0.001)
             {
+                index = i;
                 return true;
             }
         }
