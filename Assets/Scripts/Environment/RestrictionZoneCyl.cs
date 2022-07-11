@@ -67,7 +67,7 @@ namespace Assets.Scripts.Environment
             set
             {
                 _radius = value;
-                _scale = new SerVect3f(value, Scale.y, value);
+                _scale = new SerVect3f(value * 2, Scale.y, value * 2);
             }
         }
 
@@ -148,7 +148,7 @@ namespace Assets.Scripts.Environment
         }
 
         [JsonProperty]
-        private SerVect3f _scale = new SerVect3f(DEFAULT_RADIUS, DEFAULT_HEIGHT, DEFAULT_RADIUS);
+        private SerVect3f _scale = new SerVect3f(DEFAULT_RADIUS * 2, DEFAULT_HEIGHT, DEFAULT_RADIUS * 2);
         public Vector3 Scale
         {
             get
@@ -198,6 +198,27 @@ namespace Assets.Scripts.Environment
         public override RestrictionZoneBase GetCopy()
         {
             return new RestrictionZoneCyl(this);
+        }
+
+        public override List<Vector3> GetBoundaryPtsAtHeight(float height, float inflation)
+        {
+            if (height < Bottom || height > Top)
+            {
+                return new List<Vector3>();
+            }
+            var pts = new List<Vector3>();
+            int divCt = 100;
+            double inc = Math.PI * 2 / divCt;
+            double r = (double)Radius + (double)inflation;
+            for (int i = 0; i < divCt; i++)
+            {
+                double a = i * inc;
+                float x = _position.X + (float)(r * Math.Cos(a));
+                float z = _position.Z + (float)(r * Math.Sin(a));
+                pts.Add(new Vector3(x, height, z));
+            }
+
+            return pts;
         }
 
         public void SetXZPos(Vector3 xz)

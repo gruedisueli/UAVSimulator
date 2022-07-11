@@ -21,5 +21,10 @@ namespace Assets.Scripts.Environment
         public abstract Vector3 Position { get; set; }
         public abstract void UpdateParams(ModifyPropertyArgBase args);
         public abstract RestrictionZoneBase GetCopy();
+
+        /// <summary>
+        /// Builds boundary points at specified height, if they exist at all. Inflated by specified amount. Empty list if this height does not intersect the volume.
+        /// </summary>
+        public abstract List<Vector3> GetBoundaryPtsAtHeight(float height, float inflation);
     }
 }

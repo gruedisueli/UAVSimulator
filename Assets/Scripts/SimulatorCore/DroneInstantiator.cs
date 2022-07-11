@@ -163,6 +163,10 @@ namespace Assets.Scripts.SimulatorCore
             foreach (var key in sceneManager.ParkingStructures.Keys)
             {
                 var sPS = sceneManager.ParkingStructures[key];
+                if (!sPS.IsPositionValid)
+                {
+                    continue;
+                }
                 ParkingControl pC = sPS.ParkingCtrl;
                 bool isLE = sPS.ParkingStructureSpecs.Type.Contains("LowAltitude");
                 if ((isCorridor && isLE) || (!isCorridor && !isLE))

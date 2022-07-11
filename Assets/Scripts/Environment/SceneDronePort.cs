@@ -21,6 +21,7 @@ namespace Assets.Scripts.Environment
         public override Canvas SceneCanvas { get; protected set; } = null;
         public DronePortBase DronePortSpecs { get; private set; }
         public DronePortControl DronePortCtrl { get; private set; }
+        public bool IsPositionValid { get; set; } = true;
 
         public void Initialize(DronePortBase dP, string guid, Canvas canvas)
         {

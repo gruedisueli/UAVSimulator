@@ -99,6 +99,11 @@ namespace Assets.Scripts.Environment
             return new RestrictionZoneCylStack(this);
         }
 
+        public override List<Vector3> GetBoundaryPtsAtHeight(float height, float inflation)
+        {
+            throw new NotImplementedException();
+        }
+
         public void SetXZPos(Vector3 xz)
         {
             _position = new SerVect3f(xz.x, Position.y, xz.z);

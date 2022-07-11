@@ -21,6 +21,7 @@ namespace Assets.Scripts.Environment
         public override Canvas SceneCanvas { get; protected set; } = null;
         public ParkingStructureBase ParkingStructureSpecs { get; private set; }
         public ParkingControl ParkingCtrl { get; private set; }
+        public bool IsPositionValid { get; set; } = true;
 
         public void Initialize(ParkingStructureBase pS, string guid, Canvas canvas)
         {
