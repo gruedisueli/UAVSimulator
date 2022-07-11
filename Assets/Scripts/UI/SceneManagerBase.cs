@@ -930,7 +930,7 @@ namespace Assets.Scripts.UI
                 yield break;
             }
 
-            var args = new ModifyElementArgs(this, new ModifyVector3PropertyArg(ElementPropertyType.Position, hitInfo.point));
+            var args = new ModifyElementArgs(this, new ModifyVector3PropertyArg(ElementPropertyType.Position, ((RaycastHit)hitInfo).point));
             if (_selectedElement is SceneDronePort)
             {
                 DronePortUpdate(args);

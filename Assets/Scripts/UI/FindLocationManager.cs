@@ -63,7 +63,7 @@ namespace Assets.Scripts.UI
             }
             if (Input.GetMouseButtonUp(0) && !_CameraAdjustment.IsPanningCamera && !EventSystem.current.IsPointerOverGameObject() && GUIUtils.TryToSelect(out var hitInfo))
             {
-                PlaceMarker(hitInfo);
+                PlaceMarker((RaycastHit)hitInfo);
             }
         }
 

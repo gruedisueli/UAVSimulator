@@ -14,19 +14,19 @@ namespace Assets.Scripts.UI
         /// <summary>
         /// Tries to select a point for adding elements on an existing UnityTile. Returns true if hit something we want, else false.
         /// </summary>
-        public static bool TryToSelect(out RaycastHit hitInfo)
+        public static bool TryToSelect(out RaycastHit? hitInfo)
         {
-            if (Physics.Raycast(Camera.main.ScreenPointToRay(Input.mousePosition), out hitInfo))
+            int layerMask = 1 >> 14 | 1 >> 9;//14=ground, 9=building
+            var r = Physics.RaycastAll(Camera.main.ScreenPointToRay(Input.mousePosition), 1000000, layerMask);
+            hitInfo = null;
+            if (r == null || r.Length == 0)
             {
-                var gO = hitInfo.transform.gameObject;
-                var uT = gO.GetComponentInParent<UnityTile>();
-                if (uT != null) //check that we've hit a terrain tile and not something else like a button.
-                {
-                    return true;
-                }
+                Debug.Log("No hit");
+                return false;
             }
-            Debug.Log("No hit");
-            return false;
+
+            hitInfo = r[0];
+            return true;
         }
     }
 }

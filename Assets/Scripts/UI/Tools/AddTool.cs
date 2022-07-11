@@ -75,8 +75,8 @@ namespace Assets.Scripts.UI.Tools
             {
                 if (GUIUtils.TryToSelect(out var hitInfo))
                 {
-                    _hitInfo = hitInfo;
-                    _position = hitInfo.point;
+                    _hitInfo = (RaycastHit)hitInfo;
+                    _position = _hitInfo.point;
                     ElementAddedEvent.Invoke(GatherInformation());
                 }
             }
