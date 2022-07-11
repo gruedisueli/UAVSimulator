@@ -68,10 +68,6 @@ namespace Assets.Scripts.UI.Tools
                             {
                                 n = "Cylindrical Restriction";
                             }
-                            else if (a.Category == RestrictionZoneCategory.CylindricalStacked)
-                            {
-                                n = "Stacked Restriction";
-                            }
                             InstantiateButton(_family, kvp.Key, a, n);
                         }
                         break;

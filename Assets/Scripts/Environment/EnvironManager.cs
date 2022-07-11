@@ -469,10 +469,6 @@ namespace Assets.Scripts.Environment
                     {
                         c = RestrictionZoneCategory.Rect;
                     }
-                    else if (type.Contains("Cyl_Stacked"))
-                    {
-                        c = RestrictionZoneCategory.CylindricalStacked;
-                    }
                     else
                     {
                         c = RestrictionZoneCategory.Cylindrical;

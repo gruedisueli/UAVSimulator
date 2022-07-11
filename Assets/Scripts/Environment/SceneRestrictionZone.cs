@@ -52,16 +52,6 @@ namespace Assets.Scripts.Environment
                 transform.position = new Vector3(rCyl.Position.x, 0, rCyl.Position.z);
                 InstantiateCyl(rCyl);
             }
-            else if (rZ is RestrictionZoneCylStack)
-            {
-                type = "CylStacked";
-                var tmp = rZ as RestrictionZoneCylStack;
-                transform.position = new Vector3(tmp.Position.x, 0, tmp.Position.z);
-                foreach(var t  in tmp.Elements)
-                {
-                    InstantiateCyl(t);
-                }
-            }
 
             gameObject.name = "RestrictionZone_" + type;
             gameObject.tag = "RestrictionZone";
@@ -130,19 +120,6 @@ namespace Assets.Scripts.Environment
                 else
                 {
                     Debug.LogError("Wrong list length for cylindrical restriction zone game objects");
-                }
-            }
-            else if (RestrictionZoneSpecs is RestrictionZoneCylStack)
-            {
-                var rZ = RestrictionZoneSpecs as RestrictionZoneCylStack;
-                if (rZ == null || rZ.Elements.Length != SubElements.Count)
-                {
-                    Debug.LogError("List length mismatch in restriction zone");
-                    return;
-                }
-                for (int i = 0; i < rZ.Elements.Length; i++)
-                {
-                    UpdateSingleCyl(SubElements[i], rZ.Elements[i]);
                 }
             }
         }

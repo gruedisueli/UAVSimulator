@@ -33,8 +33,7 @@ namespace Assets.Scripts
     {
         Unset,
         Rect,
-        Cylindrical,
-        CylindricalStacked
+        Cylindrical
     }
 
     public enum ToolMessageCategory
@@ -185,8 +184,7 @@ namespace Assets.Scripts
     public enum RestrictionPanelType
     {
         Rect = 0,
-        Cyl = 1,
-        CylStacked = 2
+        Cyl = 1
     }
 
     public enum ParkingPanelType
