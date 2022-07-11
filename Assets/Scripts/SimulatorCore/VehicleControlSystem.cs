@@ -651,7 +651,7 @@ public class VehicleControlSystem : MonoBehaviour
     private bool GenerateNetwork()
     {
         DroneNetwork = new Assets.Scripts.DataStructure.Network();
-        int layerMask = 1 << 9 | 1 << 8;
+        int layerMask = 1 << 8;//layer 8 = restriction zones.
         List<GameObject> points = new List<GameObject>();
         var utmElev = EnvironManager.Instance.Environ.SimSettings.CorridorFlightElevation_M;
         foreach (SceneDronePort sdp in sceneManager.DronePorts.Values)
