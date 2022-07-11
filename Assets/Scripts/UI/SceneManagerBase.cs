@@ -955,35 +955,26 @@ namespace Assets.Scripts.UI
         /// </summary>
         protected void CheckPartsForSimulation()
         {
-            var e = EnvironManager.Instance.Environ;
-            int c = e.DronePorts.Count;
-            bool ready = false;
-            foreach (var ps in e.ParkingStructures)
+            bool corridorReady = _vehicleControlSystem.IsNetworkValid;
+            bool lowAltReady = false;
+            var parkStructs = FindObjectsOfType<SceneParkingStructure>(true);
+            foreach (var ps in parkStructs)
             {
-                bool isLowAlt = ps.Value.Type.Contains("LowAltitude");
-                if (c > 0)//user is building drone ports, expecting a parking structure for them...
+                if (ps.ParkingStructureSpecs.Type.Contains("LowAltitude") && ps.IsPositionValid)
                 {
-                    if (!isLowAlt && c >= 3)
-                    {
-                        ready = true;
-                        break;
-                    }
-                }
-                else if (isLowAlt)//user may not be building drone ports.
-                {
-                    ready = true;
+                    lowAltReady = true;
                     break;
                 }
             }
 
-            if (ready)
+            if (corridorReady || lowAltReady)
             {
                 _playPause._toolTip.SetText("Play / Stop Simulation");
                 _playPause.SetIsInteractable(true);
             }
             else
             {
-                _playPause._toolTip.SetText("Add either: (3 landing pads & 1 corridor parking structure)\nor (1 low altitude parking structure)\nto run simulation");
+                _playPause._toolTip.SetText("Add either: (2 landing pads & 1 corridor parking structure)\nor (1 low altitude parking structure)\nto run simulation.\nEnsure that structures are placed outside of restriction zones.");
                 _playPause.SetIsInteractable(false);
             }
         }

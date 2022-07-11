@@ -31,6 +31,7 @@ using Vector3 = UnityEngine.Vector3;
 /// </summary>
 public class VehicleControlSystem : MonoBehaviour
 {
+    public bool IsNetworkValid { get; private set; } = false;
     public bool TEMPORARY_IsRegionView = true;
     public SimulationAnalyzer _simulationAnalyzer;
     public float MIN_DRONE_RANGE;
@@ -175,7 +176,7 @@ public class VehicleControlSystem : MonoBehaviour
         }
         else if (_networkUpdateFlag)
         {
-            GenerateNetwork();
+            IsNetworkValid = GenerateNetwork();
             VisualizeNetwork();
             _networkUpdateFlag = false;
         }
@@ -488,11 +489,15 @@ public class VehicleControlSystem : MonoBehaviour
         
         foreach(var sDP in sceneManager.DronePorts.Values)
         {
+            if (!sDP.IsPositionValid)
+            {
+                continue;
+            }
             landings.Add(sDP.gameObject);
         }
         List<int> indices = new List<int>();
         List<GameObject> destinationList = new List<GameObject>();
-        int value = 0, destinationCount = UnityEngine.Random.Range(1, sceneManager.DronePorts.Values.Count + 1);
+        int value = 0, destinationCount = UnityEngine.Random.Range(1, landings.Count + 1);
         float range = MIN_DRONE_RANGE;
 
         for (int i = 0; i < destinationCount; i++)
@@ -519,6 +524,10 @@ public class VehicleControlSystem : MonoBehaviour
         // For all parking structures
         foreach (var sPS in sceneManager.ParkingStructures.Values)
         {
+            if (!sPS.IsPositionValid)
+            {
+                continue;
+            }
             var gO = sPS.gameObject;
             // find the nearest one with parked vehicles
             if (sPS.ParkingCtrl.VehicleAt.Keys.Count > 0 && sPS.ParkingCtrl.queueLength < 3 && !sPS.ParkingStructureSpecs.Type.Contains("LowAltitude"))
@@ -547,6 +556,10 @@ public class VehicleControlSystem : MonoBehaviour
         // For all parking structures
         foreach (var sPS in sceneManager.ParkingStructures.Values)
         {
+            if (!sPS.IsPositionValid)
+            {
+                continue;
+            }
             var gO = sPS.gameObject;
             // find the nearest one with parked vehicles
             if (sPS.ParkingCtrl.VehicleAt.Keys.Count > 0 && sPS.ParkingStructureSpecs.Type.Contains("LowAltitude") && sPS.ParkingCtrl.queueLength < 3)
@@ -633,25 +646,43 @@ public class VehicleControlSystem : MonoBehaviour
     }
 
     /// <summary>
-    /// Generates data structure for network
+    /// Generates data structure for network. False on failure.
     /// </summary>
-    private void GenerateNetwork()
+    private bool GenerateNetwork()
     {
         DroneNetwork = new Assets.Scripts.DataStructure.Network();
+        int layerMask = 1 << 9 | 1 << 8;
         List<GameObject> points = new List<GameObject>();
-        foreach (SceneDronePort sdp in sceneManager.DronePorts.Values) points.Add(sdp.gameObject);
+        var utmElev = EnvironManager.Instance.Environ.SimSettings.CorridorFlightElevation_M;
+        foreach (SceneDronePort sdp in sceneManager.DronePorts.Values)
+        {
+            var p0 = sdp.gameObject.transform.position;
+            var p1 = new Vector3(p0.x, utmElev, p0.z);
+            sdp.IsPositionValid = !IsPointInsideObject(p1, layerMask);
+            if (sdp.IsPositionValid)
+            {
+                points.Add(sdp.gameObject);
+            }
+        }
         foreach (SceneParkingStructure sps in sceneManager.ParkingStructures.Values)
         {
-            if (!sps.ParkingStructureSpecs.Type.Contains("LowAltitude")) points.Add(sps.gameObject);
+            var p0 = sps.gameObject.transform.position;
+            var p1 = new Vector3(p0.x, utmElev, p0.z);
+            sps.IsPositionValid = !IsPointInsideObject(p1, layerMask);
+            if (!sps.ParkingStructureSpecs.Type.Contains("LowAltitude"))
+            {
+                if (sps.IsPositionValid)
+                {
+                    points.Add(sps.gameObject);
+                }
+            }
         }
 
-        if (points.Count < 3) return;
+        if (points.Count < 3) return false;
 
         IPoint[] vertices = GetVertices(points);
         Delaunator delaunay = new Delaunator(vertices);
         DroneNetwork.vertices = points;
-        var utmElev = EnvironManager.Instance.Environ.SimSettings.CorridorFlightElevation_M;
-        int layerMask = 1 << 9 | 1 << 8;
         var obstacleGroups = GetGroupedObstacles(1, utmElev, layerMask);
         var utmSep = EnvironManager.Instance.Environ.SimSettings.CorridorSeparationDistance_M;
         var corrSpeed = EnvironManager.Instance.Environ.SimSettings.CorridorDroneSettings.MaxSpeed_MPS;
@@ -706,6 +737,7 @@ public class VehicleControlSystem : MonoBehaviour
             }
         }
 
+        return true;
     }
     public int nextHalfEdge(int e)
     {
@@ -837,48 +869,14 @@ public class VehicleControlSystem : MonoBehaviour
         return intersectingObjects.Count > 0;
     }
 
-    ///// <summary>
-    ///// Returns true if a point is inside an object on the specified layers.
-    ///// </summary>
-    //private static bool IsPointInsideObject(Vector3 p, int layerMask, out Collider containingCollider)
-    //{
-    //    //logic: a random vector from a point will result in an odd number of hits if the point is inside something.
-    //    //note, the containing object is not necessarily the first thing the ray hits.
-    //    var h = Physics.RaycastAll(p, Vector3.forward, 1000000, layerMask);
-    //    containingCollider = null;
-    //    if (h != null && h.Length % 2 == 1)
-    //    {
-    //        var instanceHitCts = new Dictionary<int, Tuple<Collider, int>>();
-    //        for (int i = 0; i < h.Length; i++)
-    //        {
-    //            var id = h[i].transform.gameObject.GetInstanceID();
-    //            if (instanceHitCts.ContainsKey(id))
-    //            {
-    //                var col = instanceHitCts[id];
-    //                var ct = col.Item2;
-    //                ct++;
-    //                instanceHitCts[id] = Tuple.Create(col.Item1, ct);
-    //            }
-    //            else
-    //            {
-    //                instanceHitCts.Add(id, Tuple.Create(h[i].collider, 1));
-    //            }
-    //        }
-
-    //        foreach (var kvp in instanceHitCts)
-    //        {
-    //            if (kvp.Value.Item2 % 2 == 1)
-    //            {
-    //                containingCollider = kvp.Value.Item1;
-    //                return true;
-    //            }
-    //        }
-
-    //        Debug.LogError("Could not locate containing object");
-    //    }
-
-    //    return false;
-    //}
+    /// <summary>
+    /// Returns true if a point is inside an object on the specified layers.
+    /// </summary>
+    private static bool IsPointInsideObject(Vector3 p, int layerMask)
+    {
+        var cols = Physics.OverlapSphere(p, 1, layerMask);
+        return cols != null && cols.Length > 0;
+    }
 
     /// <summary>
     /// Gets all obstacles, grouped by those that overlap within the specified elevation. Overlap is defined by an inflated point being within a neighboring restriction zone.
