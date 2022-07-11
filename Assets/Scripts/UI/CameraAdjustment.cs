@@ -32,6 +32,7 @@ namespace Assets.Scripts.UI
         public EventHandler<System.EventArgs> OnSetViewHome;
         public Camera _camera;
         public bool IsPanningCamera { get; private set; }
+        public bool IsTiltingCamera { get; private set; }
 
         public float _xSpeed = 200.0f;
         public float _ySpeed = 200.0f;
@@ -122,10 +123,12 @@ namespace Assets.Scripts.UI
             {
                 if (Input.GetMouseButtonDown(1))
                 {
+                    IsTiltingCamera = true;
                     OnStartTilt?.Invoke(this, System.EventArgs.Empty);
                 }
                 else if (Input.GetMouseButtonUp(1))
                 {
+                    IsTiltingCamera = false;
                     OnEndTilt?.Invoke(this, System.EventArgs.Empty);
                 }
             }

@@ -14,13 +14,23 @@ namespace Assets.Scripts.UI.Tools
     public class SelectableGameObject : MonoBehaviour
     {
         public EventHandler<SelectGameObjectArgs> OnSelected;
+        private CameraAdjustment _cameraAdjustment;
+
+        public void Awake()
+        {
+            _cameraAdjustment = FindObjectOfType<CameraAdjustment>(true);
+            if (_cameraAdjustment == null)
+            {
+                Debug.LogError("Could not find camera adjustment script in the scene");
+            }
+        }
 
         public void OnMouseUp()
         {
-            if (!EventSystem.current.IsPointerOverGameObject())//prevent selection of objects behind GUI
+            if (!EventSystem.current.IsPointerOverGameObject() && !_cameraAdjustment.IsTiltingCamera && !_cameraAdjustment.IsPanningCamera)
             {
                 Debug.Log("Clicked selectable game object");
-                if ( OnSelected != null) OnSelected.Invoke(this, new SelectGameObjectArgs());
+                OnSelected?.Invoke(this, new SelectGameObjectArgs());
             }
             else
             {
