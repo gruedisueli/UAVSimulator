@@ -22,6 +22,10 @@ Project: Newtonsoft.Json: https://github.com/JamesNK/Newtonsoft.Json [accessed 5
 Copyright (c) 2007 James Newton-King
 Licensed under MIT License: https://github.com/JamesNK/Newtonsoft.Json/blob/master/LICENSE.md [accessed 5/31/2022]
 ****
+Project: Computational Geometry Unity Library: https://github.com/Habrador/Computational-geometry [accessed 7/11/2022]
+Copyright (c) 2020 Erik Nordeus
+Licensed under MIT License: https://github.com/Habrador/Computational-geometry/blob/master/LICENSE [accessed 7/11/2022]
+****
 
 ****
 Airspace map GIS data is publicly-available here, published by the FAA: https://adds-faa.opendata.arcgis.com/datasets/faa::class-airspace/about [accessed 6/23/2022]
