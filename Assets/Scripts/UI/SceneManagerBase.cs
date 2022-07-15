@@ -598,6 +598,7 @@ namespace Assets.Scripts.UI
             }
 
             _selectedElement.SetActive(false); //hide original element
+            _selectedElement.Sprite2d.SetActive(false);
             _workingCopy.SetSelectedState(true);
         }
 
@@ -665,6 +666,7 @@ namespace Assets.Scripts.UI
 
             //update selected because we threw out old
             _selectedElement.SetActive(true);
+            _selectedElement.Sprite2d.SetActive(true);
             _selectedElement.SetSelectedState(true);
         }
 
