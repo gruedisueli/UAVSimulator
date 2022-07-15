@@ -16,7 +16,7 @@ namespace Assets.Scripts.UI
         /// </summary>
         public static bool TryToSelect(out RaycastHit? hitInfo)
         {
-            int layerMask = 1 >> 14 | 1 >> 9;//14=ground, 9=building
+            int layerMask = 1 << 14 | 1 << 9;//14=ground, 9=building
             var r = Physics.RaycastAll(Camera.main.ScreenPointToRay(Input.mousePosition), 1000000, layerMask);
             hitInfo = null;
             if (r == null || r.Length == 0)
