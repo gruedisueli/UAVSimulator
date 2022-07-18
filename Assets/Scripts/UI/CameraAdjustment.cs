@@ -14,6 +14,7 @@ using Mapbox.Unity.Map;
 
 using Assets.Scripts.Environment;
 using UnityEngine.EventSystems;
+using UnityEngine.UIElements;
 
 namespace Assets.Scripts.UI
 {
@@ -97,128 +98,201 @@ namespace Assets.Scripts.UI
             _maxZ = maxZ;
         }
 
-        /*
-         * Camera logic on LateUpdate to only update after all character movement logic has been handled. 
-         */
-        void LateUpdate()
+        void OnGUI()
         {
             if (EventSystem.current.IsPointerOverGameObject()) return;
+
+            var evt = Event.current;
+
+            if (evt.type == EventType.MouseDown)
+            {
+                if (evt.button == 0)
+                {
+                    StartPan();
+                }
+                else if (evt.button == 1)
+                {
+                    StartTilt();
+                }
+            }
+            if (evt.type == EventType.MouseDrag)
+            {
+                if (evt.button == 0)
+                {
+                    UpdatePan();
+                }
+                else if (evt.button == 1)
+                {
+                    UpdateTilt();
+                }
+            }
+            if (evt.type == EventType.MouseUp)
+            {
+                if (IsTiltingCamera)
+                {
+                    EndTilt();
+                }
+
+                if (IsPanningCamera)
+                {
+                    EndPan();
+                }
+            }
+            if (evt.type == EventType.ScrollWheel)
+            {
+                Zoom();
+            }
+        }
+
+        private void StartPan()
+        {
+            if (!_allowPan)
+            {
+                return;
+            }
+            OnStartPan?.Invoke(this, System.EventArgs.Empty);
+            _panStartTime = Time.unscaledTime;
+            _lastActionWasSetView = false;
+        }
+
+        private void StartTilt()
+        {
+            if (!_allowTilt)
+            {
+                return;
+            }
+            IsTiltingCamera = true;
+            OnStartTilt?.Invoke(this, System.EventArgs.Empty);
+        }
+
+        private void EndPan()
+        {
+            OnEndPan?.Invoke(this, System.EventArgs.Empty);
+            _lastActionWasSetView = false;
+            StartCoroutine(EndPanTiltCoroutine());
+        }
+
+        private void EndTilt()
+        {
+            OnEndTilt?.Invoke(this, System.EventArgs.Empty);
+            StartCoroutine(EndPanTiltCoroutine());
+        }
+
+        /// <summary>
+        /// Waits for other objects in scene to execute things. Preventing unnecessary mouse-up actions.
+        /// </summary>
+        private IEnumerator EndPanTiltCoroutine()
+        {
+            yield return new WaitForEndOfFrame();
+            IsTiltingCamera = false;
+            IsPanningCamera = false;
+        }
+
+        private void Zoom()
+        {
+            if (!_allowZoom)
+            {
+                return;
+            }
+
+            _lastActionWasSetView = false;
+            var wheel = Input.GetAxis("Mouse ScrollWheel");
             bool changed = false;
-            if (_allowPan)
+            if (_isPerspective && wheel != 0)
             {
-                if (Input.GetMouseButtonDown(0))
+                float forwardDist = _camera.transform.position.y / _zoomRate;
+                if (wheel < 0)
                 {
-                    OnStartPan?.Invoke(this, System.EventArgs.Empty);
-                    _panStartTime = Time.unscaledTime;
-                    _lastActionWasSetView = false;
+                    forwardDist *= -1;
                 }
-                else if (Input.GetMouseButtonUp(0))
-                {
-                    OnEndPan?.Invoke(this, System.EventArgs.Empty);
-                    IsPanningCamera = false;
-                    _lastActionWasSetView = false;
-                }
-            }
-            if (_allowTilt)
-            {
-                if (Input.GetMouseButtonDown(1))
-                {
-                    IsTiltingCamera = true;
-                    OnStartTilt?.Invoke(this, System.EventArgs.Empty);
-                }
-                else if (Input.GetMouseButtonUp(1))
-                {
-                    IsTiltingCamera = false;
-                    OnEndTilt?.Invoke(this, System.EventArgs.Empty);
-                }
-            }
 
-            if (_allowTilt && Input.GetMouseButton(1))
-            {
-                _lastActionWasSetView = false;
-                _xDeg += Input.GetAxis("Mouse X") * _xSpeed * 0.02f;
-                _yDeg -= Input.GetAxis("Mouse Y") * _ySpeed * 0.02f;
-
-                ////////OrbitAngle
-
-                //Clamp the vertical axis for the orbit
-                _yDeg = ClampAngle(_yDeg, _yMinLimit, _yMaxLimit);
-                // set camera rotation 
-                _desiredRotation = Quaternion.Euler(_yDeg, _xDeg, 0);
-                _currentRotation = _camera.transform.rotation;
-
-                _rotation = Quaternion.Lerp(_currentRotation, _desiredRotation, Time.deltaTime * _zoomDampening);
-                _camera.transform.rotation = _rotation;
+                var transZoom = Vector3.forward * forwardDist;
+                _camera.transform.Translate(transZoom);
+                SetNearClipPlane();
                 changed = true;
+                OnZoom?.Invoke(this, System.EventArgs.Empty);
             }
-            else if (_allowPan && Input.GetMouseButton(0))
+            else if (wheel != 0)
             {
-                if (Time.unscaledTime - _panStartTime > _panRegistrationTime)
+                float s;
+                if (wheel > 0)
                 {
-                    IsPanningCamera = true;
+                    s = _camera.orthographicSize / _zoomRate;
                 }
-                _lastActionWasSetView = false;
-                var tX = _camera.transform.right * -Input.GetAxis("Mouse X") * (_camera.transform.position.y / _panSpeed);
-                var tY = _camera.transform.up * -Input.GetAxis("Mouse Y") * (_camera.transform.position.y / _panSpeed);
-                var combined = tX + tY;
-                var newPos = _camera.transform.position + combined;
-                var x0 = newPos.x;
-                var y = newPos.y;
-                var z0 = newPos.z;
-                float x1, z1;
-                if (x0 > _maxX) x1 = _maxX;
-                else if (x0 < _minX) x1 = _minX;
-                else x1 = x0;
-
-                if (z0 > _maxZ) z1 = _maxZ;
-                else if (z0 < _minZ) z1 = _minZ;
-                else z1 = z0;
-
-                _camera.transform.position = new Vector3(x1, y, z1);
+                else
+                {
+                    s = _camera.orthographicSize * _zoomRate;
+                }
+                _camera.orthographicSize = s > _minOrthoZoom ? s : _minOrthoZoom;
                 changed = true;
+                SetNearClipPlane();
+                OnZoom?.Invoke(this, System.EventArgs.Empty);
             }
 
-
-            //zoom
-            if (_allowZoom)
-            {
-                _lastActionWasSetView = false;
-                var wheel = Input.GetAxis("Mouse ScrollWheel");
-                if (_isPerspective && wheel != 0)
-                {
-                    float forwardDist = _camera.transform.position.y / _zoomRate;
-                    if (wheel < 0)
-                    {
-                        forwardDist *= -1;
-                    }
-
-                    var transZoom = Vector3.forward * forwardDist;
-                    _camera.transform.Translate(transZoom);
-                    SetNearClipPlane();
-                    changed = true;
-                    OnZoom?.Invoke(this, System.EventArgs.Empty);
-                }
-                else if (wheel != 0)
-                {
-                    float s;
-                    if (wheel > 0)
-                    {
-                        s = _camera.orthographicSize / _zoomRate;
-                    }
-                    else
-                    {
-                        s = _camera.orthographicSize * _zoomRate;
-                    }
-                    _camera.orthographicSize = s > _minOrthoZoom ? s : _minOrthoZoom;
-                    changed = true;
-                    SetNearClipPlane();
-                    OnZoom?.Invoke(this, System.EventArgs.Empty);
-                }
-            }
             if (changed)
             {
-                EnvironManager.Instance.LastCamXZS = new float[] { _camera.transform.position.x, _camera.transform.position.z, _camera.orthographicSize };
+                UpdateEnvironLastCam();
             }
+        }
+
+        private void UpdatePan()
+        {
+            if (!_allowPan || Time.unscaledTime - _panStartTime < _panRegistrationTime)
+            {
+                return;
+            }
+
+            IsPanningCamera = true;
+            _lastActionWasSetView = false;
+            var tX = _camera.transform.right * -Input.GetAxis("Mouse X") * (_camera.transform.position.y / _panSpeed);
+            var tY = _camera.transform.up * -Input.GetAxis("Mouse Y") * (_camera.transform.position.y / _panSpeed);
+            var combined = tX + tY;
+            var newPos = _camera.transform.position + combined;
+            var x0 = newPos.x;
+            var y = newPos.y;
+            var z0 = newPos.z;
+            float x1, z1;
+            if (x0 > _maxX) x1 = _maxX;
+            else if (x0 < _minX) x1 = _minX;
+            else x1 = x0;
+
+            if (z0 > _maxZ) z1 = _maxZ;
+            else if (z0 < _minZ) z1 = _minZ;
+            else z1 = z0;
+
+            _camera.transform.position = new Vector3(x1, y, z1);
+
+            UpdateEnvironLastCam();
+        }
+
+        private void UpdateTilt()
+        {
+            if (!_allowTilt)
+            {
+                return;
+            }
+
+            _lastActionWasSetView = false;
+            _xDeg += Input.GetAxis("Mouse X") * _xSpeed * 0.02f;
+            _yDeg -= Input.GetAxis("Mouse Y") * _ySpeed * 0.02f;
+
+            ////////OrbitAngle
+
+            //Clamp the vertical axis for the orbit
+            _yDeg = ClampAngle(_yDeg, _yMinLimit, _yMaxLimit);
+            // set camera rotation 
+            _desiredRotation = Quaternion.Euler(_yDeg, _xDeg, 0);
+            _currentRotation = _camera.transform.rotation;
+
+            _rotation = Quaternion.Lerp(_currentRotation, _desiredRotation, Time.deltaTime * _zoomDampening);
+            _camera.transform.rotation = _rotation;
+            
+            UpdateEnvironLastCam();
+        }
+
+        private void UpdateEnvironLastCam()
+        {
+            EnvironManager.Instance.LastCamXZS = new float[] { _camera.transform.position.x, _camera.transform.position.z, _camera.orthographicSize };
         }
 
         private static float ClampAngle(float angle, float min, float max)
