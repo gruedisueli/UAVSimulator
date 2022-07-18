@@ -7,6 +7,7 @@ using System.Text;
 using System.Threading.Tasks;
 
 using UnityEngine;
+using UnityEngine.UIElements;
 
 using Mapbox.Examples;
 using Mapbox.Geocoding;
@@ -100,12 +101,15 @@ namespace Assets.Scripts.UI
 
         void OnGUI()
         {
-            if (EventSystem.current.IsPointerOverGameObject()) return;
-
             var evt = Event.current;
+            if (evt.type == EventType.Repaint)
+            {
+                return;
+            }
 
             if (evt.type == EventType.MouseDown)
             {
+                if (EventSystem.current.IsPointerOverGameObject()) return;
                 if (evt.button == 0)
                 {
                     StartPan();
@@ -115,7 +119,7 @@ namespace Assets.Scripts.UI
                     StartTilt();
                 }
             }
-            if (evt.type == EventType.MouseDrag)
+            else if (evt.type == EventType.MouseDrag)
             {
                 if (evt.button == 0)
                 {
@@ -126,7 +130,7 @@ namespace Assets.Scripts.UI
                     UpdateTilt();
                 }
             }
-            if (evt.type == EventType.MouseUp)
+            else if (evt.type == EventType.MouseUp)
             {
                 if (IsTiltingCamera)
                 {
@@ -138,7 +142,7 @@ namespace Assets.Scripts.UI
                     EndPan();
                 }
             }
-            if (evt.type == EventType.ScrollWheel)
+            else if (evt.type == EventType.ScrollWheel)
             {
                 Zoom();
             }
