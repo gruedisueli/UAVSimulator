@@ -67,6 +67,7 @@ namespace Assets.Scripts.UI
         private Vector3 _lastCenter = new Vector3();
         private float _lastD = 0;
         private bool _lastActionWasSetView = false;
+        private bool _panTimerStarted = false;
         private Vector3 _homePos = new Vector3();
 
         private float _panStartTime = 0.0f;//when clicked down mouse for panning
@@ -156,6 +157,7 @@ namespace Assets.Scripts.UI
             }
             OnStartPan?.Invoke(this, System.EventArgs.Empty);
             _panStartTime = Time.unscaledTime;
+            _panTimerStarted = true;
             _lastActionWasSetView = false;
         }
 
@@ -173,6 +175,7 @@ namespace Assets.Scripts.UI
         {
             OnEndPan?.Invoke(this, System.EventArgs.Empty);
             _lastActionWasSetView = false;
+            _panTimerStarted = false;
             StartCoroutine(EndPanTiltCoroutine());
         }
 
@@ -241,7 +244,7 @@ namespace Assets.Scripts.UI
 
         private void UpdatePan()
         {
-            if (!_allowPan || Time.unscaledTime - _panStartTime < _panRegistrationTime)
+            if (!_allowPan || !_panTimerStarted || Time.unscaledTime - _panStartTime < _panRegistrationTime)
             {
                 return;
             }
