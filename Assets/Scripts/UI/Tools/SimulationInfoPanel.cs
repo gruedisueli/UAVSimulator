@@ -45,7 +45,11 @@ namespace Assets.Scripts.UI.Tools
 
         private void Update()
         {
-            if (_control.playing && _frameCounter >= _updateRate) //no sense in updating stats when paused.
+            if (!_control.playing)
+            {
+                return;
+            }
+            if (_control.playing && _frameCounter >= _updateRate)
             {
                 _frameCounter = -1;
                 SetText();
