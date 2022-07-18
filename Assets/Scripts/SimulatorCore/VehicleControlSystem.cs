@@ -764,20 +764,7 @@ public class VehicleControlSystem : MonoBehaviour
         return pts.ToArray();
     }
 
-    RaycastHit GetClosestHit(Vector3 current, RaycastHit[] hit)
-    {
-        float minDist = Mathf.Infinity;
-        RaycastHit minHit = hit[0];
-        foreach (RaycastHit h in hit)
-        {
-            if (Vector3.Distance(current, h.point) < minDist)
-            {
-                minHit = h;
-                minDist = Vector3.Distance(current, h.point);
-            }
-        }
-        return minHit;
-    }
+    
     /// <summary>
     /// Finds closest restriction zone in the hit objects, if any. Null if none found.
     /// </summary>
@@ -1528,7 +1515,7 @@ public class VehicleControlSystem : MonoBehaviour
         while (iter <= maxIter && head < visited.Count && Physics.Raycast(visited[head], destination - visited[head], Vector3.Distance(visited[head], destination), layerMask) && head <= tail)
         {
             var h = Physics.RaycastAll(visited[head], destination - visited[head], Vector3.Distance(visited[head], destination), layerMask);
-            RaycastHit currentHitObject = GetClosestHit(visited[head], h);
+            RaycastHit currentHitObject = ViewportUtils.GetClosestHit(visited[head], h);
             Vector3 lastHit = currentHitObject.point;
             for (int i = angleIncrement; i <= 180; i += angleIncrement)
             {

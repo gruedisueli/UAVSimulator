@@ -25,7 +25,7 @@ namespace Assets.Scripts.UI
                 return false;
             }
 
-            hitInfo = r[0];
+            hitInfo = ViewportUtils.GetClosestHit(Camera.main.transform.position, r);
             return true;
         }
     }
