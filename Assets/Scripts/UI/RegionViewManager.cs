@@ -40,16 +40,25 @@ namespace Assets.Scripts.UI
 
         private DroneInfoPanel _droneInfoPanel;
 
-        private float GetZoomLevel(float viewSize)
+        private float _cityCameraElev = 5000;
+        private float _mediumCameraElev = 50000;
+        private int _currentZoom;
+
+
+        private int GetZoomLevel()
         {
-            float z = CurrentZoom;
-            if (viewSize < _maxCamSize)
+            var h = _cameraAdj._camera.transform.position.y;
+            if (h < _cityCameraElev)
             {
-                float m = viewSize / _minCamSize;//how many times bigger than min?
-                z = _biggestZoom - (float)Math.Log(m, 2); //how many powers of two higher?
+                return EnvironSettings.CITY_ZOOM_LEVEL;
             }
 
-            return z;
+            if (h < _mediumCameraElev)
+            {
+                return EnvironSettings.MEDIUM_ZOOM_LEVEL;
+            }
+
+            return EnvironSettings.REGION_ZOOM_LEVEL;
         }
 
         protected override void Init()
@@ -71,8 +80,7 @@ namespace Assets.Scripts.UI
                 return;
             }
 
-            CurrentZoom = GetZoomLevel(_cameraAdj._camera.transform.position.y);
-            Reload(CurrentZoom);
+            Reload(GetZoomLevel());
             _cameraAdj.OnZoom += OnZoomAction;
             _cameraAdj.OnEndPan += OnSetViewAction;
             _cameraAdj.OnSetView += OnSetViewAction;
@@ -135,14 +143,14 @@ namespace Assets.Scripts.UI
 
         private void OnSetViewAction(object o, System.EventArgs args)
         {
-            var z = GetZoomLevel(_cameraAdj._camera.transform.position.y);
+            var z = GetZoomLevel();
             Reload(z);
         }
 
         private void OnZoomAction(object o, System.EventArgs args)
         {
             if (!(o is CameraAdjustment cA)) return;
-            var z = GetZoomLevel(cA._camera.transform.position.y);
+            var z = GetZoomLevel();
             Reload(z);
         }
         private void SetAllowBuildings(bool toggle)
@@ -162,14 +170,20 @@ namespace Assets.Scripts.UI
 
         #region copied from Mapbox: ReloadMap.cs
 
-        public void Reload(float zoom)
+        public void Reload(int zoom)
         {
+            if (zoom == CurrentZoom)
+            {
+                return;
+            }
+
+            CurrentZoom = zoom;
             if (_reloadRoutine != null)
             {
                 StopCoroutine(_reloadRoutine);
                 _reloadRoutine = null;
             }
-            _reloadRoutine = StartCoroutine(ReloadAfterDelay(zoom));
+            _reloadRoutine = StartCoroutine(ReloadAfterDelay((float)zoom));
             _vehicleControlSystem.UpdateNetworkLineWidths();
         }
 
@@ -192,7 +206,6 @@ namespace Assets.Scripts.UI
             }
             _abstractMap.UpdateMap(_abstractMap.CenterLatitudeLongitude, zoom);
             _reloadRoutine = null;
-            CurrentZoom = zoom;
         }
 
         #endregion
