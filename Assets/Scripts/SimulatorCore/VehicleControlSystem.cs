@@ -121,7 +121,7 @@ public class VehicleControlSystem : MonoBehaviour
     private bool _networkUpdateFlag = false;
     private int _framesSinceNetworkUpdateFlag = 0;
 
-    private List<List<Obstacle>> _obstacleGroups;
+    private List<List<Obstacle>> _obstacleGroupsLowAlt;
 
     void Awake()
     {
@@ -302,7 +302,7 @@ public class VehicleControlSystem : MonoBehaviour
                     var pt0 = new Vector3(parking.transform.position.x, EnvironManager.Instance.Environ.SimSettings.LowAltitudeFlightElevation_M, parking.transform.position.z);
 
                     int layerMask = 1 << 8;//layer 8 = restriction zones.
-                    if (!BestRouteAroundObstacles(pt0, destination, _obstacleGroups, layerMask, 10, 0, 100, out var generatedPoints))
+                    if (!BestRouteAroundObstacles(pt0, destination, _obstacleGroupsLowAlt, layerMask, 10, 0, 100, out var generatedPoints))
                     {
                         Debug.Log("Could not route around obstacles");
                         return;
@@ -685,15 +685,16 @@ public class VehicleControlSystem : MonoBehaviour
                 }
             }
         }
-        var obstacleGroups = GetGroupedObstacles(1, utmElev, layerMask);
-        _obstacleGroups = obstacleGroups;
+        var obstacleGroupsLowerPath = GetGroupedObstacles(1, utmElev, layerMask);
+        var utmSep = EnvironManager.Instance.Environ.SimSettings.CorridorSeparationDistance_M;
+        var obstacleGroupsUpperPath = GetGroupedObstacles(1, utmElev + utmSep, layerMask);
+        _obstacleGroupsLowAlt = GetGroupedObstacles(1, EnvironManager.Instance.Environ.SimSettings.LowAltitudeFlightElevation_M, layerMask);
 
         if (points.Count < 3) return false;
 
         IPoint[] vertices = GetVertices(points);
         Delaunator delaunay = new Delaunator(vertices);
         DroneNetwork.vertices = points;
-        var utmSep = EnvironManager.Instance.Environ.SimSettings.CorridorSeparationDistance_M;
         var corrSpeed = EnvironManager.Instance.Environ.SimSettings.CorridorDroneSettings.MaxSpeed_MPS;
         for (int i = 0; i < delaunay.Triangles.Length; i++)
         {
@@ -718,14 +719,14 @@ public class VehicleControlSystem : MonoBehaviour
                 Vector3 corridor_to_from_start = new Vector3(toPosition.x, utmElev + utmSep, toPosition.z);
                 Vector3 corridor_to_from_end = new Vector3(fromPosition.x, utmElev + utmSep, fromPosition.z);
 
-                if (!BestRouteAroundObstacles(corridor_from_to_start, corridor_from_to_end, obstacleGroups, layerMask, 10, 0, 100, out var wayPoints))
+                if (!BestRouteAroundObstacles(corridor_from_to_start, corridor_from_to_end, obstacleGroupsLowerPath, layerMask, 10, 0, 100, out var wayPoints))
                 {
                     continue;
                 }
                 //wayPoints.Insert(0, corridor_from_to_start);
                 corridor_from_to.wayPoints = new Queue<Vector3>(wayPoints);
 
-                if (!BestRouteAroundObstacles(corridor_to_from_start, corridor_to_from_end, obstacleGroups, layerMask, 10, 0, 100, out wayPoints))
+                if (!BestRouteAroundObstacles(corridor_to_from_start, corridor_to_from_end, obstacleGroupsUpperPath, layerMask, 10, 0, 100, out wayPoints))
                 {
                     continue;
                 }
