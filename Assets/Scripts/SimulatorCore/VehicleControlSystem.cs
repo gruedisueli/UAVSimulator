@@ -121,6 +121,8 @@ public class VehicleControlSystem : MonoBehaviour
     private bool _networkUpdateFlag = false;
     private int _framesSinceNetworkUpdateFlag = 0;
 
+    private List<List<Obstacle>> _obstacleGroups;
+
     void Awake()
     {
         EnvironManager.Instance.VCS = this;
@@ -298,8 +300,14 @@ public class VehicleControlSystem : MonoBehaviour
 
                     var standBy = parking.GetComponent<ParkingControl>().parkingInfo.StandbyPosition;
                     var pt0 = new Vector3(parking.transform.position.x, EnvironManager.Instance.Environ.SimSettings.LowAltitudeFlightElevation_M, parking.transform.position.z);
-                    var generatedPoints = FindPath(pt0, destination, 5, 1 << 9 | 1 << 8);
-                    generatedPoints.Insert(0, pt0);
+
+                    int layerMask = 1 << 8;//layer 8 = restriction zones.
+                    if (!BestRouteAroundObstacles(pt0, destination, _obstacleGroups, layerMask, 10, 0, 100, out var generatedPoints))
+                    {
+                        Debug.Log("Could not route around obstacles");
+                        return;
+                    }
+
                     for (int i = generatedPoints.Count - 1; i >= 0; i--)
                     {
                         generatedPoints.Add(generatedPoints[i]);
@@ -677,13 +685,14 @@ public class VehicleControlSystem : MonoBehaviour
                 }
             }
         }
+        var obstacleGroups = GetGroupedObstacles(1, utmElev, layerMask);
+        _obstacleGroups = obstacleGroups;
 
         if (points.Count < 3) return false;
 
         IPoint[] vertices = GetVertices(points);
         Delaunator delaunay = new Delaunator(vertices);
         DroneNetwork.vertices = points;
-        var obstacleGroups = GetGroupedObstacles(1, utmElev, layerMask);
         var utmSep = EnvironManager.Instance.Environ.SimSettings.CorridorSeparationDistance_M;
         var corrSpeed = EnvironManager.Instance.Environ.SimSettings.CorridorDroneSettings.MaxSpeed_MPS;
         for (int i = 0; i < delaunay.Triangles.Length; i++)
