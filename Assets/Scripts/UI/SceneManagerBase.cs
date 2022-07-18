@@ -485,10 +485,6 @@ namespace Assets.Scripts.UI
                     {
                         clone = Instantiate(EnvironManager.Instance.RestrictionInfoPanelCylPrefab);
                     }
-                    else if (rZ.RestrictionZoneSpecs is RestrictionZoneCylStack)
-                    {
-                        clone = Instantiate(EnvironManager.Instance.RestrictionInfoPanelCylStackedPrefab);
-                    }
                 }
                 bool success = InitInfoPanel(clone);
                 return success;
@@ -1109,11 +1105,6 @@ namespace Assets.Scripts.UI
                 case RestrictionZoneCategory.Cylindrical:
                     {
                         rZ = new RestrictionZoneCyl(args.Position);
-                        break;
-                    }
-                case RestrictionZoneCategory.CylindricalStacked:
-                    {
-                        rZ = new RestrictionZoneCylStack(args.Position);
                         break;
                     }
             }

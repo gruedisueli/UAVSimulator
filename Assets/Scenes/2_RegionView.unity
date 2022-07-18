@@ -2216,7 +2216,7 @@ PrefabInstance:
     - target: {fileID: 2308453124726985584, guid: 5d0936292fa340f4499fd693e31614ae,
         type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: -125
+      value: -285
       objectReference: {fileID: 0}
     - target: {fileID: 2308453124726985584, guid: 5d0936292fa340f4499fd693e31614ae,
         type: 3}
@@ -14224,7 +14224,7 @@ PrefabInstance:
     - target: {fileID: 2308453124726985584, guid: 5d0936292fa340f4499fd693e31614ae,
         type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: -125
+      value: -285
       objectReference: {fileID: 0}
     - target: {fileID: 2308453124726985584, guid: 5d0936292fa340f4499fd693e31614ae,
         type: 3}
@@ -14257,10 +14257,9 @@ PrefabInstance:
       value: "The last type of element in is \"restriction zones\". Restriction zones
         should prevent drones/taxis from flying through these areas (these are not
         perfect right now and you may notice some bugs in this area--it's a work-in-progress).
-        \n\nRestriction zones come in 3 varieties: 1) rectangular, 2) cylindrical,
-        3) cylindrical stacked. 3) roughly corresponds to a version of class airspace,
-        but note that class airspace varies based on context. \n\n-Click on the restriction
-        zone menu--"
+        \n\nRestriction zones come in 2 varieties: 1) rectangular, 2) cylindrical.
+        You can create more complex restriction zones by layering them vertically,
+        to mimic class airspace, for example.\n\n-Click on the restriction zone menu--"
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 5d0936292fa340f4499fd693e31614ae, type: 3}
@@ -26977,7 +26976,7 @@ PrefabInstance:
     - target: {fileID: 2308453124726985584, guid: 5d0936292fa340f4499fd693e31614ae,
         type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: -125
+      value: -285
       objectReference: {fileID: 0}
     - target: {fileID: 2308453124726985584, guid: 5d0936292fa340f4499fd693e31614ae,
         type: 3}

@@ -66,7 +66,6 @@ namespace Assets.Scripts.Environment
         public GameObject ParkingCustomInfoPanelPrefab { get; private set; } = null;
         public GameObject RestrictionInfoPanelRectPrefab { get; private set; } = null;
         public GameObject RestrictionInfoPanelCylPrefab { get; private set; } = null;
-        public GameObject RestrictionInfoPanelCylStackedPrefab { get; private set; } = null;
         public GameObject AddButtonPrefab { get; private set; } = null;
         public GameObject DroneIconPrefab { get; private set; } = null;
         public GameObject ProgressBarPrefab { get; private set; } = null;
@@ -469,10 +468,6 @@ namespace Assets.Scripts.Environment
                     {
                         c = RestrictionZoneCategory.Rect;
                     }
-                    else if (type.Contains("Cyl_Stacked"))
-                    {
-                        c = RestrictionZoneCategory.CylindricalStacked;
-                    }
                     else
                     {
                         c = RestrictionZoneCategory.Cylindrical;
@@ -494,7 +489,6 @@ namespace Assets.Scripts.Environment
             ParkingCustomInfoPanelPrefab = AssetUtils.ReadPrefab(rPath, "ParkingCustomInfoPanel");
             RestrictionInfoPanelRectPrefab = AssetUtils.ReadPrefab(rPath, "RestrictionInfoPanelRect");
             RestrictionInfoPanelCylPrefab = AssetUtils.ReadPrefab(rPath, "RestrictionInfoPanelCyl");
-            RestrictionInfoPanelCylStackedPrefab = AssetUtils.ReadPrefab(rPath, "RestrictionInfoPanelCylStacked");
         }
 
         /// <summary>

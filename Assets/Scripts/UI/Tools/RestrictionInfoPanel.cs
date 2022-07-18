@@ -106,10 +106,6 @@ namespace Assets.Scripts.UI.Tools
                     SetModifyToolValue(ElementPropertyType.Radius, r);
                     break;
                 }
-                case RestrictionPanelType.CylStacked:
-                {
-                    break;
-                }
             }
         }
     }
