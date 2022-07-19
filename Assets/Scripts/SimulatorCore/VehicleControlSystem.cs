@@ -297,12 +297,17 @@ public class VehicleControlSystem : MonoBehaviour
                     //find a random destination for this drone, within the allowable radius.
 
                     Vector3 destination = GetRandomPointXZ(EnvironManager.Instance.Environ.SimSettings.LowAltitudeFlightElevation_M, parking.transform.position.x, parking.transform.position.z, EnvironManager.Instance.Environ.SimSettings.LowAltitudeDroneTravelRadius_M);//GetRandomPointXZ(0.0f);
+                    int layerMask = 1 << 8;//layer 8 = restriction zones.
+                    if (IsPointInsideObject(destination, layerMask))
+                    {
+                        return;
+                    }
 
                     var standBy = parking.GetComponent<ParkingControl>().parkingInfo.StandbyPosition;
                     var pt0 = new Vector3(parking.transform.position.x, EnvironManager.Instance.Environ.SimSettings.LowAltitudeFlightElevation_M, parking.transform.position.z);
 
-                    int layerMask = 1 << 8;//layer 8 = restriction zones.
-                    if (!BestRouteAroundObstacles(pt0, destination, _obstacleGroupsLowAlt, layerMask, 10, 0, 100, out var generatedPoints))
+                    int branchCt = 0;
+                    if (!BestRouteAroundObstacles(pt0, destination, _obstacleGroupsLowAlt, layerMask, 10, 0, 100, true, 1000, ref branchCt, out var generatedPoints))
                     {
                         Debug.Log("Could not route around obstacles");
                         return;
@@ -719,14 +724,19 @@ public class VehicleControlSystem : MonoBehaviour
                 Vector3 corridor_to_from_start = new Vector3(toPosition.x, utmElev + utmSep, toPosition.z);
                 Vector3 corridor_to_from_end = new Vector3(fromPosition.x, utmElev + utmSep, fromPosition.z);
 
-                if (!BestRouteAroundObstacles(corridor_from_to_start, corridor_from_to_end, obstacleGroupsLowerPath, layerMask, 10, 0, 100, out var wayPoints))
+                int branchCt = 0;
+                int maxBranches = 1000;
+                int maxDepth = 10;
+                float divDist = 100;
+                if (!BestRouteAroundObstacles(corridor_from_to_start, corridor_from_to_end, obstacleGroupsLowerPath, layerMask, maxDepth, 0, divDist, false, maxBranches, ref branchCt, out var wayPoints))
                 {
                     continue;
                 }
                 //wayPoints.Insert(0, corridor_from_to_start);
                 corridor_from_to.wayPoints = new Queue<Vector3>(wayPoints);
 
-                if (!BestRouteAroundObstacles(corridor_to_from_start, corridor_to_from_end, obstacleGroupsUpperPath, layerMask, 10, 0, 100, out wayPoints))
+                branchCt = 0;
+                if (!BestRouteAroundObstacles(corridor_to_from_start, corridor_to_from_end, obstacleGroupsUpperPath, layerMask, maxDepth, 0, divDist, false, maxBranches, ref branchCt, out wayPoints))
                 {
                     continue;
                 }
@@ -978,7 +988,7 @@ public class VehicleControlSystem : MonoBehaviour
     /// <summary>
     /// Routes curve around obstacles. False on failure.
     /// </summary>
-    private bool BestRouteAroundObstacles(Vector3 startPt, Vector3 endPt, List<List<Obstacle>> obstacleGroups, int layerMask, int maxDepth, int currentDepth, float divDist, out List<Vector3> routePts)
+    private bool BestRouteAroundObstacles(Vector3 startPt, Vector3 endPt, List<List<Obstacle>> obstacleGroups, int layerMask, int maxDepth, int currentDepth, float divDist, bool simpleConcavityEscape, int maxBranchCt, ref int currentBranchCt, out List<Vector3> routePts)
     {
         routePts = new List<Vector3>() { startPt };
         if (currentDepth > maxDepth)
@@ -993,7 +1003,7 @@ public class VehicleControlSystem : MonoBehaviour
         }
 
         currentDepth++;
-        var paths = GetPathsAround(startPt, endPt, obs, obstacleGroups, divDist, layerMask);
+        var paths = GetPathsAround(startPt, endPt, obs, obstacleGroups, divDist, layerMask, simpleConcavityEscape);
         if (paths == null)
         {
             Debug.Log("No paths around object could be found");
@@ -1032,13 +1042,16 @@ public class VehicleControlSystem : MonoBehaviour
         }
         double bestLen = double.MaxValue;
         bool foundBest = false;
-        int c = 0;
         for (int f = 0; f < fixRoutes.Count; f++)
         {
-            c++;
+            currentBranchCt++;
+            if (currentBranchCt > maxBranchCt)
+            {
+                Debug.Log("Branch count exceeded");
+                break;
+            }
             var toFix = fixRoutes[f];
-            var rPts = new List<Vector3>();
-            if (BestRouteAroundObstacles(toFix[toFix.Count - 1], endPt, obstacleGroups, layerMask, maxDepth, currentDepth, divDist, out rPts))
+            if (BestRouteAroundObstacles(toFix[toFix.Count - 1], endPt, obstacleGroups, layerMask, maxDepth, currentDepth, divDist, simpleConcavityEscape, maxBranchCt, ref currentBranchCt, out var rPts))
             {
                 var tmpPts = new List<Vector3>(toFix);
                 for (int i = 1; i < rPts.Count; i++)
@@ -1172,7 +1185,7 @@ public class VehicleControlSystem : MonoBehaviour
     /// <summary>
     /// Routes around obstacle, if possible. Null on failure.
     /// </summary>
-    private List<Vector3>[] GetPathsAround(Vector3 start, Vector3 end, List<Obstacle> obstacles, List<List<Obstacle>> obstacleGroups, float divDist, int layerMask)
+    private List<Vector3>[] GetPathsAround(Vector3 start, Vector3 end, List<Obstacle> obstacles, List<List<Obstacle>> obstacleGroups, float divDist, int layerMask, bool simpleConcavityEscape)
     {
         var allPts = new List<Vertex>();
         foreach (var o in obstacles)
@@ -1197,7 +1210,7 @@ public class VehicleControlSystem : MonoBehaviour
         {
             if (!haveI0)
             {
-                if (!RouteVertexToHull(start, ref hullPts, obstacleGroups, divDist, layerMask))
+                if (!RouteVertexToHull(start, ref hullPts, obstacleGroups, divDist, layerMask, simpleConcavityEscape))
                 {
                     Debug.Log("Could not route from point to hull.");
                     return null;
@@ -1205,7 +1218,7 @@ public class VehicleControlSystem : MonoBehaviour
             }
             if (!haveI1)
             {
-                if (!RouteVertexToHull(end, ref hullPts, obstacleGroups, divDist, layerMask))
+                if (!RouteVertexToHull(end, ref hullPts, obstacleGroups, divDist, layerMask, simpleConcavityEscape))
                 {
                     Debug.Log("Could not route from point to hull.");
                     return null;
@@ -1259,26 +1272,68 @@ public class VehicleControlSystem : MonoBehaviour
     /// <summary>
     /// Returns false if could not find a path from vertex to hull. Returns true and the point if so.
     /// </summary>
-    private bool RouteVertexToHull(Vector3 v, ref List<Vector3> hull, List<List<Obstacle>> obstacleGroups, float divDist, int layerMask)
+    private bool RouteVertexToHull(Vector3 v, ref List<Vector3> hull, List<List<Obstacle>> obstacleGroups, float divDist, int layerMask, bool simpleConcavityEscape)
     {
         List<Tuple<Vector3, float, bool, int>> goodPts = new List<Tuple<Vector3, float, bool, int>>();
+
+        //first attempt to find closest point on segments, and if one works, call it the solution
+        //modeled on solution for closest point on line found at: https://forum.unity.com/threads/math-problem.8114/#post-59715
         for (int i = 0; i < hull.Count; i++)
         {
             int j = i < hull.Count - 1 ? i + 1 : 0;
             var h0 = hull[i];
             var h1 = hull[j];
-            var dir = h1 - h0;
-            dir = dir.normalized;
-            float dist = Vector3.Distance(h0, h1);
-            int divCt = (int) Math.Floor(dist / divDist);
-            float inc = dist / divCt;
-            for (int z = 0; z < divCt; z++)
+            var dir = (h1 - h0).normalized;
+            var h0ToV = v - h0;
+            float segmentLength = Vector3.Distance(h0, h1);
+            float segmentParam = Vector3.Dot(dir, h0ToV);
+            var closestPt = new Vector3();
+            bool atEnd = false;
+            if (segmentParam <= 0)
             {
-                float d = z * inc;
-                var sample = h0 + dir * d;
-                if (!ObstacleExists(v, sample, obstacleGroups, layerMask, out _))
+                closestPt = h0;
+                atEnd = true;
+            }
+            else if (segmentParam >= segmentLength)
+            {
+                closestPt = h1;
+                atEnd = true;
+            }
+            else
+            {
+                var h0ToClosest = dir * segmentParam;
+                closestPt = h0 + h0ToClosest;
+            }
+
+            if (!ObstacleExists(v, closestPt, obstacleGroups, layerMask, out _))
+            {
+
+                goodPts.Add(Tuple.Create(closestPt, Vector3.Distance(v, closestPt), atEnd, i));
+                break;
+            }
+        }
+
+
+        //if not, and if we are doing a more accurate path-finding, we can do this:
+        if (!simpleConcavityEscape && goodPts.Count == 0)
+        {
+            for (int i = 0; i < hull.Count; i++)
+            {
+                int j = i < hull.Count - 1 ? i + 1 : 0;
+                var h0 = hull[i];
+                var h1 = hull[j];
+                var dir = (h1 - h0).normalized;
+                float segmentLength = Vector3.Distance(h0, h1);
+                int divCt = (int) Math.Floor(segmentLength / divDist);
+                float inc = segmentLength / divCt;
+                for (int z = 0; z < divCt; z++)
                 {
-                    goodPts.Add(Tuple.Create(sample, Vector3.Distance(v, sample), z == 0, i));
+                    float d = z * inc;
+                    var sample = h0 + dir * d;
+                    if (!ObstacleExists(v, sample, obstacleGroups, layerMask, out _))
+                    {
+                        goodPts.Add(Tuple.Create(sample, Vector3.Distance(v, sample), z == 0, i));
+                    }
                 }
             }
         }
