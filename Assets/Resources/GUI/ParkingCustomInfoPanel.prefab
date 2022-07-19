@@ -1453,6 +1453,11 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 7963714487029843755, guid: 60a7e5436cb058a48b804618e74d327a,
+        type: 3}
+      propertyPath: m_FontData.m_VerticalOverflow
+      value: 0
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 60a7e5436cb058a48b804618e74d327a, type: 3}
 --- !u!224 &2823526587312724208 stripped

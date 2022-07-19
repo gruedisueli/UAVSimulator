@@ -29,10 +29,11 @@ namespace Assets.Scripts.UI.Tools
 
             var specs = sPark.ParkingStructureSpecs;
             string t = specs.Type;
+            string simpleName = t.Contains("LowAltitude") ? "Low Altitude Parking" : "Corridor Parking";
             var asset = EnvironManager.Instance.ParkingStructAssets[t];
             _image.sprite = asset.PreviewImage;
 
-            _infoPanel.SetTextElement(ElementPropertyType.Type, t);
+            _infoPanel.SetTextElement(ElementPropertyType.Type, simpleName);
             _infoPanel.SetTextElement(ElementPropertyType.Description, specs.Description);
 
             UpdateFields(specs);

@@ -38,6 +38,10 @@ namespace Assets.Scripts.Environment
             {
                 return _description;
             }
+            set
+            {
+                _description = value;
+            }
         }
 
         [JsonProperty]

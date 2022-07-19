@@ -381,6 +381,7 @@ namespace Assets.Scripts.Environment
                 var pS = new ParkingStructureCustom();
                 pS.ParkingSpots = spots;
                 pS.Type = t.name;
+                pS.Description = t.name.Contains("LowAltitude") ? "A central hub for drones that operate without corridors" : "A parking structure for drones that operate within a corridor network";
                 ParkingStructAssets.Add(t.name, new ParkingStructureAssetPack(pfb, pS, null, ParkingStructCategory.Custom));
             }
 

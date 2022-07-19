@@ -16,7 +16,7 @@ namespace Assets.Scripts.Environment
         public int Layer { get; } = 11;
 
         public abstract string Type { get; set; }
-        public abstract string Description { get; }
+        public abstract string Description { get; set; }
         public abstract Vector3 Position { get; set; }
         public abstract Vector3 Rotation { get; set; }
         public abstract Vector3 Scale { get; set; }
